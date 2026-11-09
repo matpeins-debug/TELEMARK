@@ -708,7 +708,6 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
 .title-head .kicker { letter-spacing: 0.3em; }
 
 /* Papierkorn und Rand über der Szene: ruhende Ebene, kostet pro Bild fast nichts */
-#printLayer { position: absolute; inset: 0; pointer-events: none; background-repeat: repeat, no-repeat; background-size: 128px 128px, 100% 100%; }
 
 /* ---------- Ergebnis und Ranglisten (0.18) ---------- */
 /* Ranglisten: ganz durchscrollbar, die eigene Zeile steht beim Öffnen in der Mitte; Zeile antippen = Details */
@@ -2700,6 +2699,657 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   else root.TMComp = api;
 })(typeof window !== "undefined" ? window : globalThis);
 
+/* COLD MEDAL – Plakat-Landschaft im Stil von 1928: gemeinsame Druckfarben, Berge aus natürlichen Gratlinien, Ortskerne, Wald,
+ * Himmel in Stufen mit Spritzkanten und Druckkorn. Vorlage: design_handoff_telemark_plakat/entwurf/telemark-orte.js (Zahlen: Stilblatt).
+ * Gezeichnet wird im Entwurfsraum 1280 × 800: Talboden y = 534, Fuß der Berge BASE = 548. Die Panorama-Ebenen (scene.js) haben ihren
+ * Ursprung in der Mitte am Horizont, 390 Einheiten = Bildhöhe:  c = (x − 640) × 0.4875,  v = (y − 534) × 0.4875.
+ * Die Ortsdaten (SCENES[ort].plakat) bleiben deshalb in Entwurfs-px, so wie im Entwurf.
+ */
+(function (root) {
+  "use strict";
+  // ------------------------------------------------------------------ Druckfarben (höchstens 10 je Szene, Zwischentöne sind Mischungen)
+  const I = { kobalt: "#1F56A8", himmel: "#4F86C6", dunst: "#BFD6EA", papier: "#F4EEDF", schatten: "#8DAFD8", tief: "#5C78B8",
+    gluehen: "#E9A58C", violett: "#6B5C8E", fichte: "#2D5546", fichteD: "#1D3A33", dach: "#8E4A2E", rot: "#C23B2A", ocker: "#DDA43B",
+    tinte: "#1E2734", gruen: "#3F6B55", navy: "#23466B" };
+  const hx = (c) => [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)];
+  function mix(a, b, t) { const A = hx(a), B = hx(b); return "#" + A.map((v, i) => Math.round(v + (B[i] - v) * t).toString(16).padStart(2, "0")).join(""); }
+  function rng(seed) { let s = seed >>> 0 || 1; return () => { s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }; }
+  function hash(str) { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  const W = 1280, BASE = 548, HOR = 534, U = 0.4875;
+
+  // Lichtstimmungen: Plakatsonne (früh, nachmittags) und Alpenglühen (abends)
+  const PAL = {
+    sonne: {
+      abend: false,
+      sky: [I.kobalt, mix(I.kobalt, I.himmel, 0.5), I.himmel, mix(I.himmel, I.dunst, 0.5), I.dunst],
+      alp: { lit: I.papier, shade: I.schatten, firn: I.dunst, rock: I.tief, rockLit: I.schatten, crev: I.schatten },
+      alpFar: { lit: mix(I.papier, I.dunst, 0.3), shade: mix(I.schatten, I.dunst, 0.4), firn: I.dunst, rock: mix(I.tief, I.dunst, 0.35), rockLit: mix(I.schatten, I.dunst, 0.3), crev: I.schatten },
+      alpErd: { lit: I.schatten, shade: mix(I.tief, I.schatten, 0.3), firn: mix(I.schatten, I.dunst, 0.4), rock: mix(I.tief, I.tinte, 0.25), rockLit: mix(I.tief, I.schatten, 0.4), crev: mix(I.tief, I.schatten, 0.5) },
+      dol: { lit: mix(I.papier, I.ocker, 0.22), shade: mix(I.schatten, I.violett, 0.3), rock: mix(I.tief, I.violett, 0.35), ledge: I.papier, scree: I.papier },
+      dolErd: { lit: mix(I.schatten, I.violett, 0.2), shade: mix(I.tief, I.violett, 0.3), rock: mix(I.tief, I.tinte, 0.3), ledge: mix(I.schatten, I.dunst, 0.4), scree: mix(I.schatten, I.dunst, 0.3) },
+      hug: { lit: mix(I.fichte, I.dunst, 0.22), fill: mix(I.fichteD, I.tief, 0.2), piste: I.papier, frost: mix(I.fichte, I.papier, 0.5) },
+      hugFar: { lit: mix(I.tief, I.dunst, 0.32), fill: mix(I.tief, I.fichte, 0.45), piste: mix(I.papier, I.dunst, 0.5), frost: mix(I.dunst, I.tief, 0.25) },
+      forest: mix(I.tief, I.fichte, 0.45), forestFar: mix(mix(I.tief, I.fichte, 0.45), I.dunst, 0.35),
+      moon: null,
+      valley: I.papier, valleyShade: I.schatten,
+      wall: I.papier, wallSide: I.schatten, roof: I.dach, roofSnow: I.papier, roofSnowD: I.schatten, slate: mix(I.tinte, I.tief, 0.35), timber: mix(I.dach, I.tinte, 0.45), wood: mix(I.dach, I.tinte, 0.2),
+      win: I.tief, winHi: I.tief, winOff: I.tief, door: I.dach,
+      tree: I.fichte, treeD: I.fichteD, tSnow: I.papier, tSnowD: I.schatten,
+      hill: [I.papier, I.dunst, I.schatten, I.tief], kante: I.schatten, mulde: I.dunst, key: I.tief, hillShadow: I.tief, lip: null,
+      water: [mix(I.himmel, I.dunst, 0.55), mix(I.himmel, I.kobalt, 0.25)], waterLine: I.papier,
+      smoke: I.papier, smokeD: I.dunst, line: I.tief, loco: I.fichteD,
+      chalk: I.papier, spray: I.tinte, band: I.kobalt, bandInk: I.papier,
+    },
+    gluehen: {
+      abend: true,
+      sky: [mix(I.violett, I.tinte, 0.4), I.violett, mix(I.violett, I.gluehen, 0.3), mix(I.violett, I.gluehen, 0.55), mix(I.violett, I.gluehen, 0.78)],
+      alp: { lit: I.gluehen, shade: I.violett, firn: mix(I.gluehen, I.papier, 0.5), rock: mix(I.violett, I.tinte, 0.38), rockLit: mix(I.gluehen, I.violett, 0.45), crev: mix(I.gluehen, I.violett, 0.4) },
+      alpFar: { lit: mix(I.gluehen, I.violett, 0.18), shade: mix(I.violett, I.gluehen, 0.2), firn: mix(I.gluehen, I.papier, 0.3), rock: mix(I.violett, I.tinte, 0.2), rockLit: mix(I.gluehen, I.violett, 0.5), crev: mix(I.gluehen, I.violett, 0.4) },
+      alpErd: { lit: mix(I.violett, I.schatten, 0.45), shade: I.violett, firn: mix(I.violett, I.schatten, 0.62), rock: mix(I.violett, I.tinte, 0.35), rockLit: mix(I.violett, I.schatten, 0.2), crev: mix(I.violett, I.schatten, 0.2) },
+      dol: { lit: mix(I.gluehen, I.rot, 0.3), shade: mix(I.violett, I.rot, 0.15), rock: mix(I.violett, I.tinte, 0.3), ledge: mix(I.gluehen, I.papier, 0.55), scree: mix(I.gluehen, I.papier, 0.3) },
+      dolErd: { lit: mix(I.violett, I.schatten, 0.35), shade: I.violett, rock: mix(I.violett, I.tinte, 0.4), ledge: mix(I.violett, I.schatten, 0.6), scree: mix(I.violett, I.schatten, 0.5) },
+      hug: { lit: mix(I.fichte, I.violett, 0.4), fill: mix(I.fichteD, I.violett, 0.22), piste: mix(I.schatten, I.violett, 0.3), frost: mix(I.schatten, I.violett, 0.5) },
+      hugFar: { lit: mix(I.violett, I.schatten, 0.3), fill: mix(I.violett, I.fichteD, 0.45), piste: mix(I.violett, I.schatten, 0.55), frost: mix(I.violett, I.schatten, 0.4) },
+      forest: mix(I.violett, I.fichteD, 0.55), forestFar: mix(I.violett, I.fichteD, 0.35),
+      moon: mix(I.papier, I.gluehen, 0.25),
+      valley: mix(I.schatten, I.violett, 0.3), valleyShade: mix(I.violett, I.schatten, 0.3),
+      wall: mix(I.papier, I.violett, 0.3), wallSide: mix(I.violett, I.papier, 0.25), roof: mix(I.dach, I.violett, 0.4), roofSnow: mix(I.papier, I.violett, 0.38), roofSnowD: mix(I.violett, I.schatten, 0.35), slate: mix(I.tinte, I.violett, 0.35), timber: mix(I.dach, I.tinte, 0.6), wood: mix(I.dach, I.tinte, 0.45),
+      win: I.ocker, winHi: mix(I.ocker, I.papier, 0.45), winOff: mix(I.violett, I.tinte, 0.3), door: mix(I.dach, I.violett, 0.4),
+      tree: mix(I.fichte, I.violett, 0.3), treeD: I.fichteD, tSnow: mix(I.schatten, I.gluehen, 0.25), tSnowD: mix(I.schatten, I.violett, 0.45),
+      hill: [mix(I.schatten, I.gluehen, 0.32), mix(I.schatten, I.violett, 0.35), mix(I.violett, I.schatten, 0.25), mix(I.violett, I.tinte, 0.3)],
+      kante: mix(I.violett, I.schatten, 0.3), mulde: mix(I.schatten, I.violett, 0.25), key: mix(I.violett, I.tinte, 0.45), hillShadow: mix(I.violett, I.tinte, 0.35), lip: mix(I.gluehen, I.papier, 0.4),
+      water: [mix(I.violett, I.gluehen, 0.5), mix(I.violett, I.tinte, 0.15)], waterLine: mix(I.gluehen, I.papier, 0.4),
+      smoke: mix(I.papier, I.violett, 0.42), smokeD: mix(I.violett, I.papier, 0.22), line: mix(I.violett, I.tinte, 0.5), loco: I.fichteD,
+      chalk: mix(I.papier, I.gluehen, 0.3), spray: I.tinte, band: mix(I.violett, I.tinte, 0.45), bandInk: mix(I.papier, I.gluehen, 0.2),
+    },
+  };
+  // Tageszeit des Spiels → Lichtstimmung (HILL_TOD bleibt wie es ist)
+  const palFor = (tod) => (tod === "evening" ? PAL.gluehen : PAL.sonne);
+
+  // ------------------------------------------------------------------ Zeichenhilfen im Entwurfsraum
+  // ctx: aktive Fläche, P: Palette, r: Zufall, OFF: Passer (Schattenplatte versetzt), X0/X1: Breite der Ebene in Entwurfs-px
+  let ctx = null, P = PAL.sonne, r = rng(1), OFF = [1.3, 0.7], X0 = -20, X1 = W + 20;
+  function path(pts) { ctx.beginPath(); addPath(pts); }
+  function addPath(pts) { ctx.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]); ctx.closePath(); }
+  function fill(pts, c) { path(pts); ctx.fillStyle = c; ctx.fill(); }
+  function shade(pts, c) { ctx.save(); ctx.translate(OFF[0], OFF[1]); fill(pts, c); ctx.restore(); }
+  function line(pts, c, w) { ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]); ctx.strokeStyle = c; ctx.lineWidth = w; ctx.stroke(); }
+  function rect(x, y, w, h, c) { ctx.fillStyle = c; ctx.fillRect(x, y, w, h); }
+  function dot(x, y, rad, c) { ctx.beginPath(); ctx.arc(x, y, Math.max(0.1, rad), 0, 6.2832); ctx.fillStyle = c; ctx.fill(); }
+  const circ = (p, x, y, rad) => { p.moveTo(x + rad, y); p.arc(x, y, rad, 0, 6.2832); };
+  // Spritzkante: Punkte der oberen Farbe sinken ein, ein Drittel der unteren steigt auf. Je Farbe ein Pfad (schnell).
+  function spray(yAt, up, down, x0, x1, n, reach) {
+    const A = new Path2D(), B = new Path2D();
+    for (let i = 0; i < n; i++) {
+      const x = x0 + r() * (x1 - x0);
+      circ(A, x, yAt(x) + Math.pow(r(), 2.4) * reach, 0.55 + r() * 0.9);
+      if (i % 3 === 0) { const xb = x0 + r() * (x1 - x0); circ(B, xb, yAt(xb) - Math.pow(r(), 2.4) * reach * 0.4, 0.5 + r() * 0.7); }
+    }
+    ctx.fillStyle = up; ctx.fill(A); ctx.fillStyle = down; ctx.fill(B);
+  }
+
+  // ------------------------------------------------------------------ Gratlinie und Bergflächen
+  function ridge(ctrl, rough, rr) {
+    let pts = ctrl.map((p) => [p[0], p[1]]), amp = rough;
+    for (let it = 0; it < 7; it++) {
+      const out = [pts[0]];
+      for (let i = 0; i < pts.length - 1; i++) {
+        const a = pts[i], b = pts[i + 1], dx = b[0] - a[0];
+        if (dx > 6) out.push([(a[0] + b[0]) / 2 + (rr() - 0.5) * dx * 0.1, (a[1] + b[1]) / 2 + (rr() - 0.5) * dx * amp]);
+        out.push(b);
+      }
+      pts = out; amp *= 0.56;
+    }
+    return pts;
+  }
+  function skyY(sil, x) {
+    if (x <= sil[0][0]) return sil[0][1];
+    for (let i = 1; i < sil.length; i++) if (x <= sil[i][0]) { const a = sil[i - 1], b = sil[i]; return a[1] + (b[1] - a[1]) * (x - a[0]) / ((b[0] - a[0]) || 1); }
+    return sil[sil.length - 1][1];
+  }
+  function nearest(sil, x) { let bi = 0, bd = 1e9; for (let i = 0; i < sil.length; i++) { const d = Math.abs(sil[i][0] - x); if (d < bd) { bd = d; bi = i; } } return bi; }
+  // Falllinie mit Drift, die sich von oben (d0) nach unten (d1) ändert: Grate fächern zum Fuß hin auf
+  function fall2(x, y, yEnd, rr, d0, d1) { const pts = [[x, y]]; let cx = x; const L = Math.max(1, yEnd - y); for (let yy = y + 8; yy < yEnd; yy += 8) { const u = (yy - y) / L; cx += (rr() - 0.5) * 3.2 + (d0 + (d1 - d0) * u) * 8; pts.push([cx, yy]); } pts.push([cx, yEnd]); return pts; }
+  function xAt(L, y) {
+    if (y <= L[0][1]) return L[0][0];
+    for (let i = 1; i < L.length; i++) if (y <= L[i][1]) { const a = L[i - 1], b = L[i]; return a[0] + (b[0] - a[0]) * (y - a[1]) / ((b[1] - a[1]) || 1); }
+    return L[L.length - 1][0];
+  }
+  // Keil entlang einer Falllinie: mode 0 mittig (Rinne), -1 als Band links davon (Lichtrippe)
+  function taper(L, w, mode) {
+    const A = [], B = [], n = L.length - 1;
+    L.forEach((p, i) => {
+      const t = i / (n || 1), ww = w * Math.pow(1 - t, 0.8) * (0.75 + 0.25 * Math.sin(t * 6 + w));
+      if (mode < 0) { A.push(p); B.push([p[0] - ww, p[1] + ww * 0.15]); } else { A.push([p[0] - ww / 2, p[1]]); B.push([p[0] + ww / 2, p[1]]); }
+    });
+    return A.concat(B.reverse());
+  }
+  function tipped(sil, rr, hgt) {
+    const out = [], a = sil[0][0], b = sil[sil.length - 1][0]; let i = 0;
+    for (let x = a; x < b; x += 3.4) out.push([x, skyY(sil, x) - (i++ % 2 ? 0 : hgt * (0.5 + rr() * 0.8))]);
+    out.push(sil[sil.length - 1]);
+    return out;
+  }
+
+  // Geometrie einer Bergkette (einmal je Ort): Grat, Schattenflanken, Rippen, Rinnen, Fels, Firn, Wald mit Zungen
+  function buildRange(R, seed) {
+    const rr = rng(seed);
+    let sil = ridge(R.ctrl, R.rough, rr);
+    if (R.style === "huegel") sil = tipped(sil, rr, R.far ? 2.5 : 4.5);
+    const x0 = sil[0][0], x1 = sil[sil.length - 1][0], ys = (x) => skyY(sil, x);
+    const top = Math.min.apply(null, sil.map((p) => p[1]));
+    const G = { R, sil, top, poly: sil.concat([[x1, BASE + 6], [x0, BASE + 6]]), faces: [], ribs: [], cou: [], rock: [], firn: [], crev: [], wall: [], striae: [], ledges: [], scree: [], pistes: [], frost: [], forest: null, peaks: [] };
+    const S = R.ctrl.filter((p) => p[2] === "S").map((p) => p[0]);
+    const V = R.ctrl.filter((p) => p[2] === "V").map((p) => p[0]);
+    const det = R.detail == null ? 1 : R.detail, rocky = R.rocky == null ? 1 : R.rocky;
+    const spurs = S.map((xs) => fall2(xs, ys(xs) + 1, BASE + 6, rr, (rr() - 0.5) * 0.3, (rr() - 0.5) * 1.0));
+    const litIv = []; let prevX = x0;
+    S.forEach((xs, i) => {
+      G.peaks.push([xs, ys(xs)]);
+      const xn = i < S.length - 1 ? S[i + 1] : x1 + 1;
+      const xv = V.find((v) => v > xs && v < xn);
+      litIv.push([prevX, xs]);
+      const spur = spurs[i], iS = nearest(sil, xs);
+      let xe;
+      if (xv != null) {
+        const g = fall2(xv, ys(xv) + 1, BASE + 6, rr, (rr() - 0.5) * 0.2, (rr() - 0.5) * 0.7), nx = spurs[i + 1];
+        for (const p of g) { const a = xAt(spur, p[1]) + 8; if (nx) { const b = xAt(nx, p[1]) - 8; if (p[0] > b) p[0] = b; } if (p[0] < a) p[0] = a; }
+        G.faces.push(sil.slice(iS, nearest(sil, xv) + 1).concat(g.slice(1), spur.slice().reverse()));
+        xe = xv; prevX = xv;
+      } else {
+        G.faces.push(sil.slice(iS).concat([[x1, BASE + 6]], spur.slice().reverse()));
+        xe = x1; prevX = x1;
+      }
+      const nr = Math.max(1, Math.round((xe - xs) / 80 * det));
+      for (let k = 0; k < nr; k++) {
+        const xa = xs + (xe - xs) * (0.18 + 0.64 * (k + 0.2 + rr() * 0.6) / nr), ya = ys(xa) + 1;
+        const len = (BASE - ya) * (0.22 + rr() * 0.4);
+        if (len > 14) G.ribs.push(taper(fall2(xa, ya, ya + len, rr, 0.55 + rr() * 0.4, 0.15 + rr() * 0.25), 4 + rr() * 9, -1));
+      }
+    });
+    litIv.push([prevX, x1]);
+    if (R.style === "alpin") {
+      for (const [a, b] of litIv) {
+        const n = Math.round((b - a) / 55 * det);
+        for (let k = 0; k < n; k++) {
+          const xa = a + (b - a) * (k + 0.2 + rr() * 0.6) / n, ya = ys(xa) + 1;
+          const len = Math.min(140, (BASE - ya) * (0.15 + rr() * 0.35));
+          if (len > 12) G.cou.push(taper(fall2(xa, ya + 2, ya + len, rr, -(0.5 + rr() * 0.4), -(0.1 + rr() * 0.25)), 3 + rr() * 6, 0));
+        }
+      }
+      const inShade = (x) => G.faces.length && S.some((xs, i) => { const xn = i < S.length - 1 ? S[i + 1] : x1 + 1, xv = V.find((v) => v > xs && v < xn); return x > xs && x < (xv != null ? xv : x1); });
+      for (let x = x0 + 10; x < x1 - 10; x += 16) {
+        const sl = Math.abs(ys(x + 8) - ys(x - 8)) / 16;
+        if (sl > 0.6 && rr() < 0.32 * rocky) {
+          const sh = inShade(x), ya = ys(x) + 3 + rr() * 6, len = 22 + rr() * 54 * rocky, d = sh ? 1 : -1;
+          G.rock.push(taper(fall2(x, ya, ya + len, rr, d * (0.45 + rr() * 0.4), d * (0.1 + rr() * 0.2)), 6 + rr() * 7 * rocky, 0));
+        }
+      }
+      if (R.firn) {
+        const [a, b, d] = R.firn, tp = [], bt = [];
+        for (let x = a; x <= b; x += 8) { tp.push([x, ys(x) - 2]); bt.push([x, ys(x) + d * (0.55 + 0.45 * Math.sin((x - a) / (b - a) * Math.PI)) + (rr() - 0.5) * 6]); }
+        G.firn.push(tp.concat(bt.reverse()));
+        for (let k = 0; k < 6; k++) { const x = a + (b - a) * (0.1 + 0.8 * rr()), y = ys(x) + d * (0.25 + rr() * 0.45); G.crev.push([[x - 8 - rr() * 10, y], [x + 8 + rr() * 10, y + 2 - rr() * 4]]); }
+      }
+      if (R.wall) {
+        const [a, b, off, h] = R.wall, tp = [], bt = [];
+        for (let x = a; x <= b; x += 7) { tp.push([x, ys(x) + off]); bt.push([x, ys(x) + off + h * (0.55 + rr() * 0.55)]); }
+        G.wall.push(tp.concat(bt.reverse()));
+      }
+    }
+    if (R.style === "dolomit") {
+      for (let x = x0 + 3; x < x1; x += 6 + rr() * 8) {
+        const ya = ys(x) + 2 + rr() * 10, len = 20 + rr() * 150 * (R.cliff || 1);
+        G.striae.push({ pts: [[x, ya], [x + (rr() - 0.5) * 6, ya + len]], w: 0.9 + rr() * 1.6 });
+      }
+      for (let k = 0; k < 60 * det; k++) { const x = x0 + rr() * (x1 - x0), ya = ys(x) + 8 + rr() * (BASE - ys(x)) * 0.6, l = 6 + rr() * 16; G.ledges.push([[x, ya], [x + l, ya + 1.5]]); }
+      for (let x = x0 + 40; x < x1; x += 50 + rr() * 60) { const yt = BASE - 50 - rr() * 60, w = 16 + rr() * 26; G.scree.push([[x, yt], [x + w, BASE + 6], [x - w, BASE + 6]]); }
+    }
+    if (R.style === "huegel") {
+      for (const [px, w] of (R.pisten || [])) { const y0 = ys(px) + 3, dd = 0.25; G.pistes.push([[px - w * 0.25, y0], [px + w * 0.25, y0], [px + w * 0.6 - (BASE - y0) * dd, BASE + 6], [px - w * 0.6 - (BASE - y0) * dd, BASE + 6]]); }
+      const n = Math.round((x1 - x0) * (BASE - top) / 260);
+      for (let k = 0; k < n; k++) { const x = x0 + rr() * (x1 - x0), y = ys(x) + rr() * (BASE - ys(x)); G.frost.push([x, y, 0.7 + rr() * 1.1]); }
+    }
+    if (R.tree && R.style !== "huegel") {
+      const tongues = V.map((v) => [v, 24 + rr() * 40, 18 + rr() * 18]);
+      const pts = []; let i = 0;
+      for (let x = x0; x <= x1; x += 4.5) {
+        let y = R.tree + Math.sin(x * 0.03 + seed) * 4;
+        for (const [v, a, w] of tongues) y -= a * Math.exp(-Math.pow((x - v) / w, 2));
+        pts.push([x, y - (i++ % 2 ? 0 : 5 + rr() * 6)]);
+      }
+      G.forest = pts.concat([[x1, BASE + 6], [x0, BASE + 6]]);
+    }
+    return G;
+  }
+  function rangeColors(G, mode) {
+    const R = G.R;
+    if (R.style === "huegel") return R.far ? P.hugFar : P.hug;
+    if (R.style === "dolomit") return mode === "erd" ? P.dolErd : P.dol;
+    return mode === "erd" ? P.alpErd : R.far ? P.alpFar : P.alp;
+  }
+  function paintRange(G, mode) {
+    const R = G.R, C = rangeColors(G, mode);
+    ctx.save(); path(G.poly); ctx.clip();
+    fill(G.poly, C.lit);
+    if (R.style === "huegel") {
+      for (const f of G.faces) shade(f, C.fill);
+      for (const p of G.pistes) fill(p, C.piste);
+      const fr = new Path2D(); for (const d of G.frost) circ(fr, d[0], d[1], d[2]); ctx.fillStyle = C.frost; ctx.fill(fr);
+    } else if (R.style === "dolomit") {
+      for (const s of G.scree) fill(s, C.scree);
+      for (const f of G.faces) shade(f, C.shade);
+      for (const q of G.ribs) fill(q, C.lit);
+      for (const l of G.striae) line(l.pts, C.rock, l.w);
+      for (const l of G.ledges) line(l, C.ledge, 1.7);
+    } else {
+      for (const f of G.firn) fill(f, C.firn);
+      for (const l of G.crev) line(l, C.crev, 1.8);
+      for (const q of G.cou) fill(q, C.shade);
+      for (const q of G.rock) fill(q, C.rockLit);
+      for (const q of G.wall) fill(q, mix(C.rockLit, C.rock, 0.55));
+      for (const f of G.faces) shade(f, C.shade);
+      ctx.save(); ctx.beginPath(); for (const f of G.faces) addPath(f); ctx.clip();
+      for (const q of G.rock) shade(q, C.rock);
+      for (const q of G.wall) shade(q, C.rock);
+      ctx.restore();
+      for (const q of G.ribs) fill(q, C.lit);
+    }
+    if (G.forest) fill(G.forest, R.far ? P.forestFar : P.forest);
+    ctx.restore();
+  }
+  // Schattengrenze am Abend: gemeinsame Höhe, wie der Erdschatten (darüber glühen die Gipfel)
+  const erdLine = (x) => 372 + Math.sin(x * 0.011) * 10 + Math.sin(x * 0.037) * 4;
+  const GEO = new Map();
+  function geoFor(O) {
+    let g = GEO.get(O.id);
+    if (!g) { g = O.ranges.map((R, i) => buildRange(R, (hash(O.id) + i * 977) >>> 0)); GEO.set(O.id, g); }
+    return g;
+  }
+
+  // ------------------------------------------------------------------ Tal, Wasser, Wald am Talrand
+  function forestBand(y) {
+    const a = X0 - 20, b = X1 + 20, pts = [[a, y + 26]]; let x = a;
+    while (x < b) {
+      const h = 10 + r() * 18 + (Math.sin(x * 0.01) + 1) * 6, w = 6 + r() * 6;
+      pts.push([x, y - r() * 4], [x + w / 2, y - h], [x + w, y - r() * 4]);
+      x += w * (0.7 + r() * 0.4);
+    }
+    pts.push([b, y + 26]);
+    fill(pts, P.forest);
+    // Schattenband unter dem Waldsaum (wellig, Schattenplatte)
+    const top = [], bot = [];
+    for (let xx = a, i = 0; xx <= b + 260; xx += 250, i++) { top.push([xx, y + 18 + (i % 2 ? 8 : 0) + r() * 2]); bot.push([xx, y + 32 + (i % 2 ? 8 : 0) - r() * 2]); }
+    shade(top.concat(bot.reverse()), P.valleyShade);
+  }
+  function valley(O) {
+    const y = O.valleyY || HOR, pts = [];
+    for (let x = X0 - 20, i = 0; x <= X1 + 270; x += 260, i++) pts.push([x, y + (i % 2 ? -4 : 1)]);
+    fill(pts.concat([[X1 + 270, 900], [X0 - 20, 900]]), P.valley);
+    forestBand(y);
+  }
+  function valleyDetail(O) {
+    const rr = rng(hash(O.id) ^ 41);
+    for (const [x, y, L, t] of [[700, 590, 160, 7], [860, 680, 220, 9], [1120, 676, 180, 8], [640, 720, 200, 10]]) {
+      ctx.save(); ctx.translate(x + OFF[0] + (rr() - 0.5) * 30, y + OFF[1]); ctx.beginPath(); ctx.ellipse(0, 0, L / 2, t / 2, -0.04, 0, 6.2832); ctx.fillStyle = P.valleyShade; ctx.fill(); ctx.restore();
+    }
+    grove([[662, 680, 34, 0], [686, 686, 26, 2], [762, 704, 46, 1], [792, 710, 32, 0], [820, 702, 24, 2]], true);
+  }
+  function river(Rv) {
+    const top = [], bot = [], x0 = Math.max(X0 - 20, Rv.x0 || 460);
+    for (let x = x0; x <= X1 + 20; x += 30) { top.push([x, Rv.y + Math.sin(x * 0.013) * 3]); bot.push([x, Rv.y + Rv.h + Math.sin(x * 0.013 + 1) * 3]); }
+    fill(top.concat(bot.reverse()), P.water[1]);
+    for (let k = 0; k < 26 * (X1 - x0) / 840; k++) { const x = x0 + r() * (X1 - x0), y = Rv.y + 2 + r() * (Rv.h - 3); line([[x, y], [x + 5 + r() * 12, y]], P.waterLine, 1); }
+  }
+
+  // ------------------------------------------------------------------ Häuser, Kirchen, Wahrzeichen
+  function preset(type, rr) {
+    const o = { wall: P.wall, side: P.wallSide, roof: P.roof, k: 0.28, balcony: true };
+    switch (type) {
+      case "fachwerk": return Object.assign(o, { roof: P.slate, k: 0.52, timber: P.timber, balcony: false });
+      case "goral": return Object.assign(o, { wall: P.wood, side: mix(P.wood, I.tinte, 0.35), k: 0.82, logs: mix(P.wood, I.tinte, 0.3), balcony: false });
+      case "nordisch": { const c = [I.rot, I.ocker, P.wall, mix(I.dach, I.rot, 0.5)][Math.floor(rr() * 4)]; const cw = P.abend && c !== P.wall ? mix(c, I.violett, 0.38) : c; return Object.assign(o, { wall: cw, side: mix(cw, I.tinte, 0.28), roof: P.slate, k: 0.42, balcony: false }); }
+      case "italien": return Object.assign(o, { wall: mix(P.wall, I.ocker, 0.22), side: mix(P.wallSide, I.ocker, 0.15), k: 0.16, shut: I.gruen, balcony: false });
+      case "bayern": return Object.assign(o, { k: 0.3, paint: rr() < 0.55 ? [I.ocker, I.rot, I.gruen, I.himmel][Math.floor(rr() * 4)] : null });
+      default: return o;
+    }
+  }
+  function house(x, yb, w, h, o) {
+    const d = w * 0.5, ox = d * 0.62, oy = d * 0.24, g = w * (o.k == null ? 0.28 : o.k);
+    shade([[x + w, yb], [x + w + ox, yb - oy], [x + w + ox, yb - h - oy], [x + w, yb - h]], o.side);
+    fill([[x, yb], [x + w, yb], [x + w, yb - h], [x + w / 2, yb - h - g], [x, yb - h]], o.wall);
+    if (o.logs) for (let yy = yb - 2.4; yy > yb - h - g * 0.6; yy -= 2.6) line([[x, yy], [x + w, yy]], o.logs, 0.6);
+    if (o.timber) {
+      const T = o.timber, lw = Math.max(0.8, w * 0.045);
+      for (const f of [0.03, 0.36, 0.64, 0.97]) line([[x + w * f, yb], [x + w * f, yb - h]], T, lw);
+      line([[x, yb - h * 0.5], [x + w, yb - h * 0.5]], T, lw);
+      line([[x, yb - h + 0.4], [x + w, yb - h + 0.4]], T, lw);
+      line([[x + w * 0.03, yb], [x + w * 0.36, yb - h * 0.5]], T, lw * 0.9);
+      line([[x + w * 0.97, yb], [x + w * 0.64, yb - h * 0.5]], T, lw * 0.9);
+      line([[x + w / 2, yb - h], [x + w / 2, yb - h - g * 0.8]], T, lw);
+    }
+    fill([[x + w / 2, yb - h - g], [x + w / 2 + ox, yb - h - g - oy], [x + w + ox + 2, yb - h - oy + 1.5], [x + w + 2, yb - h + 1.5]], o.roof);
+    fill([[x + w / 2, yb - h - g - 1.2], [x + w / 2 + ox, yb - h - g - oy - 1.2], [x + w + ox, yb - h - oy - 1], [x + w, yb - h - 1]], P.roofSnow);
+    line([[x - 2, yb - h + 2], [x + w / 2, yb - h - g], [x + w + 2, yb - h + 2]], o.roof, 1.8);
+    line([[x - 1, yb - h + 0.6], [x + w / 2, yb - h - g - 1.4], [x + w + 1, yb - h + 0.6]], P.roofSnow, 1.2);
+    if (o.balcony) line([[x, yb - h * 0.52], [x + w, yb - h * 0.52]], o.roof, 1.2);
+    if (o.paint) rect(x + w * 0.34, yb - h * 0.9, w * 0.32, h * 0.26, o.paint);
+    const fw = Math.max(1.6, w * 0.13), fh = Math.max(2, h * 0.19), n = w > 20 ? 3 : 2;
+    for (let i = 0; i < n; i++) {
+      const fx = x + (w / (n + 1)) * (i + 1) - fw / 2;
+      if (!(o.paint && i === Math.floor(n / 2))) rect(fx, yb - h * 0.86, fw, fh, i === 1 ? P.winHi : P.win);
+      rect(fx, yb - h * 0.4, fw, fh, P.win);
+      if (o.shut) { rect(fx - 1.3, yb - h * 0.86, 1, fh, o.shut); rect(fx + fw + 0.3, yb - h * 0.86, 1, fh, o.shut); }
+    }
+  }
+  function onion(c, tt, s) {
+    const bulb = [[c - 8 * s, tt], [c - 9 * s, tt - 5 * s], [c - 5 * s, tt - 10 * s], [c - 1.5 * s, tt - 13 * s], [c - 1.5 * s, tt - 17 * s], [c + 1.5 * s, tt - 17 * s], [c + 1.5 * s, tt - 13 * s], [c + 5 * s, tt - 10 * s], [c + 9 * s, tt - 5 * s], [c + 8 * s, tt]];
+    fill(bulb, P.roof);
+    shade([[c, tt - 13 * s], [c + 1.5 * s, tt - 13 * s], [c + 5 * s, tt - 10 * s], [c + 9 * s, tt - 5 * s], [c + 8 * s, tt], [c, tt]], mix(P.roof, I.tinte, 0.25));
+    fill([[c - 8 * s, tt - 1], [c - 9 * s, tt - 5 * s], [c - 5 * s, tt - 9.5 * s], [c - 3 * s, tt - 7 * s], [c - 6 * s, tt - 3 * s]], P.roofSnow);
+    line([[c, tt - 17 * s], [c, tt - 27 * s]], P.line, 1.2); line([[c - 2.5, tt - 24 * s], [c + 2.5, tt - 24 * s]], P.line, 1.2);
+  }
+  function tower(x, yb, h, t, wall, side) {
+    const tw = t === "campanile" ? 14 : 12, tx = x - tw / 2, tt = yb - h * (t === "campanile" ? 0.82 : 0.6);
+    shade([[tx + tw, yb], [tx + tw + 5, yb - 2], [tx + tw + 5, tt - 2], [tx + tw, tt]], side);
+    rect(tx, tt, tw, yb - tt, wall);
+    if (t === "campanile") { rect(tx + 2.5, tt + 4, 3.5, 8, P.win); rect(tx + tw - 6, tt + 4, 3.5, 8, P.win); rect(tx - 1, tt + 14, tw + 2, 1.6, side); }
+    else { rect(tx + tw / 2 - 2, tt + 5, 4, 7, P.win); dot(tx + tw / 2, tt + 18, 2.6, P.roof); }
+    if (t === "spire" || t === "wood") {
+      const sh = h * (t === "wood" ? 0.32 : 0.42), col = t === "wood" ? P.wood : P.slate;
+      fill([[tx - 1.5, tt], [x, tt - sh], [tx + tw + 1.5, tt]], col);
+      shade([[x, tt - sh], [tx + tw + 1.5, tt], [x, tt]], mix(col, I.tinte, 0.3));
+      fill([[tx - 1.5, tt], [x, tt - sh], [x - 1.4, tt - sh * 0.5], [tx + 1, tt - 1]], P.roofSnow);
+      line([[x, tt - sh], [x, tt - sh - 7]], P.line, 1.2); line([[x - 2.5, tt - sh - 5], [x + 2.5, tt - sh - 5]], P.line, 1.2);
+    } else if (t === "onion") onion(x, tt, 1);
+    else if (t === "campanile") {
+      fill([[tx - 1.5, tt], [x, tt - 13], [tx + tw + 1.5, tt]], P.roof);
+      shade([[x, tt - 13], [tx + tw + 1.5, tt], [x, tt]], mix(P.roof, I.tinte, 0.25));
+      line([[x, tt - 13], [x, tt - 19]], P.line, 1.2);
+    }
+  }
+  function church(x, yb, t, h) {
+    if (t === "stave") { stave(x, yb, h); return; }
+    const woody = t === "wood", wall = woody ? P.wood : P.wall, side = woody ? mix(P.wood, I.tinte, 0.35) : P.wallSide;
+    if (t === "twin") {
+      house(x - 22, yb, 44, h * 0.34, { wall, side, roof: P.roof, k: 0.4 });
+      tower(x - 26, yb, h, "onion", wall, side); tower(x + 24, yb, h, "onion", wall, side);
+      return;
+    }
+    if (t === "campanile") { house(x - 44, yb, 36, h * 0.28, { wall: mix(P.wall, I.ocker, 0.2), side, roof: P.roof, k: 0.2 }); tower(x, yb, h, t, mix(P.wall, I.ocker, 0.2), side); return; }
+    house(x + 4, yb, 34, h * 0.3, { wall, side, roof: woody ? P.wood : P.roof, k: woody ? 0.75 : 0.42, logs: woody ? mix(P.wood, I.tinte, 0.3) : null });
+    tower(x, yb, h, t, wall, side);
+  }
+  function stave(x, yb, h) {
+    const wd = P.wood, dk = mix(P.wood, I.tinte, 0.42);
+    rect(x - 14, yb - 12, 28, 12, wd);
+    for (const [w, hh, y] of [[32, 8, yb - 12], [22, 7, yb - 22], [14, 6, yb - 31]]) {
+      fill([[x - w / 2 - 2, y], [x, y - hh - 3], [x + w / 2 + 2, y]], dk);
+      fill([[x - w / 2 - 1, y - 1], [x, y - hh - 4], [x - w * 0.1, y - hh * 0.45]], P.roofSnow);
+      if (y !== yb - 12) rect(x - w / 2 + 3, y, w - 6, 3, wd);
+    }
+    fill([[x - 3, yb - 37], [x, yb - 37 - h * 0.35], [x + 3, yb - 37]], dk);
+    rect(x - 3, yb - 8, 6, 8, P.win);
+  }
+  function abbey(x0, x1, yb, h) {
+    const bx0 = x0 + 30, bx1 = x1 - 20, by = yb - 16, bh = 22;
+    fill([[bx0, by], [bx1, by], [bx1, by - bh], [bx1 - 10, by - bh - 12], [bx0 + 10, by - bh - 12], [bx0, by - bh]], P.wallSide);
+    fill([[bx0 - 1, by - bh], [bx0 + 10, by - bh - 12], [bx1 - 10, by - bh - 12], [bx1 + 1, by - bh]], P.roofSnowD);
+    const ox = 22, oy = 8;
+    shade([[x1, yb], [x1 + ox, yb - oy], [x1 + ox, yb - h - oy], [x1, yb - h]], P.wallSide);
+    rect(x0, yb - h, x1 - x0, h, P.wall);
+    fill([[x0 - 2, yb - h + 1], [x0 + 12, yb - h - 15], [x1 - 10, yb - h - 15], [x1 + 2, yb - h + 1]], P.roofSnow);
+    shade([[x1 - 10, yb - h - 15], [x1 + ox - 8, yb - h - oy - 15], [x1 + ox + 2, yb - h - oy + 1], [x1 + 2, yb - h + 1]], P.roofSnowD);
+    rect(x0 - 2, yb - h - 1, x1 - x0 + 4, 3, P.roof);
+    for (let row = 0; row < 3; row++) for (let fx = x0 + 6; fx < x1 - 4; fx += 8.2) rect(fx, yb - h + 6 + row * 8.5, 2.8, 4.4, (row === 1 && Math.floor(fx) % 3 === 0) ? P.winHi : P.win);
+    rect((x0 + x1) / 2 - 4, yb - 9, 8, 9, P.door);
+    const cx0 = x0 - 38, cw = 40, ch = 40, cg = 20;
+    fill([[cx0, yb], [cx0 + cw, yb], [cx0 + cw, yb - ch], [cx0 + cw / 2, yb - ch - cg], [cx0, yb - ch]], P.wall);
+    line([[cx0 - 2, yb - ch + 2], [cx0 + cw / 2, yb - ch - cg], [cx0 + cw + 2, yb - ch + 2]], P.roof, 2.4);
+    line([[cx0 - 1, yb - ch], [cx0 + cw / 2, yb - ch - cg - 1.6], [cx0 + cw + 1, yb - ch]], P.roofSnow, 1.4);
+    rect(cx0 + cw / 2 - 4, yb - 30, 8, 16, P.win); rect(cx0 + cw / 2 - 3, yb - 9, 6, 9, P.door);
+    const tx = cx0 + 4, tw = 15, tb = yb - ch - 2, tt = tb - 56;
+    rect(tx, tt, tw, tb - tt, P.wall);
+    shade([[tx + tw, tb], [tx + tw + 6, tb - 3], [tx + tw + 6, tt - 3], [tx + tw, tt]], P.wallSide);
+    rect(tx + 4, tt + 8, 7, 10, P.win); dot(tx + tw / 2, tt + 28, 3.2, P.roof);
+    onion(tx + tw / 2 + 1, tt, 1.3);
+  }
+  function hotel(x, yb, w, h) {
+    const ox = 18, oy = 7;
+    shade([[x + w, yb], [x + w + ox, yb - oy], [x + w + ox, yb - h - oy], [x + w, yb - h]], P.wallSide);
+    rect(x, yb - h, w, h, P.wall);
+    fill([[x - 2, yb - h], [x + 4, yb - h - 13], [x + w - 4, yb - h - 13], [x + w + 2, yb - h]], P.roof);
+    shade([[x + w + 2, yb - h], [x + w - 4, yb - h - 13], [x + w + ox - 6, yb - h - oy - 13], [x + w + ox + 1, yb - h - oy]], mix(P.roof, I.tinte, 0.2));
+    fill([[x + 4, yb - h - 13], [x + 9, yb - h - 18], [x + w - 9, yb - h - 18], [x + w - 4, yb - h - 13]], P.roofSnow);
+    fill([[x + w - 4, yb - h - 13], [x + w - 9, yb - h - 18], [x + w + ox - 12, yb - h - oy - 18], [x + w + ox - 6, yb - h - oy - 13]], P.roofSnowD);
+    for (let i = 0; i < 6; i++) { const dx = x + 8 + i * ((w - 16) / 5) - 2.5; rect(dx, yb - h - 11, 5, 7, P.roofSnow); rect(dx + 1.3, yb - h - 9, 2.4, 4, P.win); }
+    rect(x, yb - h + 3, w, 3, I.rot);
+    for (let row = 0; row < 4; row++) for (let i = 0; i < 9; i++) rect(x + 5 + i * ((w - 10) / 8.6), yb - h + 10 + row * 9, 3.2, 5.2, (row + i) % 5 === 2 ? P.winHi : P.win);
+    rect(x + w / 2 - 5, yb - 8, 10, 8, P.door);
+  }
+  function block(x, yb, w, h, rr) {
+    const tone = rr() < 0.5 ? P.wall : mix(P.wall, P.wallSide, 0.35);
+    shade([[x + w, yb], [x + w + 5, yb - 2], [x + w + 5, yb - h - 2], [x + w, yb - h]], P.wallSide);
+    rect(x, yb - h, w, h, tone);
+    if (rr() < 0.5) { rect(x - 1, yb - h - 2, w + 2, 2.4, P.roofSnow); }
+    else { fill([[x - 1, yb - h], [x + 2.5, yb - h - 6], [x + w - 2.5, yb - h - 6], [x + w + 1, yb - h]], P.slate); rect(x + 2.5, yb - h - 7.4, w - 5, 1.8, P.roofSnow); }
+    for (let yy = yb - h + 4; yy < yb - 4; yy += 6.5) for (let xx = x + 2; xx < x + w - 2.5; xx += 4.2) rect(xx, yy, 1.8, 3, P.abend ? (rr() < 0.5 ? P.win : rr() < 0.3 ? P.winHi : P.winOff) : P.win);
+  }
+  // Ortskern: drei Reihen Häuser, zur Mitte dichter, vorne größer
+  function cluster(T, rr) {
+    const out = [], n = 3;
+    for (let k = 0; k < n; k++) {
+      const yb = T.y0 + (T.y1 - T.y0) * k / (n - 1), sc = (0.78 + 0.32 * k / (n - 1)) * (T.scale || 1.18);
+      let x = T.cx - T.w / 2 + rr() * 10;
+      while (x < T.cx + T.w / 2) {
+        const w = (14 + rr() * 11) * sc, mid = x + w / 2, dc = Math.abs(mid - T.cx) / (T.w / 2);
+        const keep = rr() < (1 - dc * dc * 0.75) * (T.dens || 0.92);
+        const blocked = (T.skip || []).some((s) => mid > s[0] && mid < s[1] && (s[2] == null || k <= s[2]));
+        if (keep && !blocked) out.push({ x, yb: yb + (rr() - 0.5) * 4, w, h: w * (0.6 + rr() * 0.2) * (T.tall || 1), k });
+        x += keep ? w + 3 + rr() * 6 : w * 0.6;
+      }
+    }
+    return out;
+  }
+  // Kamine (für den Rauch der Bewegungsebene): Lage in Entwurfs-px
+  function town(T, chimneys) {
+    const rr = rng(T.seed || 5);
+    const items = cluster(T, rr).map((h) => ({ yb: h.yb, h, draw: () => house(h.x, h.yb, h.w, h.h, preset(T.house, rr)) }));
+    for (const c of (T.churches || [])) items.push({ yb: c.yb, draw: () => church(c.x, c.yb, c.t, c.h) });
+    for (const e of (T.extra || [])) items.push({ yb: e.yb, draw: () => (e.t === "abbey" ? abbey(e.x0, e.x1, e.yb, e.h) : hotel(e.x, e.yb, e.w, e.h)) });
+    items.sort((a, b) => a.yb - b.yb).forEach((it) => it.draw());
+    const hs = items.filter((it) => it.h && it.h.k > 0);
+    if (chimneys) for (let i = 0; i < Math.min(T.smoke == null ? 5 : T.smoke, hs.length); i++) { const h = hs[Math.floor(rr() * hs.length)].h; chimneys.push([h.x + h.w * 0.72, h.yb - h.h - h.w * 0.22, 0.7 + h.k * 0.2, rr() * 10]); }
+  }
+  function city(Cn) {
+    const rr = rng(Cn.seed || 9);
+    for (const row of Cn.rows) {
+      let x = row.x0;
+      while (x < row.x1) { const w = 10 + rr() * 16, h = row.hmin + rr() * (row.hmax - row.hmin); block(x, row.y, w, h, rr); x += w + rr() * 2; }
+      for (const c of (Cn.churches || [])) if (c.row === Cn.rows.indexOf(row)) church(c.x, c.yb, c.t, c.h);
+    }
+  }
+  function viaduct(V) {
+    const { x0, x1, y, h, n } = V, span = (x1 - x0) / n, pw = span * 0.2, st = mix(P.wall, P.wallSide, 0.3), sd = P.wallSide;
+    for (let i = 0; i < n; i++) {
+      const xl = x0 + i * span, xr = xl + span, cx = (xl + xr) / 2, rad = span / 2 - pw / 2, ya = y + 5 + h * 0.45;
+      const pts = [[xl, y + 5], [xr, y + 5], [xr, ya]];
+      for (let a = 0; a <= Math.PI + 0.01; a += Math.PI / 10) pts.push([cx + rad * Math.cos(a), ya - rad * Math.sin(a) * 0.9]);
+      pts.push([xl, ya]); fill(pts, st);
+    }
+    for (let i = 0; i <= n; i++) { const px = x0 + i * span - pw / 2; rect(px, y + 5, pw, h, st); shade([[px + pw * 0.55, y + 5], [px + pw, y + 5], [px + pw, y + 5 + h], [px + pw * 0.55, y + 5 + h]], sd); }
+    rect(x0 - pw / 2, y, x1 - x0 + pw, 5, st); rect(x0 - pw / 2, y - 1.5, x1 - x0 + pw, 1.6, P.roofSnow);
+  }
+  function skywalk(S) {
+    const { x0, x1, y } = S, ph = 20, L = P.line;
+    line([[x0, y], [x0, y - ph]], L, 1.6); line([[x1, y], [x1, y - ph]], L, 1.6);
+    const cat = (u) => y - ph + Math.sin(u * Math.PI) * ph * 0.85, deck = (u) => y - 3 + Math.sin(u * Math.PI) * 4;
+    const a = [], b = []; for (let k = 0; k <= 20; k++) { const u = k / 20, x = x0 + (x1 - x0) * u; a.push([x, cat(u)]); b.push([x, deck(u)]); }
+    line(a, L, 1); line(b, L, 1.6);
+    for (let k = 1; k < 20; k += 2) { const u = k / 20, x = x0 + (x1 - x0) * u; line([[x, cat(u)], [x, deck(u)]], L, 0.6); }
+  }
+  function latticeTower(T) {
+    const { x, y, h } = T, L = P.line, b = 7, tp = 2.2;
+    line([[x - b, y], [x - tp, y - h]], L, 1.3); line([[x + b, y], [x + tp, y - h]], L, 1.3);
+    for (let k = 0; k < 6; k++) { const u0 = k / 6, u1 = (k + 1) / 6, wa = b + (tp - b) * u0, wb = b + (tp - b) * u1; line([[x - wa, y - h * u0], [x + wb, y - h * u1]], L, 0.7); line([[x + wa, y - h * u0], [x - wb, y - h * u1]], L, 0.7); }
+    rect(x - 5, y - h - 4, 10, 4, L); fill([[x - 6, y - h - 4], [x, y - h - 9], [x + 6, y - h - 4]], P.roof);
+  }
+  function station(x, y) { rect(x - 6, y - 7, 12, 7, P.wood); rect(x - 7, y - 8.5, 14, 2, P.roofSnow); }
+  function kozolec(x, yb) {
+    const w = 34, h = 20, wd = P.wood;
+    for (const px of [x, x + w / 2, x + w]) rect(px - 1, yb - h, 2.2, h, wd);
+    for (let k = 1; k < 5; k++) line([[x, yb - h + k * 3.6], [x + w, yb - h + k * 3.6]], wd, 0.9);
+    fill([[x - 4, yb - h], [x + w / 2, yb - h - 8], [x + w + 4, yb - h]], P.roof);
+    fill([[x - 3, yb - h - 1], [x + w / 2, yb - h - 8.6], [x + w + 3, yb - h - 1], [x + w / 2, yb - h - 4]], P.roofSnow);
+  }
+
+  // ------------------------------------------------------------------ Fichten und Nahebene
+  // Drei Formen: v 0 schlank (4 Etagen), 1 breit (5), 2 jung (3); Licht links, Schneehauben je Etage
+  function spruce(x, yb, h, v) {
+    const tiers = v === 1 ? 5 : v === 2 ? 3 : 4, wk = v === 1 ? 0.52 : v === 2 ? 0.5 : 0.38;
+    const w = h * wk, top = yb - h, th = (h * 0.86) / tiers, R = [[x, top]], tips = [];
+    for (let i = 0; i < tiers; i++) {
+      const yE = top + h * 0.06 + th * (i + 1), hw = (w / 2) * (0.34 + 0.66 * (i + 1) / tiers);
+      R.push([x + hw, yE]); tips.push([hw, yE]);
+      if (i < tiers - 1) R.push([x + hw * 0.4, yE - th * 0.32]);
+    }
+    const yL = R[R.length - 1][1];
+    R.push([x + w * 0.05, yL], [x + w * 0.05, yb]);
+    const L = R.slice(1).reverse().map((q) => [2 * x - q[0], q[1]]);
+    fill(R.concat(L), P.treeD);
+    fill(L.concat([[x, top], [x, yb]]), P.tree);
+    for (let i = 0; i < tiers; i++) {
+      const [hw, yE] = tips[i], a = i === 0 ? 0 : 0.42, ax = hw * a * 0.85, ay = yE - th * (1 - a * 0.7), t = th * 0.2;
+      fill([[x - ax, ay - t * 0.6], [x - hw - 1, yE - 0.5], [x - hw * 0.72, yE - t * 1.2], [x - ax * 0.6, ay + t * 0.4]], P.tSnow);
+      shade([[x + ax, ay - t * 0.6], [x + hw + 1, yE - 0.5], [x + hw * 0.72, yE - t * 1.2], [x + ax * 0.6, ay + t * 0.4]], P.tSnowD);
+    }
+  }
+  // Gruppe [x, Fuß, Höhe, Form]; Schlagschatten nach rechts
+  function grove(list, cast) {
+    if (cast) for (const [x, yb, h] of list) shade([[x, yb + 1], [x + h * 0.9, yb + 1 - h * 0.02], [x + h * 0.7, yb + h * 0.06], [x, yb + h * 0.05]], P.valleyShade);
+    for (const [x, yb, h, v] of list.slice().sort((a, b) => a[1] - b[1])) spruce(x, yb, h, v);
+  }
+  function nearSide(O) {
+    fill([[880, 900], [960, 744], [1060, 718], [1170, 700], [1300, 688], [X1 + 20, 680], [X1 + 20, 900]], P.valley);
+    shade([[960, 744], [1060, 718], [1170, 700], [1300, 688], [X1 + 20, 680], [X1 + 20, 692], [1300, 700], [1180, 712], [1070, 730], [980, 752]], P.valleyShade);
+    grove([[1196, 764, 150, 0], [1240, 776, 188, 1], [1282, 752, 138, 0], [1158, 786, 104, 2]], true);
+    grove([[968, 790, 92, 1], [1004, 800, 68, 2], [938, 806, 58, 0]], true);
+  }
+
+  // ------------------------------------------------------------------ Ebenen des Panoramas
+  // Ferne Ebene: Ketten von hinten nach vorn; abends glühen nur die Gipfel über dem Erdschatten. Seilbahnen hängen hier.
+  function farLayer(O, live) {
+    rect(X0 - 20, BASE - 2, X1 - X0 + 40, 220, P.forest);
+    const geos = geoFor(O);
+    for (const G of geos) paintRange(G, "lit");
+    if (P.abend) {
+      ctx.save(); ctx.beginPath(); ctx.moveTo(X0 - 40, 900);
+      for (let x = X0 - 40; x <= X1 + 80; x += 40) ctx.lineTo(x, erdLine(x));
+      ctx.lineTo(X1 + 80, 900); ctx.closePath(); ctx.clip();
+      for (const G of geos) paintRange(G, "erd");
+      ctx.restore();
+    }
+    const F = O.far || {};
+    if (F.tower) latticeTower(F.tower);
+    if (F.skywalk) skywalk(F.skywalk);
+    if (F.cross) { const [x, y] = F.cross; line([[x, y + 1], [x, y - 15]], I.tinte, 1.8); line([[x - 5, y - 10], [x + 5, y - 10]], I.tinte, 1.8); }
+    for (const cb of (O.cables || [])) {
+      line([[cb[0], cb[1]], [cb[2], cb[3]]], P.line, 1.1); station(cb[0], cb[1] + 1); station(cb[2], cb[3] + 1);
+      // bis zum Animations-Haken (Schritt 3): Kabine über das alte live.cable, Lage in Panorama-Einheiten
+      if (live && !live.cable) live.cable = { A: [(cb[0] - 640) * U, (cb[1] - HOR) * U], B: [(cb[2] - 640) * U, (cb[3] - HOR) * U], layer: 0, sp: 2 * Math.PI / (cb[4] || 9) };
+    }
+  }
+  function midLayer(O) {
+    r = rng(hash(O.id) ^ 23);
+    valley(O);
+    valleyDetail(O);
+    const M = O.mid || {};
+    if (M.river) river(M.river);
+    if (M.viaduct) viaduct(M.viaduct);
+    if (M.train) line([[Math.min(M.train.x0, X0 - 20), M.train.y + 0.6], [Math.max(M.train.x1, X1 + 20), M.train.y + 0.6]], P.line, 1.2);
+    for (const k of (M.kozolci || [])) kozolec(k[0], k[1]);
+    for (const g of (M.groves || [])) grove(g, true);
+    if (M.hamlet) { const h = M.hamlet; for (const [dx, w] of [[-34, 10], [-20, 12], [-6, 9], [8, 12], [22, 10]]) house(h.cx + dx, h.yb + (dx % 3), w, w * 0.62, preset("chalet", rng(3))); }
+    for (const T of (O.town || [])) town(T, null);
+    if (M.city) city(M.city);
+    if (M.funicular) { const f = M.funicular; line([[f[0], f[1]], [f[2], f[3]]], P.line, 1.6); station(f[0], f[1]); station(f[2], f[3]); }
+  }
+  // Eine Ebene zeichnen. c: Fläche mit Ursprung Mitte/Horizont in Panorama-Einheiten, ext: { c0, c1 } der Ebene
+  function paintLayer(id, c, O, ext, tod, live) {
+    ctx = c; P = palFor(tod); OFF = [1.3, 0.7]; r = rng(hash(O.id) ^ 11);
+    X0 = 640 + ext.c0 / U; X1 = 640 + ext.c1 / U;
+    c.save(); c.scale(U, U); c.translate(-640, -HOR); c.lineJoin = "round"; c.lineCap = "butt";
+    if (id === "far") farLayer(O, live); else if (id === "mid") midLayer(O); else nearSide(O);
+    c.restore();
+  }
+  // Farbe unter einer Ebene (wo ihre Fläche endet)
+  const layerGround = (id, tod) => (id === "far" ? palFor(tod).forest : palFor(tod).valley);
+  // höchster Gipfel in Panorama-Einheiten über dem Horizont
+  const peakOf = (O) => Math.max(...O.ranges.map((R) => Math.max(...R.ctrl.map((p) => (HOR - p[1]) * U))));
+
+  // ------------------------------------------------------------------ Himmel: fünf Stufen mit Spritzkanten, einmal je Bildgröße
+  const SKY_Y = [0, 118, 222, 318, 412, 560];
+  // Wpx/Hpx: Bild in CSS-px; moon: Lage des Monds in Entwurfs-x (null: ohne). Rückgabe: Fläche und ihr Bereich in Entwurfs-y.
+  function buildSky(Wpx, Hpx, dpr, tod, moon) {
+    const s = Hpx / 390 * U, res = Math.min(2, dpr || 1);
+    const xa = 640 - Wpx / 2 / s, xb = 640 + Wpx / 2 / s, ya = 96, yb = 452;
+    const cv = document.createElement("canvas");
+    cv.width = Math.max(1, Math.ceil(Wpx * res)); cv.height = Math.max(1, Math.ceil((yb - ya) * s * res));
+    ctx = cv.getContext("2d"); P = palFor(tod); r = rng(0x5ca1ab);
+    ctx.setTransform(s * res, 0, 0, s * res, -xa * s * res, -ya * s * res);
+    for (let i = 0; i < 5; i++) rect(xa - 40, SKY_Y[i], xb - xa + 80, SKY_Y[i + 1] - SKY_Y[i] + 1, P.sky[i]);
+    const n = Math.round(2200 * (xb - xa + 40) / 1280);
+    for (let i = 1; i < 5; i++) spray(() => SKY_Y[i], P.sky[i - 1], P.sky[i], xa - 20, xb + 20, n, 30);
+    if (P.moon && moon != null) dot(moon, 178, 12, P.moon);
+    return { cv, ya, yb, xa, xb, s, res, top: P.sky[0], bot: P.sky[4] };
+  }
+  // Entwurfs-x eines Bildanteils f (0 … 1) bei dieser Bildgröße (für die Monde der alten Orte)
+  const skyX = (f, Wpx, Hpx) => { const s = Hpx / 390 * U; return 640 + (f - 0.5) * Wpx / s; };
+
+  // ------------------------------------------------------------------ Korn und Spritzkante als Kacheln
+  // Druckkorn (Stilblatt): Kreide in Papierweiß (abends mit Glühen), 2600 Punkte je Kachel 220 × 220 Entwurfs-px, Deckkraft 25–75 %;
+  // Spritzer in Tinte, 1500 je Kachel, 12–42 %. Radius 0,6–1,9 bzw. 0,5–1,4 px der doppelt aufgelösten Kachel wie im Entwurf
+  // (440er-Kachel, halb skaliert), also halb so groß in Entwurfs-px. q = Gerätepixel je Entwurfs-px (Höhe/800 × dpr).
+  function grainTile(tod, q) {
+    const pal = palFor(tod), size = Math.max(32, Math.round(220 * q)), sc = size / 220;
+    const g = document.createElement("canvas"); g.width = g.height = size;
+    const c = g.getContext("2d"), rr = rng(77);
+    const put = (p, x, y, rad) => {
+      circ(p, x, y, rad);
+      const ex = x < rad ? size : x > size - rad ? -size : 0, ey = y < rad ? size : y > size - rad ? -size : 0;
+      if (ex) circ(p, x + ex, y, rad); if (ey) circ(p, x, y + ey, rad); if (ex && ey) circ(p, x + ex, y + ey, rad);
+    };
+    const layer = (n, r0, r1, a0, a1, col) => {
+      const L = 6, ps = []; for (let i = 0; i < L; i++) ps.push(new Path2D());
+      for (let i = 0; i < n; i++) { const a = rr(); put(ps[Math.min(L - 1, Math.floor(a * L))], rr() * size, rr() * size, (r0 + rr() * (r1 - r0)) * sc); }
+      c.fillStyle = col;
+      for (let i = 0; i < L; i++) { c.globalAlpha = a0 + (a1 - a0) * (i + 0.5) / L; c.fill(ps[i]); }
+    };
+    layer(2600, 0.3, 0.95, 0.25, 0.75, pal.chalk);
+    layer(1500, 0.25, 0.7, 0.12, 0.42, pal.spray);
+    c.globalAlpha = 1;
+    return g;
+  }
+  // Spritzkante für den Hang (liegt jedes Bild anders): waagrechter Streifen, Breite w CSS-px wiederholbar (+ Rand m),
+  // Kante bei y = up. s: CSS-px je Entwurfs-px, Reichweite 26 Entwurfs-px, 1800 Punkte je 1280 Entwurfs-px.
+  function sprayStrip(upCol, downCol, s, dpr, w, seed) {
+    const reach = 26 * s, up = reach * 0.4 + 1.6 * s, h = up + reach + 1.6 * s, m = 48;
+    const cv = document.createElement("canvas"); cv.width = Math.ceil((w + m) * dpr); cv.height = Math.max(1, Math.ceil(h * dpr));
+    const c = cv.getContext("2d"); c.scale(dpr, dpr);
+    const A = new Path2D(), B = new Path2D(), rr = rng(seed || 3);
+    const put = (p, x, y, rad) => { circ(p, x, y, rad); if (x < m + rad) circ(p, x + w, y, rad); if (x > w - rad) circ(p, x - w, y, rad); };
+    const n = Math.round(1800 * (w / s) / 1280);
+    for (let i = 0; i < n; i++) {
+      put(A, rr() * w, up + Math.pow(rr(), 2.4) * reach, (0.55 + rr() * 0.9) * s);
+      if (i % 3 === 0) put(B, rr() * w, up - Math.pow(rr(), 2.4) * reach * 0.4, (0.5 + rr() * 0.7) * s);
+    }
+    c.fillStyle = upCol; c.fill(A); c.fillStyle = downCol; c.fill(B);
+    return { cv, w, up, h, dpr, m };
+  }
+
+  root.TMPlakat = { INK: I, PAL, palFor, mix, rng, hash, U, HOR, BASE, paintLayer, layerGround, peakOf, buildSky, skyX, grainTile, sprayStrip, erdLine };
+})(typeof window !== "undefined" ? window : globalThis);
+
 /* TELEMARK – Kulisse: Zuschauer, Banden und Objekte an der Schanze, Panorama je Schanze (Nacht, flacher Vektorstil).
  * Welt in Metern (wie render.js), Panorama in Grundeinheiten (Bildschirmhöhe 390) relativ zum Horizont.
  */
@@ -2733,35 +3383,31 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   const hasRR = typeof Path2D !== "undefined" && typeof Path2D.prototype.roundRect === "function";
 
   // ------------------------------------------------------------------ Tageszeit
-  // evening = Flutlicht bei Nacht (Grundpalette), afternoon = klarer Wintertag, morning = Sonnenaufgang mit Alpenglühen.
+  // Plakat-Druckfarben (plakat.js): morning und afternoon = Plakatsonne, evening = Alpenglühen (Flutlicht und warme Fenster bleiben).
+  // Die Orte mit alter Kulisse (noch ohne plakat-Daten) zeichnen ihre Berge und Häuser in diesen Farben.
   // lights: Anteil eingeschalteter Lichter (Fenster, Laternen). Bauten in Nachtfarben werden tagsüber mit D() aufgehellt.
+  const PK = root.TMPlakat, INK = PK.INK, PS = PK.PAL.sonne, PG = PK.PAL.gluehen;
+  const sonne = (name) => ({
+    name, night: false, lights: 0, lift: "#B9B4A4", liftAmt: 0.5, pal: PS,
+    mount: INK.tief, hills: PS.hugFar.fill, mSnowShade: INK.schatten, mSnowLit: INK.papier, gully: "rgba(52,70,96,0.35)", haze: INK.dunst,
+    forestFar: PS.forestFar, forestFarFjord: PS.forestFar, water: PS.water[1], waveLine: "rgba(244,238,223,0.3)", island: PS.hugFar.fill,
+    valley: PS.valley, river: PS.water[1], house: [mix(INK.papier, INK.dach, 0.22), mix(INK.schatten, INK.dach, 0.28)], roof: INK.dach, tall: mix(INK.schatten, INK.tief, 0.35),
+    church: [PS.wall, PS.slate, mix(PS.wall, PS.wallSide, 0.35)], tower: mix(INK.papier, INK.schatten, 0.45), forestNear: PS.forest, nearGround: PS.valley, struct: PS.line,
+    glass: INK.tief, dial: INK.papier, judgesGlass: "rgba(140,170,200,0.65)",
+  });
   const THEMES = {
+    // Alpenglühen: über der Linie des Erdschattens (erd) glühen die Gipfel, darunter liegen sie violett im Schatten
     evening: {
-      name: "evening", night: true, lights: 1,
-      mount: null, hills: null, mSnowShade: "#2A4264", mSnowLit: "#3D5A80", gully: "rgba(10,20,36,0.35)", haze: "#1B2942",
-      forestFar: "#13243A", forestFarFjord: "#112139", water: "#0D1A30", waveLine: "rgba(230,215,180,0.08)", island: "#0F1D33",
-      valley: "#14233A", river: "#0D192C", house: ["#182740", "#1C2A42"], roof: "#304664", tall: "#18263D",
-      church: ["#1E2D45", "#30445F", "#23334C"], tower: "#18263D", forestNear: "#0F1C2C", nearGround: "#0F1C2C", struct: "#0E1A2C",
+      name: "evening", night: true, lights: 1, pal: PG,
+      mount: PG.alp.rock, hills: PG.hugFar.fill, mSnowShade: PG.alp.shade, mSnowLit: PG.alp.lit, gully: "rgba(30,39,52,0.3)", haze: PG.sky[2],
+      erd: { mount: PG.alpErd.rock, mSnowShade: PG.alpErd.shade, mSnowLit: PG.alpErd.lit },
+      forestFar: PG.forestFar, forestFarFjord: PG.forestFar, water: PG.water[1], waveLine: "rgba(237,194,173,0.22)", island: PG.hugFar.fill,
+      valley: PG.valley, river: PG.water[1], house: [PG.wall, PG.wallSide], roof: PG.roof, tall: PG.wallSide,
+      church: [PG.wall, PG.slate, PG.wallSide], tower: PG.wallSide, forestNear: PG.forest, nearGround: PG.valley, struct: PG.line,
       glass: "rgba(246,200,112,0.62)", dial: "rgba(246,220,160,0.88)", judgesGlass: "rgba(226,186,110,0.62)",
     },
-    // Wintertag wie auf alten Plakaten: Alpenblau, cremeweißer Schnee, dunkelgrüner Wald, warme Häuser
-    afternoon: {
-      name: "afternoon", night: false, lights: 0, lift: "#B9B4A4", liftAmt: 0.5,
-      mount: "#5C7DA4", hills: "#4C6A66", mSnowShade: "#B7C7D7", mSnowLit: "#F7F0E1", gully: "rgba(52,70,96,0.35)", haze: "#A3B9CF",
-      forestFar: "#3D5B55", forestFarFjord: "#3A5862", water: "#6C93B8", waveLine: "rgba(255,248,230,0.2)", island: "#4F6B6C",
-      valley: "#E5E0CF", river: "#7DA0BF", house: ["#CDB89B", "#B9A386"], roof: "#F4EEE1", tall: "#A69C8C",
-      church: ["#E4DAC7", "#7A5C4A", "#D7CBB7"], tower: "#D4CBB9", forestNear: "#33554D", nearGround: "#A7B4AD", struct: "#545F6B",
-      glass: "rgba(60,82,108,0.5)", dial: "rgba(246,240,226,0.95)", judgesGlass: "rgba(140,170,200,0.65)",
-    },
-    // Sonnenaufgang: Pfirsich und Altrosa über blauvioletten Bergen
-    morning: {
-      name: "morning", night: false, lights: 0.28, lift: "#ACA0B0", liftAmt: 0.42,
-      mount: "#75709A", hills: "#58597D", mSnowShade: "#C0B4CB", mSnowLit: "#F9DBC4", gully: "rgba(70,62,96,0.35)", haze: "#BBA9BF",
-      forestFar: "#4A5273", forestFarFjord: "#465071", water: "#8C8FB3", waveLine: "rgba(255,236,220,0.18)", island: "#575C7F",
-      valley: "#E2D3CE", river: "#9093B7", house: ["#BBA7A6", "#C6B1A2"], roof: "#F4E8E2", tall: "#968E9F",
-      church: ["#D8CBC9", "#6F5D73", "#CBBDBC"], tower: "#C8BEC9", forestNear: "#424A68", nearGround: "#9C98AE", struct: "#56556E",
-      glass: "rgba(84,80,112,0.5)", dial: "rgba(246,236,228,0.95)", judgesGlass: "rgba(178,168,204,0.65)",
-    },
+    afternoon: sonne("afternoon"),
+    morning: sonne("morning"),
   };
   let TH = THEMES.evening;
   const memoD = new Map();
@@ -3365,12 +4011,24 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       ftower: { c: 140, h: 24 },
       town: { kind: "village", v0: 20, v1: 64, dens: 1.0, roofK: 0.45, viaduct: { c: -170, w: 120, v: 27, h: 14, n: 11 }, church: { c: 110, type: "spire", h: 44 } },
     },
-    // Blick wie aus dem Stadion: links der Titlis mit Gletscher und Seilbahn, die Doppelgipfel der Spannörter, der Felsturm des Hahnen; Kloster im Tal
+    // Plakat 1928: links der Titlis mit Gletscher und Seilbahn, die Doppelgipfel der Spannörter, der Felsturm des Hahnen; Kloster und
+    // Grandhotel im Talboden. Daten in Entwurfs-px wie in telemark-orte.js (siehe plakat.js), die Grate nach links und rechts mit
+    // flacheren Ausläufern verlängert, damit sie auch am Handy quer (±600 Einheiten) bis zum Rand reichen.
     engelberg: {
       moon: 0.66,
-      far: { col: "#1A3455", snow: 0.5, base: 18, jag: 0.1, peaks: [[-560, 118, 110, 1.2], [-380, 142, 70, 0.85], [-170, 176, 190, 1.7], [20, 128, 40, 0.8], [70, 122, 40, 0.8], [230, 168, 46, 0.6], [420, 132, 120, 1.2], [610, 116, 120, 1.3]] },
-      cable: { c0: -260, c1: -170 },
-      town: { kind: "village", v0: 18, v1: 62, dens: 0.85, church: { c: 200, type: "abbey", h: 50 } },
+      plakat: {
+        id: "engelberg", moon: [986, 178],
+        ranges: [
+          { style: "alpin", far: true, rough: 0.28, tree: 500, ctrl: [[560, 548], [640, 470], [700, 424], [760, 366], [796, 320, "S"], [824, 352, "V"], [862, 308, "S"], [904, 352], [960, 404, "V"], [1010, 440], [1070, 548]] },
+          { style: "alpin", rough: 0.24, tree: 488, firn: [120, 370, 46], ctrl: [[-700, 482], [-590, 470], [-470, 476], [-350, 458], [-240, 452], [-130, 444], [-40, 436], [40, 408], [120, 362], [200, 302], [262, 252], [312, 226, "S"], [372, 234], [412, 254, "V"], [454, 246, "S"], [520, 294], [580, 340, "V"], [640, 384], [700, 434], [770, 548]] },
+          { style: "alpin", rough: 0.3, rocky: 1.5, tree: 490, ctrl: [[860, 548], [930, 470], [990, 410], [1030, 350], [1058, 298, "S"], [1078, 316, "V"], [1102, 302, "S"], [1132, 350], [1170, 382, "V"], [1222, 372, "S"], [1280, 398], [1330, 420], [1440, 428], [1550, 446], [1660, 440], [1780, 460], [1900, 468], [1990, 478]] },
+        ],
+        far: { drift: [[312, 226, 1], [862, 308, 0.7], [1058, 298, 0.6]] },
+        cables: [[586, 548, 318, 300, 9]],
+        mid: { train: { y: 668, x0: 560, x1: 1300, speed: 38 } },
+        town: [{ house: "chalet", cx: 1040, w: 440, y0: 592, y1: 648, extra: [{ t: "abbey", x0: 934, x1: 1118, yb: 606, h: 31 }, { t: "hotel", x: 786, yb: 598, w: 76, h: 50 }], skip: [[780, 870, 1], [890, 1146, 1]] }],
+        flags: [[1010, 736, 66, 28, 28, "ch"], [1050, 728, 60, 28, 28, "ch"], [824, 530, 26, 14, 14, "ch"]],
+      },
     },
     // Planica: Ponce-Kamm über die ganze Breite, links der Jalovec am Talschluss; im Tal nur das Nordische Zentrum, rechts Rateče
     planica: {
@@ -3381,17 +4039,19 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   };
   const sceneFor = (key) => SCENES[key] || SCENES[key.split("-")[0]] || SCENES.oberstdorf;
 
-  const LAYERS = [{ id: "far", par: 0.08, top: 205, bot: 34 }, { id: "mid", par: 0.22, top: 125, bot: 78 }, { id: "near", par: 0.5, top: 12, bot: 150 }];
+  // mid.bot 100 statt 78: Mulden und Fichtengruppen im Talboden der Plakat-Orte reichen bis v ≈ 95; near.top 40: nahe Fichten ragen höher
+  const LAYERS = [{ id: "far", par: 0.08, top: 205, bot: 34 }, { id: "mid", par: 0.22, top: 125, bot: 100 }, { id: "near", par: 0.5, top: 40, bot: 150 }];
   const CX_REF = 90;
 
-  // Panorama-Ebenen einmal je Schanze und Bildschirmgröße zeichnen
+  // Panorama-Ebenen (und Himmel) einmal je Schanze, Tageszeit und Bildschirmgröße zeichnen
   function buildPanorama(key, W, Hs, dpr) {
-    const sc = sceneFor(key);
+    const sc = sceneFor(key), pk = sc.plakat;
     const k = Hs / 390, wv = W / k;
     const res = Math.min(2, dpr) * k;
     const r = rng(hash(key.split("-")[0]) ^ 0x9a1);
-    const peak = sc.wall ? Math.max(...sc.wall.crest.map((q) => q[1])) + 8 : Math.max(...sc.far.peaks.map((q) => q[1]));
-    const out = { key, W, H: Hs, res, dpr, theme: TH.name, peak, layers: [], live: { blink: [], cable: null, cables: [], ferry: null, moonX: sc.moon }, sc };
+    const peak = pk ? PK.peakOf(pk) : sc.wall ? Math.max(...sc.wall.crest.map((q) => q[1])) + 8 : Math.max(...sc.far.peaks.map((q) => q[1]));
+    const sky = PK.buildSky(W, Hs, dpr, TH.name, pk ? pk.moon[0] : PK.skyX(sc.moon, W, Hs));
+    const out = { key, W, H: Hs, res, dpr, theme: TH.name, peak, sky, layers: [], live: { blink: [], cable: null, cables: [], ferry: null, moonX: sc.moon }, sc };
     for (const L of LAYERS) {
       const wl = Math.ceil(wv + 470 * L.par + 60);
       const cv = document.createElement("canvas");
@@ -3399,10 +4059,12 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       const c = cv.getContext("2d");
       c.setTransform(res, 0, 0, res, wl / 2 * res, L.top * res); // Ursprung: Mitte, Horizont
       const ext = { c0: -wl / 2 - 4, c1: wl / 2 + 4, bot: L.bot, top: L.top };
-      if (L.id === "far") drawFar(c, sc, ext, r, out.live);
+      if (pk) PK.paintLayer(L.id, c, pk, ext, TH.name, out.live);
+      else if (L.id === "far") drawFar(c, sc, ext, r, out.live);
       else if (L.id === "mid") drawTown(c, sc, ext, r, out.live);
       else drawNear(c, sc, ext, r);
-      out.layers.push({ cv, wl, par: L.par, top: L.top, bot: L.bot, id: L.id, ground: L.id === "far" ? (sc.fjord ? TH.water : TH.forestFar) : L.id === "mid" ? TH.valley : TH.nearGround });
+      const ground = pk ? PK.layerGround(L.id, TH.name) : L.id === "far" ? (sc.fjord ? TH.water : TH.forestFar) : L.id === "mid" ? TH.valley : TH.nearGround;
+      out.layers.push({ cv, wl, par: L.par, top: L.top, bot: L.bot, id: L.id, ground });
     }
     return out;
   }
@@ -3429,7 +4091,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       reliefMass(c, e, r, { V: pts.map(([x, h]) => ({ x, h })), baseAt: env, tops: sp.peaks.filter((q) => q[1] > 50).map((q) => q[0]), minTop: 50,
         wallH: (x) => clamp(env(x) * (0.5 - 0.4 * sp.snow), 10, 46), tree: sp.tree != null ? sp.tree : 14, col: sp.col, moonLeft: sc.moon < 0.5, haze: sp.haze != null ? sp.haze : 0.14 });
     } else {
-      c.fillStyle = TH.night ? sp.col : (sp.snow > 0 ? TH.mount : TH.hills);
+      c.fillStyle = sp.snow > 0 ? TH.mount : TH.hills;
       c.beginPath(); c.moveTo(e.c0, e.bot);
       for (const [x, h] of pts) c.lineTo(x, -h);
       c.lineTo(e.c1, e.bot); c.closePath(); c.fill();
@@ -3598,17 +4260,21 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     for (let x = e.c0 - 24; x < e.c1 + 24; x += 4 + r() * 7) ar.push({ x0: x, a: 0.6 + r() * 0.3, w0: 1.8 + r() * 2.2, sp: 0.04, s: (r() - 0.5) * 0.4, len: 14 + r() * 34, ph: r() * 500 });
     if (o.needle) ar.push({ x0: o.needle.c - 0.2, a: 1.1, w0: 3.2, sp: 0.05, s: 0, len: 34, ph: 0 });
     for (const g of ar) if (g.h0 == null) g.h0 = crestAt(g.x0) - 0.5;
-    // Farben (fest, wenige Stufen), mit etwas Dunst zur Ferne
+    // Farben (fest, wenige Stufen, Druckfarben), mit etwas Dunst zur Ferne; abends unter der Linie des Erdschattens die Schattenfarben
     const hz = o.haze || 0, hzC = TH.haze;
     const col = (h) => hex(hz ? mix(h, hzC, hz) : h);
-    const rockB = night ? o.col : TH.mount;
-    const P = {
-      rockL: col(mix(rockB, TH.mSnowLit, night ? 0.22 : 0.3)), rock: col(rockB), rockD: col(mix(rockB, night ? "#05070D" : "#1F2638", night ? 0.42 : 0.3)),
-      snowL: col(night ? mix(TH.mSnowLit, "#C9D6E8", 0.3) : TH.mSnowLit), snowS: col(night ? mix(TH.mSnowShade, "#8FA4C2", 0.2) : TH.mSnowShade),
-      forL: col(mix(TH.forestFar, TH.mSnowLit, night ? 0.06 : 0.1)), forest: col(TH.forestFar), forD: col(mix(TH.forestFar, "#05070D", 0.22)),
-      pine: col(mix(TH.forestFar, rockB, 0.3)),
+    const set = (T) => {
+      const rockB = T.mount, S = {
+        rockL: col(mix(rockB, T.mSnowLit, 0.3)), rock: col(rockB), rockD: col(mix(rockB, INK.tinte, 0.3)),
+        snowL: col(T.mSnowLit), snowS: col(T.mSnowShade),
+        forL: col(mix(TH.forestFar, T.mSnowLit, 0.1)), forest: col(TH.forestFar), forD: col(mix(TH.forestFar, INK.tinte, 0.22)),
+        pine: col(mix(TH.forestFar, rockB, 0.3)),
+      };
+      S.snowM = S.snowL.map((v, i) => Math.round((v + S.snowS[i]) / 2));
+      return S;
     };
-    P.snowM = P.snowL.map((v, i) => Math.round((v + P.snowS[i]) / 2));
+    const PL = set(TH), PE = TH.erd ? set(TH.erd) : null;
+    const erdH = (x) => (PK.HOR - PK.erdLine(x / PK.U + 640)) * PK.U;   // Höhe der Schattengrenze über dem Horizont
     // Raster in voller Auflösung (halbe Auflösung war schneller, aber an den Graten treppig); q bleibt als Stellschraube
     const cv = c.canvas, T = c.getTransform(), q = 1, res = T.a / q, ox = T.e / q, oy = T.f / q;
     const Wp = Math.ceil(cv.width / q), maxH = Math.max(...V.map((p) => p.h)) + 2;
@@ -3616,10 +4282,10 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (Hp > 0) {
       const img = new ImageData(Wp, Hp), D8 = img.data;
       const rel = new Float32Array(Wp), slo = new Float32Array(Wp), relB = new Float32Array(Wp), sloB = new Float32Array(Wp);
-      const crestPx = new Float32Array(Wp), treePx = new Float32Array(Wp), snowPx = new Float32Array(Wp);
-      for (let px = 0; px < Wp; px++) { const x = (px + 0.5 - ox) / res; crestPx[px] = crestAt(x); treePx[px] = treeAt(x); snowPx[px] = baseAt(x) - wallH(x); }
+      const crestPx = new Float32Array(Wp), treePx = new Float32Array(Wp), snowPx = new Float32Array(Wp), erdPx = new Float32Array(Wp);
+      for (let px = 0; px < Wp; px++) { const x = (px + 0.5 - ox) / res; crestPx[px] = crestAt(x); treePx[px] = treeAt(x); snowPx[px] = baseAt(x) - wallH(x); erdPx[px] = PE ? erdH(x) : -1e9; }
       const nz = noise2(r, 7), nf = noise2(r, 3.2);
-      const glowC = o.glow ? hex(o.glow[0]) : null;
+      const glowC = null;   // Stadtschein entfällt: abends leuchten die Fenster
       for (let py = py0; py < py1; py++) {
         const h = (oy - py - 0.5) / res;
         const gT = night && glowC && h < o.glow[1] ? 0.14 * Math.pow(1 - Math.max(0, h) / o.glow[1], 1.5) : 0;
@@ -3641,7 +4307,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         const row = (py - py0) * Wp * 4;
         for (let px = 0; px < Wp; px++) {
           if (h > crestPx[px] + 1) continue;
-          const x = (px + 0.5 - ox) / res, R = rel[px];
+          const x = (px + 0.5 - ox) / res, R = rel[px], P = h < erdPx[px] ? PE : PL;
           // Licht: zur Lichtseite abfallende Flanken hell, abgewandte im Schatten, Mulden dazwischen neutral
           const sl = moonLeft ? slo[px] : -slo[px], li = sl > 0.012 ? 1 : sl < -0.012 ? -1 : 0;
           const slB = moonLeft ? sloB[px] : -sloB[px], lb = relB[px] < 0.04 ? 0 : slB > 0.004 ? 1 : slB < -0.004 ? -1 : 0;
@@ -3854,7 +4520,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       windows(c, hs.x - w / 2, hs.v - h, w, h, r, T.kind === "city" ? 0.5 : 0.42, Math.max(1, Math.round(w / 2.6)), Math.max(1, Math.round(h / 2.6)));
     }
     while (ti < tall.length) { const tb = tall[ti++]; c.fillStyle = TH.tall; c.fillRect(tb.x - tb.w / 2, tb.v - tb.h, tb.w, tb.h); windows(c, tb.x - tb.w / 2, tb.v - tb.h, tb.w, tb.h, r, 0.45, 3, Math.round(tb.h / 2.4)); }
-    if (T.viaduct) drawViaduct(c, T.viaduct, TH.night ? "#22324D" : TH.name === "morning" ? "#A79FAE" : "#B9AE9E", TH.night ? "#0E1A2C" : "rgba(60,60,70,0.35)");
+    if (T.viaduct) drawViaduct(c, T.viaduct, TH.night ? "#22324D" : "#B9AE9E", TH.night ? "#0E1A2C" : "rgba(60,60,70,0.35)");
     if (T.church) drawChurch(c, T.church, T.v0 + 26, r, live);
     // Fernsehturm (Tryvann bei Oslo)
     if (sc.tower) {
@@ -3939,53 +4605,23 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     return pos;
   }
 
+  // Himmel in fünf Stufen mit Spritzkanten (eine Fläche je Bildgröße, am Horizont angeheftet; abends mit flachem Mond).
+  // Darüber und darunter die Randfarben. Sonne, Sterne und Flugzeug gibt es auf dem Plakat nicht.
   function drawSky(ctx, P, hor, vs, k, W, Hs, t) {
-    if (!TH.night) { drawSun(ctx, P, hor, vs, k, W, Hs, t); return; }
-    // Mond mit Hof
-    const mx = W * P.sc.moon, my = Math.max(42 * k, hor - 196 * k + vs * 0.2), mr = 10.5 * k;
-    const g = ctx.createRadialGradient(mx, my, mr, mx, my, mr * 6);
-    g.addColorStop(0, "rgba(220,232,255,0.12)"); g.addColorStop(1, "rgba(220,232,255,0)");
-    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(mx, my, mr * 6, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#E6ECF4"; ctx.beginPath(); ctx.arc(mx, my, mr, 0, TAU); ctx.fill();
-    ctx.fillStyle = "rgba(160,176,200,0.35)";
-    for (const [dx, dy, rr] of [[-0.3, -0.2, 0.22], [0.25, 0.1, 0.16], [-0.05, 0.35, 0.12], [0.35, -0.35, 0.1]]) { ctx.beginPath(); ctx.arc(mx + dx * mr, my + dy * mr, rr * mr, 0, TAU); ctx.fill(); }
-    // Flugzeug, alle 80 s einmal quer
-    const per = 80, u = (t % per) / 50;
-    if (u < 1) {
-      const x = -20 + u * (W + 40), y = Hs * 0.17 + Math.sin(u * 3) * 6 * k;
-      ctx.fillStyle = (t * 1.1) % 1 < 0.12 ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.25)";
-      ctx.beginPath(); ctx.arc(x, y, Math.max(0.9, 1.1 * k), 0, TAU); ctx.fill();
-      ctx.fillStyle = "rgba(255,80,80,0.8)"; ctx.beginPath(); ctx.arc(x - 3 * k, y + 0.6 * k, Math.max(0.8, 0.8 * k), 0, TAU); ctx.fill();
-    }
+    const S = P.sky;
+    if (!S) return;
+    const dpr = P.dpr || 1, h = S.cv.height / S.res;
+    const y0 = Math.round((hor + (S.ya - PK.HOR) * S.s) * dpr) / dpr;
+    ctx.fillStyle = S.top; ctx.fillRect(0, 0, W, Math.max(0, y0 + 1));
+    ctx.fillStyle = S.bot; ctx.fillRect(0, y0 + h - 1, W, Math.max(0, Hs - y0 - h + 2));
+    ctx.drawImage(S.cv, 0, y0, S.cv.width / S.res, h);
   }
 
-  // Sonne bei Tag: morgens tief und warm über den Gipfeln, nachmittags höher und hell; Flugzeug mit Kondensstreifen
-  function drawSun(ctx, P, hor, vs, k, W, Hs, t) {
-    const morning = TH.name === "morning";
-    const peak = P.peak || 150;
-    const sx = W * P.sc.moon, sy = Math.max(40 * k, hor - (morning ? peak + 20 : peak + 70) * k + vs * 0.2), sr = (morning ? 12 : 10) * k;
-    const gr = sr * (morning ? 15 : 9);
-    const g = ctx.createRadialGradient(sx, sy, sr * 0.6, sx, sy, gr);
-    if (morning) { g.addColorStop(0, "rgba(255,216,168,0.6)"); g.addColorStop(0.3, "rgba(255,190,150,0.24)"); g.addColorStop(1, "rgba(255,190,150,0)"); }
-    else { g.addColorStop(0, "rgba(255,250,232,0.55)"); g.addColorStop(0.35, "rgba(255,250,232,0.14)"); g.addColorStop(1, "rgba(255,250,232,0)"); }
-    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(sx, sy, gr, 0, TAU); ctx.fill();
-    ctx.fillStyle = morning ? "#FFE4BE" : "#FFFBEF"; ctx.beginPath(); ctx.arc(sx, sy, sr, 0, TAU); ctx.fill();
-    const per = 80, u = (t % per) / 50;
-    if (u < 1) {
-      const x = -20 + u * (W + 40), y = Hs * 0.17 + Math.sin(u * 3) * 6 * k;
-      const tl = 70 * k;
-      const cg = ctx.createLinearGradient(x - tl, 0, x, 0); cg.addColorStop(0, "rgba(255,255,255,0)"); cg.addColorStop(1, "rgba(255,255,255,0.7)");
-      ctx.strokeStyle = cg; ctx.lineWidth = Math.max(1, 1.3 * k); ctx.lineCap = "round";
-      ctx.beginPath(); ctx.moveTo(x - tl, y + Math.sin((u - 0.05) * 3) * 6 * k - Math.sin(u * 3) * 6 * k); ctx.lineTo(x - 2 * k, y); ctx.stroke();
-      ctx.fillStyle = "rgba(70,80,96,0.85)"; ctx.beginPath(); ctx.arc(x, y, Math.max(1, 1.2 * k), 0, TAU); ctx.fill();
-    }
-  }
-
-  // Mond- bzw. Sonnenspiegelung auf dem Fjord (nach der fernen Ebene, vor der Stadt)
+  // Mondspiegelung auf dem Fjord am Abend (nach der fernen Ebene, vor der Stadt)
   function drawReflection(ctx, P, pos, W, k, t) {
-    if (!P.sc.fjord) return;
+    if (!P.sc.fjord || !TH.night) return;
     const f = P.sc.fjord, mx = W * P.sc.moon, y0 = pos[0].oy + f.v0 * k, y1 = pos[0].oy + (f.v1 + 4) * k;
-    const rc = TH.night ? "220,232,255" : TH.name === "morning" ? "255,222,190" : "255,250,236", ra = TH.night ? 0.22 : 0.3;
+    const rc = "246,224,206", ra = 0.26;
     for (let y = y0 + 1.5 * k, i = 0; y < y1; y += 2.2 * k, i++) {
       const w = (6 + 4 * Math.sin(i * 1.7 + t * 0.8)) * k * (1 - (y - y0) / (y1 - y0) * 0.5);
       ctx.fillStyle = `rgba(${rc},${ra * (1 - (y - y0) / (y1 - y0))})`;
@@ -4001,42 +4637,26 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   "use strict";
   const Hill = root.TMHill;
   const Scene = root.TMScene;
+  const PK = root.TMPlakat;
   const DEG = Math.PI / 180;
 
   const C = {
     skyTop: "#0B1526", skyMid: "#0F1D35", skyLow: "#15284A", far: "#1A2D4C", mid: "#122239",
     forest: "#0A1627", forestB: "#0D1D33", snow: "#E6EDF6", snowShade: "#C6D2E2", snowDeep: "#9FB2CB", snowBody: "#18263B",
     steel: "#6E7D93", steelD: "#435168", deck: "#8D9BAF", warm: "#FFE7B0", city: "#FFD27A",
-    ice: "#F1E7D2", cyan: "#E3AE45", kred: "#C23B2A", ink: "#1E2734", muted: "#B9AE96", ground: "#0A1627", stars: true, flood: true,
-    ski: "#E4EAF2", skiFar: "#A9B5C6", boot: "#111821", helmet: "#F2F6FB", skiEdge: "#0E1726",
+    ice: "#F1E7D2", cyan: "#E3AE45", kred: "#C23B2A", ink: "#1E2734", muted: "#B9AE96", ground: "#0A1627", stars: false, flood: true,
+    ski: "#E4EAF2", skiFar: "#A9B5C6", boot: "#1E2734", helmet: "#F2F6FB", skiEdge: "#1E2734",
   };
-  // Tageszeit: Abend (Flutlicht, Grundpalette), Nachmittag, Früh. Lichter, Sterne und Lichtkegel nur am Abend.
+  // Tageszeit → Druckfarben des Plakats: Früh und Nachmittag = Plakatsonne, Abend = Alpenglühen mit Flutlicht (Lichter und
+  // Lichtkegel nur am Abend). Die Schlüssel des Spiels zeigen auf die Palette: Himmel, Wald, Boden, Schnee; pal für den Hang.
+  const tod = (pal, o) => Object.assign({ pal, skyTop: pal.sky[0], skyMid: pal.sky[2], skyLow: pal.sky[4], forest: pal.forest, forestB: pal.forestFar,
+    ground: pal.valley, snow: pal.hill[0], snowBody: pal.hill[3], chalk: pal.chalk, stars: false }, o);
   const TOD = {
-    evening: { skyTop: "#0F1A2C", skyMid: "#162944", skyLow: "#26405F", forest: "#0E1B27", ground: "#0E1B27", forestB: "#13253A",
-      snow: "#EFE6D3", snowBody: "#1A2638", steel: "#6A7280", steelD: "#3F4856", deck: "#A39C8C", stars: true, flood: true, warm: "#FFE2A6",
-      strips: { s1: "#DDD3BF", s2: "#9E9F9A", lit: [0x6E, 0x77, 0x82], dark: [0x22, 0x2D, 0x3D] } },
-    afternoon: { skyTop: "#2C5F92", skyMid: "#6E9BC2", skyLow: "#EADDBE", forest: "#2C4C43", ground: "#C9D0C9", forestB: "#5B756F",
-      snow: "#FBF5E8", snowBody: "#9AAAB6", steel: "#5E6874", steelD: "#3F4955", deck: "#A69F8E", stars: false, flood: false,
-      strips: { s1: "#F6EFDF", s2: "#DCD9CD", lit: [0xC9, 0xCC, 0xC4], dark: [0x7E, 0x91, 0xA2] } },
-    morning: { skyTop: "#34507E", skyMid: "#B38A8C", skyLow: "#F1C493", forest: "#323E58", ground: "#B9B2C0", forestB: "#655F7C",
-      snow: "#FBEFE2", snowBody: "#968FAA", steel: "#6B6878", steelD: "#4A4758", deck: "#A89C92", stars: false, flood: false,
-      strips: { s1: "#F8EADC", s2: "#E0D3CF", lit: [0xC8, 0xBC, 0xC4], dark: [0x84, 0x7E, 0x9E] } },
+    evening: tod(PK.PAL.gluehen, { steel: "#6A7280", steelD: "#3F4856", deck: "#A39C8C", flood: true, warm: "#FFE2A6" }),
+    afternoon: tod(PK.PAL.sonne, { steel: "#5E6874", steelD: "#3F4955", deck: "#A69F8E", flood: false }),
+    morning: tod(PK.PAL.sonne, { steel: "#5E6874", steelD: "#3F4955", deck: "#A69F8E", flood: false }),
   };
-  // Schneehang: helle Oberfläche, darunter abgestuft dunkler (bei Nacht rasch, bei Tag sanft).
-  // Streifen von der Oberfläche nach unten: [Tiefe in m (Unterkante), min px, max px, Farbe]
-  function buildStrips(sp) {
-    const out = [[0.18, 1.2, 6, sp.s1], [0.55, 2.5, 22, sp.s2]];
-    const dark = sp.dark, lit = sp.lit;
-    const depth = [];
-    for (let m = 15; m > 0.95; m *= 0.8) depth.push(m);
-    depth.forEach((m, i) => {
-      const t = Math.pow((i + 1) / depth.length, 1.15);
-      const c = dark.map((d, j) => Math.round(d + (lit[j] - d) * t));
-      out.splice(2, 0, [m, 0, 1200, `rgb(${c[0]},${c[1]},${c[2]})`]);
-    });
-    return out;
-  }
-  let SNOW_STRIPS = buildStrips(TOD.evening.strips);
+  Object.assign(C, TOD.evening);
   // Aussehen des Springers: Anzug (Farbe, dunklere Seite, Muster, Zweitfarbe), Helm, Brille, Ski
   const DEFAULT_LOOK = { suit: "#FF8A3D", suitD: "#B85A22", accent: "#EEF2F7", accentD: "#A7B3C4", pattern: "uni",
     helmet: "#F2F6FB", visor: "#4FC3F7", ski: "#E4EAF2", skiFar: "#A9B5C6" };
@@ -4374,18 +4994,10 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     planica: { sup: "solid", side: "#AFA99D", line: "#827C71", rail: "net", hut: "roof", table: "block", acc: "#1E8A4C", acc2: "#F4F1EA", text: "LETALNICA" },
   };
   const archFor = (key) => ARCH[key] || ARCH[key.split("-")[0]] || ARCH.oberstdorf;
-  // Stimmung je Schanze: Himmel (oben, Mitte, Horizont) für die Nacht, bei Tag nur leicht eingefärbt; Schneefall (Anteil der Flocken)
+  // Stimmung je Schanze: nur noch der Schneefall (Anteil der Flocken); der Himmel kommt aus der gemeinsamen Palette
   const ATMO = {
-    holmenkollen: { sky: ["#0C1C30", "#15314F", "#2A4D6C"], day: ["#5E8FB8", "#A9C6DB", "#E6EEF0"], snow: 1 },          // Fjord, kaltes Blau
-    oberstdorf: { sky: ["#0F1A2C", "#182B47", "#2A4363"], snow: 0.6 },
-    garmisch: { sky: ["#13182F", "#232849", "#3E4069"], day: ["#1B4A8A", "#5A8CC6", "#DCE6F0"], snow: 0.3 },           // klares Tiefblau vor der Felswand
-    innsbruck: { sky: ["#12172A", "#25273E", "#5A4646"], snow: 0.25, glow: "#E39A52" },         // Stadtlicht: warmer Horizont
-    bischofshofen: { sky: ["#0C1923", "#142937", "#24404D"], snow: 0.85 },    // Waldtal, grünlich
-    predazzo: { sky: ["#191630", "#2A2446", "#4D3D5F"], day: ["#3A3D76", "#B57A9A", "#F3BA9E"], snow: 0.4 },           // Dolomiten: violett, Morgenrot
-    zakopane: { sky: ["#0A1928", "#11283D", "#1E4258"], snow: 1.25, glow: "#C98A52" },         // Tatra: kalt und verschneit
-    willingen: { sky: ["#0F1B22", "#1B2B33", "#33454B"], day: ["#687F92", "#A5B3B1", "#DAD8C5"], snow: 0.95 },        // Sauerland: dunstig
-    engelberg: { sky: ["#0D1B2F", "#16304F", "#2E5378"], day: ["#2668A6", "#7BB3DA", "#ECF3F7"], snow: 0.5 },         // Gletscherblau
-    planica: { sky: ["#0E1A25", "#192D3B", "#2C495A"], day: ["#2D5A85", "#C8A178", "#F6D59C"], snow: 0.7 },             // goldener Morgen
+    holmenkollen: { snow: 1 }, oberstdorf: { snow: 0.6 }, garmisch: { snow: 0.3 }, innsbruck: { snow: 0.25 }, bischofshofen: { snow: 0.85 },
+    predazzo: { snow: 0.4 }, zakopane: { snow: 1.25 }, willingen: { snow: 0.95 }, engelberg: { snow: 0.5 }, planica: { snow: 0.7 },
   };
   const atmoFor = (key) => ATMO[key] || ATMO[key.split("-")[0]] || ATMO.oberstdorf;
   function mixHex(a, b, t) {
@@ -4400,6 +5012,22 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   function rng(seed) {
     let s = seed >>> 0 || 1;
     return () => { s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; };
+  }
+  // Mulden und Spuren im Hang, je Schanze fest: Lage längs des Hangs als Welt-x, Tiefe unter der Kante und Größe in Entwurfs-px.
+  // Wie im Entwurf: Mulden 180–260 × 7–14 px in drei Tiefen (Zone 1, 2, 3), Spuren in 36–120 px Tiefe.
+  function hillMarks(Hh) {
+    const r = rng(PK.hash(Hh.key) ^ 0x51), mulden = [], spuren = [];
+    const CLS = [[50, 30, 180, 80, 7, 3], [166, 14, 210, 50, 11, 3], [268, 16, 190, 50, 11, 3]], ORDER = [0, 1, 0, 2, 0, 1];
+    let i = 0;
+    for (let s = 4 + r() * 3; s < Hh.sEnd - 2; s += 2.4 + r() * 2.2, i++) {
+      const c = CLS[ORDER[i % ORDER.length]], p = Hill.landAtS(Hh, s);
+      mulden.push({ x: p.x, d: c[0] + r() * c[1], L: c[2] + r() * c[3], t: c[4] + r() * c[5] });
+    }
+    for (let s = 2 + r() * 4; s < Hh.sEnd - 4; s += 3.5 + r() * 4) {
+      const a = Hill.landAtS(Hh, s), b = Hill.landAtS(Hh, Math.min(Hh.sEnd, s + 3 + r() * 3));
+      spuren.push({ x0: a.x, x1: b.x, d: 36 + r() * 84 });
+    }
+    return { mulden, spuren };
   }
 
   class Renderer {
@@ -4428,8 +5056,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       this.theme = n;
       Scene.setTheme(n);
       Object.assign(C, TOD[n]);
-      SNOW_STRIPS = buildStrips(TOD[n].strips);
-      this.pano = null;
+      this.pano = null; this.grain = null; this.strips = null;
     }
 
     // ---------------------------------------------------------------- Statische Weltgeometrie
@@ -4523,6 +5150,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       this.lights(G, S, cam, k, vis, v.t);
       this.slope(G, v.hill, S, xMin, xMax, cam, k, v);
       this.inrun(v.hill, S, cam, k, v, xMin, xMax);
+      // Druckkorn über der Landschaft; die Spielebene (Fahnen, Linien, Springer) bleibt sauber darüber
+      this.grainPass(0.22);
       if (v.flags) this.windFlags(v.hill, S, cam, k, v);
       if (v.best && v.best.d > 40) this.beam(v.hill, S, cam, k, v.best);
       if (v.ideal) this.idealLine(S, cam, k, v.ideal);
@@ -4538,53 +5167,24 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       if (v.dim) { ctx.fillStyle = "rgba(14,20,28," + v.dim + ")"; ctx.fillRect(0, 0, W, H); }
     }
 
-    // Druck-Anmutung: feines Papierkorn und ein leicht abgedunkelter Rand (einmal erzeugt, dann nur noch gekachelt)
-    paper(ctx, W, H) {
-      if (!this.grain && typeof document !== "undefined") {
-        const g = document.createElement("canvas"); g.width = g.height = 128;
-        const gc = g.getContext("2d"), im = gc.createImageData(128, 128), r = rng(7);
-        for (let i = 0; i < im.data.length; i += 4) {
-          const v = r(), dark = v < 0.5;
-          im.data[i] = dark ? 40 : 255; im.data[i + 1] = dark ? 32 : 246; im.data[i + 2] = dark ? 20 : 226;
-          im.data[i + 3] = Math.round(Math.abs(v - 0.5) * 2 * 26);
-        }
-        gc.putImageData(im, 0, 0);
-        this.grain = ctx.createPattern(g, "repeat");
+    // Druckkorn (Stilblatt): eine Kachel aus Kreide- und Spritzpunkten, einmal je Tageszeit und Bildgröße erzeugt, dann gekachelt.
+    // a: Deckkraft (Bild 22 %, auf dem Hang ein zweites Mal 24 %). Ein gesetzter Clip bleibt wirksam. Keine Vignette.
+    grainPass(a) {
+      if (typeof document === "undefined") return;
+      const ctx = this.ctx, key = this.theme + "|" + this.H + "|" + this.dpr;
+      if (!this.grain || this.grain.key !== key) {
+        const tile = PK.grainTile(this.theme, this.H / 800 * this.dpr);
+        this.grain = { key, pat: ctx.createPattern(tile, "repeat") };
       }
-      if (this.grain) { ctx.fillStyle = this.grain; ctx.fillRect(0, 0, W, H); }
-      if (!this.vig || this.vig.w !== W || this.vig.h !== H) {
-        const vg = ctx.createRadialGradient(W / 2, H * 0.48, Math.min(W, H) * 0.45, W / 2, H * 0.48, Math.hypot(W, H) * 0.62);
-        vg.addColorStop(0, "rgba(20,14,6,0)"); vg.addColorStop(1, "rgba(20,14,6,0.32)");
-        this.vig = { w: W, h: H, g: vg };
-      }
-      ctx.fillStyle = this.vig.g; ctx.fillRect(0, 0, W, H);
+      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = a;
+      ctx.fillStyle = this.grain.pat; ctx.fillRect(0, 0, this.cv.width, this.cv.height);
+      ctx.restore();
     }
 
     background(G, cam, k, v) {
       const ctx = this.ctx, W = this.W, H = this.H;
       const vs = Math.max(-80, Math.min(80, cam.cy * 0.55)) * k; // Kamera tiefer -> Horizont höher
       const hor = H * 0.64 + vs;
-      const g = ctx.createLinearGradient(0, 0, 0, Math.max(10, hor + 40 * k));
-      // Himmel je Schanze: nachts ganz, tagsüber nur ein Hauch der eigenen Farbe
-      const at = atmoFor(G.H.key), sk = !C.flood && at.day ? at.day : at.sky, ta = C.flood ? 0.85 : at.day ? 0.4 : 0.14;
-      g.addColorStop(0, mixHex(C.skyTop, sk[0], ta)); g.addColorStop(0.55, mixHex(C.skyMid, sk[1], ta)); g.addColorStop(1, mixHex(C.skyLow, sk[2], ta));
-      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-      // Sterne
-      const sx = -cam.cx * 0.05 * k;
-      ctx.fillStyle = "#FFFFFF";
-      if (C.stars) for (const s of G.stars) {
-        const x = (((s.x * 1600 + sx) % 1600) + 1600) % 1600 * (W / 1600) * 1.0;
-        const y = s.y * (hor - 30 * k) + vs * 0.3;
-        if (y < 0 || y > hor - 20 * k) continue;
-        ctx.globalAlpha = s.o; ctx.beginPath(); ctx.arc(x, y, s.r, 0, 6.283); ctx.fill();
-      }
-      ctx.globalAlpha = 1;
-      // Lichterschein einer Stadt über dem Horizont (Innsbruck), hinter den Bergen
-      if (C.flood && at.glow) {
-        const gl = ctx.createLinearGradient(0, hor - 150 * k, 0, hor + 10 * k), c3 = hexRgb(at.glow);
-        gl.addColorStop(0, `rgba(${c3},0)`); gl.addColorStop(0.7, `rgba(${c3},0.16)`); gl.addColorStop(1, `rgba(${c3},0.3)`);
-        ctx.fillStyle = gl; ctx.fillRect(0, hor - 150 * k, W, 160 * k);
-      }
       const key = G.H.key;
       if (!this.pano || this.pano.key !== key || this.pano.W !== W || this.pano.H !== H || this.pano.dpr !== this.dpr || this.pano.theme !== Scene.themeName()) {
         this.pano = Scene.buildPanorama(key, W, H, this.dpr); this.pano.dpr = this.dpr;
@@ -4601,23 +5201,41 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       if (close) ctx.closePath();
     }
 
-    pine(x, y, h, color) {
-      const ctx = this.ctx, w = h * 0.36;
-      ctx.fillStyle = color; ctx.beginPath();
-      ctx.moveTo(x, y - h); ctx.lineTo(x + w * 0.5, y - h * 0.62); ctx.lineTo(x + w * 0.28, y - h * 0.62);
-      ctx.lineTo(x + w * 0.75, y - h * 0.28); ctx.lineTo(x + w * 0.42, y - h * 0.28); ctx.lineTo(x + w, y);
-      ctx.lineTo(x - w, y); ctx.lineTo(x - w * 0.42, y - h * 0.28); ctx.lineTo(x - w * 0.75, y - h * 0.28);
-      ctx.lineTo(x - w * 0.28, y - h * 0.62); ctx.lineTo(x - w * 0.5, y - h * 0.62); ctx.closePath(); ctx.fill();
+    // Fichte wie auf dem Plakat (plakat.js): Form v 0 schlank (4 Etagen), 1 breit (5), 2 jung (3); dunkle Silhouette, Lichtseite
+    // links, Schneehauben (die beschatteten als versetzte Schattenplatte). Fuß x/yb und Höhe h in Bildschirm-px; klein nur Silhouette.
+    spruce(x, yb, h, v) {
+      const ctx = this.ctx, P = C.pal;
+      const tiers = v === 1 ? 5 : v === 2 ? 3 : 4, wk = v === 1 ? 0.52 : v === 2 ? 0.5 : 0.38;
+      const w = h * wk, top = yb - h, th = (h * 0.86) / tiers, R = [[x, top]], tips = [];
+      for (let i = 0; i < tiers; i++) {
+        const yE = top + h * 0.06 + th * (i + 1), hw = (w / 2) * (0.34 + 0.66 * (i + 1) / tiers);
+        R.push([x + hw, yE]); tips.push([hw, yE]);
+        if (i < tiers - 1) R.push([x + hw * 0.4, yE - th * 0.32]);
+      }
+      R.push([x + w * 0.05, R[R.length - 1][1]], [x + w * 0.05, yb]);
+      const L = R.slice(1).reverse().map((q) => [2 * x - q[0], q[1]]);
+      this.path(R.concat(L), true); ctx.fillStyle = P.treeD; ctx.fill();
+      if (h < 7) return;
+      this.path(L.concat([[x, top], [x, yb]]), true); ctx.fillStyle = P.tree; ctx.fill();
+      const lit = new Path2D(), sh = new Path2D(), e = h * 0.007, o = this.H / 390 * PK.U;
+      const quad = (p, q) => { p.moveTo(q[0][0], q[0][1]); for (let i = 1; i < 4; i++) p.lineTo(q[i][0], q[i][1]); p.closePath(); };
+      for (let i = 0; i < tiers; i++) {
+        const [hw, yE] = tips[i], a = i === 0 ? 0 : 0.42, ax = hw * a * 0.85, ay = yE - th * (1 - a * 0.7), t = th * 0.2;
+        quad(lit, [[x - ax, ay - t * 0.6], [x - hw - e, yE - e * 0.5], [x - hw * 0.72, yE - t * 1.2], [x - ax * 0.6, ay + t * 0.4]]);
+        quad(sh, [[x + ax + 1.3 * o, ay - t * 0.6 + 0.7 * o], [x + hw + e + 1.3 * o, yE - e * 0.5 + 0.7 * o], [x + hw * 0.72 + 1.3 * o, yE - t * 1.2 + 0.7 * o], [x + ax * 0.6 + 1.3 * o, ay + t * 0.4 + 0.7 * o]]);
+      }
+      ctx.fillStyle = P.tSnow; ctx.fill(lit); ctx.fillStyle = P.tSnowD; ctx.fill(sh);
     }
 
     terrain(G, Hh, cam, S, xMin, xMax, k, vis) {
       const ctx = this.ctx, H = this.H;
+      const form = (x) => { const f = Math.sin(x * 91.7) * 43758.5453; return Math.floor((f - Math.floor(f)) * 3); };
       // entfernte Baumreihe neben dem Aufsprunghang
       const bp = Math.min(cam.ppm, 11 * k);
       for (const t of G.back) {
         if (t.x < xMin - 10 || t.x > xMax + 10) continue;
         const g = S(t.x, t.y - 2.2);
-        this.pine(g[0], g[1] - 2.2 * bp, Math.max(2, t.h * bp), C.forestB);
+        this.spruce(g[0], g[1] - 2.2 * bp, Math.max(2, t.h * bp), form(t.x));
       }
       // Gelände (dunkel) unter Anlauf und hinter dem Auslauf
       const pts = [];
@@ -4634,7 +5252,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         if (t.x < xMin - 20 || t.x > xMax + 20) continue;
         const [x, y] = S(t.x, t.y);
         if (y - t.h * cam.ppm > H + 10) continue;
-        this.pine(x, y, Math.max(2.5, t.h * cam.ppm), C.forest);
+        this.spruce(x, y, Math.max(2.5, t.h * cam.ppm), form(t.x));
       }
     }
 
@@ -4696,29 +5314,116 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       body.lineTo(i0 === 0 ? U0[0] + slant : pts[0][0], bottom);
       body.closePath();
       ctx.fillStyle = C.snowBody; ctx.fill(body);
-      // Normalen der Oberfläche (Bildschirm), Streifen als Flächen zwischen versetzten Linien
-      const n = pts.length, nrm = new Array(n);
-      for (let i = 0; i < n; i++) {
-        const a = pts[Math.max(0, i - 1)], c = pts[Math.min(n - 1, i + 1)];
-        const tx = c[0] - a[0], ty = c[1] - a[1], l = Math.hypot(tx, ty) || 1;
-        nrm[i] = [-ty / l, tx / l];
-      }
-      ctx.save(); ctx.clip(body);
-      let up = 0, upper = pts;
-      for (const [m, mn, mx, col] of SNOW_STRIPS) {
-        const d = Math.max(up + 0.75, Math.max(mn, Math.min(mx, m * cam.ppm)));
-        const lower = new Array(n);
-        for (let i = 0; i < n; i++) lower[i] = [pts[i][0] + nrm[i][0] * d, pts[i][1] + nrm[i][1] * d];
-        ctx.fillStyle = col; ctx.beginPath();
-        ctx.moveTo(upper[0][0], upper[0][1]);
-        for (let i = 1; i < n; i++) ctx.lineTo(upper[i][0], upper[i][1]);
-        for (let i = n - 1; i >= 0; i--) ctx.lineTo(lower[i][0], lower[i][1]);
-        ctx.closePath(); ctx.fill();
-        upper = lower; up = d;
-      }
-      ctx.restore();
+      // linker Rand des Schneekörpers (schräg unter dem Tisch), damit die Spritzkanten ohne Clip im Körper bleiben
+      const p0 = pts[0], edge = i0 === 0 ? (y) => p0[0] + slant * Math.max(0, y - p0[1]) / Math.max(1, bottom - p0[1]) : null;
+      this.hillZones(G, Hh, pts, S, cam, k, body, edge);
+      // Hangkante als klare Linie
+      ctx.strokeStyle = C.pal.key; ctx.lineWidth = Math.max(1, 2.6 * PK.U * k); ctx.lineJoin = "round"; ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
+      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+      ctx.stroke(); ctx.lineCap = "butt";
       // Markierungen
       this.markers(Hh, S, cam, k, v);
+    }
+
+    // Hang wie auf dem Plakat: vier Zonen parallel zum Profil (Grenzen 112, 214, 320 Entwurfs-px darunter, wellig) mit Spritzkanten,
+    // Muldenschatten, Spuren, Kantenschatten und abends der glühenden Lippe. Tiefen in Bildschirm-px (Entwurfs-px × Höhe/800, nicht
+    // in Metern). Wellen, Mulden und Spritzpunkte hängen am Hang (Welt-x), damit beim Mitfahren nichts schwimmt. Flächen im Clip des
+    // Schneekörpers; die Spritzkanten ohne Clip (geschert und geclippt zeichnen manche Browser sehr langsam), dafür mit Randprüfung.
+    hillZones(G, Hh, pts, S, cam, k, body, edge) {
+      const ctx = this.ctx, W = this.W, H = this.H, P = C.pal, u = PK.U * k, n = pts.length;
+      const profY = (x) => {
+        if (x <= pts[0][0]) return pts[0][1];
+        let lo = 0, hi = n - 1;
+        if (x >= pts[hi][0]) return pts[hi][1];
+        while (hi - lo > 1) { const m = (lo + hi) >> 1; if (pts[m][0] > x) hi = m; else lo = m; }
+        const a = pts[lo], b = pts[hi];
+        return a[1] + (b[1] - a[1]) * (x - a[0]) / ((b[0] - a[0]) || 1);
+      };
+      const xw = (x) => cam.cx + (x - cam.ax) / cam.ppm;          // Bildschirm-x → Welt-x (m)
+      const F = 28 / PK.U;                                          // Entwurfs-px je m beim Bezugszoom im Flug
+      const zr = Math.max(0.25, Math.min(1, cam.ppm / (20 * k)));    // in der weiten Übersicht flachere Wellen
+      const zl = Math.max(0.3, Math.min(1.3, cam.ppm / (28 * k)));   // Mulden wachsen mit dem Zoom
+      const ZONES = [[112, 14, 0.009, 1], [214, 18, 0.007, 3], [320, 22, 0.006, 5]];
+      const depth = (z, x) => { const [d, a, f, ph] = ZONES[z], q = xw(x) * F; return (d + (Math.sin(q * f + ph) + Math.sin(q * f * 2.7 + ph) * 0.35) * a * zr) * u; };
+      const xa = Math.max(pts[0][0], -24), xb = Math.min(pts[n - 1][0], W + 24);
+      if (xb <= xa) return;
+      const xs = [];
+      for (let x = xa; x < xb; x += 14) xs.push(x);
+      xs.push(xb);
+      const prof = xs.map(profY);
+      const top = Math.min(-40, Math.min(...prof) - 20);
+      const ox = 1.3 * u, oy = 0.7 * u;   // Passer: die Schattenplatte liegt leicht versetzt
+      // Zonen von unten nach oben: jeweils alles über der Grenze (im Clip also zwischen Profil und Grenze)
+      const B = ZONES.map((_, z) => xs.map((x, i) => [x, prof[i] + depth(z, x)]));
+      ctx.save(); ctx.clip(body);
+      for (let z = 2; z >= 0; z--) {
+        ctx.save(); if (z > 0) ctx.translate(ox, oy);
+        ctx.beginPath(); ctx.moveTo(xa, top);
+        for (const p of B[z]) ctx.lineTo(p[0], p[1]);
+        ctx.lineTo(xb, top); ctx.closePath();
+        ctx.fillStyle = P.hill[z]; ctx.fill(); ctx.restore();
+      }
+      ctx.restore();
+      // Spritzkanten: Punkte der oberen Zone sinken in die untere
+      const key = this.theme + "|" + this.H + "|" + this.dpr;
+      if (!this.strips || this.strips.key !== key) this.strips = { key, t: [0, 1, 2].map((z) => PK.sprayStrip(P.hill[z], P.hill[z + 1], u, this.dpr, 512, 11 + z)) };
+      const anchor = S(0, 0)[0];
+      for (let z = 0; z < 3; z++) this.sprayAlong(B[z], this.strips.t[z], anchor, edge);
+      ctx.save(); ctx.clip(body);
+      // Muldenschatten: lange Linsen in Hangrichtung
+      if (!G.marks) G.marks = hillMarks(Hh);
+      const ang = (x) => Math.atan2(profY(x + 6) - profY(x - 6), 12);
+      ctx.save(); ctx.translate(ox, oy);
+      for (const m of G.marks.mulden) {
+        const x = S(m.x, 0)[0];
+        if (x < -160 || x > W + 160) continue;
+        const y = profY(x) + m.d * u;
+        if (y < -30 || y > H + 30) continue;
+        ctx.save(); ctx.translate(x, y); ctx.rotate(ang(x));
+        ctx.beginPath(); ctx.ellipse(0, 0, m.L / 2 * u * zl, m.t / 2 * u * Math.sqrt(zl), 0, 0, 6.2832);
+        ctx.fillStyle = m.d < 112 ? P.mulde : P.hill[m.d < 214 ? 2 : 3]; ctx.fill(); ctx.restore();
+      }
+      ctx.restore();
+      // Spuren: dünne Linien in Muldenfarbe, mit Unterbrechungen
+      ctx.strokeStyle = P.mulde; ctx.lineWidth = Math.max(0.8, 1.6 * u); ctx.lineCap = "butt"; ctx.beginPath();
+      for (const sp of G.marks.spuren) {
+        const a = Math.max(-10, S(sp.x0, 0)[0]), b = Math.min(W + 10, S(sp.x1, 0)[0]);
+        if (b <= a) continue;
+        for (let x = a; ; x += 10) {
+          const xx = Math.min(x, b), y = profY(xx) + (sp.d + Math.sin(xw(xx) * F * 0.02) * 2) * u;
+          if (x === a) ctx.moveTo(xx, y); else ctx.lineTo(xx, y);
+          if (xx >= b) break;
+        }
+      }
+      ctx.stroke();
+      // Kantenschatten 7–17 px unter der Kante (Schattenplatte), abends die glühende Lippe direkt an der Kante
+      ctx.save(); ctx.translate(ox, oy); ctx.beginPath();
+      xs.forEach((x, i) => (i ? ctx.lineTo(x, prof[i] + 7 * u) : ctx.moveTo(x, prof[i] + 7 * u)));
+      for (let i = xs.length - 1; i >= 0; i--) ctx.lineTo(xs[i], prof[i] + (17 + Math.sin(xw(xs[i]) * F * 0.03) * 2) * u);
+      ctx.closePath(); ctx.fillStyle = P.kante; ctx.fill(); ctx.restore();
+      if (P.lip) {
+        ctx.beginPath();
+        xs.forEach((x, i) => (i ? ctx.lineTo(x, prof[i] - 4 * u) : ctx.moveTo(x, prof[i] - 4 * u)));
+        for (let i = xs.length - 1; i >= 0; i--) ctx.lineTo(xs[i], prof[i] + 6 * u);
+        ctx.closePath(); ctx.fillStyle = P.lip; ctx.fill();
+      }
+      this.grainPass(0.24);
+      ctx.restore();
+    }
+
+    // Spritzstreifen entlang einer Grenzlinie b (Bildschirmpunkte, x steigend): je Abschnitt ein geschertes Stück der Kachel
+    sprayAlong(b, T, anchor, edge) {
+      const ctx = this.ctx, dpr = this.dpr, H = this.H, s = T.dpr;
+      for (let i = 0; i < b.length - 1; i++) {
+        const x0 = b[i][0], y0 = b[i][1], x1 = b[i + 1][0], y1 = b[i + 1][1], sw = x1 - x0;
+        if (sw <= 0.05 || Math.min(y0, y1) - T.up > H || Math.max(y0, y1) - T.up + T.h < 0) continue;
+        if (edge && x0 < edge(Math.max(y0, y1) + T.h)) continue;
+        const sx = (((x0 - anchor) % T.w) + T.w) % T.w;
+        ctx.setTransform(dpr, dpr * (y1 - y0) / sw, 0, dpr, dpr * x0, dpr * y0);
+        ctx.drawImage(T.cv, sx * s, 0, Math.min(sw, T.m) * s, T.cv.height, 0, -T.up, Math.min(sw, T.m), T.h);
+      }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
     board(x, y, label, bg, fg, w, k) {
@@ -5206,11 +5911,10 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       const x = ex - Math.sin(b) * inset, y = ey + Math.cos(b) * inset;
       const a = Math.max(0.12, 0.4 - hAb * 0.035);
       const rx = Math.max(6, 1.2 * cam.ppm * (1 + hAb * 0.06)), ry = Math.max(2, 0.3 * cam.ppm * (1 + hAb * 0.04));
+      // Plakat: flache Linse in Tiefschatten (Druckfarbe des Hangs), je höher desto blasser
       ctx.save(); ctx.translate(x, y); ctx.rotate(b);
-      ctx.fillStyle = `rgba(10,22,40,${a * 0.5})`;
-      ctx.beginPath(); ctx.ellipse(0, 0, rx * 1.4, ry * 1.5, 0, 0, 6.283); ctx.fill();
-      ctx.fillStyle = `rgba(10,22,40,${a})`;
-      ctx.beginPath(); ctx.ellipse(0, 0, rx, ry, 0, 0, 6.283); ctx.fill();
+      ctx.globalAlpha = Math.min(0.8, a * 1.8); ctx.fillStyle = C.pal.hillShadow;
+      ctx.beginPath(); ctx.ellipse(0, 0, rx * 1.15, ry * 1.2, 0, 0, 6.283); ctx.fill();
       ctx.restore();
     }
 
@@ -5220,7 +5924,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       const [x, y] = S(J.x, J.y);
       const a = sl.ang * DEG;
       const ux = Math.cos(a), uy = Math.sin(a), nx = Math.sin(a), ny = -Math.cos(a);
-      ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 1.6; ctx.lineCap = "round";
+      ctx.strokeStyle = C.chalk; ctx.lineWidth = 1.6; ctx.lineCap = "round";
       const specs = [[74, 18, 80, 0.35], [118, 40, 100, 0.25], [66, 58, 52, 0.2], [170, 26, 70, 0.18]];
       for (const [back, up, ln, op] of specs) {
         const sx = x - ux * back * k + nx * up * k, sy = y - uy * back * k + ny * up * k;
@@ -5233,7 +5937,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 
     particles(S, cam, k, list) {
       const ctx = this.ctx;
-      ctx.fillStyle = "#FFFFFF";
+      ctx.fillStyle = C.chalk;   // Schneestaub in Kreide, nie reines Weiß
       for (const p of list) {
         const [x, y] = S(p.x, p.y);
         ctx.globalAlpha = Math.max(0, p.a);
@@ -5273,10 +5977,11 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       ctx.arc(b[0], b[1], rb, ang - th, ang + th);
       ctx.closePath();
     }
-    // Körperteil aus Kapseln [a, b, ra, rb]: dunkle Kontur, Füllung, Glanzlicht auf der Oberseite (Licht von oben)
+    // Körperteil aus Kapseln [a, b, ra, rb]: Kontur in Tinte (Plakat: jede Gliedmaße zuerst in Tinte, breiter), Füllung, Glanzlicht oben.
+    // this.cr: Breite der Kontur in Posen-Einheiten (jumper() setzt sie aus 2,2 Entwurfs-px; sonst 0,9)
     part(segs, col, plain) {
-      const ctx = this.ctx;
-      if (!plain) { ctx.beginPath(); for (const s of segs) this.capsule(s[0], s[1], s[2] + 0.7, s[3] + 0.7); ctx.fillStyle = "rgba(8,14,26,0.62)"; ctx.fill(); }
+      const ctx = this.ctx, cr = this.cr == null ? 0.9 : this.cr;
+      if (!plain) { ctx.beginPath(); for (const s of segs) this.capsule(s[0], s[1], s[2] + cr, s[3] + cr); ctx.fillStyle = C.ink; ctx.fill(); }
       ctx.beginPath(); for (const s of segs) this.capsule(s[0], s[1], s[2], s[3]); ctx.fillStyle = col; ctx.fill();
       if (plain) return;
       ctx.beginPath();
@@ -5319,7 +6024,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       this.part([[[sx, sy], [sx + (hx - sx) * 0.62, sy + (hy - sy) * 0.62], 1.9, 1.6]], L.suit, plain);
       // Helm mit Brille auf der Gesichtsseite und Glanzpunkt
       const [dx, dy] = J.face;
-      if (!plain) { ctx.fillStyle = "rgba(8,14,26,0.62)"; ctx.beginPath(); ctx.arc(hx, hy, 5.4, 0, 6.283); ctx.fill(); }
+      if (!plain) { ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(hx, hy, 4.7 + (this.cr == null ? 0.9 : this.cr), 0, 6.283); ctx.fill(); }
       ctx.fillStyle = L.helmet; ctx.beginPath(); ctx.arc(hx, hy, 4.7, 0, 6.283); ctx.fill();
       const fa = Math.atan2(dy, dx);
       ctx.fillStyle = L.visor; ctx.beginPath(); ctx.arc(hx, hy, 4.75, fa - 0.66, fa + 0.66); ctx.arc(hx + dx * 1.3, hy + dy * 1.3, 2.7, fa + 1.0, fa - 1.0, true); ctx.closePath(); ctx.fill();
@@ -5452,7 +6157,10 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       ctx.save();
       ctx.translate(x, y); ctx.rotate((J.rot || 0) * DEG); ctx.scale(sc, sc);
       if (J.air) this.cushion(J.air, J.pose);
+      // Tintenkontur: 2,2 Entwurfs-px je Seite (× Höhe/800), mindestens 0,85 Posen-Einheiten, wenn die Kamera nah ist
+      this.cr = Math.min(2.4, Math.max(0.85, 2.2 * PK.U * k / sc));
       this.figure(J.pose, this.look);
+      this.cr = null;
       ctx.restore();
       if (rc) this.landRing(rc, sc, J.ring, true);
     }
@@ -5512,7 +6220,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       }
     }
     draw(ctx, k, dens) {
-      ctx.lineCap = "round"; ctx.strokeStyle = "#FFFFFF";
+      ctx.lineCap = "round"; ctx.strokeStyle = C.chalk || "#F4EEDF";   // Flocken in Kreide (Papierweiß, abends mit Glühen)
       const n = Math.round(this.f.length * Math.min(1, (dens == null ? 0.8 : dens) / 1.25));
       for (let i = 0; i < n; i++) {
         const f = this.f[i];
@@ -6445,7 +7153,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.26";
+  const VERSION = "0.27";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -6833,24 +7541,6 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   window.addEventListener("resize", layout);
   window.addEventListener("orientationchange", () => setTimeout(layout, 120));
   layout();
-  (function printLayer() {
-    try {
-      const g = document.createElement("canvas"); g.width = g.height = 128;
-      const gc = g.getContext("2d"), im = gc.createImageData(128, 128);
-      let seed = 7;
-      const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
-      for (let i = 0; i < im.data.length; i += 4) {
-        const v = rnd(), dark = v < 0.5;
-        im.data[i] = dark ? 40 : 255; im.data[i + 1] = dark ? 32 : 246; im.data[i + 2] = dark ? 20 : 226;
-        im.data[i + 3] = Math.round(Math.abs(v - 0.5) * 2 * 26);
-      }
-      gc.putImageData(im, 0, 0);
-      const d = document.createElement("div");
-      d.id = "printLayer"; d.setAttribute("aria-hidden", "true");
-      d.style.backgroundImage = `url(${g.toDataURL("image/png")}), radial-gradient(ellipse 75% 80% at 50% 48%, rgba(20,14,6,0) 55%, rgba(20,14,6,0.3) 100%)`;
-      canvas.after(d);
-    } catch (e) { /* ohne Papierkorn */ }
-  })();
   applyColor();
 
   // ------------------------------------------------------------------ Ton (WebAudio) und Vibration: src/audio.js
