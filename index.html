@@ -895,6 +895,28 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 .an-tip { margin: 1px 0 0; font-size: 12px; line-height: 15px; flex: none; }
 .rs-chal.compact .btn { height: 34px; font-size: 16px; }
 
+/* Mehrspieler: drei Karten nebeneinander, die erste hervorgehoben */
+.multi { width: 760px; max-width: calc(100% - 24px); max-height: calc(100% - 16px); overflow: auto; gap: 10px; padding: 14px 18px 16px; touch-action: pan-y; }
+.mu-cards { display: grid; grid-template-columns: 1.25fr 1fr 1fr; gap: 10px; }
+.mu-card { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px 12px; border-radius: 6px; background: var(--row); min-width: 0; }
+.mu-card .btn { margin-top: auto; justify-content: center; }
+.mu-main { background: rgba(221, 164, 59, 0.2); box-shadow: inset 0 0 0 2px rgba(221, 164, 59, 0.55); }
+.mu-k { display: flex; align-items: center; gap: 6px; font-family: var(--font-label); font-size: 10.5px; line-height: 13px; font-weight: 700; letter-spacing: 0.1em; color: var(--muted); }
+.mu-steps { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 3px; font-size: 13.5px; line-height: 17px; }
+.mu-steps li::marker { font-family: var(--font-display); font-weight: 800; color: var(--hi); }
+.mu-p { margin: 0; font-size: 13px; line-height: 17px; }
+.mu-hill { display: flex; align-items: center; justify-content: space-between; gap: 4px; padding: 2px; border-radius: 4px; background: rgba(255, 255, 255, 0.35); }
+.mu-hill .ghost-btn { width: 32px; height: 32px; }
+.mu-hill-n { flex: 1; min-width: 0; text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mu-groups { display: flex; flex-direction: column; gap: 4px; }
+.mu-groups:empty { display: none; }
+.mu-groups .chg-row { min-height: 30px; }
+.narrow .mu-steps, .narrow .mu-p { font-size: 12.5px; line-height: 16px; }
+
+/* Hinweis auf eine neue Version (Web-App): oben in der Mitte, über allem */
+.upd-btn { position: absolute; left: 50%; top: 8px; transform: translateX(-50%); z-index: 60; height: 32px; padding: 0 14px; border: 2px solid var(--ink-deep); border-radius: 4px;
+  background: var(--gold); color: var(--ink-deep); font-family: var(--font-label); font-weight: 700; font-size: 13px; letter-spacing: 0.04em; white-space: nowrap; cursor: pointer; box-shadow: 0 3px 0 rgba(20, 27, 37, 0.5); }
+
 </style>
 </head>
 <body>
@@ -904,6 +926,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 <div id="ui">
 
 <!-- ============ HUD während des Sprungs ============ -->
+<button type="button" id="btnUpd" class="upd-btn" hidden></button>
 <div id="hud" hidden>
   <div id="playerPanel" class="panel hud-tl">
     <div class="pp-row"><span id="ppFlag" class="flag"></span><span id="ppName" class="pp-name">MAT</span><span id="ppNation" class="pp-nat">AUT</span></div>
@@ -1001,14 +1024,13 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       <h1 class="logo">TELEMARK</h1>
     </div>
     <div class="btn-col">
-      <button type="button" id="btnPlay" class="btn btn-primary"><span>Training</span><span class="ico" data-icon="arrow-right"></span></button>
+      <button type="button" id="btnPlay" class="btn btn-primary"><span class="btn-two"><span>Training</span><span id="trBadge" class="btn-badge" hidden>ANFÄNGER</span></span><span class="ico" data-icon="arrow-right"></span></button>
       <div class="btn-row btn-row-ch">
         <button type="button" id="btnComp" class="btn btn-secondary"><span>Wettkampf</span><span class="ico" data-icon="chev-right"></span></button>
         <button type="button" id="btnChamp" class="btn btn-secondary" aria-label="Meisterschaft: Tournee, Saison, Skiflug-Woche"><span class="btn-two"><span>Meisterschaft</span><span id="chBadge" class="btn-badge" hidden></span></span><span class="ico" data-icon="chev-right"></span></button>
       </div>
-      <div class="btn-row btn-row-3">
-        <button type="button" id="btnHot" class="btn btn-secondary" aria-label="Partymodus: mehrere Spieler, ein Handy"><span class="btn-two"><span>Party</span><span id="ptBadge" class="btn-badge" hidden></span></span><span class="ico" data-icon="chev-right"></span></button>
-        <button type="button" id="btnDuel" class="btn btn-secondary" aria-label="Duell: Herausforderung per Link öffnen"><span>Duell</span><span class="ico" data-icon="chev-right"></span></button>
+      <div class="btn-row btn-row-ch">
+        <button type="button" id="btnMulti" class="btn btn-secondary" aria-label="Mehrspieler: online mit Freunden oder an einem Handy"><span class="btn-two"><span>Mehrspieler</span><span id="muBadge" class="btn-badge" hidden></span></span><span class="ico" data-icon="chev-right"></span></button>
         <button type="button" id="btnArcade" class="btn btn-secondary btn-arcade" aria-label="Arcade: Missionen, Tageschallenge, Skiflug"><span>Arcade</span><span id="arcNote" class="btn-note" hidden></span><span class="ico" data-icon="chev-right"></span></button>
       </div>
     </div>
@@ -1160,13 +1182,39 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       <h2 class="h1 ch-title">Link einfügen</h2>
       <p class="hd-text">Kopiere den Link aus WhatsApp und füge ihn hier ein.</p>
       <input id="chIn" class="ch-in" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Link der Herausforderung" aria-label="Link der Herausforderung">
-      <p class="hd-text ch-new">Selbst herausfordern: Spring im Training und tippe danach auf <b>Herausfordern</b>. <button type="button" id="btnChTrain" class="btn-plain">Zum Training</button></p>
+      <p class="hd-text ch-new">Selbst eine Gruppe starten: unter <b>Mehrspieler → Gruppe starten</b>. <button type="button" id="btnChTrain" class="btn-plain">Zu Mehrspieler</button></p>
       <div id="chGroups" class="ch-groups" hidden></div>
     </div>
     <div class="hd-btns">
       <button type="button" id="btnChBack" class="btn btn-secondary btn-s"><span>Später</span></button>
       <button type="button" id="btnChOther" class="btn-plain ch-other">Anderer Link</button>
       <button type="button" id="btnChGo" class="btn btn-primary btn-wide"><span id="chGoTxt">Annehmen</span><span class="ico" data-icon="arrow-right"></span></button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Mehrspieler ============ -->
+<section id="scrMulti" class="screen screen-dim2 center" hidden>
+  <div class="dialog multi panel-strong" role="dialog" aria-labelledby="muTitle">
+    <div class="set-head"><div class="su-titles"><span class="kicker">MIT FREUNDEN SPRINGEN</span><h2 id="muTitle" class="h1">Mehrspieler</h2></div><div class="set-head-btns"><button type="button" id="btnMuBack" class="btn-plain">Zurück</button></div></div>
+    <div class="mu-cards">
+      <div class="mu-card mu-main">
+        <span class="mu-k"><span class="ico" data-icon="share" data-size="18"></span><span id="muNewKick">ONLINE · JEDER AM EIGENEN HANDY</span></span>
+        <ol class="mu-steps"><li>Einmal springen</li><li id="muStep2">Link per WhatsApp schicken</li><li id="muStep3">Alle springen mit demselben Wind, die Rangliste ist live</li></ol>
+        <div class="mu-hill"><button type="button" id="muPrev" class="ghost-btn" aria-label="Vorherige Schanze"><span class="ico" data-icon="chev-left" data-size="18"></span></button><span id="muHill" class="mu-hill-n"></span><button type="button" id="muNext" class="ghost-btn" aria-label="Nächste Schanze"><span class="ico" data-icon="chev-right" data-size="18"></span></button></div>
+        <button type="button" id="btnMuNew" class="btn btn-primary btn-s"><span id="muNewTxt">Gruppe starten</span><span class="ico" data-icon="arrow-right" data-size="20"></span></button>
+      </div>
+      <div class="mu-card">
+        <span class="mu-k"><span class="ico" data-icon="link" data-size="18"></span>LINK BEKOMMEN?</span>
+        <p class="mu-p">Tipp ihn in WhatsApp einfach an, das Spiel öffnet sich direkt in der Gruppe.</p>
+        <div id="muGroups" class="mu-groups"></div>
+        <button type="button" id="btnDuel" class="btn btn-secondary btn-s" aria-label="Link aus WhatsApp einfügen"><span>Link einfügen</span></button>
+      </div>
+      <div class="mu-card">
+        <span class="mu-k"><span class="ico" data-icon="dice" data-size="18"></span>EIN HANDY FÜR ALLE</span>
+        <p class="mu-p">2 bis 8 Spieler, das Handy geht nach jedem Sprung weiter. Auch als Tournee.</p>
+        <button type="button" id="btnHot" class="btn btn-secondary btn-s" aria-label="Partymodus: mehrere Spieler, ein Handy"><span class="btn-two"><span>Party starten</span><span id="ptBadge" class="btn-badge" hidden></span></span></button>
+      </div>
     </div>
   </div>
 </section>
@@ -1362,7 +1410,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         <div class="set-row"><span class="lbl">Tempo (Training)</span><div id="segSpeed" class="seg" role="radiogroup" aria-label="Tempo im Training"><button type="button" data-v="1">Normal</button><button type="button" data-v="0.75">75 %</button><button type="button" data-v="0.5">50 %</button></div></div>
         <div class="set-row"><span class="lbl">Hilfen anzeigen</span><button type="button" id="tgAssist" class="toggle" role="switch" aria-checked="true"><i></i></button></div>
         <div class="set-row"><span class="lbl">Anfängermodus</span><button type="button" id="tgBeginner" class="toggle" role="switch" aria-checked="false" aria-describedby="beginnerNote"><i></i></button></div>
-        <p id="beginnerNote" class="set-note">Im Training hält das Spiel vor dem Absprung und vor der Landung an, du tippst im perfekten Moment. Mit Tipps im Flug. Zählt nicht für Bestweiten und Duelle.</p>
+        <p id="beginnerNote" class="set-note">Im Training hält das Spiel vor dem Absprung an: drücken und halten. Im Flug lenkst du mit dem Finger, ein goldener Kreis zeigt wohin. Vor der Landung hält es wieder an: loslassen. Zählt nicht für Bestweiten und Duelle.</p>
         <div class="set-row"><span class="lbl">Expertenmodus</span><button type="button" id="tgExpert" class="toggle" role="switch" aria-checked="false" aria-describedby="expertNote"><i></i></button></div>
         <p id="expertNote" class="set-note">Anfahrtshocke selbst halten, an der Kante loslassen. Keine Hilfen im Sprung.</p>
         <div class="set-row"><span class="lbl">Fluglage-Kasten</span><div id="segGauge" class="seg" role="radiogroup" aria-label="Fluglage-Kasten zusätzlich zum Springer"><button type="button" data-v="off">Aus</button><button type="button" data-v="left">Links</button><button type="button" data-v="right">Rechts</button></div></div>
@@ -6393,7 +6441,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.24";
+  const VERSION = "0.25";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -6729,7 +6777,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     "startBox", "goalBox", "goalKicker", "goalTitle", "goalText", "goalStars", "lightR", "lightG", "startTitle", "startSub", "gateBox", "gateVal", "gateMinus", "gatePlus", "speedBox", "speedVal", "speedLbl", "tachoFill",
     "timingBox", "timingLbl", "timingMark", "landBox", "landMark", "gauge", "flTop", "flL", "flR", "flTarget", "flTrail", "flDot", "pad", "padDot", "padGoal", "tapPill", "tapPillText", "hint", "hintIcon", "hintText",
     "hintSub", "toast", "toastTitle", "toastSub", "replayBadge", "replayHint", "btnPause", "hillStats", "tjFlag", "tjName"].forEach((id) => { el[id] = $(id); });
-  const SCREENS = { title: "scrTitle", tutorial: "scrTutorial", result: "scrResult", setup: "scrSetup", board: "scrBoard", hand: "scrHand", final: "scrFinal", arcade: "scrArcade", chal: "scrChal", champ: "scrChamp" };
+  const SCREENS = { title: "scrTitle", tutorial: "scrTutorial", result: "scrResult", setup: "scrSetup", board: "scrBoard", hand: "scrHand", final: "scrFinal", arcade: "scrArcade", chal: "scrChal", champ: "scrChamp", multi: "scrMulti" };
   const vis = (e, on) => { if (e.hidden === on) e.hidden = !on; };
   const txt = (e, s) => { if (e.textContent !== s) e.textContent = s; };
 
@@ -7025,6 +7073,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     const c = S.champ && !S.champ.done ? S.champ : null, p = S.party && !S.party.done ? S.party : null;
     vis($("chBadge"), !!c); if (c) txt($("chBadge"), `${c.station + 1}/${c.hills.length}`);
     vis($("ptBadge"), !!p); if (p) txt($("ptBadge"), `${p.station + 1}/${p.hills.length}`);
+    vis($("muBadge"), !!p); if (p) txt($("muBadge"), "PARTY");
+    vis($("trBadge"), !!S.beginner && !S.expert);
   }
   function setHill(key) {
     if (!HILL_ORDER.includes(key)) return;
@@ -7034,6 +7084,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     demo = null; demoWait = 0.3; particles = [];
     if (mode === "title") { updateCam(camTarget(null), 0, true); refreshTitle(); }
     if (mode === "setup") fillSetupHill();
+    if (mode === "multi") updateCam(camTarget(null), 0, true);
   }
   function cycleHill(d) {
     const i = HILL_ORDER.indexOf(S.hill);
@@ -7078,7 +7129,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   }
 
   function newJump() {
-    const seed = (Math.random() * 1e9) | 0;
+    const seed = (Math.random() * 1e9) | 0, grpNew = grpNewPending && ctxMode === "training";
+    grpNewPending = false;
     const practice = ctxMode === "training" && practiceLeft > 0;
     let gate, refGate, wind, jseed = seed, who = { name: S.name || "SPRINGER", nation: S.nation }, colors = null;
     if (ctxMode === "comp") { gate = comp.gate; refGate = comp.startGate; wind = comp.windNow(); jseed = comp.jumpSeed(); }
@@ -7094,17 +7146,17 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       // gleiche Bedingungen wie beim Gegner: Luke, Windfolge und Zufallswert aus dem Link
       gate = chal.g; refGate = H.refGate; wind = Ph.makeWind(chal.w, chal.s); jseed = chal.s;
     } else {
-      gate = gateFor(H); refGate = H.refGate; wind = Ph.makeWind(practice ? "off" : S.wind, seed);
+      gate = gateFor(H); refGate = H.refGate; wind = Ph.makeWind(practice ? "off" : grpNew ? "var" : S.wind, seed);
       // dritter Übungssprung: nur Seitenwind, damit die Balance einmal geübt ist
       if (practice && practiceLeft === 1) wind = Object.assign(wind, { mode: "side", side: (seed & 1 ? 1 : -1) * 0.42, gustR: 0.06 });
     }
     const expert = !!S.expert && ctxMode !== "hot" && !practice;
-    const beginner = !!S.beginner && !expert && ctxMode === "training" && !practice;
+    const beginner = !!S.beginner && !expert && ctxMode === "training" && !grpNew;
     J = new Ph.Jump(H, { gate, refGate, wind, seed: jseed, inrunCtl: expert });
     jc = { seed: jseed, practice, light: "red", tLight: 0.9 + Math.random() * 1.2, rec: [], recT: -1, slow: practice ? [0.5, 0.7, 1][clamp(3 - practiceLeft, 0, 2)] : (ctxMode === "training" ? trainSpeed() : 1),
       drag: null, timing: null, toastT: 0, doneT: 0, dragged: false, finished: false, who, colors,
       countdown: ctxMode === "comp" || ctxMode === "hot" ? 10 : null, ghostRec: [], ghostT: -1, toLead: null, speedT: 0,
-      noAssist: (ctxMode === "mission" && !!ms.m.noAssist) || expert, expert, beginner, freeze: null, target: ctxMode === "mission" ? missionTarget(ms.m, H) : null,
+      noAssist: (ctxMode === "mission" && !!ms.m.noAssist) || expert, expert, beginner, grpNew, freeze: null, target: ctxMode === "mission" ? missionTarget(ms.m, H) : null,
       prevBest: S.bests[H.key] ? S.bests[H.key].d : null };
     vis($("ppMode"), expert || beginner); txt($("ppMode"), expert ? "EXPERTENMODUS" : beginner ? "ANFÄNGERMODUS" : "");
     $("ppMode").classList.toggle("beg", beginner);
@@ -7424,18 +7476,13 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 
   // Anfängermodus: genau im perfekten Moment anhalten (Absprung an der Kante, Telemark vor der Landung), bis getippt wird
   function beginnerStop() {
-    if (jc.freeze === "thumb" && ((drag && drag.flight) || keys.up || keys.down || keys.left || keys.right)) { jc.freeze = null; jc.thumbOk = true; }
     if (jc.freeze) return true;
-    if (J.phase === "flight" && !jc.thumbOk && J.tf >= 0.45 && J.prepTime == null && !J.noseDive) {
-      if (drag && drag.flight) jc.thumbOk = true;
-      else { jc.freeze = "thumb"; Snd.beep(660, 0.07, 0.05); vib(15); return true; }
-    }
     if (J.phase === "inrun" && J.tapTime == null && jc.pendTap == null && J.s / Math.max(1, J.v) <= Ph.P.tauIdeal) { jc.freeze = "takeoff"; Snd.beep(880, 0.08, 0.06); vib(20); return true; }
     if (J.phase === "flight" && J.prepTime == null && !J.noseDive && J.tau != null && J.tau <= Ph.P.teleBest) { jc.freeze = "land"; Snd.beep(880, 0.08, 0.06); vib(20); return true; }
     return false;
   }
   function stepJump(dtReal) {
-    const dt = dtReal * (jc.beginner && J.phase === "flight" ? Math.min(jc.slow, 0.7) : jc.slow);
+    const dt = dtReal * (jc.beginner && J.phase === "flight" ? Math.min(jc.slow, (drag && drag.flight) || keys.up || keys.down || keys.left || keys.right ? 0.7 : 0.35) : jc.slow);
     if (J.phase === "gate") { jc.gt = (jc.gt || 0) + dtReal; if (jc.light === "green") jc.gg = (jc.gg || 0) + dtReal; }
     if (J.phase === "gate" && jc.light === "red") {
       jc.tLight -= dtReal;
@@ -7554,6 +7601,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     drag.ax = x; drag.ay = y; drag.flight = true;
   }
   function subLine(st) {
+    if (jc && jc.grpNew) return `Gruppe starten · Luke ${st.gate}`;
     if (jc && jc.practice) return `Übungssprung ${practiceN}/3${jc.slow < 1 ? " · Zeitlupe" : " · echtes Tempo"}`;
     if (ctxMode === "comp" && champ) return `${CP.FORMATS[champ.format].label} ${champ.station + 1}/${champ.hills.length} · ${comp.round === 1 ? (comp.ko ? "K.-o." : "1. Durchgang") : "Finale"} · Nr. ${comp.idx + 1} · Luke ${st.gate}`;
     if (ctxMode === "comp") return `${comp.round === 1 ? "1. Durchgang" : "Finale"} · Nr. ${comp.idx + 1} · Luke ${st.gate}`;
@@ -7618,7 +7666,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       if (ph === "inrun" && J.tapTime == null && tauEdge < 0.3 && tauEdge > 0.11) pill = "JETZT TIPPEN";
       if (ph === "flight" && J.prepTime == null && J.tau != null && J.tau < 0.55 && J.tau > 0.18) pill = "JETZT TIPPEN";
     }
-    if (jc && live && jc.freeze) pill = jc.freeze === "thumb" ? "DAUMEN AUFLEGEN" : "JETZT TIPPEN";
+    if (jc && live && jc.freeze) pill = jc.freeze === "takeoff" ? "DRÜCKEN & HALTEN" : drag ? "LOSLASSEN" : "JETZT TIPPEN";
+    if (jc && live && jc.beginner && !jc.freeze && ph === "flight" && !drag && J.prepTime == null && !J.noseDive) pill = "FINGER AUFLEGEN";
     vis(el.tapPill, !!pill);
     if (pill && el.tapPillText.textContent !== pill) el.tapPillText.textContent = pill;
     const inFlight = ph === "flight";
@@ -7673,9 +7722,12 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (lz) el.landMark.style.left = (clamp((1.15 - J.tau) / 1.15, 0, 1) * 100).toFixed(1) + "%";
     let hint = null;
     if (live && jc.freeze) hint = jc.freeze === "takeoff"
-      ? ["tap", "Jetzt tippen: Absprung!", "Genau jetzt an der Kante ist der perfekte Moment", "center"]
-      : jc.freeze === "thumb" ? ["pad", "Daumen auflegen und liegen lassen", "Damit steuerst du im Flug Vorlage und Balance", "center"]
+      ? ["tap", "Jetzt drücken und halten: Absprung!", "Finger danach liegen lassen, damit lenkst du den Flug", "center"]
+      : drag ? ["tap", "Jetzt loslassen: Telemark!", "Kurz vor dem Boden die Landung vorbereiten", "center"]
       : ["tap", "Jetzt tippen: Telemark!", "Kurz vor dem Boden die Landung vorbereiten", "center"];
+    // Anfänger ohne Finger im Flug: in Zeitlupe weiter, bis er liegt (der Kreis erscheint genau darunter)
+    if (live && !hint && jc.beginner && inFlight && !drag && J.prepTime == null && !J.noseDive && !lz)
+      hint = ["pad", "Finger auflegen und halten", "Der Kreis erscheint unter deinem Finger, damit lenkst du", "center"];
     // Anfänger: dem goldenen Kreis folgen (oben = flacher liegen, unten = aufrichten, seitlich = Balance gegen Seitenwind)
     if (live && !hint && jc.beginner && inFlight && padOn && !lz && J.prepTime == null && !J.noseDive && jc.goalOff != null) {
       if (st.tf < 1.6 && !jc.goalSeen) hint = ["pad", "Daumen in den goldenen Kreis", "oben = flacher liegen · unten = aufrichten · seitlich = Balance", "center"];
@@ -7788,7 +7840,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     }
     if (jc.practice) { practiceLeft = Math.max(0, practiceLeft - 1); if (practiceLeft === 0) { S.tutorialDone = true; S.physicsNew = false; S.flightNew = false; } }
     save();
-    const entry = Object.assign({ n: S.jumps, newBest, gate: J.gate, rec: jc.rec, tip: coachTip(sc), practice: jc.practice, who: jc.who, windOff: J.wind.mode === "off", mood: jc.mood,
+    const entry = Object.assign({ n: S.jumps, newBest, gate: J.gate, rec: jc.rec, tip: coachTip(sc), practice: jc.practice, who: jc.who, windOff: J.wind.mode === "off", mood: jc.mood, grpNew: !!jc.grpNew,
       v: J.vTakeoff * 3.6, ft: J.tf, maxH: J.stats.maxH, path: jc.ghostRec, hillKey: H.key, ctx: ctxMode,
       vIn: J.stats.vMaxIn * 3.6, vFl: J.stats.vMaxFl * 3.6, vLand: J.stats.vLand * 3.6, dtL: J.landing.dtL, expert: !!jc.expert,
       inOk: J.stats.inT > 0.5 ? Math.round(100 * J.stats.inOk / J.stats.inT) : null, vLoss: J.stats.vLoss * 3.6 }, sc);
@@ -8149,7 +8201,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     txt($("btnMenu").querySelector("span:last-child"), inGrp ? "Gruppe" : "Menü");
     const canPic = ["training", "chal", "daily", "mission"].includes(ctxMode) && !r.practice && !!r.path && r.path.length > 4;
     vis($("rsChal"), canChal); vis($("btnPic"), canPic); vis($("chalShareTxt"), false);
-    if (canChal) txt($("chalBtnTxt"), inGrp ? "Einladen" : ctxMode === "chal" ? (r.chalWin > 0 ? "Zurückfordern" : "Nochmal fordern") : r.grpChal ? "Gruppe teilen" : "Herausfordern");
+    if (canChal) txt($("chalBtnTxt"), inGrp ? "Link teilen" : ctxMode === "chal" ? (r.chalWin > 0 ? "Zurückfordern" : "Nochmal fordern") : r.grpChal ? "Gruppe teilen" : "Herausfordern");
+    if (r.grpNew) { vis($("rsChal"), false); grpStartResult(r); }
     if (fillStand) fillStand();
     let next = "Nächster Sprung";
     if (ctxMode === "training" && practiceLeft > 0) next = `Übungssprung ${3 - practiceLeft + 1}/3`;
@@ -8159,12 +8212,17 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (ctxMode === "hot") next = hot.roundOver() ? (hot.round < hot.rounds ? `Durchgang ${hot.round + 1}` : "Endergebnis") : `Weiter: ${hot.current().name}`;
     if (ctxMode === "mission") next = !r.mission.done ? `Sprung ${ms.res.length + 1}/${missionJumps(ms.m)}` : (r.mission.stars === 3 && nextMission(ms.m) ? "Nächste Mission" : "Nochmal");
     if (ctxMode === "daily") next = dc.tries.length < 3 ? `Versuch ${dc.tries.length + 1}/3` : "Teilen";
+    if (r.grpNew) next = grpNextTxt(r);
     txt($("btnNext").querySelector("span"), next);
     Snd.results(resultSound(r));
     setTimeout(() => { if (mode === "result") $("btnNext").focus({ preventScroll: true }); }, 50);
   }
 
   function resultNext() {
+    const r = lastResult;
+    if (r && r.grpNew && r.chal && !r.grpSent) { grpSend(r); return; }
+    if (r && r.grpNew && r.grpSent && r.grpChal) { openChal(r.grpChal); return; }
+    if (r && r.grpNew && !r.chal) grpNewPending = true;   // Sturz: nochmal, die Gruppe startet mit dem nächsten Sprung
     if (ctxMode === "comp") { openBoard(); return; }
     if (ctxMode === "hot") { afterHotJump(); return; }
     if (ctxMode === "mission") {
@@ -8300,6 +8358,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       return [chal.grp ? `${chal.n} FÜHRT DIE GRUPPE` : `${chal.n} FORDERT DICH HERAUS`, `Über ${fmt1(chal.p)} Punkte`, `${chal.n} sprang ${fmt1(chal.d)} m. Gleicher Wind: Mit guten Haltungsnoten reicht etwas mehr.`];
     }
     if (ctxMode === "training") {
+      if (jc.grpNew) return ["GRUPPE STARTEN", "Dein Sprung legt die Gruppe an", "Danach schickst du den Link. Alle springen mit demselben Wind wie du."];
       if (jc.beginner) return ["ANFÄNGERMODUS", "Das Spiel hält an, wenn du tippen musst", "Die gelbe Linie zeigt den perfekten Flug."];
       const b = S.bests[H.key];
       if (b) return ["DEINE BESTWEITE", `${fmt1(b.d)} m`, `${fmt1(b.pts)} Punkte von Luke ${b.gate}. K-Punkt ${H.K} m, HS ${H.HS} m.`];
@@ -8623,6 +8682,62 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     try { await navigator.clipboard.writeText(text); showToastSafeText("LINK KOPIERT", "In WhatsApp einfügen und senden"); return; } catch (e) { /* weiter */ }
     // Rückfall: Text zum manuellen Kopieren anzeigen
     const ta = $("chalShareTxt"); ta.value = text; vis(ta, true); ta.focus(); ta.select();
+  }
+  // ------------------------------------------------------------------ Mehrspieler: drei Wege in einem Fenster
+  let grpNewPending = false;
+  function openMulti() {
+    goTitle();
+    mode = "multi"; showScreen("multi");
+    const on = onlineReady() || (ON && !S.onlineAsked);
+    txt($("muNewKick"), on ? "ONLINE · JEDER AM EIGENEN HANDY" : "PER LINK · JEDER AM EIGENEN HANDY");
+    txt($("muStep3"), on ? "Alle springen mit demselben Wind, die Rangliste ist live" : "Dein Freund springt mit demselben Wind und schickt den Link zurück");
+    txt($("muNewTxt"), on ? "Gruppe starten" : "Duell starten");
+    fillMultiHill();
+    const L = ON ? S.groups.slice(0, 3) : [];
+    $("muGroups").innerHTML = L.map((x) => {
+      const Hh = Hill.getHill(x.h);
+      return `<button type="button" class="chg-row" data-g="${x.g}"><span class="chg-h">${esc(Hh.short || Hh.name)}</span><span class="chg-s">${x.n} Springer${x.rk ? ` · Platz ${x.rk}` : ""}</span>${icon("arrow-right", 16)}</button>`;
+    }).join("");
+  }
+  function fillMultiHill() { txt($("muHill"), `${H.short || H.name} · HS${H.HS}`); }
+  function startGroupJump() {
+    if (ON && !S.onlineAsked) { askOnline(() => startGroupJump()); return; }
+    if (!S.name) { askName(() => startGroupJump()); return; }
+    chal = null; chalPending = false; ctxMode = "training"; practiceLeft = 0; grpNewPending = true;
+    H = Hill.getHill(S.hill);
+    newJump();
+  }
+  const grpNextTxt = (r) => !r.chal ? "Nochmal springen" : r.grpSent ? (r.grpChal ? "Zur Gruppe" : "Nächster Sprung") : r.grpMaking ? "Gruppe wird angelegt …" : "Link schicken";
+  // Startsprung: die Gruppe sofort anlegen, damit „Link schicken“ beim Tippen gleich das Teilen öffnet
+  function grpStartResult(r) {
+    const tip = !r.chal ? "Ein Sturz startet keine Gruppe. Spring nochmal, dann geht es los."
+      : onlineReady() ? "Tippe auf „Link schicken“ und wähle WhatsApp: an einzelne Freunde oder eure Gruppe. Wer den Link antippt, springt mit demselben Wind wie du, die Rangliste siehst du live."
+      : "Tippe auf „Link schicken“ und wähle WhatsApp. Dein Freund springt mit demselben Wind wie du und schickt dir seinen Link zurück.";
+    txt($("rsTip"), tip); vis($("rsTip"), true);
+    const chip = $("rsChip"); chip.className = "chip chip-cyan"; chip.textContent = "GRUPPE STARTEN";
+    txt($("rsSession"), `Gruppe starten · ${H.short || H.name} · Luke ${r.gate}`);
+    setRsTab("list");
+    if (r.chal && onlineReady() && !r.grpChal && !r.grpMaking) {
+      r.grpMaking = true;
+      groupNew(r).then((gc) => { r.grpChal = gc; }).catch((e) => { r.grpErr = e; onlineFail(e, "GRUPPE GEHT GERADE NICHT"); })
+        .finally(() => { r.grpMaking = false; if (mode === "result" && lastResult === r) txt($("btnNext").querySelector("span"), r.grpErr && !r.grpChal ? "Nochmal versuchen" : grpNextTxt(r)); });
+    }
+  }
+  async function grpSend(r) {
+    if (onlineReady()) {
+      if (r.grpMaking) return;
+      if (!r.grpChal) {   // erster Versuch ging nicht: nochmal anlegen
+        r.grpErr = null; grpStartResult(r); return;
+      }
+      const ok = await shareLink(groupText(r.grpChal));
+      if (!ok) { showToastSafeText("GRUPPE IST ANGELEGT", "Nochmal auf „Link schicken“ tippen"); return; }
+      r.grpSent = true;
+      openChal(r.grpChal);   // danach: die Gruppe mit Live-Rangliste
+      return;
+    }
+    await shareChal();
+    r.grpSent = true;
+    if (mode === "result" && lastResult === r) txt($("btnNext").querySelector("span"), grpNextTxt(r));
   }
   // ------------------------------------------------------------------ Online: Gruppen mit Live-Rangliste, Spielstand per Code (Supabase)
   // Eine Gruppe ist eine Herausforderung mit Rangliste auf dem Server: gleiche Schanze, Luke, Wind und Startwert für alle,
@@ -9005,9 +9120,9 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     $("scrChal").querySelector(".dialog").classList.toggle("grp", grp);
     txt($("chKicker"), grp ? "ONLINE-GRUPPE" : chalPaste ? "DUELL" : "HERAUSFORDERUNG");
     vis($("chHave"), !chalPaste); vis($("chPaste"), chalPaste); vis($("btnChOther"), !chalPaste);
-    txt($("btnChOther"), grp ? "Einladen" : "Anderer Link");
+    txt($("btnChOther"), grp ? "Link teilen" : "Anderer Link");
     txt($("chGoTxt"), chalPaste ? "Öffnen" : grp ? "Springen" : "Annehmen");
-    txt($("btnChBack").querySelector("span"), chalPaste ? "Zurück" : "Später");
+    txt($("btnChBack").querySelector("span"), chalPaste || grp ? "Zurück" : "Später");
     txt($("chTgtLbl"), grp ? "FÜHRT MIT" : "ZU SCHLAGEN");
     if (chalPaste) { $("chIn").value = ""; fillGroupList(); return; }
     if (grp) { fillGroup(); return; }
@@ -10055,7 +10170,13 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   on("btnHot", () => { if (S.party && !S.party.done) { party = S.party; champ = null; openChampHub(); } else openSetup("hot"); });
   on("btnArChal", () => openChal(null, !chal));
   on("btnDuel", () => openChal(null, !chal || !!chal.grp));
-  on("btnChTrain", () => { chalPaste = false; goTitle(); $("btnPlay").click(); });
+  on("btnMulti", () => openMulti());
+  on("btnMuBack", () => goTitle());
+  on("btnMuNew", () => startGroupJump());
+  on("muPrev", () => { const i = HILL_ORDER.indexOf(H.key); setHill(HILL_ORDER[(i - 1 + HILL_ORDER.length) % HILL_ORDER.length]); fillMultiHill(); });
+  on("muNext", () => { const i = HILL_ORDER.indexOf(H.key); setHill(HILL_ORDER[(i + 1) % HILL_ORDER.length]); fillMultiHill(); });
+  $("muGroups").addEventListener("click", (e) => { const b = e.target.closest("[data-g]"); if (b) openGroup(b.dataset.g); });
+  on("btnChTrain", () => { chalPaste = false; openMulti(); });
   on("btnChal", () => shareChal());
   on("btnPic", () => sharePic());
   on("btnPicDone", () => setOverlay(null));
@@ -10065,7 +10186,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     offerFile($("picDl").getAttribute("download") || "telemark.png", picBlob).then((done) => { if (!done) softNotice("Herunterladen geht hier nicht: Bild lange drücken"); });
   });
   on("btnChGo", () => chalGo());
-  on("btnChBack", () => { if (chalPaste && chal) { chalPaste = false; fillChal(); } else goTitle(); });
+  on("btnChBack", () => { if (chalPaste && chal && !chal.grp) { chalPaste = false; fillChal(); } else openMulti(); });
   on("btnChOther", () => { chalPaste = true; fillChal(); $("chIn").focus(); });
   $("chIn").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); chalGo(); } e.stopPropagation(); });
   on("hillPrev", () => cycleHill(-1));
@@ -10076,7 +10197,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   on("btnHiDone", () => setOverlay(null));
   on("suPrev", () => cycleHill(-1));
   on("suNext", () => cycleHill(1));
-  on("btnSuBack", () => { if (setupKind === "hot") readHotNames(); goTitle(); });
+  on("btnSuBack", () => { if (setupKind === "hot") { readHotNames(); openMulti(); return; } goTitle(); });
   on("btnSuStart", () => startFromSetup());
   on("hotMinus", () => { readHotNames(); S.hot.n = clamp(S.hot.n - 1, 2, 8); save(); fillHotNames(); });
   on("hotPlus", () => { readHotNames(); S.hot.n = clamp(S.hot.n + 1, 2, 8); save(); fillHotNames(); });
@@ -10262,7 +10383,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   seg("segSpeed", (v) => { S.speed = +v; S.slow = +v < 1; save(); segSet("segSpeed", v); if (jc && !jc.practice && ctxMode === "training") jc.slow = trainSpeed(); });
   toggle("tgAssist", "assist");
   toggle("tgExpert", "expert", () => { if (S.expert) { S.beginner = false; save(); fillSettings(); softNotice("Experte: Daumen in der Anfahrt halten (Hocke), an der Kante loslassen. Keine Hilfen."); } });
-  toggle("tgBeginner", "beginner", () => { if (S.beginner) { S.expert = false; save(); fillSettings(); softNotice("Anfänger: Im Training hält das Spiel im perfekten Moment an, dann tippen."); } });
+  toggle("tgBeginner", "beginner", () => { if (S.beginner) { S.expert = false; save(); fillSettings(); softNotice("Anfänger: Vor dem Absprung drücken und halten, im Flug dem goldenen Kreis folgen, vor der Landung loslassen."); } refreshTitle(); });
   toggle("tgSound", "sound", () => { if (!S.sound) Snd.off(); else { Snd.unlock(); Snd.set("crowd", 0.07, null, 0.4); Snd.beep(880, 0.12); } });
   toggle("tgVibe", "vibe", () => vib(20));
   on("tgMusic", () => { S.music = S.music === false; save(); fillSettings(); if (!S.music) Snd.stadiumOff(); });
@@ -10317,13 +10438,14 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (!drag || e.pointerId !== drag.id) return;
     drag = null;
     if (e.type === "pointerup" && mode === "jump") releaseInrun(e);
+    if (e.type === "pointerup" && mode === "jump" && jc && jc.beginner && jc.freeze === "land" && J && J.phase === "flight") onAction(e);
   };
   stage.addEventListener("pointerup", endDrag);
   stage.addEventListener("pointercancel", endDrag);
   window.addEventListener("keydown", (e) => {
     if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "SELECT")) return;
     if (e.key === "Escape" || e.key === "p" || e.key === "P") {
-      if (overlay === "settings") closeSettings(); else if (overlay === "jumper") closeJumper(); else if (overlay === "pause" || overlay === "records" || overlay === "hill") setOverlay(null); else if (overlay === "info") closeInfo(); else if (overlay === "pic") setOverlay(null); else if (mode === "arcade" || mode === "chal") goTitle(); else pause();
+      if (overlay === "settings") closeSettings(); else if (overlay === "jumper") closeJumper(); else if (overlay === "pause" || overlay === "records" || overlay === "hill") setOverlay(null); else if (overlay === "info") closeInfo(); else if (overlay === "pic") setOverlay(null); else if (mode === "arcade" || mode === "chal" || mode === "multi") goTitle(); else pause();
       return;
     }
     if (overlay) return;
@@ -10441,7 +10563,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     }
     const wNow = J ? (J.wind.mode === "off" ? 0 : J.wind.display(J.t)) : 0.6;
     snow.update(cam, dtReal, W, Hs, wNow);
-    const dim = mode === "tutorial" ? 0.55 : (mode === "result" || mode === "final") ? 0.25 : (mode === "board" || mode === "hand" || mode === "setup" || mode === "arcade" || mode === "chal" || mode === "champ") ? 0.35 : 0;
+    const dim = mode === "tutorial" ? 0.55 : (mode === "result" || mode === "final") ? 0.25 : (mode === "board" || mode === "hand" || mode === "setup" || mode === "arcade" || mode === "chal" || mode === "champ" || mode === "multi") ? 0.35 : 0;
     const focus = st ? { x: st.x, landed: (st.phase === "outrun" || st.phase === "done") && st.kind !== "fall" } : null;
     // Menüs und Tafeln: Hintergrund mit 30 Bildern je Sekunde zeichnen (halbe Arbeit, spart Akku); Sprung und Wiederholung immer flüssig
     menuAcc += dtReal;
@@ -10610,6 +10732,24 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) { /* egal */ }
   // eigenes Hosting: Offline-Speicher, damit das Spiel auch ohne Netz startet
   if (SITE.web && "serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) navigator.serviceWorker.register("sw.js").catch(() => {});
+  // Neue Version? Das Spiel fragt beim Start, beim Zurückkommen und alle 15 Minuten nach (am Home-Bildschirm bleibt sonst die alte Seite offen).
+  // Hinweis oben, Tippen lädt neu; mitten im Sprung wird nichts neu geladen.
+  let updSeen = null, updT = 0;
+  function checkUpdate() {
+    if (!SITE.web || Date.now() - updT < 60000) return;
+    updT = Date.now();
+    fetch("version.txt?t=" + Date.now(), { cache: "no-store" }).then((r) => (r.ok ? r.text() : "")).then((v) => {
+      v = String(v || "").trim();
+      if (!/^\d+\.\d+(\.\d+)?[a-z]?$/.test(v) || v === VERSION) return;
+      updSeen = v; txt($("btnUpd"), `Neue Version ${v} · tippen zum Laden`); vis($("btnUpd"), true);
+    }).catch(() => {});
+  }
+  on("btnUpd", () => { if (mode === "jump" || mode === "replay") return; location.reload(); });
+  if (SITE.web) {
+    setTimeout(checkUpdate, 4000);
+    setInterval(checkUpdate, 15 * 60000);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) checkUpdate(); });
+  }
 
   let resetArm = 0;
   on("btnReset", () => {
