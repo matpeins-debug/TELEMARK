@@ -254,14 +254,14 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .chip-s { display: flex; align-items: center; gap: 4px; height: 24px; padding: 0 8px 0 6px; border-radius: 12px; background: var(--row); font-size: 12px; color: var(--text-2); }
 .tut-foot { display: flex; justify-content: flex-end; gap: 10px; }
 
-.res-left { position: absolute; left: 24px; top: 20px; width: 400px; bottom: 76px; display: flex; flex-direction: column; gap: 8px; padding: 14px 18px; }
+.res-left { position: absolute; left: 24px; top: 20px; width: 400px; bottom: 76px; display: flex; flex-direction: column; gap: 6px; padding: 14px 18px; }
 .res-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .res-name { font-family: var(--font-display); font-weight: 700; font-size: 22px; line-height: 24px; }
 .res-big { display: flex; align-items: baseline; justify-content: space-between; }
 .res-dist { font-style: italic; font-weight: 800; font-size: 52px; line-height: 54px; white-space: nowrap; }
 .res-pts { font-weight: 700; font-size: 24px; color: var(--accent); white-space: nowrap; }
 .res-rows { display: flex; flex-direction: column; gap: 2px; }
-.res-row { display: grid; grid-template-columns: 62px minmax(0, 1fr) 62px; align-items: center; gap: 8px; min-height: 28px; }
+.res-row { display: grid; grid-template-columns: 62px minmax(0, 1fr) 62px; align-items: center; gap: 8px; min-height: 25px; }
 .rr-l { font-size: 13px; color: var(--muted); }
 .rr-m { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--text-2); min-width: 0; white-space: nowrap; overflow: hidden; }
 .rr-p { text-align: right; font-weight: 700; font-size: 19px; white-space: nowrap; }
@@ -428,19 +428,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .hd-stand { display: flex; flex-direction: column; gap: 2px; }
 .hd-btns { display: flex; justify-content: space-between; gap: 10px; margin-top: 4px; }
 
-.fin-left { position: absolute; left: 24px; top: 20px; width: 380px; bottom: 76px; display: flex; flex-direction: column; gap: 8px; padding: 14px 18px; }
-.podium { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; align-items: end; flex: 1; min-height: 0; }
-.pd { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; }
-.pd-sw { width: 14px; height: 14px; border-radius: 7px; }
-.pd-name { font-family: var(--font-display); font-weight: 700; font-size: 16px; line-height: 18px; text-align: center; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.pd-pts { font-family: var(--font-display); font-weight: 600; font-size: 14px; color: var(--muted); }
-.pd-block { width: 100%; display: flex; align-items: flex-start; justify-content: center; padding-top: 6px; border-radius: 10px 10px 0 0;
-  font-family: var(--font-display); font-weight: 800; font-size: 26px; color: var(--ink); }
-.pd-1 .pd-block { height: 74px; background: var(--gold); }
-.pd-2 .pd-block { height: 54px; background: #CFC8B6; }
-.pd-3 .pd-block { height: 40px; background: #B9773F; }
-.pd.me .pd-name { color: var(--hi); }
-.fin-right { position: absolute; left: 420px; right: 24px; top: 20px; bottom: 76px; display: flex; flex-direction: column; gap: 6px; padding: 14px; min-width: 0; }
+.fin-left { position: absolute; left: 24px; top: 20px; width: clamp(300px, calc(100% - 464px), 380px); bottom: 76px; display: flex; flex-direction: column; gap: 8px; padding: 14px 18px; }
+.fin-right { position: absolute; left: calc(clamp(300px, calc(100% - 464px), 380px) + 40px); right: 24px; top: 20px; bottom: 76px; display: flex; flex-direction: column; gap: 6px; padding: 14px; min-width: 0; }
 .fn-grid, .fn-row { display: grid; grid-template-columns: 26px minmax(0, 1fr) 54px 54px 56px; gap: 8px; align-items: center; padding: 0 10px; }
 .fn-row { height: 26px; border-radius: 8px; flex: none; }
 .fn-row.me { background: var(--hi-soft); }
@@ -521,10 +510,10 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   font-family: var(--font-display); font-weight: 700; font-size: 13px; letter-spacing: 0.02em; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35); }
 
 /* ---------- Meisterschaft: Kalender, Gesamtwertung, Trikot ---------- */
-.cp-left { position: absolute; left: 24px; top: 20px; width: 380px; bottom: 76px; display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; }
+.cp-left { position: absolute; left: 24px; top: 20px; width: clamp(300px, calc(100% - 464px), 380px); bottom: 76px; display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; }
 .cp-left .h1 { font-size: 32px; line-height: 34px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cp-sub { margin: 0; font-size: 13px; line-height: 17px; color: var(--text-2); }
-.cp-right { position: absolute; left: 420px; right: 24px; top: 20px; bottom: 76px; display: flex; flex-direction: column; gap: 6px; padding: 14px; min-width: 0; }
+.cp-right { position: absolute; left: calc(clamp(300px, calc(100% - 464px), 380px) + 40px); right: 24px; top: 20px; bottom: 76px; display: flex; flex-direction: column; gap: 6px; padding: 14px; min-width: 0; }
 .cp-right .rr-head { align-items: center; }
 .cp-right .rr-head .h2 { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .seg-xs button { height: 28px; padding: 0 9px; font-size: 14px; }
@@ -539,7 +528,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
 .cal-row .cal-me { text-align: right; font-family: var(--font-display); font-weight: 700; font-size: 16px; line-height: 18px; white-space: nowrap; }
 .cal-row .cal-me small { display: block; font-family: var(--font-body); font-weight: 500; font-size: 11px; line-height: 13px; color: var(--muted); }
 .cal-row.now .cal-me { color: var(--hi); font-size: 14px; }
-.cp-podium { flex: 1 1 0; min-height: 0; max-height: 150px; }
+.cp-podium { flex: 1 1 0; min-height: 0; max-height: 170px; }
 .cp-grid, .cp-row { display: grid; grid-template-columns: 26px 28px minmax(0, 1fr) 64px; gap: 6px; align-items: center; padding: 0 10px; }
 .cp-row { height: 26px; border-radius: 8px; flex: none; }
 .cp-row.me { background: var(--hi-soft); }
@@ -691,9 +680,6 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
 .cal-row, .ms-row, .rc-row { border-radius: 3px; }
 .cal-row.now, .bd-now.me, .ch-target, .dy-try.best { box-shadow: inset 0 0 0 1.5px var(--hi-line); }
 .bd-now { border-radius: 3px; }
-.pd-block { border-radius: 2px 2px 0 0; border: 2px solid var(--ink-deep); border-bottom: none; }
-.pd-1 .pd-block { background: var(--gold); }
-.pd.me .pd-name { color: var(--hi); }
 .jersey { border-radius: 2px; background: #F2C230; box-shadow: inset 0 -3px 0 rgba(120, 80, 0, 0.35), 0 0 0 1px rgba(30, 39, 52, 0.4); }
 .pbar { border-radius: 0; height: 5px; }
 .hi-profile { background: linear-gradient(#22344A, #1A2A3E); border-radius: 3px; }
@@ -818,7 +804,15 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
 .narrow .ra-v { font-size: 12.5px; }
 .narrow .ra-v.long { font-size: 11px; }
 .ch-board { display: flex; flex-direction: column; gap: 2px; margin: 2px 0 4px; }
-.chb-row { display: grid; grid-template-columns: 22px auto minmax(0, 1fr) auto; gap: 6px; align-items: center; font-size: 13px; line-height: 18px; }
+.chb-row { display: grid; grid-template-columns: 22px auto minmax(0, 1fr) auto 14px; gap: 6px; align-items: center; font-size: 13px; line-height: 18px; }
+button.chb-row { width: 100%; margin: 0; padding: 1px 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; border-radius: 3px; }
+button.chb-row:active { background: rgba(255,255,255,.08); }
+button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
+.chb-m { display: inline-flex; align-items: center; gap: 4px; }
+/* Helme in den Ranglisten: wippen leicht, jeder etwas versetzt */
+.hm { flex: none; display: inline-block; vertical-align: -2px; animation: hmBob 1.4s ease-in-out infinite; transform-origin: 50% 90%; }
+@keyframes hmBob { 0%, 100% { transform: translateY(0) rotate(0deg); } 30% { transform: translateY(-1.6px) rotate(-4deg); } 65% { transform: translateY(0.4px) rotate(3deg); } }
+@media (prefers-reduced-motion: reduce) { .hm { animation: none; } }
 .chb-row.main { font-weight: 700; }
 .chb-n { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .chb-p { font-family: var(--font-display); font-weight: 700; }
@@ -864,20 +858,8 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
 .pp-mode { align-self: flex-start; margin-top: 3px; padding: 1px 7px; border-radius: 3px; font-family: var(--font-label); font-weight: 700; font-size: 10.5px; line-height: 16px; letter-spacing: 0.12em; color: #FFF8EC; background: var(--warn); }
 .pp-mode.beg { background: var(--hi); }
 /* Podest mit Springern: Figuren stehen direkt auf ihrer Stufe, die Fläche darüber wird genutzt */
-.podium { align-items: stretch; }
-.pd { justify-content: flex-end; }
-.pd-fig { display: block; width: 100%; flex: 1 1 0; min-height: 0; max-height: 170px; margin-top: 2px; }
-.pd-name { display: flex; align-items: center; justify-content: center; gap: 5px; }
-.pd-name .flag, .pd-name .pd-sw { flex: none; }
-.pd-nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-.pd-block { flex-direction: column; align-items: center; gap: 0; padding-top: 3px; line-height: 1; }
-.pd-block b { font-size: 24px; line-height: 26px; }
-.pd-block .pd-pts { font-size: 13px; line-height: 15px; color: rgba(20, 27, 37, 0.72); }
-.pd-1 .pd-block { height: 64px; }
-.pd-2 .pd-block { height: 52px; }
-.pd-3 .pd-block { height: 46px; }
 /* Richter: Noten erscheinen nacheinander, darunter was sie gekostet haben (in Punkten und Metern) */
-.res-why { margin: -3px 0 1px; font-size: 11.5px; line-height: 15px; color: var(--muted); font-family: var(--font-body); }
+.res-why { margin: -3px 0 1px; font-size: 11.5px; line-height: 15px; color: var(--muted); font-family: var(--font-body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .judges span { animation: judgeIn 0.34s cubic-bezier(0.2, 0.9, 0.3, 1.3) both; }
 .judges span:nth-child(2) { animation-delay: 0.1s; }
 .judges span:nth-child(3) { animation-delay: 0.2s; }
@@ -887,6 +869,31 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
 /* Luke: große Knöpfe mit Abstand, damit man sich nicht vertippt */
 .gate-box .mini-btn { width: 46px; height: 46px; font-size: 24px; }
 .gate-box .gate-row { gap: 14px; }
+
+/* Siegerpodest: eine Zeichenfläche, die den Platz zwischen Titel und Text füllt */
+.podium { position: relative; flex: 1 1 0; min-height: 70px; }
+.pod-cv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+/* Anfänger: goldener Kreis im Daumenfeld = wohin der Daumen gerade muss */
+.pad-goal { position: absolute; left: 0; top: 0; width: 34px; height: 34px; border-radius: 50%; border: 2px dashed rgba(240, 195, 94, 0.95); background: rgba(240, 195, 94, 0.12); box-shadow: 0 0 10px rgba(240, 195, 94, 0.35); }
+.pad-goal.in { border-style: solid; background: rgba(240, 195, 94, 0.32); }
+/* Sprunganalyse im Training */
+.rs-anabox { display: flex; flex-direction: column; gap: 3px; flex: 1 1 0; min-height: 0; overflow-y: auto; touch-action: pan-y; overscroll-behavior: contain; }
+.an-head { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 15px; line-height: 18px; flex: none; }
+.an-chart { position: relative; flex: 1 1 52px; min-height: 42px; max-height: 110px; margin: 1px 0 2px; border-radius: 6px; background: var(--row); }
+.an-chart canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.an-row { display: grid; grid-template-columns: 62px minmax(0, 1fr) 40px 60px; gap: 6px; align-items: center; min-height: 18px; padding-left: 6px; border-left: 3px solid var(--muted); flex: none; }
+.an-row.info { border-left-color: #5A8FC8; } .an-row.info .an-b { color: #5A8FC8; }
+.an-row.ok { border-left-color: #2E8B57; } .an-row.mid { border-left-color: #D9A03A; } .an-row.bad { border-left-color: #C0392B; }
+.an-k { font-size: 10px; line-height: 12px; letter-spacing: 0.1em; font-weight: 600; color: var(--muted); }
+.an-s { font-size: 11.5px; line-height: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.an-b { height: 6px; border-radius: 3px; background: rgba(30, 39, 52, 0.08); overflow: hidden; }
+.an-bar { display: block; height: 100%; border-radius: 3px; background: currentColor; opacity: 0.75; }
+.an-row.ok .an-b { color: #2E8B57; } .an-row.mid .an-b { color: #D9A03A; } .an-row.bad .an-b { color: #C0392B; }
+.an-v { font-family: var(--font-display); font-size: 13px; text-align: right; white-space: nowrap; }
+.an-wind { font-size: 11px; line-height: 14px; color: var(--muted); }
+.an-tip { margin: 1px 0 0; font-size: 12px; line-height: 15px; flex: none; }
+.rs-chal.compact .btn { height: 34px; font-size: 16px; }
 
 </style>
 </head>
@@ -977,12 +984,12 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     </svg>
     <div class="fl-foot"><span class="ico" data-icon="chev-left" data-size="12"></span><span>BALANCE</span><span class="ico" data-icon="chev-right" data-size="12"></span></div>
   </div>
-  <div id="pad" class="pad" hidden><i class="pad-h"></i><i class="pad-v"></i><b id="padDot" class="pad-dot"></b></div>
+  <div id="pad" class="pad" hidden><i class="pad-h"></i><i class="pad-v"></i><b id="padGoal" class="pad-goal" hidden></b><b id="padDot" class="pad-dot"></b></div>
 
   <div id="tapPill" class="tap-pill" hidden><span class="ico" data-icon="tap"></span><span id="tapPillText">JETZT TIPPEN</span></div>
   <div id="hint" class="hint-wrap" hidden><div class="hint panel"><span id="hintIcon" class="ico"></span><span id="hintText"></span><span id="hintSub" class="hint-sub"></span></div></div>
   <div id="toast" class="panel toast" hidden><span id="toastTitle" class="toast-title"></span><span id="toastSub" class="toast-sub"></span></div>
-  <div id="replayBadge" class="replay-badge" hidden><span class="rec"></span>WIEDERHOLUNG</div>
+  <div id="replayBadge" class="replay-badge" hidden><span class="rec"></span><span id="rpTxt">WIEDERHOLUNG</span></div>
   <div id="replayHint" class="hint-wrap" hidden><div class="hint panel"><span class="ico" data-icon="tap" data-size="22"></span><span>Tippen zum Beenden</span></div></div>
 </div>
 
@@ -1081,23 +1088,24 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     </div>
   </div>
   <div class="res-right panel-strong">
-    <div class="rr-head"><h2 id="rsListTitle" class="h2">Deine Sprünge</h2><div id="rsTabs" class="seg seg-s rs-tabs" role="tablist" aria-label="Ansicht"><button type="button" data-v="list">Stand</button><button type="button" data-v="det">Details</button><button type="button" data-v="champ">Gesamt</button></div></div>
+    <div class="rr-head"><h2 id="rsListTitle" class="h2">Deine Sprünge</h2><div id="rsTabs" class="seg seg-s rs-tabs" role="tablist" aria-label="Ansicht"><button type="button" data-v="list">Stand</button><button type="button" data-v="ana">Analyse</button><button type="button" data-v="det">Details</button><button type="button" data-v="champ">Gesamt</button></div></div>
     <div id="rsRank" class="rs-rank" hidden></div>
     <div id="rsPaneList" class="rs-pane">
       <div id="rsListHead" class="jt-head"><span>#</span><span>LANDUNG</span><span class="ta-r">WEITE</span><span class="ta-r">PUNKTE</span></div>
       <div id="rsList" class="jt-list fit"></div>
-      <div id="rsChal" class="rs-chal" hidden>
-        <button type="button" id="btnChal" class="btn btn-secondary btn-s"><span class="ico" data-icon="share" data-size="20"></span><span id="chalBtnTxt">Freund herausfordern</span></button>
-        <textarea id="chalShareTxt" class="dy-share" readonly hidden aria-label="Link zum Kopieren"></textarea>
-      </div>
       <div id="rsAna" class="res-ana"></div>
       <p id="rsTip" class="res-tip"></p>
     </div>
+    <div id="rsPaneAna" class="rs-pane" hidden><div id="rsAnaBox" class="rs-anabox"></div></div>
     <div id="rsPaneDet" class="rs-pane" hidden><div id="rsDet" class="rs-det"></div></div>
     <div id="rsPaneChamp" class="rs-pane" hidden>
       <div class="jt-head st-grid"><span>#</span><span id="rsChampCol">SPRINGER</span><span class="ta-r">JETZT</span><span class="ta-r">LIVE</span></div>
       <div id="rsChampList" class="jt-list scroll"></div>
       <p id="rsChampNote" class="res-tip"></p>
+    </div>
+    <div id="rsChal" class="rs-chal" hidden>
+      <button type="button" id="btnChal" class="btn btn-secondary btn-s"><span class="ico" data-icon="share" data-size="20"></span><span id="chalBtnTxt">Freund herausfordern</span></button>
+      <textarea id="chalShareTxt" class="dy-share" readonly hidden aria-label="Link zum Kopieren"></textarea>
     </div>
   </div>
   <div class="res-btns">
@@ -4466,6 +4474,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
       if (v.flags) this.windFlags(v.hill, S, cam, k, v);
       if (v.best && v.best.d > 40) this.beam(v.hill, S, cam, k, v.best);
       if (v.ideal) this.idealLine(S, cam, k, v.ideal);
+      if (v.ghosts) for (const g of v.ghosts) this.jumper(S, cam, k, g, true);
       if (v.ghost) this.jumper(S, cam, k, v.ghost, true);
       if (v.jumper && v.jumper.visible !== false) {
         if (v.jumper.shadow) this.shadow(v.hill, S, cam, k, v.jumper);
@@ -5240,9 +5249,12 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
         const dx = ski[1][0] - ski[0][0], dy = ski[1][1] - ski[0][1], l = Math.hypot(dx, dy) || 1, ux = dx / l, uy = dy / l;
         return [[ank[0] - ux * 2.6, ank[1] - uy * 2.6 + 0.6], [ank[0] + ux * 2.8, ank[1] + uy * 2.8 + 0.6], 1.9, 1.7];
       };
-      this.ski(J.sf[0], J.sf[1], L.skiFar, 3.0, 5.5);
+      // Siegerehrung: beide Ski aufrecht in der Hand hinter dem Körper, die Schuhe stehen flach
+      const held = J.held, flat = (a) => [[a[0] - 1, a[1]], [a[0] + 1, a[1]]];
+      if (held) { this.ski(held[0][0], held[0][1], L.skiFar, 3.0, 5.5); this.ski(held[1][0], held[1][1], L.ski, 3.0, 5.5); }
+      else this.ski(J.sf[0], J.sf[1], L.skiFar, 3.0, 5.5);
       this.part([[J.hip, J.kb, 3.0, 2.2], [J.kb, J.ab, 2.2, 1.6]], legF, plain);
-      this.part([boot(J.ab, J.sf)], C.boot, plain);
+      this.part([boot(J.ab, held ? flat(J.ab) : J.sf)], C.boot, plain);
       this.part([[J.sh, J.eb, 1.7, 1.4], [J.eb, J.hb, 1.4, 1.1]], L.suitD, plain);
       this.part([[J.hip, J.sh, 3.5, 3.9]], L.suit, plain);
       if (stripe) this.part([[at(J.hip, J.sh, 0.04), at(J.hip, J.sh, 0.96), 1.1, 1.2]], L.accent, true);
@@ -5250,7 +5262,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
       if (L.bib) this.part([[at(J.hip, J.sh, 0.16), at(J.hip, J.sh, 0.9), 3.7, 4.0]], L.bib, true);
       this.part([[J.hip, J.kf, 3.2, 2.3], [J.kf, J.af, 2.3, 1.7]], legN, plain);
       if (stripe) this.part([[at(J.hip, J.kf, 0.12), J.kf, 0.9, 0.7], [J.kf, at(J.kf, J.af, 0.85), 0.7, 0.55]], L.accent, true);
-      this.part([boot(J.af, J.sn)], C.boot, plain);
+      this.part([boot(J.af, held ? flat(J.af) : J.sn)], C.boot, plain);
       const [sx, sy] = J.sh, [hx, hy] = J.head;
       this.part([[[sx, sy], [sx + (hx - sx) * 0.62, sy + (hy - sy) * 0.62], 1.9, 1.6]], L.suit, plain);
       // Helm mit Brille auf der Gesichtsseite und Glanzpunkt
@@ -5263,7 +5275,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
       this.part([[J.sh, J.ef, 1.8, 1.5], [J.ef, J.hf, 1.5, 1.2]], L.suit, plain);
       if (stripe) this.part([[at(J.sh, J.ef, 0.15), J.ef, 0.55, 0.45], [J.ef, at(J.ef, J.hf, 0.8), 0.45, 0.4]], L.accent, true);
       this.part([[J.hf, J.hf, 1.35, 1.35]], C.boot, plain);
-      this.ski(J.sn[0], J.sn[1], L.ski, 3.0, 5.5);
+      if (!held) this.ski(J.sn[0], J.sn[1], L.ski, 3.0, 5.5);
     }
 
     // Luft am Springer (Bildschirm): Linien strömen hinter ihm weg. Ruhige Fluglage = glatte, parallele Linien (golden auf dem Luftpolster),
@@ -5344,10 +5356,20 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
       const [x, y] = S(J.x, J.y);
       if (ghost) {
         const sc = J.scale != null ? J.scale : Math.max(0.5, cam.ppm / 27 * JSCALE);
-        ctx.save(); ctx.globalAlpha = 0.36;
+        ctx.save(); ctx.globalAlpha = (J.look ? 0.42 : 0.36) * (J.fade != null ? J.fade : 1);
         ctx.translate(x, y); ctx.rotate((J.rot || 0) * DEG); ctx.scale(sc, sc);
-        this.figure(J.pose, GHOST_LOOK);
+        this.figure(J.pose, J.look || GHOST_LOOK);
         ctx.restore();
+        // Name über dem Kopf des Geists (Mehrspieler: wer fliegt da mit?)
+        if (J.label && cam.ppm > 4) {
+          const hd = J.pose && J.pose.head ? J.pose.head : [0, -40], a = (J.rot || 0) * DEG;
+          const hx = x + (hd[0] * Math.cos(a) - hd[1] * Math.sin(a)) * sc, hy = y + (hd[0] * Math.sin(a) + hd[1] * Math.cos(a)) * sc;
+          ctx.save(); ctx.font = `700 10px ${COND}`; ctx.textAlign = "center";
+          const tw = ctx.measureText(J.label).width + 10, ly = hy - 6 * sc - 4;
+          ctx.globalAlpha = 0.8; ctx.fillStyle = "rgba(20,27,37,0.8)"; this.rrect(hx - tw / 2, ly - 13, tw, 15, 3); ctx.fill();
+          ctx.fillStyle = "#F5EDDA"; ctx.fillText(J.label, hx, ly - 2);
+          ctx.restore();
+        }
         return;
       }
       const sc = J.scale != null ? J.scale : Math.max(0.5, cam.ppm / 27 * JSCALE);
@@ -6371,7 +6393,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.23";
+  const VERSION = "0.24";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -6440,6 +6462,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     lr: '<path d="M3 12h18"/><path d="M6.5 8.5L3 12l3.5 3.5"/><path d="M17.5 8.5L21 12l-3.5 3.5"/><circle cx="12" cy="12" r="2.4" fill="currentColor" stroke="none"/>',
     pad: '<circle cx="12" cy="12" r="8.8"/><path d="M12 10v4M10 12h4" opacity="0.45"/><circle cx="14.6" cy="9.4" r="2.6" fill="currentColor" stroke="none"/>',
     replay: '<path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/>',
+    play: '<path d="M8 5.5v13l10-6.5z" fill="currentColor"/>',
     "arrow-right": '<path d="M5 12h14"/><path d="M13 6l6 6-6 6"/>',
     home: '<path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/><path d="M10 20v-5h4v5"/>',
     info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.6" r="1.1" fill="currentColor" stroke="none"/>',
@@ -6656,9 +6679,32 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   }
   const HOT_COLORS = [["#FF8A3D", "#B85A22"], ["#4FD1C5", "#2A8F86"], ["#F25C78", "#A93349"], ["#FFD23F", "#B8901A"], ["#9B8CFF", "#6553C9"],
     ["#7FD49B", "#3F9A5C"], ["#5AA9FF", "#2F6FBF"], ["#E4EAF2", "#8E9BB0"]];
+  // Partymodus: Anzug und Helm in der Spielerfarbe
+  const hotLook = (bib) => { const c = HOT_COLORS[(bib - 1) % HOT_COLORS.length]; return Object.assign(lookFor({ suit: c[0], helmet: c[0] }), { suitD: c[1] }); };
+  // Aussehen für die Online-Rangliste: sechs Zeichen, je ein Platz in den Farblisten (Fremdes wird verworfen)
+  const LOOK_KEYS = ["suit", "pattern", "accent", "helmet", "visor", "ski"], B32 = "0123456789abcdefghijklmnopqrstuv";
+  const lookList = (k) => (k === "pattern" ? PATTERNS : LOOK_COLS[k].map((c) => c[0]));
+  function lookCode(l) {
+    l = Object.assign({}, DEF_LOOK, l || {});
+    return LOOK_KEYS.map((k) => B32[Math.max(0, lookList(k).indexOf(l[k]))]).join("");
+  }
+  function lookDecode(s) {
+    if (typeof s !== "string" || !/^[0-9a-v]{6}$/.test(s)) return null;
+    const o = {};
+    for (let i = 0; i < 6; i++) { const L = lookList(LOOK_KEYS[i]), j = B32.indexOf(s[i]); if (j >= L.length) return null; o[LOOK_KEYS[i]] = L[j]; }
+    return o;
+  }
+  // kleiner Helm in den Farben des Springers; in den Ranglisten wippt jeder ein wenig versetzt
+  function helm(l, i) {
+    return `<svg class="hm" style="animation-delay:${(-((i || 0) * 0.37) % 1.4).toFixed(2)}s" width="18" height="15" viewBox="0 0 24 20" aria-hidden="true">` +
+      `<path d="M2.5 15.5C2.5 8 7 3 13.2 3c5.6 0 8.6 4 8.6 9.2v3.3z" fill="${l.helmet}" stroke="rgba(10,18,32,.55)" stroke-width="1"/>` +
+      `<path d="M11.5 9.2h10.4v4.4h-8.6a1.8 1.8 0 0 1-1.8-1.8z" fill="${l.visor}"/>` +
+      `<path d="M7.5 4.8c-2.1 1.6-3.3 3.9-3.5 6.3" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4" stroke-linecap="round"/>` +
+      `<path d="M2 16h20.4" stroke="rgba(10,18,32,.6)" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+  }
   // Hot-Seat: jeder Spieler eine Anzugfarbe, sonst Standard-Ausrüstung; sonst das eigene Aussehen
   function applyColor(pair) {
-    const L = pair ? Object.assign(lookFor({ suit: pair[0] }), { suitD: pair[1] }) : lookFor(S.look);
+    const L = pair ? Object.assign(lookFor({ suit: pair[0], helmet: pair[0] }), { suitD: pair[1] }) : lookFor(S.look);
     document.documentElement.style.setProperty("--accent", uiAccent(L.suit));
     renderer.setLook(L);
   }
@@ -6681,7 +6727,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   const el = {};
   ["playerPanel", "ppFlag", "ppName", "ppNation", "ppSub", "windPanel", "windSide", "windVal", "windLbl", "windFlag", "distBox", "distVal", "distChip",
     "startBox", "goalBox", "goalKicker", "goalTitle", "goalText", "goalStars", "lightR", "lightG", "startTitle", "startSub", "gateBox", "gateVal", "gateMinus", "gatePlus", "speedBox", "speedVal", "speedLbl", "tachoFill",
-    "timingBox", "timingLbl", "timingMark", "landBox", "landMark", "gauge", "flTop", "flL", "flR", "flTarget", "flTrail", "flDot", "pad", "padDot", "tapPill", "tapPillText", "hint", "hintIcon", "hintText",
+    "timingBox", "timingLbl", "timingMark", "landBox", "landMark", "gauge", "flTop", "flL", "flR", "flTarget", "flTrail", "flDot", "pad", "padDot", "padGoal", "tapPill", "tapPillText", "hint", "hintIcon", "hintText",
     "hintSub", "toast", "toastTitle", "toastSub", "replayBadge", "replayHint", "btnPause", "hillStats", "tjFlag", "tjName"].forEach((id) => { el[id] = $(id); });
   const SCREENS = { title: "scrTitle", tutorial: "scrTutorial", result: "scrResult", setup: "scrSetup", board: "scrBoard", hand: "scrHand", final: "scrFinal", arcade: "scrArcade", chal: "scrChal", champ: "scrChamp" };
   const vis = (e, on) => { if (e.hidden === on) e.hidden = !on; };
@@ -6718,6 +6764,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     ui.style.width = sw / uiS + "px"; ui.style.height = sh / uiS + "px"; ui.style.transform = `scale(${uiS})`;
     ui.classList.toggle("narrow", sw / uiS < 820);   // schmale Bildschirme (z. B. iPhone SE): kleinerer Schriftzug, damit nichts überlappt
     turnHint(rotated);
+    setTimeout(() => { if (mode === "result" && rsTab === "ana") drawAnaChart(lastResult); }, 30);   // nach dem Start: erst wenn alles da ist
   }
   // Hochformat: Das Spiel dreht sich mit, ein kurzer Hinweis sagt, dass man das Handy quer halten soll
   let turnEl = null, turnT = 0;
@@ -7070,6 +7117,12 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     fillGoalBox();
     jc.ghost = ctxMode === "training" && !practice && S.ghosts[H.key] ? S.ghosts[H.key] : null;
     if (ctxMode === "chal" && chal.path) jc.ghost = { d: chal.d, path: chal.path };
+    if (ctxMode === "chal" && chal.grp && chal.ghosts && chal.ghosts.length) { jc.ghost = null; jc.ghosts = chal.ghosts.slice(0, 6); }
+    // Partymodus: die letzten Sprünge der anderen Spieler (die drei weitesten)
+    if (ctxMode === "hot" && hot && hot.gh) {
+      const cur = hot.current();
+      jc.ghosts = Object.keys(hot.gh).filter((id) => !cur || id !== cur.id).map((id) => hot.gh[id]).sort((a, b) => b.d - a.d).slice(0, 3);
+    }
     if (practice) practiceN = 3 - practiceLeft + 1;
     applyColor(colors);
     const yl = champLeader();
@@ -7086,6 +7139,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   function startInrun() {
     if (!J || J.phase !== "gate" || jc.light !== "green") return;
     J.start(); vib(15);
+    jc.simBase = { wind: CP.shiftWind(J.wind, J.t), gate: J.gate, refGate: J.refGate, seed: jc.seed };
     if (jc.beginner) jc.ideal = idealFlight();
   }
   // Ideale Flugkurve für Anfänger: derselbe Sprung, aber perfekt gesprungen (wie die KI-Spitze ohne Fehler)
@@ -7108,6 +7162,136 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
       path.push([j.landing.x, g.y]);
       return { path, d: j.landing.dist, label: `IDEAL ${fmt1(j.landing.dist)} m` };
     } catch (e) { return null; }
+  }
+
+  // ------------------------------------------------------------------ Sprunganalyse (Training)
+  // Derselbe Sprung unter denselben Bedingungen (Luke, Windfolge, Zufall) nachgerechnet: perfekt, mit deinem Absprung und perfektem Flug,
+  // und perfekt ohne Wind. Die Unterschiede zeigen, wo die Meter geblieben sind.
+  function simJump(base, o) {
+    const j = new Ph.Jump(H, { gate: base.gate, refGate: base.refGate, wind: o.calm ? Ph.makeWind("off", 1) : base.wind, seed: base.seed });
+    j.start();
+    const path = [];
+    for (let i = 0; i < 240 * 30 && !j.landing; i++) {
+      if (j.phase === "inrun" && j.tapTime == null && o.tau != null && j.s / Math.max(1, j.v) <= o.tau) j.tap();
+      if (j.phase === "flight") {
+        if (o.airTap && j.tapTime == null && j.tf >= 0.06) j.tap();
+        j.u = (j.pOpt || 0) - (j.dist == null ? -0.45 : j.dist); j.ur = -(j.distR || 0);
+        if (j.prepTime == null && j.tau != null && j.tau <= Ph.P.teleBest) j.tap();
+        if (i % 6 === 0) path.push([j.x, j.y]);
+      }
+      j.step(STEP);
+    }
+    if (!j.landing) return null;
+    path.push([j.landing.x, Hill.groundAt(H, j.landing.x).y]);
+    return { d: j.landing.dist, path };
+  }
+  function analyseJump(r) {
+    const b = jc.simBase;
+    if (!b || r.practice) return null;
+    const ideal = simJump(b, { tau: Ph.P.tauIdeal });
+    if (!ideal) return null;
+    const take = r.zone === "perfect" ? ideal : simJump(b, J.tauTap != null ? { tau: J.tauTap } : { tau: null, airTap: !!J.lateAirTap });
+    const calm = J.wind.mode === "off" ? ideal : simJump(b, { tau: Ph.P.tauIdeal, calm: true });
+    // Flugbahn als Höhe über dem Hang, je Punkt die Abweichung der Fluglage (Vorlage, Balance)
+    const fl = r.rec.filter((s) => s.phase === "flight").map((s) => {
+      const g = Hill.groundAt(H, Math.max(0, s.x));
+      return { d: g.d, h: Math.max(0, s.y - g.y), e: s.p - s.pOpt, r: s.r || 0, tf: s.tf, prep: s.prepF > 0.05 };
+    });
+    const idealPath = ideal.path.map(([x, y]) => { const g = Hill.groundAt(H, Math.max(0, x)); return { d: g.d, h: Math.max(0, y - g.y) }; });
+    // wo und wie die Fluglage danebenlag: früh (bis 0,9 s), Mitte, spät; zu aufrecht, zu viel Vorlage, schräg
+    const parts = [[0, 0.9, "direkt nach dem Absprung"], [0.9, 2.4, "in der Flugmitte"], [2.4, 99, "vor der Landung"]].map(([a, z, name]) => {
+      const S0 = fl.filter((s) => !s.prep && s.tf >= a && s.tf < z);
+      if (S0.length < 6) return null;
+      const up = S0.filter((s) => s.e < -0.16).length / S0.length, fw = S0.filter((s) => s.e > 0.16).length / S0.length, rl = S0.filter((s) => Math.abs(s.r) > 0.2).length / S0.length;
+      const worst = Math.max(up, fw, rl);
+      return { name, worst, kind: worst === rl ? "roll" : worst === up ? "up" : "fw" };
+    }).filter(Boolean).sort((p, q) => q.worst - p.worst);
+    return { ideal: ideal.d, take: take ? take.d : null, calm: calm ? calm.d : null, fl, idealPath, part: parts[0] && parts[0].worst > 0.25 ? parts[0] : null };
+  }
+  // Analyse anzeigen: was möglich war, wo die Meter geblieben sind (Absprung, Flug, Landung), was der Wind gemacht hat, dazu die Flugkurve
+  function anaHtml(r) {
+    const a = r.ana;
+    if (!a) return "";
+    const m = (v) => `${v >= 0 ? "−" : "+"}${fmt1(Math.abs(Math.round(v * 2) / 2))} m`;
+    const fall = r.kind === "fall", gap = Math.max(0, a.ideal - r.dist);
+    const tl = a.take != null ? Math.max(0, a.ideal - a.take) : 0, fl2 = a.take != null ? a.take - r.dist : gap;
+    const lost = Math.max(0, 60 - r.style), lm = lost / H.meterValue;
+    const head = fall ? `Sturz. Mit sauberem Flug waren ${fmt1(a.ideal)} m möglich.`
+      : gap < 0.25 ? `Perfekt: mehr als ${fmt1(r.dist)} m war nicht drin.` : gap < 0.75 ? `Fast perfekt, möglich waren ${fmt1(a.ideal)} m.`
+      : `Möglich waren ${fmt1(a.ideal)} m, dir fehlen ${fmt1(Math.round(gap * 2) / 2)} m.`;
+    const te = r.takeErr, z = r.zone;
+    const tkTxt = z === "none" ? "nicht abgesprungen" : z === "perfect" ? "perfekt getroffen" : `${Math.abs(te)} ms zu ${te > 0 ? "früh" : "spät"}`;
+    const flTxt = r.inLean != null ? `Vorlage ${r.inLean} % · Balance ${r.inRoll} %` : "–";
+    const ldTxt = fall ? "Sturz" : `${r.kind === "telemark" ? "Telemark" : "ohne Telemark"} · Abzug ${fmt1(lost)} P.`;
+    const maxL = Math.max(0.5, tl, Math.abs(fl2), lm);
+    const bar = (v) => `<i class="an-bar" style="width:${Math.round(clamp(Math.abs(v) / maxL, 0, 1) * 100)}%"></i>`;
+    const row = (k, sub, v, val, cls) => `<div class="an-row ${cls}"><span class="an-k">${k}</span><span class="an-s">${sub}</span><span class="an-b">${bar(v)}</span><b class="an-v">${val}</b></div>`;
+    let rows = row("ABSPRUNG", tkTxt, tl, tl < 0.25 ? "0 m" : m(tl), tl < 0.75 ? "ok" : tl < 2.5 ? "mid" : "bad");
+    rows += row("FLUG", flTxt, fl2, Math.abs(fl2) < 0.25 ? "0 m" : m(fl2), fl2 < 0.75 ? "ok" : fl2 < 2.5 ? "mid" : "bad");
+    rows += row("LANDUNG", ldTxt, lm, fall ? "–" : lm < 0.25 ? "0 m" : m(lm), fall ? "bad" : lost < 2.5 ? "ok" : "mid");
+    // Wind: wie viel Weite er gebracht oder gekostet hat (gleich für alle, dafür gibt es Ausgleichspunkte)
+    if (a.calm != null && !r.windOff) {
+      const wg = Math.round((a.ideal - a.calm) * 2) / 2, wi = windInfo(r.wind || 0);
+      rows += row("WIND", `${wi.lbl} ${fmt1(Math.abs(r.wind || 0))} m/s · ${fmtS(r.windPts)} P.`, wg, Math.abs(wg) < 0.25 ? "0 m" : `${wg > 0 ? "+" : "−"}${fmt1(Math.abs(wg))} m`, "info");
+    }
+    return `<p class="an-head">${esc(head)}</p><div class="an-chart"><canvas id="anCv" aria-label="Flugkurve: Höhe über dem Hang, deine und die perfekte"></canvas></div>${rows}<p class="an-tip">${esc(anaTip(r, tl, fl2, lost))}</p>`;
+  }
+  function anaTip(r, tl, fl2, lost) {
+    const a = r.ana, te = r.takeErr;
+    if (r.kind === "fall") return r.tip;
+    const big = Math.max(tl, fl2, lost / H.meterValue);
+    if (big < 0.75) return "Mehr geht unter diesen Bedingungen kaum. Weiter kommst du nur mit einer höheren Luke oder mit Aufwind.";
+    if (big === tl) return r.zone === "none" ? "Am meisten kostet der fehlende Absprung: an der Kante tippen, das Signal kommt kurz davor."
+      : `Am meisten kostet der Absprung (${fmt1(Math.round(tl * 2) / 2)} m): ${Math.abs(te)} ms ${te > 0 ? "später" : "früher"} tippen, also ${te > 0 ? "näher an der Kante" : "einen Hauch vor der Kante"}.`;
+    if (big === fl2) {
+      const p = a.part, fix = p ? { up: "zu aufrecht, Daumen höher schieben (flacher liegen)", fw: "zu viel Vorlage, Daumen etwas zurücknehmen", roll: "die Ski standen schräg, seitlich gegenhalten, bis sie parallel sind" }[p.kind] : null;
+      return `Am meisten kostet der Flug (${fmt1(Math.round(fl2 * 2) / 2)} m)${p ? `: ${p.name} ${fix}.` : ". Halte den Punkt der Fluglage länger im grünen Feld."}`;
+    }
+    return r.kind === "telemark" ? "Am meisten kostet die Haltung: ruhiger fliegen und für den Telemark kurz vor dem Boden tippen, wenn sich der Ring schließt."
+      : "Ohne Telemark ziehen die Richter je rund 2 Punkte ab: kurz vor dem Boden tippen, wenn sich der Ring schließt.";
+  }
+  // Flugkurve: Höhe über dem Hang über der Weite, perfekt (gestrichelt) und deine (Farbe = Fluglage: grün sauber, gelb daneben, rot weit daneben)
+  function drawAnaChart(r) {
+    const cv = $("anCv"), a = r && r.ana;
+    if (!cv || !a || !cv.isConnected) return;
+    const cw = cv.clientWidth, ch = cv.clientHeight;
+    if (cw < 60 || ch < 30) return;
+    const dpr = Math.min(2.5, (window.devicePixelRatio || 1) * uiS);
+    cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr);
+    const c = cv.getContext("2d"); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, cw, ch);
+    const css = getComputedStyle(cv);
+    const ink = css.getPropertyValue("--text").trim() || "#1E2734", muted = css.getPropertyValue("--muted").trim() || "#786D59", font = css.getPropertyValue("--font-display").trim() || "sans-serif";
+    const dMax = Math.max(a.ideal, r.dist, H.HS) + 4, hMax = Math.max(3, ...a.fl.map((p) => p.h), ...a.idealPath.map((p) => p.h)) * 1.18;
+    const L = 4, R = cw - 4, T = 4, B = ch - 13;
+    const X = (d) => L + (R - L) * clamp(d, 0, dMax) / dMax, Y = (h) => B - (B - T) * clamp(h, 0, hMax) / hMax;
+    c.font = `600 10px ${font}`; c.textBaseline = "alphabetic";
+    // Hang als Grundlinie, K-Punkt und HS
+    c.strokeStyle = "rgba(30,39,52,0.35)"; c.lineWidth = 1; c.beginPath(); c.moveTo(L, B + 0.5); c.lineTo(R, B + 0.5); c.stroke();
+    for (const [d, lab] of [[H.K, "K"], [H.HS, "HS"]]) {
+      c.strokeStyle = "rgba(30,39,52,0.22)"; c.setLineDash([2, 3]); c.beginPath(); c.moveTo(X(d) + 0.5, T + 10); c.lineTo(X(d) + 0.5, B); c.stroke(); c.setLineDash([]);
+      c.fillStyle = muted; c.textAlign = "center"; c.fillText(lab, Math.min(X(d), R - 7), T + 8);
+    }
+    // perfekt: gestrichelt in Gold
+    c.strokeStyle = "#C88E22"; c.lineWidth = 2; c.setLineDash([5, 4]); c.beginPath();
+    a.idealPath.forEach((p, i) => (i ? c.lineTo(X(p.d), Y(p.h)) : c.moveTo(X(p.d), Y(p.h)))); c.stroke(); c.setLineDash([]);
+    // deine: Abschnitte in der Farbe der Fluglage
+    c.lineWidth = 3; c.lineCap = "round";
+    for (let i = 1; i < a.fl.length; i++) {
+      const p = a.fl[i - 1], q = a.fl[i], dev = Math.max(Math.abs(q.e) / 0.16, Math.abs(q.r) / 0.2);
+      c.strokeStyle = q.prep ? "#5A6B85" : dev <= 1 ? "#2E8B57" : dev <= 2 ? "#D9A03A" : "#C0392B";
+      c.beginPath(); c.moveTo(X(p.d), Y(p.h)); c.lineTo(X(q.d), Y(q.h)); c.stroke();
+    }
+    // Landepunkte mit Weite darunter: die kürzere Weite links vom Punkt, die längere rechts davon (so überlappen sie nie)
+    c.font = `700 10px ${font}`;
+    const dot = (d, col) => { c.fillStyle = col; c.beginPath(); c.arc(X(d), B, 3, 0, 6.283); c.fill(); };
+    const tP = `perfekt ${fmt1(a.ideal)}`, tD = r.kind === "fall" ? "" : `du ${fmt1(r.dist)}`, wP = c.measureText(tP).width, wD = c.measureText(tD).width;
+    dot(a.ideal, "#B07A16"); if (tD) dot(r.dist, ink);
+    // die weitere Weite rechts von ihrem Punkt, die kürzere links davon; am Rand rücken beide zusammen nach links
+    const farIdeal = !tD || a.ideal >= r.dist, [wF, wN] = farIdeal ? [wP, wD] : [wD, wP];
+    const fStart = Math.min((farIdeal ? X(a.ideal) : X(r.dist)) - 3, R - wF);
+    const nEnd = Math.max(L + wN, Math.min((farIdeal ? X(r.dist) : X(a.ideal)) + 3, fStart - 8));
+    c.textAlign = "left"; c.fillStyle = farIdeal ? "#B07A16" : ink; c.fillText(farIdeal ? tP : tD, fStart, ch - 2);
+    if (tD) { c.textAlign = "right"; c.fillStyle = farIdeal ? ink : "#B07A16"; c.fillText(farIdeal ? tD : tP, nEnd, ch - 2); }
   }
 
   // Luke verstellen: Fehltipps neben die Knöpfe starten den Sprung nicht (Schutzzone um den Kasten, kurz nach dem Verstellen kein Start)
@@ -7240,13 +7424,18 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
 
   // Anfängermodus: genau im perfekten Moment anhalten (Absprung an der Kante, Telemark vor der Landung), bis getippt wird
   function beginnerStop() {
+    if (jc.freeze === "thumb" && ((drag && drag.flight) || keys.up || keys.down || keys.left || keys.right)) { jc.freeze = null; jc.thumbOk = true; }
     if (jc.freeze) return true;
+    if (J.phase === "flight" && !jc.thumbOk && J.tf >= 0.45 && J.prepTime == null && !J.noseDive) {
+      if (drag && drag.flight) jc.thumbOk = true;
+      else { jc.freeze = "thumb"; Snd.beep(660, 0.07, 0.05); vib(15); return true; }
+    }
     if (J.phase === "inrun" && J.tapTime == null && jc.pendTap == null && J.s / Math.max(1, J.v) <= Ph.P.tauIdeal) { jc.freeze = "takeoff"; Snd.beep(880, 0.08, 0.06); vib(20); return true; }
     if (J.phase === "flight" && J.prepTime == null && !J.noseDive && J.tau != null && J.tau <= Ph.P.teleBest) { jc.freeze = "land"; Snd.beep(880, 0.08, 0.06); vib(20); return true; }
     return false;
   }
   function stepJump(dtReal) {
-    const dt = dtReal * jc.slow;
+    const dt = dtReal * (jc.beginner && J.phase === "flight" ? Math.min(jc.slow, 0.7) : jc.slow);
     if (J.phase === "gate") { jc.gt = (jc.gt || 0) + dtReal; if (jc.light === "green") jc.gg = (jc.gg || 0) + dtReal; }
     if (J.phase === "gate" && jc.light === "red") {
       jc.tLight -= dtReal;
@@ -7307,10 +7496,11 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   }
 
   // Geist: bester eigener Sprung auf dieser Schanze, gleiche Zeit seit dem Absprung
-  function ghostVisual() {
-    if (!jc || !jc.ghost || !J || (J.phase !== "flight" && J.phase !== "outrun" && J.phase !== "crash" && J.phase !== "done")) return null;
+  function ghostVisual(gh) {
+    gh = gh || (jc && jc.ghost);
+    if (!jc || !gh || !J || (J.phase !== "flight" && J.phase !== "outrun" && J.phase !== "crash" && J.phase !== "done")) return null;
     const t = J.phase === "flight" ? J.tf : J.tf + (J.t - (J.touchT || J.t));
-    const P = jc.ghost.path;
+    const P = gh.path;
     if (!P || P.length < 2 || t > P[P.length - 1][0]) return null;
     let i = 0;
     while (i < P.length - 2 && P[i + 1][0] < t) i++;
@@ -7428,8 +7618,9 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
       if (ph === "inrun" && J.tapTime == null && tauEdge < 0.3 && tauEdge > 0.11) pill = "JETZT TIPPEN";
       if (ph === "flight" && J.prepTime == null && J.tau != null && J.tau < 0.55 && J.tau > 0.18) pill = "JETZT TIPPEN";
     }
-    if (jc && live && jc.freeze) pill = "JETZT TIPPEN";
+    if (jc && live && jc.freeze) pill = jc.freeze === "thumb" ? "DAUMEN AUFLEGEN" : "JETZT TIPPEN";
     vis(el.tapPill, !!pill);
+    if (pill && el.tapPillText.textContent !== pill) el.tapPillText.textContent = pill;
     const inFlight = ph === "flight";
     const showFl = live && inFlight && !J.noseDive && gaugeShown() && !jc.expert;
     vis(el.gauge, showFl);
@@ -7455,9 +7646,17 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
       const c = half - 1 - 11, edge = Math.abs(du) > PAD_R || Math.abs(dr) > PAD_R;
       el.padDot.style.transform = `translate(${(c + clamp(dr, -PAD_R, PAD_R) * k).toFixed(1)}px, ${(c - clamp(du, -PAD_R, PAD_R) * k).toFixed(1)}px)`;
       el.padDot.classList.toggle("edge", edge);
+      // Anfänger: goldener Kreis = wohin der Daumen gerade muss (gleicht Böen und Seitenwind aus)
+      if (jc.beginner) {
+        const gu = clamp((J.pOpt || 0) - (J.dist || 0) - PAD_U0, -PAD_R, PAD_R), gr = clamp(-(J.distR || 0), -PAD_R, PAD_R), cg = half - 1 - 17;
+        el.padGoal.style.transform = `translate(${(cg + gr * k).toFixed(1)}px, ${(cg - gu * k).toFixed(1)}px)`;
+        jc.goalOff = Math.hypot(du - gu, dr - gr);
+        el.padGoal.classList.toggle("in", jc.goalOff < 0.17);
+      }
+      vis(el.padGoal, !!jc.beginner);
       // nach dem Mitgehen tritt der Ring zurück; am Rand leuchtet er auf
       el.pad.classList.toggle("edge", edge);
-      el.pad.classList.toggle("quiet", !edge && st.tf > 1.1 && Math.hypot(du, dr) < PAD_R * 0.7);
+      el.pad.classList.toggle("quiet", !jc.beginner && !edge && st.tf > 1.1 && Math.hypot(du, dr) < PAD_R * 0.7);
     }
     const showDist = inFlight || ph === "outrun" || ph === "crash" || ph === "done";
     vis(el.distBox, showDist);
@@ -7475,7 +7674,18 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     let hint = null;
     if (live && jc.freeze) hint = jc.freeze === "takeoff"
       ? ["tap", "Jetzt tippen: Absprung!", "Genau jetzt an der Kante ist der perfekte Moment", "center"]
+      : jc.freeze === "thumb" ? ["pad", "Daumen auflegen und liegen lassen", "Damit steuerst du im Flug Vorlage und Balance", "center"]
       : ["tap", "Jetzt tippen: Telemark!", "Kurz vor dem Boden die Landung vorbereiten", "center"];
+    // Anfänger: dem goldenen Kreis folgen (oben = flacher liegen, unten = aufrichten, seitlich = Balance gegen Seitenwind)
+    if (live && !hint && jc.beginner && inFlight && padOn && !lz && J.prepTime == null && !J.noseDive && jc.goalOff != null) {
+      if (st.tf < 1.6 && !jc.goalSeen) hint = ["pad", "Daumen in den goldenen Kreis", "oben = flacher liegen · unten = aufrichten · seitlich = Balance", "center"];
+      else if (jc.goalOff >= 0.17) {
+        const sw = Math.abs(J.distR || 0) > 0.22;
+        hint = sw ? ["lr", `Seitenwind: Kreis nach ${-(J.distR || 0) > 0 ? "rechts" : "links"} folgen`, "Daumen hinterher, bis die Ski parallel sind", "center"]
+          : ["drag", "Dem goldenen Kreis folgen", "Böen schieben ihn weg, der Daumen geht mit", "center"];
+      }
+      if (jc.goalOff < 0.17 && st.tf > 0.5) jc.goalSeen = true;
+    }
     if (!hint && live && assist) {
       if (ph === "gate" && jc.light === "green" && jc.practice) hint = ["tap", "Tippen zum Start", "", "center"];
       else if (inFlight && !lz && st.tf > 0.15 && st.tf < 2.8 && !jc.dragged) hint = ["pad", "Daumen halten & nach oben schieben", "hoch = Vorlage · runter = aufrecht · seitlich = Balance", "center"];
@@ -7493,7 +7703,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
         left: ["lr", "Daumen nach links", "Ski wieder parallel"],
         right: ["lr", "Daumen nach rechts", "Ski wieder parallel"] }[jc.coachShow.k].concat("center");
     }
-    if (live && jc.beginner && !hint && inFlight && jc.dragged && !J.noseDive && J.prepTime == null && st.tf > 0.4 && Math.abs(st.p - st.pOpt) <= 0.16 && Math.abs(st.r || 0) <= 0.2)
+    if (live && jc.beginner && !hint && inFlight && !J.noseDive && J.prepTime == null && st.tf > 0.4 && Math.abs(st.p - st.pOpt) <= 0.16 && Math.abs(st.r || 0) <= 0.2)
       hint = ["pad", "Gut so, halten!", "Die Fluglage stimmt. Vor der Landung hält das Spiel an.", "center"];
     // nach dem Update zweimal erklären, was die goldenen Linien bedeuten (sobald sie zum ersten Mal leuchten)
     if (live && !hint && inFlight && !lz && !jc.expert && S.lookNew > 0 && ((jc.airQ || 0) > 0.6 || jc.lookT)) {
@@ -7582,6 +7792,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
       v: J.vTakeoff * 3.6, ft: J.tf, maxH: J.stats.maxH, path: jc.ghostRec, hillKey: H.key, ctx: ctxMode,
       vIn: J.stats.vMaxIn * 3.6, vFl: J.stats.vMaxFl * 3.6, vLand: J.stats.vLand * 3.6, dtL: J.landing.dtL, expert: !!jc.expert,
       inOk: J.stats.inT > 0.5 ? Math.round(100 * J.stats.inOk / J.stats.inT) : null, vLoss: J.stats.vLoss * 3.6 }, sc);
+    if (ctxMode === "training" && !jc.practice) { try { entry.ana = analyseJump(entry); } catch (e) { entry.ana = null; } }
     if (mine && !jc.practice && !jc.beginner) {
       const t = S.st || (S.st = {});
       if (sc.kind === "fall") t.falls = (t.falls || 0) + 1; if (sc.zone === "perfect") t.perfect = (t.perfect || 0) + 1; t.n = (t.n || 0) + 1; t.pts = (t.pts || 0) + sc.total;
@@ -7593,7 +7804,11 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
       save();
     }
     if (ctxMode === "comp") { comp.record("me", sc); entry.rank = comp.standings(false).find((x) => x.id === "me").rank; }
-    if (ctxMode === "hot") { hot.record(sc); }
+    if (ctxMode === "hot") {
+      const hp = hot.current();
+      if (hp && sc.kind !== "fall" && jc.ghostRec.length > 4) (hot.gh || (hot.gh = {}))[hp.id] = { name: hp.name, d: sc.dist, path: jc.ghostRec, look: hotLook(hp.bib) };
+      hot.record(sc);
+    }
     if (champ || party) saveChamp();
     if (ctxMode === "training") { session.unshift(entry); if (session.length > 30) session.length = 30; }
     if (ctxMode === "mission") missionRecord(entry);
@@ -7630,7 +7845,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   function standRow(x, opts) {
     const o = opts || {}, me = o.me;
     const mv = o.mv ? `<span class="sr-mv ${o.mv > 0 ? "up" : "down"}">${o.mv > 0 ? "▲" : "▼"}${Math.abs(o.mv)}</span>` : "";
-    return `<div class="st-row${me ? " me" : ""}${o.open ? " open" : ""}"${o.id ? ` data-id="${o.id}"` : ""}><span class="sr-r">${x.rank != null ? x.rank : "–"}</span><span class="sr-n">${mv}${flagSpan(x.nation)}${esc(x.name)}${me ? '<span class="you">DU</span>' : ""}${x.jersey ? '<span class="jersey" title="Gelbes Trikot"></span>' : ""}</span><span class="sr-d">${x.dist != null ? fmt1(x.dist) + " m" : ""}</span><span class="sr-p">${x.dsq ? "DSQ" : fmt1(x.total)}</span></div>` + (o.open && o.more ? o.more : "");
+    return `<div class="st-row${me ? " me" : ""}${o.open ? " open" : ""}"${o.id ? ` data-id="${o.id}"` : ""}><span class="sr-r">${x.rank != null ? x.rank : "–"}</span><span class="sr-n">${mv}${o.helm ? helm(o.helm, x.rank) : ""}${flagSpan(x.nation)}${esc(x.name)}${me ? '<span class="you">DU</span>' : ""}${x.jersey ? '<span class="jersey" title="Gelbes Trikot"></span>' : ""}</span><span class="sr-d">${x.dist != null ? fmt1(x.dist) + " m" : ""}</span><span class="sr-p">${x.dsq ? "DSQ" : fmt1(x.total)}</span></div>` + (o.open && o.more ? o.more : "");
   }
 
   // Ranglisten zum Durchscrollen: alle Zeilen; die eigene steht in der Mitte, solange man nicht selbst gescrollt hat. Zeile antippen = Details.
@@ -7698,7 +7913,9 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   let rsTab = "list", rsFill = null, rsRankOn = false;
   function setRsTab(v) {
     rsTab = v; segSet("rsTabs", v);
-    vis($("rsPaneList"), v === "list"); vis($("rsPaneDet"), v === "det"); vis($("rsPaneChamp"), v === "champ");
+    vis($("rsPaneList"), v === "list"); vis($("rsPaneAna"), v === "ana"); vis($("rsPaneDet"), v === "det"); vis($("rsPaneChamp"), v === "champ");
+    $("rsChal").classList.toggle("compact", v === "ana");
+    if (v === "ana") { drawAnaChart(lastResult); requestAnimationFrame(() => { if (rsTab === "ana" && mode === "result") drawAnaChart(lastResult); }); }
     // die Platzierung oben nur beim Stand; Details und Gesamtwertung brauchen den Platz
     if (v !== "list") vis($("rsRank"), false); else if (rsRankOn) vis($("rsRank"), true);
     if (v === "list" && rsFill) rsFill();
@@ -7818,9 +8035,11 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     $("rsJudges").innerHTML = r.judges.map((v, i) => `<span class="${r.struck.includes(i) ? "struck" : ""}">${fmt1(v)}</span>`).join("");
     // Was die Richter abgezogen haben und was das in Metern bedeutet (höchste und tiefste Note fallen weg)
     const lost = Math.max(0, 60 - r.style), m = lost / H.meterValue;
-    txt($("rsStyleWhy"), r.kind === "fall" ? `Sturz: hohe Abzüge, zusammen ${fmt1(lost)} Punkte weniger (≈ ${fmt1(m)} m).`
-      : r.kind === "twofoot" ? `Ohne Telemark zieht jeder Richter rund 2 Punkte ab, dazu Flug −${fmt1(r.flightDed)}. Zusammen −${fmt1(lost)} P. ≈ ${fmt1(m)} m.`
-      : `Telemark! Abzug je Richter: Flug −${fmt1(r.flightDed)}, Landung −${fmt1(r.landDed)}. Zusammen −${fmt1(lost)} P. ≈ ${fmt1(m)} m.`);
+    const why = `Abzug ${fmt1(lost)} P. (≈ ${fmt1(m)} m) · `;
+    txt($("rsStyleWhy"), r.kind === "fall" ? why + "wegen Sturz"
+      : r.kind === "twofoot" ? why + `ohne Telemark je Richter −${fmt1(r.landDed)}${r.flightDed >= 0.25 ? `, Flug −${fmt1(r.flightDed)}` : ""}`
+      : lost < 0.05 ? "Volle Haltungsnoten: Telemark und sauberer Flug"
+      : why + `je Richter Flug −${fmt1(r.flightDed)}${r.landDed >= 0.25 ? `, Landung −${fmt1(r.landDed)}` : ""}`);
     txt($("rsStyle"), fmt1(r.style));
     const wi = windInfo(r.wind);
     txt($("rsWindTxt"), r.windOff ? "Wind aus" : `${wi.lbl} ${wi.val}`);
@@ -7855,7 +8074,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
       head.className = "jt-head st-grid";
       const cur = hot.order[hot.idx - 1];
       const hs = hot.standings();
-      const row = (x) => { const last = x.r[hot.round - 1] || x.r[hot.round - 2]; return standRow({ rank: x.rank, nation: x.nation, name: x.name, dist: last ? last.dist : null, total: x.total }, { me: x.id === cur }); };
+      const row = (x) => { const last = x.r[hot.round - 1] || x.r[hot.round - 2]; return standRow({ rank: x.rank, nation: x.nation, name: x.name, dist: last ? last.dist : null, total: x.total }, { me: x.id === cur, helm: hotLook(x.bib) }); };
       list.classList.add("scroll"); list.classList.remove("fit");
       fillStand = () => scrollList(list, hs.map(row), ".st-row.me");
     } else if (ctxMode === "mission") {
@@ -7916,12 +8135,14 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     $("rsDet").innerHTML = detailsHtml(r);
     const inCh = ctxMode === "comp" && !!champ;
     vis($("rsTabs").querySelector('[data-v="champ"]'), inCh);
+    $("rsAnaBox").innerHTML = anaHtml(r);
+    vis($("rsTabs").querySelector('[data-v="ana"]'), !!r.ana);
     txt($("rsTabs").querySelector('[data-v="list"]'), { comp: "Stand", hot: "Wertung", training: "Sprünge", mission: "Mission", daily: "Versuche", chal: grpMode ? "Gruppe" : "Duell" }[ctxMode] || "Stand");
     if (inCh) champPane();
     // Stand, Wertung und Sprünge: der Reiter ist die Überschrift (Mission, Tageschallenge und Duell behalten ihren Titel)
     vis($("rsListTitle"), !["comp", "hot", "training", "daily", "chal"].includes(ctxMode) && $("rsListTitle").textContent.length <= 12);
     rsFill = fillStand;
-    setRsTab("list");
+    setRsTab(r.ana ? "ana" : "list");   // im Training zuerst die Analyse
     // Freund herausfordern: nach gestandenen Trainingssprüngen und nach jedem Versuch einer Herausforderung
     const inGrp = ctxMode === "chal" && !!chal && !!chal.grp;
     const canChal = !!r.chal || inGrp;
@@ -8441,7 +8662,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     const Hh = Hill.getHill(b.h), nat = (c) => (NATIONS.some((y) => y[0] === c) ? c : "");
     const board = (Array.isArray(b.b) ? b.b : []).filter((x) => x && typeof x === "object").map((x) => ({
       r: Math.max(1, Math.round(+x.r) || 1), n: String(x.n || "SPRINGER").slice(0, 12), c: nat(x.c), d: clamp(+x.d || 0, 0, 400), p: clamp(+x.p || 0, -100, 500),
-      k: KIND_SHORT[x.k] ? x.k : "twofoot", x: Math.max(1, Math.round(+x.x) || 1), me: x.me === true }));
+      k: KIND_SHORT[x.k] ? x.k : "twofoot", x: Math.max(1, Math.round(+x.x) || 1), me: x.me === true, l: lookDecode(x.l) }));
     const lead = board[0] || { n: "SPRINGER", c: "", d: 0, p: 0, k: "twofoot" };
     let path = null;
     try { path = b.gh ? ghostUnpack2(String(b.gh)) : null; } catch (e) { path = null; }
@@ -8449,7 +8670,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
       grp: b.g, h: b.h, g: clamp(Math.round(+b.gate) || Hh.refGate, 1, Hh.gates), w: WIND_NAME[b.w] ? b.w : "var",
       s: Number.isFinite(+b.s) ? Math.abs(Math.round(+b.s)) % 2147483647 : 1, t: TOD_NAME[b.t] ? b.t : "evening",
       n: lead.n, c: lead.c, d: lead.d, p: lead.p, k: lead.k, path, r: [],
-      tries: keep ? keep.tries : 0, best: keep ? keep.best : null, board, total: Math.max(board.length, Math.round(+b.n) || 0),
+      tries: keep ? keep.tries : 0, best: keep ? keep.best : null, ghosts: keep ? keep.ghosts : null, board, total: Math.max(board.length, Math.round(+b.n) || 0),
     };
   }
   function rememberGroup(c) {
@@ -8474,17 +8695,34 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
       rememberGroup(c);
       openChal(c);
       flushPending();
+      loadGhosts(c.grp);
     } catch (e) { onlineFail(e, "GRUPPE NICHT GELADEN"); }
     finally { grpBusy = false; }
   }
   async function groupNew(r) {
     const c = r.chal;
-    const b = await ON.rpc("tm_group_new", { p_code: myCode(), p_name: meName(), p_nation: S.nation || "", p_hill: c.h, p_gate: c.g, p_wind: c.w, p_seed: c.s, p_tod: c.t,
-      p_dist: c.d, p_points: c.p, p_kind: c.k, p_ghost: typeof c.g2 === "string" && c.g2.length <= 4000 ? c.g2 : null });
+    const b = await ON.rpc("tm_group_new2", { p_code: myCode(), p_name: meName(), p_nation: S.nation || "", p_hill: c.h, p_gate: c.g, p_wind: c.w, p_seed: c.s, p_tod: c.t,
+      p_dist: c.d, p_points: c.p, p_kind: c.k, p_ghost: typeof c.g2 === "string" && c.g2.length <= 4000 ? c.g2 : null, p_look: lookCode(S.look) });
     const gc = groupChal(b);
     if (!gc) { const e = new Error("leere Antwort"); e.status = 500; throw e; }
     rememberGroup(gc);
     return gc;
+  }
+  // Geister der Gruppe: die besten Sprünge mit Flugbahn (Namen, Nationfarben); der eigene heißt „DU“
+  async function loadGhosts(g) {
+    if (!ON) return;
+    try {
+      const L = await ON.rpc("tm_group_ghosts", { p_group: g, p_code: S.oc || null }, 8000);
+      if (!Array.isArray(L) || !chal || chal.grp !== g) return;
+      chal.ghosts = L.filter((x) => x && typeof x.gh === "string").map((x) => {
+        let path = null;
+        try { path = ghostUnpack2(x.gh); } catch (e) { path = null; }
+        const nat = NATIONS.some((y) => y[0] === x.c) ? x.c : "", n = String(x.n || "SPRINGER").slice(0, 12), lk = lookDecode(x.l);
+        return path && path.length > 4 ? { r: Math.round(+x.r) || 0, n, c: nat, name: x.me === true ? "DU" : n, d: clamp(+x.d || 0, 0, 400), k: x.k === "telemark" ? "telemark" : "twofoot",
+          path, me: x.me === true, look: x.me === true ? lookFor(S.look) : lk ? lookFor(lk) : natLook(nat) } : null;
+      }).filter(Boolean);
+      if (mode === "chal" && !chalPaste && chal && chal.grp === g) fillChal();
+    } catch (e) { /* ohne Geister weiter */ }
   }
   // Live: solange die Gruppe offen ist, alle 5 Sekunden nachsehen
   function groupPoll() {
@@ -8497,7 +8735,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
           if (c && c.grp === chal.grp && mode === "chal" && !chalPaste) {
             const changed = JSON.stringify(c.board) !== JSON.stringify(chal.board);
             chal = c; rememberGroup(c);
-            if (changed) fillChal();
+            if (changed) { fillChal(); loadGhosts(c.grp); }   // neue Plätze: auch die Geister neu holen
           }
         } catch (e) { /* beim nächsten Mal wieder */ }
       }
@@ -8513,8 +8751,8 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     const p = { g, d: entry.dist, p: chalPts(entry.total), k: entry.kind, gh: typeof gh === "string" && gh.length <= 4000 ? gh : null };
     entry.grpState = "send";
     try {
-      const c = groupChal(await ON.rpc("tm_group_post", { p_code: myCode(), p_name: meName(), p_nation: S.nation || "", p_group: g, p_dist: p.d, p_points: p.p, p_kind: p.k, p_ghost: p.gh }), chal);
-      if (c && chal && chal.grp === g) { chal = c; rememberGroup(c); }
+      const c = groupChal(await ON.rpc("tm_group_post2", { p_code: myCode(), p_name: meName(), p_nation: S.nation || "", p_group: g, p_dist: p.d, p_points: p.p, p_kind: p.k, p_ghost: p.gh, p_look: lookCode(S.look) }), chal);
+      if (c && chal && chal.grp === g) { chal = c; rememberGroup(c); loadGhosts(g); }
       entry.grpState = "ok";
     } catch (e) {
       entry.grpState = "fail";
@@ -8536,7 +8774,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     pendBusy = true;
     for (const p of S.opend.slice()) {
       let again = false;
-      try { await ON.rpc("tm_group_post", { p_code: myCode(), p_name: meName(), p_nation: S.nation || "", p_group: p.g, p_dist: p.d, p_points: p.p, p_kind: p.k, p_ghost: p.gh || null }); }
+      try { await ON.rpc("tm_group_post2", { p_code: myCode(), p_name: meName(), p_nation: S.nation || "", p_group: p.g, p_dist: p.d, p_points: p.p, p_kind: p.k, p_ghost: p.gh || null, p_look: lookCode(S.look) }); }
       catch (e) { again = !e.status || e.status >= 500; }
       if (again) break;
       S.opend = S.opend.filter((x) => x !== p); saveLocal();
@@ -8556,8 +8794,8 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     const b = chal.board, me = b.find((x) => x.me);
     let rows = b.slice(0, 6);
     if (me && !rows.includes(me)) rows = rows.slice(0, 5).concat([me]);
-    let h = rows.map((x) => standRow({ rank: x.r, nation: x.c, name: x.n, dist: x.d, total: x.p }, { me: x.me })).join("");
-    if (!me && r.kind !== "fall") h += standRow({ rank: null, nation: S.nation, name: meName(), dist: r.dist, total: chalPts(r.total) }, { me: true });
+    let h = rows.map((x) => standRow({ rank: x.r, nation: x.c, name: x.n, dist: x.d, total: x.p }, { me: x.me, helm: x.me ? lookFor(S.look) : x.l ? lookFor(x.l) : natLook(x.c) })).join("");
+    if (!me && r.kind !== "fall") h += standRow({ rank: null, nation: S.nation, name: meName(), dist: r.dist, total: chalPts(r.total) }, { me: true, helm: lookFor(S.look) });
     const note = r.grpState === "send" ? "Wird an die Gruppe gesendet …"
       : r.grpState === "fail" ? (r.grpQueued ? "Keine Verbindung: Der Sprung wird nachgesendet." : "Dieser Sprung wurde nicht gesendet.")
       : chal.tries > 1 ? `Es zählt dein bester Sprung · ${chal.tries} Versuche` : "Es zählt dein bester Sprung. Die Rangliste sehen alle live.";
@@ -8581,12 +8819,18 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     txt($("chPts"), `${fmt1(chal.p)} Punkte · ${KIND_SHORT[chal.k]}`);
     let rows = b.slice(0, 6);
     if (me && !rows.includes(me)) rows = rows.slice(0, 5).concat([me]);
+    const gs = chal.ghosts || [], canWatch = (x) => gs.findIndex((g) => g.r === x.r && g.n === x.n);
     $("chBoard").innerHTML = `<span class="ch-lbl">RANGLISTE · <span class="ch-live">LIVE</span> · ${chal.total} SPRINGER</span>` +
-      rows.map((x) => `<span class="chb-row${x.me ? " main" : ""}"><b>${x.r}.</b>${x.c ? flagSpan(x.c) : "<span></span>"}<span class="chb-n">${esc(x.n)}${x.me ? " · DU" : ""}</span><span class="chb-p">${fmt1(x.p)}</span></span>`).join("") +
+      rows.map((x) => {
+        const wi = canWatch(x), w = wi >= 0, tag = w ? "button" : "span";
+        return `<${tag}${w ? ` type="button" aria-label="Sprung von ${esc(x.n)} ansehen" data-i="${wi}"` : ""} class="chb-row${x.me ? " main" : ""}${w ? " can" : ""}"><b>${x.r}.</b>` +
+          `<span class="chb-m">${helm(x.me ? lookFor(S.look) : x.l ? lookFor(x.l) : natLook(x.c), x.r)}${x.c ? flagSpan(x.c) : ""}</span><span class="chb-n">${esc(x.n)}${x.me ? " · DU" : ""}</span>` +
+          `<span class="chb-p">${fmt1(x.p)}</span>${w ? icon("play", 13) : "<span></span>"}</${tag}>`;
+      }).join("") +
       (chal.total > rows.length ? `<span class="chb-more">und ${chal.total - rows.length} weitere</span>` : "");
     vis($("chBoard"), true);
     txt($("chNote"), S.tutorialDone
-      ? "Gleicher Wind für alle, der Führende fliegt als Geist mit. Spring so oft du willst, dein bester zählt. Name und Ergebnis sehen alle mit dem Link."
+      ? `Gleicher Wind für alle, die Besten fliegen als Geister mit${(chal.ghosts || []).length ? ", Name antippen zeigt den Sprung" : ""}. Dein bester Sprung zählt. Name und Ergebnis sehen alle mit dem Link.`
       : "Zuerst drei kurze Übungssprünge in Zeitlupe, dann geht es los. Name und Ergebnis sehen alle mit dem Link.");
     groupPoll();
   }
@@ -8601,7 +8845,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   // Beim ersten Mal kurz erklären, was online passiert
   function askOnline(cb) {
     askCb = cb;
-    txt($("akTxt"), "Alle springen mit demselben Wind, die Rangliste sehen alle live, egal wie viele mitmachen. Dafür speichern wir Name, Nation und Sprünge bei Supabase (Server in Frankfurt), sichtbar für alle mit dem Link und 30 Tage nach dem letzten Sprung gelöscht. Ändern unter Info → Online.");
+    txt($("akTxt"), "Alle springen mit demselben Wind, die Rangliste sehen alle live, egal wie viele mitmachen. Dafür speichern wir Name, Nation, Farben und Sprünge bei Supabase (Server in Frankfurt), sichtbar für alle mit dem Link und 30 Tage nach dem letzten Sprung gelöscht. Ändern unter Info → Online.");
     setOverlay("ask");
   }
   // Spielstand online: ohne Geister (groß, auf jedem Gerät neu) und ohne die Online-Angaben dieses Geräts
@@ -8870,6 +9114,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     const t0 = rec[Math.max(0, iT < 0 ? 0 : iT - 70)].t;
     const t1 = iL < 0 ? rec[rec.length - 1].t : Math.min(rec[rec.length - 1].t, rec[iL].t + 3.3);
     rp = { rec, t: t0, t1, i: 0, tL: iL < 0 ? 1e9 : rec[iL].t, mood: r.mood };
+    txt($("rpTxt"), "WIEDERHOLUNG");
     mode = "replay"; showScreen(null); vis(hud, true);
     for (const e of [el.playerPanel, el.startBox, el.gateBox, el.speedBox, el.timingBox, el.landBox, el.gauge, el.tapPill, el.hint, el.toast, el.distChip]) vis(e, false);
     vis(el.replayBadge, true); vis(el.replayHint, true); vis(el.distBox, true); txt(el.distVal, "–"); vis(el.btnPause, false);
@@ -8890,8 +9135,52 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   }
   function endReplay() {
     if (!rp) return;
+    const w = rp.watch;
     rp = null; vis(el.replayBadge, false); vis(el.replayHint, false); vis(hud, false);
+    if (w) { vis(el.windPanel, true); w.back(); return; }
     showResult(lastResult);
+  }
+  // Den Sprung eines anderen ansehen: aus seiner Flugbahn (Geist) eine Wiederholung ab dem Absprung, im Auslauf bis zum Abschwingen
+  function watchRec(g) {
+    const P = g.path, rec = [];
+    let tT = null;
+    for (let i = 0; i < P.length; i++) {
+      const a = P[Math.max(0, i - 1)], b = P[Math.min(P.length - 1, i + 1)], dt = (b[0] - a[0]) || 0.2;
+      const [t, x, y, p, pf] = P[i], gr = Hill.groundAt(H, x), vx = (b[1] - a[1]) / dt, vy = (b[2] - a[2]) / dt;
+      if (tT == null && i > 2 && y - gr.y < 0.08) tT = t;
+      rec.push(tT == null ? { t, phase: "flight", x, y, tf: t, p, prepF: pf, crashF: 0, r: 0, tookTap: true, vx, vy, v: Math.hypot(vx, vy) }
+        : { t, phase: "outrun", kind: g.k, tLand: t - tT, x, y: gr.y, beta: gr.beta, vx, vy: 0, v: Math.hypot(vx, vy) });
+    }
+    if (tT == null) return null;
+    let { t, x } = rec[rec.length - 1], v = clamp(rec[rec.length - 1].vx, 8, 32);
+    while (t < tT + 3.3) {
+      t += 0.1; v = Math.max(3, v - 2.8 * 0.1); x += v * 0.1;
+      const gr = Hill.groundAt(H, x);
+      rec.push({ t, phase: "outrun", kind: g.k, tLand: t - tT, x, y: gr.y, beta: gr.beta, vx: v, vy: 0, v });
+    }
+    return { rec, tT };
+  }
+  function startWatch(g, back) {
+    const w = g && g.path && g.path.length > 4 ? watchRec(g) : null;
+    if (!w) { showToastSafeText("SPRUNG NICHT VERFÜGBAR", "Für diesen Sprung gibt es keine Flugbahn"); return; }
+    const big = g.d >= H.K + 0.45 * (H.HS - H.K), tele = g.k === "telemark";
+    const mood = big ? (tele ? "great" : "good") : g.d >= H.K - 4 ? (tele ? "good" : "ok") : g.d >= H.K - 16 ? "ok" : "bad";
+    rp = { rec: w.rec, t: 0, t1: w.rec[w.rec.length - 1].t, i: 0, tL: w.tT, mood, watch: { name: g.me ? "DEIN SPRUNG" : g.n, d: g.d, back } };
+    txt($("rpTxt"), `${rp.watch.name} · ${fmt1(g.d)} m`);
+    clearTimeout(grpT);
+    mode = "replay"; showScreen(null); vis(hud, true);
+    for (const e of [el.playerPanel, el.startBox, el.gateBox, el.speedBox, el.timingBox, el.landBox, el.gauge, el.tapPill, el.hint, el.toast, el.distChip, el.goalBox]) vis(e, false);
+    vis(el.replayBadge, true); vis(el.replayHint, true); vis(el.distBox, true); txt(el.distVal, "–"); vis(el.btnPause, false);
+    particles = [];
+    renderer.setLook(g.look || lookFor(DEF_LOOK));
+    vis(el.windPanel, false);   // der Wind von damals ist nicht bekannt
+    updateCam(camTarget(w.rec[0]), 0, true);
+  }
+  function watchGroupRow(i) {
+    const g = chal && chal.ghosts && chal.ghosts[i];
+    if (!g) return;
+    H = Hill.getHill(chal.h); renderer.setTheme(chal.t);
+    startWatch(g, () => openChal(chal));
   }
 
   // ------------------------------------------------------------------ Demo-Sprung im Startbildschirm
@@ -9153,7 +9442,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
       const lead = s.filter((x) => x.rank === 1);
       const tie = lead.length > 1;
       txt($("fnTitle"), tie ? "Gleichstand!" : `Sieg für ${s[0].name}!`);
-      podium(s.slice(0, 3).map((x) => ({ name: x.name, color: HOT_COLORS[(x.bib - 1) % 8][0], total: x.total, me: false, rank: x.rank })));
+      podium(s.slice(0, 3).map((x) => ({ name: x.name, color: HOT_COLORS[(x.bib - 1) % 8][0], look: hotLook(x.bib), total: x.total, me: false, rank: x.rank })));
       const andJoin = (a) => a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " und " + a[a.length - 1];
       let pText = s.length < 2 ? "" : tie ? `${andJoin(lead.map((x) => x.name))} teilen sich den Sieg – punktgleich mit ${fmt1(s[0].total)}.`
         : `${fmt1(s[0].total - s[1].total)} Punkte Vorsprung auf ${s[1].name}.`;
@@ -9161,7 +9450,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
       txt($("fnText"), pText);
       txt($("fnSub"), `${s.length} Spieler · ${hot.rounds} ${hot.rounds === 1 ? "Durchgang" : "Durchgänge"}`);
       txt($("fnH1"), "1."); txt($("fnH2"), hot.rounds > 1 ? "2." : "");
-      scrollList($("fnList"), s.map((x) => `<div class="fn-row"><span class="sr-r">${x.rank}</span><span class="sr-n"><span class="sw-dot" style="display:inline-block;width:8px;height:8px;border-radius:4px;background:${HOT_COLORS[(x.bib - 1) % 8][0]}"></span>${esc(x.name)}</span><span class="sr-d">${x.r[0] && !x.r[0].dsq ? fmt1(x.r[0].dist) : (x.r[0] ? "DSQ" : "–")}</span><span class="sr-d">${hot.rounds > 1 ? (x.r[1] && !x.r[1].dsq ? fmt1(x.r[1].dist) : (x.r[1] ? "DSQ" : "–")) : ""}</span><span class="sr-p">${fmt1(x.total)}</span></div>`), null);
+      scrollList($("fnList"), s.map((x) => `<div class="fn-row"><span class="sr-r">${x.rank}</span><span class="sr-n">${helm(hotLook(x.bib), x.rank)}${esc(x.name)}</span><span class="sr-d">${x.r[0] && !x.r[0].dsq ? fmt1(x.r[0].dist) : (x.r[0] ? "DSQ" : "–")}</span><span class="sr-d">${hot.rounds > 1 ? (x.r[1] && !x.r[1].dsq ? fmt1(x.r[1].dist) : (x.r[1] ? "DSQ" : "–")) : ""}</span><span class="sr-p">${fmt1(x.total)}</span></div>`), null);
       Snd.cheer(1); Snd.results("win", true);
     }
     // in Meisterschaft und Party-Tournee geht es zur Gesamtwertung statt "Nochmal"
@@ -9179,45 +9468,131 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     const c = NAT_LOOK[code] || ["#5A6B85", "#F2F6FB", "#EEF2F7"];
     return lookFor({ suit: c[0], helmet: c[1], accent: c[2], pattern: "split", visor: "#20262F", ski: "#E4EAF2" });
   }
-  // Podest: die drei Springer stehen auf ihren Stufen und feiern (Sieger mit beiden Armen oben), alle wippen leicht
-  let podFigs = [];
+  // Siegerehrung als Bild: drei Stufen, darauf die Springer mit den Ski in der Hand (Sieger mit Faust, die anderen winken),
+  // Namen darüber, bei Platz die Fahnen der Nationen an Masten und etwas Konfetti. Alles in einer Fläche, damit es in jeder Größe stimmt.
+  let pod = null;
+  const FLAG_IMG = {};
+  const calmMotion = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  function flagImg(code) {
+    if (!FLAG_IMG[code]) {
+      const im = new Image();
+      im.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(flag(code).replace('<svg width="18" height="12"', '<svg xmlns="http://www.w3.org/2000/svg" width="90" height="60"'));
+      FLAG_IMG[code] = im;
+    }
+    return FLAG_IMG[code];
+  }
   function podium(top, el) {
-    const order = [1, 0, 2], box = el || $("fnPodium");
-    box.innerHTML = order.map((i) => {
-      const x = top[i];
-      if (!x) return "<div></div>";
-      const mark = x.color ? `<span class="pd-sw" style="background:${x.color}"></span>` : `<span class="flag">${flag(x.nation)}</span>`;
-      const r = Math.min(3, x.rank || i + 1);
-      return `<div class="pd pd-${r}${x.me ? " me" : ""}"><span class="pd-name">${mark}<span class="pd-nm">${esc(x.name)}</span></span><canvas class="pd-fig" data-i="${i}" aria-hidden="true"></canvas><div class="pd-block"><b>${x.rank || i + 1}</b><span class="pd-pts">${fmt1(x.total)}</span></div></div>`;
-    }).join("");
-    podFigs = Array.from(box.querySelectorAll(".pd-fig")).map((cv) => {
-      const i = +cv.dataset.i, x = top[i];
-      const look = x.me ? lookFor(S.look) : x.color ? lookFor({ suit: x.color, helmet: x.color, accent: "#EEF2F7", visor: "#20262F" }) : natLook(x.nation);
-      return { cv, look, rank: Math.min(3, x.rank || i + 1), ph: i * 1.7 };
-    });
+    const box = el || $("fnPodium");
+    box.innerHTML = `<canvas class="pod-cv" role="img"></canvas>`;
+    const cv = box.firstChild;
+    cv.setAttribute("aria-label", "Siegerpodest: " + top.filter(Boolean).map((x, i) => `${x.rank || i + 1}. ${x.name} ${fmt1(x.total)} Punkte`).join(", "));
+    // Farben der Tafel (hell), nicht die des dunklen Hintergrunds
+    const css = getComputedStyle(box.closest(".panel-strong") || box);
+    pod = { cv, font: css.getPropertyValue("--font-display").trim() || "sans-serif", ink: css.getPropertyValue("--text").trim() || "#1E2734",
+      hi: css.getPropertyValue("--hi").trim() || "#B23524", muted: css.getPropertyValue("--muted").trim() || "#786D59",
+      items: top.slice(0, 3).map((x, i) => x && {
+        name: x.name, nation: x.color ? null : x.nation, total: x.total, me: !!x.me, rank: Math.min(3, x.rank || i + 1),
+        look: x.look || (x.me ? lookFor(S.look) : x.color ? lookFor({ suit: x.color, helmet: x.color }) : natLook(x.nation)), ph: i * 1.9,
+      }) };
+    for (const x of pod.items) if (x && x.nation) flagImg(x.nation);
+  }
+  // Haltung auf dem Podest (Einheiten wie die übrigen Posen, Blick nach rechts): Ski aufrecht in der hinteren Hand
+  function podPose(rank, t, ph) {
+    const sp = rank === 1 ? 5.2 : 2.4, b = calmMotion ? 0 : (0.5 - 0.5 * Math.cos(t * sp + ph)) * (rank === 1 ? 1.5 : 0.6);
+    const P = (x, y) => [x, y + b];
+    const pose = {
+      ab: [-1.7, -4.6], af: [1.7, -4.6], kb: [-0.3 + b * 0.7, -15.6 + b * 0.5], kf: [2.7 + b * 0.7, -15.4 + b * 0.5],
+      hip: P(0.4, -26.6), sh: P(1.3, -42.4), head: P(2.1, -49.1), face: [1, 0.06],
+      eb: P(-4.4, -33.6), hb: P(-8.5, -38.6),
+      held: [[[-9.4, -0.6], [-10.7, -63 + b * 0.4]], [[-6.6, -0.6], [-7.9, -63 + b * 0.4]]],
+    };
+    const w = calmMotion ? 0 : Math.sin(t * (rank === 2 ? 7 : 5.5) + ph);
+    if (rank === 1) { const k = calmMotion ? 0 : 0.5 + 0.5 * Math.cos(t * sp + ph); pose.ef = P(4.6 + 1.4 * k, -50.6 + 2.6 * k); pose.hf = P(5.8 + 2.4 * k, -60 + 4.5 * k); }
+    else if (rank === 2) { pose.ef = P(7.4, -47.6); pose.hf = P(9.8 + 3.4 * w, -55 + 0.8 * Math.abs(w)); }
+    else { pose.ef = P(7.8, -44.8); pose.hf = P(11.2 + 2.4 * w, -50.6); }
+    pose.sf = pose.held[0]; pose.sn = pose.held[1];
+    return pose;
+  }
+  // wehende Fahne: das Bild in schmalen Streifen, zum freien Ende hin stärker versetzt und schattiert (alle wehen in dieselbe Richtung)
+  function wavyFlag(c, im, x, y, fw, fh, t, ph) {
+    const N = 12, iw = im.naturalWidth || 90, ih = im.naturalHeight || 60;
+    for (let i = 0; i < N; i++) {
+      const u0 = i / N, dy = Math.sin(t * 3.4 - u0 * 5.5 + ph) * fh * 0.09 * u0;
+      c.drawImage(im, iw * u0, 0, iw / N, ih, x + fw * u0, y + dy, fw / N + 0.6, fh);
+      const sh = Math.cos(t * 3.4 - u0 * 5.5 + ph) * u0;
+      c.fillStyle = sh > 0 ? `rgba(255,255,255,${0.16 * sh})` : `rgba(10,18,32,${-0.22 * sh})`;
+      c.fillRect(x + fw * u0, y + dy, fw / N + 0.6, fh);
+    }
   }
   function drawPodium(t) {
-    const figs = podFigs.filter((f) => f.cv.isConnected && f.cv.clientWidth > 0 && f.cv.clientHeight > 20);
-    if (!figs.length) return;
-    const dpr = Math.min(2.5, (window.devicePixelRatio || 1) * uiS);
-    // gleiche Größe für alle drei: nach der niedrigsten Fläche
-    const hMin = Math.min(...figs.map((f) => f.cv.clientHeight)), sc = clamp((hMin - 4) / 54, 0.5, 2.4);
-    for (const f of figs) {
-      const cw = f.cv.clientWidth, ch = f.cv.clientHeight, bw = Math.round(cw * dpr), bh = Math.round(ch * dpr);
-      if (f.cv.width !== bw || f.cv.height !== bh) { f.cv.width = bw; f.cv.height = bh; }
-      const c = f.cv.getContext("2d");
-      c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, cw, ch);
-      // Sieger: beide Arme hoch und Fäuste; Zweiter: Faust und Winken; Dritter: Hand heben (in Schleife)
-      const mood = f.rank === 1 ? "great" : f.rank === 2 ? "good" : "ok";
-      const span = f.rank === 1 ? [1.3, 3.7] : f.rank === 2 ? [1.3, 4.1] : [1.9, 3.9];
-      const tl = span[0] + ((t * 0.9 + f.ph) % (span[1] - span[0]));
-      const pose = RM.gest.outrun("telemark", tl, mood);
-      // auf dem Podest ohne lange Ski: nur die Schuhe
-      pose.sf = [[pose.ab[0] - 5, -1.2], [pose.ab[0] + 9, -1.2]]; pose.sn = [[pose.af[0] - 5, -1.8], [pose.af[0] + 9, -1.8]];
-      const bob = Math.sin(t * 3.1 + f.ph) * 1.6 * sc + (f.rank === 1 ? Math.max(0, Math.sin(t * 6.2 + f.ph)) * -1.2 * sc : 0);
-      c.save(); c.translate(cw / 2 - 2 * sc, ch - 1 + bob); c.scale(sc, sc);
-      RM.drawFigure(c, pose, f.look);
+    if (!pod || !pod.cv.isConnected) return;
+    const cv = pod.cv, cw = cv.clientWidth, ch = cv.clientHeight;
+    if (cw < 60 || ch < 50) return;
+    const dpr = Math.min(2.5, (window.devicePixelRatio || 1) * uiS), bwPx = Math.round(cw * dpr), bhPx = Math.round(ch * dpr);
+    if (cv.width !== bwPx || cv.height !== bhPx) { cv.width = bwPx; cv.height = bhPx; }
+    const c = cv.getContext("2d");
+    c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, cw, ch);
+    // Maßstab: drei Stufen in der Breite, Springer mit Ski und Namen in der Höhe. Flache Fläche (Handy quer): niedrigere Stufen, Name ohne Punkte.
+    const low = ch / cw < 0.5, BH = low ? [0, 30, 23, 17] : [0, 40, 30, 23], need = low ? 152 : 176;
+    const u = Math.min(cw / 304, ch / need, 1.75), bw = 96 * u, gap = 8 * u, x0 = (cw - 3 * bw - 2 * gap) / 2, base = ch;
+    const fs = 1.45 * u, sceneTop = base - need * u;
+    const cols = [[1, 0], [0, 1], [2, 2]];   // [Platz in der Liste, Spalte]: links Zweiter, Mitte Sieger, rechts Dritter
+    // Fahnen der Nationen an Masten, wenn oben Platz ist (Sieger am höchsten, alle wehen nach rechts)
+    if (sceneTop > 30) {
+      const fw = Math.min(40 * u, sceneTop * 0.75, 62), fh = fw * 2 / 3;
+      for (const [i, k] of cols) {
+        const x = pod.items[i], im = x && x.nation && FLAG_IMG[x.nation];
+        if (!im || !im.complete || !im.naturalWidth) continue;
+        const px = x0 + k * (bw + gap) + bw * 0.1, topY = 4 + (x.rank - 1) * Math.min(12, sceneTop * 0.12);
+        c.strokeStyle = "rgba(30,39,52,0.5)"; c.lineWidth = Math.max(1.2, 1.5 * u); c.lineCap = "round";
+        c.beginPath(); c.moveTo(px, base - BH[x.rank] * u * 0.5); c.lineTo(px, topY); c.stroke();
+        c.fillStyle = "rgba(30,39,52,0.65)"; c.beginPath(); c.arc(px, topY, Math.max(1.6, 1.8 * u), 0, 6.283); c.fill();
+        c.save(); c.globalAlpha = 0.9; wavyFlag(c, im, px + 1, topY + 2, fw, fh, calmMotion ? 0 : t, i * 1.3); c.restore();
+      }
+    }
+    // Konfetti hinter den Springern
+    if (!calmMotion) {
+      const n = Math.round(clamp(cw * ch / 5200, 10, 46)), cols6 = ["#DDA43B", "#B23524", "#4FD1C5", "#FFFFFF", "#3FBF6E", "#3A7BFF"];
+      for (let i = 0; i < n; i++) {
+        const r1 = ((i * 7919) % 1000) / 1000, r2 = ((i * 104729) % 997) / 997, r3 = ((i * 31337) % 991) / 991;
+        const y = (t * (14 + 22 * r2) + r3 * (ch + 30)) % (ch + 30) - 15, x = r1 * cw + Math.sin(t * (0.8 + r3) + i) * 10 * u;
+        c.save(); c.translate(x, y); c.rotate(t * (1.5 + 3 * r2) + i); c.scale(1, Math.cos(t * (2 + 3 * r3) + i));
+        c.fillStyle = cols6[i % 6]; c.globalAlpha = 0.75; c.fillRect(-2.4 * u, -1.2 * u, 4.8 * u, 2.4 * u);
+        c.restore();
+      }
+    }
+    // Schatten am Boden, dann Stufen, Springer und Namen
+    c.fillStyle = "rgba(20,27,37,0.12)"; c.beginPath(); c.ellipse(cw / 2, base - 1, (3 * bw + 2 * gap) * 0.56, 4 * u, 0, 0, 6.283); c.fill();
+    const BLOCK = [null, ["#F2C766", "#D9A03A"], ["#E6E0D2", "#C4BCA8"], ["#D3925A", "#B0703A"]];
+    for (const [i, k] of cols) {
+      const x = pod.items[i];
+      if (!x) continue;
+      const bx = x0 + k * (bw + gap), bh = BH[x.rank] * u, by = base - bh, cx = bx + bw / 2;
+      const g = c.createLinearGradient(0, by, 0, base); g.addColorStop(0, BLOCK[x.rank][0]); g.addColorStop(1, BLOCK[x.rank][1]);
+      c.fillStyle = g; c.strokeStyle = "#141B25"; c.lineWidth = Math.max(1.2, 1.5 * u);
+      c.beginPath(); c.moveTo(bx, base + 2); c.lineTo(bx, by + 3 * u); c.quadraticCurveTo(bx, by, bx + 3 * u, by); c.lineTo(bx + bw - 3 * u, by);
+      c.quadraticCurveTo(bx + bw, by, bx + bw, by + 3 * u); c.lineTo(bx + bw, base + 2); c.fill(); c.stroke();
+      c.fillStyle = "rgba(255,255,255,0.3)"; c.fillRect(bx + 2 * u, by + 2 * u, bw - 4 * u, 2 * u);
+      const rf = Math.round(Math.min(24 * u, bh * 0.72));
+      c.textAlign = "center"; c.textBaseline = "middle"; c.fillStyle = "#1E2734"; c.font = `800 ${rf}px ${pod.font}`;
+      c.fillText(String(x.rank), cx, by + bh / 2 + 1.5 * u);
+      // Springer auf der Stufe; der Dritte schaut zur Mitte
+      c.save(); c.translate(cx - (k === 2 ? -1 : 1) * 2.5 * u, by); c.scale(k === 2 ? -fs : fs, fs);
+      RM.drawFigure(c, podPose(x.rank, t, x.ph), x.look);
       c.restore();
+      // über den Skispitzen: Fahne und Name, darunter die Punkte
+      const nf = Math.round(clamp(13 * u, 11, 22)), pf = Math.round(clamp(10.5 * u, 10, 17));
+      const ptsY = by - 72 * fs - 2 * u, nameY = low ? ptsY : ptsY - pf - 2 * u;
+      c.textBaseline = "alphabetic"; c.font = `700 ${nf}px ${pod.font}`;
+      const im = x.nation && FLAG_IMG[x.nation], fw = im && im.complete && im.naturalWidth ? nf * 1.2 : 0, pad = fw ? fw + 4 : 0;
+      // außen darf der Name in den freien Rand reichen, in der Mitte bleibt er über seiner Stufe
+      const lo = k === 0 ? 2 : k === 1 ? bx - gap / 2 : bx - gap / 2, hi2 = k === 0 ? bx + bw + gap / 2 : k === 1 ? bx + bw + gap / 2 : cw - 2;
+      let nm = x.name, tw = c.measureText(nm).width;
+      while (tw + pad > hi2 - lo && nm.length > 2) { nm = nm.slice(0, -2) + "…"; tw = c.measureText(nm).width; }
+      const left = clamp(cx - (tw + pad) / 2, lo, hi2 - tw - pad);
+      if (fw) { c.drawImage(im, left, nameY - nf * 0.8, fw, fw * 2 / 3); c.strokeStyle = "rgba(20,27,37,0.25)"; c.lineWidth = 1; c.strokeRect(left, nameY - nf * 0.8, fw, fw * 2 / 3); }
+      c.textAlign = "left"; c.fillStyle = x.me ? pod.hi : pod.ink; c.fillText(nm, left + pad, nameY);
+      if (!low) { c.textAlign = "center"; c.font = `600 ${pf}px ${pod.font}`; c.fillStyle = pod.muted; c.fillText(fmt1(x.total) + " P.", cx, ptsY + pf * 0.15); }
     }
   }
 
@@ -9247,7 +9622,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     txt($("hdName"), p.name);
     txt($("hdText"), `Handy an ${p.name} übergeben. Luke ${hot.gate} · ${windTxt(hot.wind.mode === "off" ? 0 : hot.wind.display(0))} · für alle gleich.`);
     const s = hot.standings().filter((x) => x.r.length);
-    $("hdStand").innerHTML = s.length ? s.slice(0, 4).map((x) => { const last = x.r[x.r.length - 1]; return standRow({ rank: x.rank, nation: x.nation, name: x.name, dist: last ? last.dist : null, total: x.total }); }).join("") : "";
+    $("hdStand").innerHTML = s.length ? s.slice(0, 4).map((x) => { const last = x.r[x.r.length - 1]; return standRow({ rank: x.rank, nation: x.nation, name: x.name, dist: last ? last.dist : null, total: x.total }, { helm: hotLook(x.bib) }); }).join("") : "";
     bd = bd || { armMenu: 0 };
     txt($("btnHdMenu").querySelector("span:last-child"), "Menü");
   }
@@ -9362,7 +9737,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
       let best = "";
       if (!isParty && !wins) { const b = ch.results.filter((r) => r.me && r.me.rank).sort((a, c) => a.me.rank - c.me.rank)[0]; if (b) best = ` · beste Station: Platz ${b.me.rank} in ${hillShort(b.hill)}`; }
       txt($("cpSub"), `${isParty ? "Tournee" : F.label} beendet · ${n} Stationen${wins ? ` · ${wins} ${wins === 1 ? "Tagessieg" : "Tagessiege"}${isParty ? " für " + st[0].name : ""}` : best}`);
-      podium(st.slice(0, 3).map((x) => ({ name: x.name, nation: x.nation, color: isParty ? HOT_COLORS[(x.bib - 1) % 8][0] : null, total: x.total, me: x.id === "me", rank: x.rank })), $("cpPodium"));
+      podium(st.slice(0, 3).map((x) => ({ name: x.name, nation: x.nation, color: isParty ? HOT_COLORS[(x.bib - 1) % 8][0] : null, look: isParty ? hotLook(x.bib) : null, total: x.total, me: x.id === "me", rank: x.rank })), $("cpPodium"));
       $("cpPodium").querySelectorAll(".pd-pts").forEach((e, k) => { const x = st[[1, 0, 2][k]]; if (x) e.textContent = fmtPts(ch, x.total); });
     } else {
       const Hn = Hill.getHill(ch.hills[i]);
@@ -9417,7 +9792,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     }
     const row = (x) => {
       const mv = started && x.prev != null && x.prev !== x.rank ? `<span class="cp-mv ${x.prev > x.rank ? "up" : "down"}">${x.prev > x.rank ? "▲" : "▼"}${Math.abs(x.prev - x.rank)}</span>` : '<span class="cp-mv"></span>';
-      const mark = isParty ? `<span class="sw-dot" style="background:${HOT_COLORS[(x.bib - 1) % 8][0]}"></span>` : flagSpan(x.nation);
+      const mark = isParty ? helm(hotLook(x.bib), x.rank) : flagSpan(x.nation);
       return `<div class="cp-row${x.id === "me" ? " me" : ""}"><span class="sr-r">${started ? x.rank : "–"}</span>${mv}<span class="sr-n">${mark}${esc(x.name)}${x.id === "me" ? '<span class="you">DU</span>' : ""}${x.id === lead ? '<span class="jersey" title="Gelbes Trikot"></span>' : ""}</span><span class="sr-p">${started ? fmtPts(ch, x.total) : ""}</span></div>`;
     };
     scrollList($("cpList"), st.map(row), ".cp-row.me");
@@ -9919,7 +10294,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     const hand = p.x > W / 2 ? "right" : "left";
     if (hand !== S.hand) { S.hand = hand; el.gauge.classList.toggle("left", gaugeOnLeft()); }
     const consumed = onAction(e);
-    if (mode === "jump" && J && (J.phase === "inrun" || J.phase === "flight") && (!consumed || (jc && jc.expert && J.phase === "inrun"))) {
+    if (mode === "jump" && J && (J.phase === "inrun" || J.phase === "flight") && (!consumed || (jc && (jc.expert || jc.beginner) && J.phase === "inrun"))) {
       drag = { id: e.pointerId, x: p.x, y: p.y, y0: p.y, flight: false };
       if (J.phase === "flight") padAnchor(p.x, p.y);
       try { stage.setPointerCapture(e.pointerId); } catch (err) { /* egal */ }
@@ -9977,7 +10352,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   let last = performance.now(), tAnim = 0, menuAcc = 1;
   // Videowand im Auslauf: wer springt, Live-Weite, Ergebnis
   function screenText(st) {
-    if (mode === "replay") return ["WIEDERHOLUNG", lastResult ? fmt1(lastResult.dist) + " m" : ""];
+    if (mode === "replay") return rp && rp.watch ? [rp.watch.name, fmt1(rp.watch.d) + " m"] : ["WIEDERHOLUNG", lastResult ? fmt1(lastResult.dist) + " m" : ""];
     if ((mode === "jump" || mode === "result") && J && st) {
       const who = (jc && jc.who) || { name: S.name || "SPRINGER", nation: S.nation };
       if (st.phase === "gate" || st.phase === "inrun") return [`${who.name} · ${who.nation}`, `LUKE ${J.gate}`];
@@ -10006,7 +10381,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   }
   function frameBody(now) {
     const dtReal = Math.min(0.1, (now - last) / 1000); last = now; tAnim += dtReal;
-    let st = null, good = false, best = null, jv = null, ghost = null;
+    let st = null, good = false, best = null, jv = null, ghost = null, ghosts = null;
     if (bd && bd.armMenu > 0) { bd.armMenu -= dtReal; if (bd.armMenu <= 0 && mode === "board") renderBoard(); }
     qualityTick(dtReal);
     if (mode === "jump" && J) {
@@ -10031,14 +10406,21 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
       else if (ctxMode === "chal") best = { d: chal.d, label: `${chal.n} ${fmt1(chal.d)}` };
       else if (ctxMode !== "training" && jc.toLead != null) best = { d: jc.toLead, label: (jc.duel ? "DUELL " : "ZUR FÜHRUNG ") + fmt1(jc.toLead) };
       ghost = ghostVisual();
+      // Mehrspieler: die Sprünge der anderen fliegen als Geister mit (in ihren Farben, mit Namen)
+      // ganz nah am eigenen Springer: blasser und ohne Namen (sonst sähe es aus, als hieße man selbst so)
+      ghosts = (jc.ghosts || []).map((g) => {
+        const v = ghostVisual(g);
+        if (v) { const dd = Math.hypot(v.x - st.x, v.y - st.y); v.look = g.look; v.label = dd > 3.5 ? g.name : null; v.fade = clamp(dd / 3.5, 0.35, 1); }
+        return v;
+      }).filter(Boolean);
     } else if (mode === "replay" && rp) {
-      const rs = rp.t > rp.tL + 0.5 ? 0.8 : 0.5;   // nach der Landung etwas schneller: der Jubel muss nicht in Zeitlupe
+      const rs = rp.watch ? (rp.t > rp.tL + 0.4 ? 1 : 0.75) : rp.t > rp.tL + 0.5 ? 0.8 : 0.5;   // nach der Landung etwas schneller: der Jubel muss nicht in Zeitlupe
       rp.t += dtReal * rs;
       st = replaySnap();
       jv = jumperVisual(st, false, { mood: rp.mood });
       updateCam(camTarget(st), dtReal * rs, false);
       if (st.phase === "flight") txt(el.distVal, st.x > 1 ? fmt1(Math.max(0, Math.floor(Hill.groundAt(H, st.x).d * 2) / 2)) + " m" : "–");
-      else if (st.phase !== "inrun" && st.phase !== "gate") txt(el.distVal, fmt1(lastResult.dist) + " m");
+      else if (st.phase !== "inrun" && st.phase !== "gate") txt(el.distVal, fmt1(rp.watch ? rp.watch.d : lastResult.dist) + " m");
       if (rp.t >= rp.t1) endReplay();
       stepParticles(dtReal * rs);
       drawWindFlag(hudWind, tAnim);
@@ -10063,10 +10445,10 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     const focus = st ? { x: st.x, landed: (st.phase === "outrun" || st.phase === "done") && st.kind !== "fall" } : null;
     // Menüs und Tafeln: Hintergrund mit 30 Bildern je Sekunde zeichnen (halbe Arbeit, spart Akku); Sprung und Wiederholung immer flüssig
     menuAcc += dtReal;
-    if (mode === "final" || mode === "champ") drawPodium(tAnim);
     if (mode !== "jump" && mode !== "replay" && menuAcc < 1 / 31) { if (overlay === "jumper") drawJumperPreview(tAnim); return; }
     menuAcc = 0;
-    renderer.draw({ hill: H, cam, t: tAnim, jumper: jv, ghost, gate: J && J.phase === "gate" ? J.gate : null, best,
+    if (mode === "final" || mode === "champ") drawPodium(tAnim);
+    renderer.draw({ hill: H, cam, t: tAnim, jumper: jv, ghost, ghosts, gate: J && J.phase === "gate" ? J.gate : null, best,
       ideal: mode === "jump" && jc && jc.ideal && J && J.phase !== "gate" ? jc.ideal : null,
       particles, flags: true, windNow: wNow, snow, focus, screen: screenText(st),
       speedLines: st && st.phase === "inrun" ? { a: clamp((st.v - 3) / 20, 0, 1) * 0.85, ang: st.ang } : null,
@@ -10169,7 +10551,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     vis($("btnOlSave"), !saved && !off); vis($("btnOlNow"), saved && !off); vis($("btnOlStop"), saved);
     vis($("olLoadBox"), !!olLoad);
     $("tgOnline").setAttribute("aria-checked", String(!S.noOnline));
-    txt($("olPriv"), "Freiwillig und nur, wenn du es nutzt: Für Gruppen speichern wir Name, Nation und Sprünge, sichtbar für alle mit dem Gruppen-Link, für den Online-Spielstand deinen Spielstand. Gespeichert bei Supabase Inc. auf Servern in Frankfurt (Art. 6 Abs. 1 lit. b DSGVO). Gruppen werden 30 Tage nach dem letzten Sprung gelöscht, Spielstände nach 13 Monaten ohne Nutzung. Deinen Code speichern wir nur als Prüfwert.");
+    txt($("olPriv"), "Freiwillig und nur, wenn du es nutzt: Für Gruppen speichern wir Name, Nation, Farben und Sprünge, sichtbar für alle mit dem Gruppen-Link, für den Online-Spielstand deinen Spielstand. Gespeichert bei Supabase Inc. auf Servern in Frankfurt (Art. 6 Abs. 1 lit. b DSGVO). Gruppen werden 30 Tage nach dem letzten Sprung gelöscht, Spielstände nach 13 Monaten ohne Nutzung. Deinen Code speichern wir nur als Prüfwert.");
   }
   on("btnOnline", () => openOnline(overlay === "info" ? "info" : null));
   on("btnOlDone", () => closeOnline());
@@ -10222,6 +10604,8 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   on("btnAkYes", () => { S.onlineAsked = true; S.noOnline = false; saveLocal(); setOverlay(null); const f = askCb; askCb = null; if (f) f(); });
   on("btnAkNo", () => { S.onlineAsked = true; S.noOnline = true; saveLocal(); setOverlay(null); const f = askCb; askCb = null; if (f) f(); });
   $("chGroups").addEventListener("click", (e) => { const b = e.target.closest("[data-g]"); if (b) openGroup(b.dataset.g); });
+  // Rangliste der Gruppe: Zeile antippen = diesen Sprung ansehen
+  $("chBoard").addEventListener("click", (e) => { const b = e.target.closest(".chb-row.can"); if (b) watchGroupRow(+b.dataset.i); });
   // Browser dürfen den Spielstand dann nicht still wegräumen (wo unterstützt; ohne Rückfrage)
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) { /* egal */ }
   // eigenes Hosting: Offline-Speicher, damit das Spiel auch ohne Netz startet
