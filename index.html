@@ -824,6 +824,37 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
 .chb-p { font-family: var(--font-display); font-weight: 700; }
 .chb-more { font-size: 12px; color: var(--muted); }
 
+/* ---------- Online: Gruppe mit Live-Rangliste, Gruppenliste, Online-Fenster, Rückfrage ---------- */
+.chal.grp { width: 780px; }
+.chal.grp .ch-have { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.9fr); column-gap: 18px; row-gap: 8px; align-items: start; }
+.chal.grp .ch-target { padding: 6px 12px; gap: 12px; }
+.chal.grp .ch-target .ch-lbl, .chal.grp .ch-dist { white-space: nowrap; }
+.chal.grp .ch-dist { font-size: 30px; line-height: 32px; }
+.chal.grp .ch-have > * { grid-column: 1; }
+.chal.grp #chBoard { grid-column: 2; grid-row: 1 / span 5; margin: 0; padding: 8px 10px; border-radius: 4px; background: var(--row); align-self: stretch; }
+.chal.grp .ch-big { font-size: 36px; line-height: 40px; }
+.ch-live { color: var(--hi); }
+.ch-live::before { content: ""; display: inline-block; width: 7px; height: 7px; margin-right: 4px; border-radius: 50%; background: currentColor; vertical-align: 1px; animation: livePulse 1.6s ease-in-out infinite; }
+@keyframes livePulse { 50% { opacity: 0.25; } }
+.chb-row.main .chb-n, .chb-row.main .chb-p { color: var(--hi); }
+.ch-groups { display: flex; flex-direction: column; gap: 4px; }
+.chg-row { display: flex; align-items: center; gap: 10px; height: 38px; padding: 0 10px; border: 1px solid var(--line-2); border-radius: 4px; background: var(--row); color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+.chg-h { font-weight: 700; font-size: 14px; white-space: nowrap; }
+.chg-s { flex: 1; min-width: 0; font-size: 13px; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.oldlg .hi-body { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.ol-code { display: flex; align-items: center; gap: 10px; padding: 4px 6px 4px 10px; border-radius: 4px; background: var(--row); }
+.ol-code b { font-family: var(--font-display); font-size: 20px; line-height: 24px; letter-spacing: 0.06em; color: var(--text); user-select: all; -webkit-user-select: all; white-space: nowrap; }
+.ol-code .btn-plain { height: 30px; padding: 0 10px; font-size: 13px; margin-left: auto; }
+.ol-in { display: flex; gap: 8px; align-items: center; }
+.ol-in .ch-in { height: 40px; min-width: 0; font-size: 14px; text-transform: uppercase; }
+.oldlg .if-btns .btn-plain { height: 36px; padding: 0 12px; font-size: 13px; }
+.ol-del { height: 36px; padding: 0 12px; font-size: 13px; align-self: flex-start; }
+.ol-del.warn { border-color: var(--warn); color: var(--warn); }
+.oldlg .set-row { min-height: 34px; }
+.askdlg { width: 470px; max-width: calc(100% - 32px); gap: 10px; }
+.ol-code .ch-lbl { white-space: nowrap; }
+.askdlg .h1 { font-size: 30px; line-height: 34px; }
+
 </style>
 </head>
 <body>
@@ -1077,7 +1108,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     <div id="chHave" class="ch-have">
       <div class="ch-who"><span id="chFlag" class="flag"></span><span id="chName" class="ch-big">SPRINGER</span></div>
       <p id="chHill" class="hd-text"></p>
-      <div class="ch-target"><span class="ch-lbl">ZU SCHLAGEN</span><span id="chDist" class="num ch-dist"></span><span id="chPts" class="ch-pts"></span></div>
+      <div class="ch-target"><span id="chTgtLbl" class="ch-lbl">ZU SCHLAGEN</span><span id="chDist" class="num ch-dist"></span><span id="chPts" class="ch-pts"></span></div>
       <div id="chBoard" class="ch-board" hidden></div>
       <p id="chCond" class="ch-cond"></p>
       <p id="chNote" class="hd-text"></p>
@@ -1087,6 +1118,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
       <p class="hd-text">Kopiere den Link aus WhatsApp und füge ihn hier ein.</p>
       <input id="chIn" class="ch-in" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Link der Herausforderung" aria-label="Link der Herausforderung">
       <p class="hd-text ch-new">Selbst herausfordern: Spring im Training und tippe danach auf <b>Herausfordern</b>. <button type="button" id="btnChTrain" class="btn-plain">Zum Training</button></p>
+      <div id="chGroups" class="ch-groups" hidden></div>
     </div>
     <div class="hd-btns">
       <button type="button" id="btnChBack" class="btn btn-secondary btn-s"><span>Später</span></button>
@@ -1302,12 +1334,54 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   </div>
 </section>
 
+<!-- ============ Online: Spielstand per Code, auf dieses Gerät holen, Online-Daten löschen ============ -->
+<section id="scrOnline" class="screen screen-dim3 center" hidden>
+  <div class="dialog hillinfo infodlg oldlg panel-strong" role="dialog" aria-labelledby="olTitle">
+    <div class="set-head">
+      <div class="hi-head"><span class="kicker">TELEMARK ONLINE</span><h2 id="olTitle" class="h1">Online</h2></div>
+      <div class="hi-nav"><button type="button" id="btnOlDone" class="btn btn-primary btn-s"><span>Fertig</span></button></div>
+    </div>
+    <p id="olOff" class="hi-about" hidden>Online gibt es auf der Spielseite im Browser.</p>
+    <div id="olBody" class="hi-body">
+      <div class="hi-right">
+        <span class="hi-k">SPIELSTAND ONLINE</span>
+        <p id="olSaveTxt" class="hi-about"></p>
+        <div id="olCodeBox" class="ol-code" hidden><span class="ch-lbl">DEIN CODE</span><b id="olCode" class="num"></b><button type="button" id="btnOlCopy" class="btn-plain">Kopieren</button></div>
+        <div class="if-btns">
+          <button type="button" id="btnOlSave" class="btn btn-secondary btn-s"><span>Online sichern</span></button>
+          <button type="button" id="btnOlNow" class="btn btn-secondary btn-s" hidden><span>Jetzt sichern</span></button>
+          <button type="button" id="btnOlStop" class="btn-plain" hidden>Nicht mehr sichern</button>
+        </div>
+        <span class="hi-k">AUF DIESES GERÄT HOLEN</span>
+        <div class="ol-in"><input id="olIn" class="ch-in" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Code, z. B. K7PM-3QXD-9TRA" aria-label="Code des Spielstands"><button type="button" id="btnOlLoad" class="btn btn-secondary btn-s"><span>Laden</span></button></div>
+        <div id="olLoadBox" class="hi-box" hidden><span id="olLoadTxt"></span><span class="if-btns"><button type="button" id="btnOlNo" class="btn-plain">Abbrechen</button><button type="button" id="btnOlYes" class="btn btn-primary btn-s"><span>Ersetzen</span></button></span></div>
+      </div>
+      <div class="hi-right">
+        <span class="hi-k">DATENSCHUTZ ONLINE</span>
+        <p id="olPriv" class="hi-about"></p>
+        <div class="set-row"><span class="lbl">Online-Funktionen</span><button type="button" id="tgOnline" class="toggle" role="switch" aria-checked="true" aria-label="Online-Funktionen"><i></i></button></div>
+        <button type="button" id="btnOlDel" class="btn-plain ol-del"><span>Meine Online-Daten löschen</span></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Rückfrage vor der ersten Online-Gruppe ============ -->
+<section id="scrAsk" class="screen screen-dim3 center" hidden>
+  <div class="dialog askdlg panel-strong" role="dialog" aria-labelledby="akTitle">
+    <span class="kicker">ONLINE-GRUPPE</span>
+    <h2 id="akTitle" class="h1">Gegeneinander, live</h2>
+    <p id="akTxt" class="hd-text"></p>
+    <div class="hd-btns"><button type="button" id="btnAkNo" class="btn btn-secondary btn-s"><span>Nur Link</span></button><button type="button" id="btnAkYes" class="btn btn-primary btn-wide"><span>Online-Gruppe</span><span class="ico" data-icon="arrow-right"></span></button></div>
+  </div>
+</section>
+
 <!-- ============ Info: Spielstand, Fanspiel, Datenschutz, Impressum ============ -->
 <section id="scrInfo" class="screen screen-dim3 center" hidden>
   <div class="dialog hillinfo infodlg panel-strong" role="dialog" aria-labelledby="ifTitle">
     <div class="set-head">
       <div class="hi-head"><span id="ifKicker" class="kicker">TELEMARK</span><h2 id="ifTitle" class="h1">Info &amp; Datenschutz</h2></div>
-      <div class="hi-nav"><button type="button" id="btnIfDone" class="btn btn-primary btn-s"><span>Fertig</span></button></div>
+      <div class="hi-nav"><button type="button" id="btnOnline" class="btn btn-secondary btn-s" hidden><span>Online</span></button><button type="button" id="btnIfDone" class="btn btn-primary btn-s"><span>Fertig</span></button></div>
     </div>
     <div class="hi-body">
       <div class="hi-right">
@@ -1326,7 +1400,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
       </div>
       <div class="hi-right">
         <span class="hi-k">DATENSCHUTZ</span>
-        <p class="hi-about">Kein Konto, keine Werbung, keine Cookies, keine Analyse. Name, Nation, Bestweiten und Einstellungen speichert das Spiel nur im Browser auf diesem Gerät, es sendet nichts an einen Server. Ein Duell-Link enthält deinen Namen, deine Nation und deinen Sprung und geht nur an die, denen du ihn selbst schickst.</p>
+        <p id="ifPriv0" class="hi-about">Kein Konto, keine Werbung, keine Cookies, keine Analyse. Name, Nation, Bestweiten und Einstellungen speichert das Spiel nur im Browser auf diesem Gerät, es sendet nichts an einen Server. Ein Duell-Link enthält deinen Namen, deine Nation und deinen Sprung und geht nur an die, denen du ihn selbst schickst.</p>
         <p id="ifPriv" class="hi-about"></p>
       </div>
     </div>
@@ -6157,13 +6231,86 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   root.TMAudio = { make };
 })(typeof window !== "undefined" ? window : globalThis);
 
+// TELEMARK online: Supabase über die REST-Schnittstelle, ohne Bibliothek.
+// Das Spiel ruft nur die geprüften Datenbankfunktionen tm_* auf (Tabellen sind von außen nicht erreichbar).
+// Der persönliche Code (12 Zeichen) ist zugleich Ausweis: Wer ihn kennt, kann den Spielstand laden.
+(function () {
+  "use strict";
+  const ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";   // ohne I, O, 0, 1 (verwechselbar)
+  const CODE_RE = /^[A-HJ-NP-Z2-9]{12}$/, GROUP_RE = /^[A-HJ-NP-Z2-9]{7}$/;
+
+  function newCode() {
+    const b = new Uint8Array(12);
+    crypto.getRandomValues(b);
+    let s = "";
+    for (const x of b) s += ALPHA[x & 31];
+    return s;
+  }
+  const fmtCode = (c) => String(c || "").replace(/(.{4})(?=.)/g, "$1-");
+  // Eingabe aufräumen: Leerzeichen, Bindestriche, Kleinbuchstaben; null wenn kein gültiger Code
+  function parseCode(t) {
+    const s = String(t || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+    return CODE_RE.test(s) ? s : null;
+  }
+  const groupOk = (g) => GROUP_RE.test(String(g || ""));
+
+  // cfg: { url: "https://….supabase.co", key: "sb_publishable_…" }; null wenn nicht eingerichtet
+  function make(cfg) {
+    const url = cfg && String(cfg.url || "").replace(/\/+$/, "");
+    if (!url || !/^https:\/\/[a-z0-9.-]+$/i.test(url) || !cfg.key || typeof fetch !== "function") return null;
+    const base = url + "/rest/v1/rpc/";
+    const headers = { "Content-Type": "application/json", apikey: cfg.key, Authorization: "Bearer " + cfg.key };
+    async function rpc(fn, args, ms) {
+      const ac = typeof AbortController === "function" ? new AbortController() : null;
+      const timer = ac ? setTimeout(() => ac.abort(), ms || 9000) : 0;
+      try {
+        const r = await fetch(base + fn, { method: "POST", headers, body: JSON.stringify(args || {}), signal: ac ? ac.signal : undefined, cache: "no-store" });
+        const text = await r.text();
+        let j = null;
+        try { j = text ? JSON.parse(text) : null; } catch (e) { /* keine JSON-Antwort */ }
+        if (!r.ok) {
+          const e = new Error((j && (j.message || j.hint)) || "HTTP " + r.status);
+          e.status = r.status; e.code = (j && j.code) || "";
+          throw e;
+        }
+        return j;
+      } catch (e) {
+        if (e && e.name === "AbortError") { const x = new Error("Zeit abgelaufen"); x.status = 0; x.code = "timeout"; throw x; }
+        if (e && e.status == null) { e.status = 0; e.code = e.code || "net"; }
+        throw e;
+      } finally { if (timer) clearTimeout(timer); }
+    }
+    return { rpc };
+  }
+
+  // Fehler in einen kurzen Satz fürs Spiel
+  // Der Server meldet Fehler als HTTP-Status: 400 ungültig, 404 Gruppe fehlt, 409 Gruppe voll, 429 zu schnell, 507 Speicher voll
+  function message(e) {
+    const c = e && e.code, st = e && e.status;
+    if (c === "PGRST202") return "Diese Funktion ist online noch nicht eingerichtet";
+    if (st === 429) return "Zu viele Anfragen, kurz warten";
+    if (st === 404) return "Gruppe nicht gefunden (30 Tage ohne Sprung werden Gruppen gelöscht)";
+    if (st === 409) return "Die Gruppe ist voll (200 Springer)";
+    if (st === 400) return "Ungültige Angaben";
+    if (st === 507) return "Online-Speicher ist voll";
+    if (!st) return "Keine Verbindung";
+    if (st >= 500) return "Server gerade nicht erreichbar";
+    return "Online gerade nicht möglich";
+  }
+
+  window.TMOnline = { make, newCode, fmtCode, parseCode, groupOk, message, ALPHA };
+})();
+
 /* TELEMARK – Spielablauf, Kamera, Steuerung, HUD, Wertung, Wettkampf, Partymodus (Hot-Seat), Herausforderung per Link, Wiederholung, Einstellungen. */
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.22";
+  const VERSION = "0.23";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
-  const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}} || {});
+  const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
+  // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
+  const OL = window.TMOnline || null;
+  const ON = OL && SITE.web ? OL.make(SITE.sb) : null;
   // ------------------------------------------------------------------ Fehlergrenzen
   // Ein Fehler beim Start zeigt einen Rettungsbildschirm (neu laden oder Spielstand zurücksetzen) statt einer leeren Seite;
   // ein Fehler während des Spiels hält die Bildschleife nicht an, erst eine lange Fehlerserie führt zum Rettungsbildschirm.
@@ -6297,7 +6444,8 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     tutorialDone: false, bests: {}, compBest: {}, jumps: 0, telemarks: 0, sumD: 0, level: "mid", compWind: "var",
     hot: { n: 2, names: ["SPIELER 1", "SPIELER 2", "SPIELER 3", "SPIELER 4", "SPIELER 5", "SPIELER 6", "SPIELER 7", "SPIELER 8"], rounds: 2, wind: "var", fmt: "one" },
     chFmt: "tour", chLevel: "mid", chWind: "var", champ: null, party: null, champBest: {},
-    gaugeLeft: false, gaugeSide: "off", flv: 3, hand: "right", sens: 1, ghosts: {}, tops: {}, tod: "evening", missions: {}, daily: null, look: null, expert: false };
+    gaugeLeft: false, gaugeSide: "off", flv: 3, hand: "right", sens: 1, ghosts: {}, tops: {}, tod: "evening", missions: {}, daily: null, look: null, expert: false,
+    oc: null, osave: false, oat: "", groups: [], opend: [], noOnline: false, onlineAsked: false };
   let S = JSON.parse(JSON.stringify(DEF));
   try {
     const raw = localStorage.getItem(KEY);
@@ -6373,6 +6521,14 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     };
     if (o.champ != null && !chOk(o.champ, false)) { o.champ = null; fixed++; }
     if (o.party != null && !chOk(o.party, true)) { o.party = null; fixed++; }
+    // Online: persönlicher Code, zuletzt geöffnete Gruppen, noch nicht gesendete Gruppensprünge
+    if (o.oc != null && !(typeof o.oc === "string" && /^[A-HJ-NP-Z2-9]{12}$/.test(o.oc))) { o.oc = null; o.osave = false; fixed++; }
+    const gOk = (x) => isObj(x) && /^[A-HJ-NP-Z2-9]{7}$/.test(x.g) && hillOk(x.h);
+    if (!o.groups.every(gOk)) { o.groups = o.groups.filter(gOk); fixed++; }
+    if (o.groups.length > 8) o.groups.length = 8;
+    const pOk = (x) => isObj(x) && /^[A-HJ-NP-Z2-9]{7}$/.test(x.g) && num(x.d) && num(x.p) && (x.k === "telemark" || x.k === "twofoot");
+    if (!o.opend.every(pOk)) { o.opend = o.opend.filter(pOk); fixed++; }
+    if (o.opend.length > 6) o.opend.length = 6;
     return fixed;
   }
   try {
@@ -6393,7 +6549,9 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   const gaugeAuto = () => !S.gaugeSet && ((jc && jc.practice) || S.jumps < 5);
   const gaugeShown = () => S.gaugeSide !== "off" || gaugeAuto();
   const gaugeOnLeft = () => S.gaugeSide === "left";
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* voll oder gesperrt */ } }
+  let cloudT = 0, cloudBusy = false;   // Spielstand online: verzögert sichern, nie zweimal gleichzeitig
+  function saveLocal() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* voll oder gesperrt */ } }
+  function save() { saveLocal(); cloudSoon(); }
   const trainSpeed = () => ([1, 0.75, 0.5].includes(S.speed) ? S.speed : S.slow ? 0.5 : 1);
   let H = Hill.getHill(S.hill);
   const gateFor = (Hh) => clamp(S.gates[Hh.key] != null ? S.gates[Hh.key] : Hh.refGate, 1, Hh.gates);
@@ -6730,7 +6888,10 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     vis($("scrJumper"), name === "jumper");
     vis($("scrInfo"), name === "info");
     vis($("scrPic"), name === "pic");
+    vis($("scrOnline"), name === "online");
+    vis($("scrAsk"), name === "ask");
     if (name === "settings") fillSettings();
+    if (name === "online") fillOnline();
     if (name === "info") fillInfo();
     if (name === "jumper") fillJumper();
     if (name === "records") fillRecords();
@@ -6948,7 +7109,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
         }
         txt(el.distVal, fmt1(L.dist) + " m");
         if (ctxMode === "training" && L.kind !== "fall" && (jc.prevBest == null || L.dist > jc.prevBest)) { vis(el.distChip, true); txt(el.distChip, "NEUE BESTWEITE"); }
-        if (ctxMode !== "training" && jc.toLead != null && L.kind !== "fall" && L.dist >= jc.toLead) { vis(el.distChip, true); txt(el.distChip, ctxMode === "chal" ? `WEITER ALS ${chal.n}` : jc.duel ? "ÜBER DER DUELL-LINIE" : "ÜBER DER FÜHRUNGSLINIE"); }
+        if (ctxMode !== "training" && jc.toLead != null && L.kind !== "fall" && L.dist >= jc.toLead) { vis(el.distChip, true); txt(el.distChip, ctxMode === "chal" ? (chal.grp && chal.board[0] && chal.board[0].me ? "WEITER ALS DEIN BESTER" : `WEITER ALS ${chal.n}`) : jc.duel ? "ÜBER DER DUELL-LINIE" : "ÜBER DER FÜHRUNGSLINIE"); }
       }
       if (ev.type === "stopped") { jc.doneT = 0; Snd.stopped(J.landing ? J.landing.kind : null); }
     }
@@ -7097,7 +7258,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     if (ctxMode === "comp") return `${comp.round === 1 ? "1. Durchgang" : "Finale"} · Nr. ${comp.idx + 1} · Luke ${st.gate}`;
     if (ctxMode === "hot" && party) return `Tournee ${party.station + 1}/${party.hills.length} · Durchgang ${hot.round}/${hot.rounds} · Luke ${st.gate}`;
     if (ctxMode === "hot") return `Durchgang ${hot.round}/${hot.rounds} · Luke ${st.gate}`;
-    if (ctxMode === "chal") return `Herausforderung von ${chal.n} · Luke ${st.gate}`;
+    if (ctxMode === "chal") return chal.grp ? `Online-Gruppe · ${chal.total} Springer · Luke ${st.gate}` : `Herausforderung von ${chal.n} · Luke ${st.gate}`;
     if (ctxMode === "mission") return `${ms.m.title}${ms.m.n || ms.m.hills ? ` · Sprung ${ms.res.length + 1}/${missionJumps(ms.m)}` : ""} · Luke ${st.gate}`;
     if (ctxMode === "daily") return `Tageschallenge · Versuch ${dc.tries.length + 1}/3 · Luke ${st.gate}`;
     return `Training${jc && jc.slow < 1 ? ` · Tempo ${Math.round(jc.slow * 100)} %` : ""} · Luke ${st.gate}`;
@@ -7323,6 +7484,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     // Herausforderung: jeder gestandene Trainingssprung und jeder Versuch einer Herausforderung kann als Link raus
     if ((ctxMode === "training" && !jc.practice) || ctxMode === "chal") entry.chal = sc.kind === "fall" ? null : chalFromJump(sc);
     if (ctxMode === "chal") chalRecord(entry);
+    if (ctxMode === "chal" && chal && chal.grp) postGroup(entry);
     lastResult = entry;
     showResult(entry);
   }
@@ -7454,6 +7616,16 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
         sub = rk === 1 ? `${fmt1(me.total - others[0].total)} Punkte vor ${others[0].name}` : `${fmt1(hs[0].total - me.total)} Punkte hinter ${hs[0].name}`;
       }
     }
+    if (ctxMode === "chal" && chal && chal.grp && r.grpState === "ok") {
+      const b = chal.board, me = b.find((x) => x.me);
+      if (me) {
+        rk = me.r;
+        head = rk === 1 ? "Du führst die Gruppe" : `Platz ${rk} von ${chal.total}`;
+        const sec = b.find((x) => x.r === 2), lead = b[0];
+        sub = rk === 1 ? (sec ? `${fmt1(me.p - sec.p)} Punkte vor ${sec.n}` : "als Erster in der Gruppe") : `${fmt1(lead.p - me.p)} Punkte hinter ${lead.n}`;
+        if (chalPts(r.total) < me.p) sub += ` · es zählt dein bester (${fmt1(me.p)})`;
+      }
+    }
     rsRankOn = !!rk;
     if (!rk) { vis(el, false); return; }
     el.innerHTML = `<div class="rk-medal ${rk === 1 ? "g" : rk === 2 ? "s" : rk === 3 ? "b" : ""}">${rk}</div><div class="rk-txt"><b>${esc(head)}</b><span>${esc(sub)}</span></div>${mv}`;
@@ -7515,6 +7687,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     else if (ctxMode === "mission" && r.mission && r.mission.done) { chip.className = r.mission.stars ? "chip chip-cyan" : "chip chip-warn"; chip.textContent = r.mission.stars ? `${"★".repeat(r.mission.stars)} MISSION` : "NOCH KEIN STERN"; }
     else if (ctxMode === "mission" && r.mission) { chip.className = "chip chip-dim"; chip.textContent = `SPRUNG ${ms.res.length}/${missionJumps(ms.m)}`; }
     else if (ctxMode === "daily") { chip.className = r.dailyBest ? "chip chip-cyan" : "chip chip-dim"; chip.textContent = r.dailyBest ? "BESTER VERSUCH" : `VERSUCH ${dc.tries.length}/3`; }
+    else if (ctxMode === "chal" && chal && chal.grp) grpChip(r, chip);
     else if (ctxMode === "chal") { chip.className = r.chalWin > 0 ? "chip chip-cyan" : r.chalWin < 0 ? "chip chip-warn" : "chip chip-dim"; chip.textContent = r.chalWin > 0 ? "GEWONNEN" : r.chalWin < 0 ? "VERLOREN" : "GLEICHSTAND"; }
     else if (r.newBest) { chip.className = "chip chip-cyan"; chip.textContent = "NEUE BESTWEITE"; }
     else if (r.kind === "fall") { chip.className = "chip chip-warn"; chip.textContent = "STURZ"; }
@@ -7569,6 +7742,13 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
       txt($("rsListTitle"), "Tageschallenge");
       txt($("rsSession"), `${dateDE(dc.date)} · ${H.name}`);
       list.innerHTML = dailyTriesHtml(true);
+    } else if (ctxMode === "chal" && chal && chal.grp) {
+      txt($("rsListTitle"), "Gruppe");
+      txt($("rsSession"), `${H.name} · Luke ${chal.g} · ${chal.total} Springer`);
+      list.classList.add("scroll"); list.classList.remove("fit");
+      head.innerHTML = '<span>#</span><span>SPRINGER</span><span class="ta-r">WEITE</span><span class="ta-r">PUNKTE</span>';
+      head.className = "jt-head st-grid";
+      fillStand = () => { list.innerHTML = grpListHtml(r); };
     } else if (ctxMode === "chal") {
       txt($("rsListTitle"), "Herausforderung");
       txt($("rsSession"), `${H.name} · Luke ${chal.g}`);
@@ -7604,24 +7784,27 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     ana.push(["LANDUNG", r.kind === "telemark" ? "Telemark" : r.kind === "fall" ? "Sturz" : "beidbeinig", r.kind === "telemark" ? "ok" : r.kind === "fall" ? "bad" : "mid"]);
     $("rsAna").innerHTML = ana.map(([k, v, c]) => `<div class="ra ${c}"><span class="ra-k">${k}</span><span class="ra-v${String(v).length > 9 ? " long" : ""}">${v}</span></div>`).join("");
     txt($("rsTip"), r.tip);
-    vis($("rsTip"), ctxMode !== "mission" && ctxMode !== "comp");
+    const grpMode = ctxMode === "chal" && !!chal && !!chal.grp;   // in der Gruppe braucht die Rangliste den Platz
+    vis($("rsTip"), ctxMode !== "mission" && ctxMode !== "comp" && !grpMode);
     vis($("rsAna"), ctxMode !== "comp");
     // Platzierung groß oben, Ansichten: Stand, Details zum Sprung, in der Meisterschaft die Gesamtwertung live
     rankHeader(r);
     $("rsDet").innerHTML = detailsHtml(r);
     const inCh = ctxMode === "comp" && !!champ;
     vis($("rsTabs").querySelector('[data-v="champ"]'), inCh);
-    txt($("rsTabs").querySelector('[data-v="list"]'), { comp: "Stand", hot: "Wertung", training: "Sprünge", mission: "Mission", daily: "Versuche", chal: "Duell" }[ctxMode] || "Stand");
+    txt($("rsTabs").querySelector('[data-v="list"]'), { comp: "Stand", hot: "Wertung", training: "Sprünge", mission: "Mission", daily: "Versuche", chal: grpMode ? "Gruppe" : "Duell" }[ctxMode] || "Stand");
     if (inCh) champPane();
     // Stand, Wertung und Sprünge: der Reiter ist die Überschrift (Mission, Tageschallenge und Duell behalten ihren Titel)
     vis($("rsListTitle"), !["comp", "hot", "training", "daily", "chal"].includes(ctxMode) && $("rsListTitle").textContent.length <= 12);
     rsFill = fillStand;
     setRsTab("list");
     // Freund herausfordern: nach gestandenen Trainingssprüngen und nach jedem Versuch einer Herausforderung
-    const canChal = !!r.chal;
+    const inGrp = ctxMode === "chal" && !!chal && !!chal.grp;
+    const canChal = !!r.chal || inGrp;
+    txt($("btnMenu").querySelector("span:last-child"), inGrp ? "Gruppe" : "Menü");
     const canPic = ["training", "chal", "daily", "mission"].includes(ctxMode) && !r.practice && !!r.path && r.path.length > 4;
     vis($("rsChal"), canChal); vis($("btnPic"), canPic); vis($("chalShareTxt"), false);
-    if (canChal) txt($("chalBtnTxt"), ctxMode === "chal" ? (r.chalWin > 0 ? "Zurückfordern" : "Nochmal fordern") : "Herausfordern");
+    if (canChal) txt($("chalBtnTxt"), inGrp ? "Einladen" : ctxMode === "chal" ? (r.chalWin > 0 ? "Zurückfordern" : "Nochmal fordern") : r.grpChal ? "Gruppe teilen" : "Herausfordern");
     if (fillStand) fillStand();
     let next = "Nächster Sprung";
     if (ctxMode === "training" && practiceLeft > 0) next = `Übungssprung ${3 - practiceLeft + 1}/3`;
@@ -8028,14 +8211,257 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     return code ? chalDecode(code) : null;
   }
   async function shareChal() {
-    const c = lastResult && lastResult.chal;
+    const r = lastResult;
+    // in einer Online-Gruppe: weitere Freunde einladen
+    if (ctxMode === "chal" && chal && chal.grp) { await shareLink(groupText(chal)); return; }
+    const c = r && r.chal;
     if (!c) return;
+    // nach dem Training: Online-Gruppe anlegen (beim ersten Mal kurz erklären), sonst wie bisher der Link mit dem Sprung
+    if (ctxMode === "training" && onlineReady()) {
+      if (r.grpChal) { await shareLink(groupText(r.grpChal)); return; }
+      if (!S.onlineAsked) { askOnline(() => shareChal()); return; }
+      if (grpMaking) return;
+      grpMaking = true; txt($("chalBtnTxt"), "Gruppe wird angelegt …");
+      let gc = null;
+      try { gc = await groupNew(r); } catch (e) { onlineFail(e, "GRUPPE GEHT GERADE NICHT"); }
+      grpMaking = false;
+      if (gc) {
+        r.grpChal = gc;
+        if (lastResult === r) txt($("chalBtnTxt"), "Gruppe teilen");
+        if (!(await shareLink(groupText(gc)))) showToastSafeText("GRUPPE ANGELEGT", "Jetzt auf „Gruppe teilen“ tippen");
+        return;
+      }
+      if (lastResult === r) txt($("chalBtnTxt"), "Herausfordern");
+    }
     const text = chalText(c, chalUrl(c));
     try { if (navigator.share) { await navigator.share({ title: "TELEMARK", text }); return; } } catch (e) { if (e && e.name === "AbortError") return; }
     try { await navigator.clipboard.writeText(text); showToastSafeText("LINK KOPIERT", "In WhatsApp einfügen und senden"); return; } catch (e) { /* weiter */ }
     // Rückfall: Text zum manuellen Kopieren anzeigen
     const ta = $("chalShareTxt"); ta.value = text; vis(ta, true); ta.focus(); ta.select();
   }
+  // ------------------------------------------------------------------ Online: Gruppen mit Live-Rangliste, Spielstand per Code (Supabase)
+  // Eine Gruppe ist eine Herausforderung mit Rangliste auf dem Server: gleiche Schanze, Luke, Wind und Startwert für alle,
+  // Ziel und Geist ist der Führende. Jeder darf so oft springen, wie er will, der beste Sprung zählt.
+  let grpBusy = false, grpT = 0, grpMaking = false, pendBusy = false, askCb = null;
+  const onlineReady = () => !!ON && !S.noOnline;
+  const meName = () => String(S.name || "SPRINGER").toUpperCase();
+  function myCode() { if (!S.oc) { S.oc = OL.newCode(); saveLocal(); } return S.oc; }
+  const onlineFail = (e, head) => showToastSafeText(head || "ONLINE", OL ? OL.message(e) : "Keine Verbindung");
+  const dateTimeDE = (iso) => {
+    const d = new Date(iso);
+    if (!iso || isNaN(d.getTime())) return "unbekannt";
+    const p2 = (n) => String(n).padStart(2, "0");
+    return `${p2(d.getDate())}.${p2(d.getMonth() + 1)}.${d.getFullYear()} ${p2(d.getHours())}:${p2(d.getMinutes())}`;
+  };
+  function groupFromLocation() {
+    const m = /(?:^|[#&?])g=([A-HJ-NP-Z2-9]{7})(?![A-Za-z0-9])/.exec((location.hash || "") + "&" + (location.search || "").replace(/^\?/, "&"));
+    return m ? m[1] : null;
+  }
+  const groupUrl = (g) => (gameUrl() || location.href.split("#")[0]) + "#g=" + g;
+  function groupText(c) {
+    const Hh = Hill.getHill(c.h), top = c.board.slice(0, 3).map((x) => `${x.r}. ${x.n} ${fmt1(x.p)}`).join(" · ");
+    return `${meName()} lädt dich in eine TELEMARK-Gruppe ein: ${Hh.short || Hh.name} (HS${Hh.HS}), gleicher Wind für alle, Rangliste live.${top ? ` Stand: ${top}.` : ""} Spring mit:\n${groupUrl(c.grp)}`;
+  }
+  // Teilen-Menü, sonst Zwischenablage, sonst Text zum Kopieren. false: der Browser lässt das Teilen ohne frisches Tippen nicht zu.
+  async function shareLink(text) {
+    try { if (navigator.share) { await navigator.share({ title: "TELEMARK", text }); return true; } }
+    catch (e) { if (e && e.name === "AbortError") return true; if (e && e.name === "NotAllowedError") return false; }
+    try { await navigator.clipboard.writeText(text); showToastSafeText("LINK KOPIERT", "In WhatsApp einfügen und senden"); return true; } catch (e) { /* weiter */ }
+    if (mode === "result") { const ta = $("chalShareTxt"); ta.value = text; vis(ta, true); ta.focus(); ta.select(); }
+    else txt($("chNote"), text);
+    return true;
+  }
+  // Antwort des Servers (Gruppe mit Rangliste) prüfen und wie eine Herausforderung aufbauen
+  function groupChal(b, keep) {
+    if (!b || typeof b !== "object" || !OL.groupOk(b.g) || !Hill.HILLS.some((x) => x.key === b.h)) return null;
+    const Hh = Hill.getHill(b.h), nat = (c) => (NATIONS.some((y) => y[0] === c) ? c : "");
+    const board = (Array.isArray(b.b) ? b.b : []).filter((x) => x && typeof x === "object").map((x) => ({
+      r: Math.max(1, Math.round(+x.r) || 1), n: String(x.n || "SPRINGER").slice(0, 12), c: nat(x.c), d: clamp(+x.d || 0, 0, 400), p: clamp(+x.p || 0, -100, 500),
+      k: KIND_SHORT[x.k] ? x.k : "twofoot", x: Math.max(1, Math.round(+x.x) || 1), me: x.me === true }));
+    const lead = board[0] || { n: "SPRINGER", c: "", d: 0, p: 0, k: "twofoot" };
+    let path = null;
+    try { path = b.gh ? ghostUnpack2(String(b.gh)) : null; } catch (e) { path = null; }
+    return {
+      grp: b.g, h: b.h, g: clamp(Math.round(+b.gate) || Hh.refGate, 1, Hh.gates), w: WIND_NAME[b.w] ? b.w : "var",
+      s: Number.isFinite(+b.s) ? Math.abs(Math.round(+b.s)) % 2147483647 : 1, t: TOD_NAME[b.t] ? b.t : "evening",
+      n: lead.n, c: lead.c, d: lead.d, p: lead.p, k: lead.k, path, r: [],
+      tries: keep ? keep.tries : 0, best: keep ? keep.best : null, board, total: Math.max(board.length, Math.round(+b.n) || 0),
+    };
+  }
+  function rememberGroup(c) {
+    const me = c.board.find((x) => x.me);
+    const e = { g: c.grp, h: c.h, n: c.total, rk: me ? me.r : 0, at: Date.now() };
+    S.groups = [e].concat(S.groups.filter((x) => x.g !== c.grp)).slice(0, 8);
+    saveLocal();
+  }
+  async function openGroup(code) {
+    if (!ON) { showToastSafeText("NUR AUF DER SPIELSEITE", "Online-Gruppen gehen im Browser auf der Spielseite"); return; }
+    if (S.noOnline) { askOnline(() => { if (!S.noOnline) openGroup(code); }); return; }   // online ausgeschaltet: erst fragen
+    if (grpBusy) return;
+    grpBusy = true;
+    try {
+      const c = groupChal(await ON.rpc("tm_group_get", { p_group: code, p_code: S.oc || null }));
+      if (!c) {
+        S.groups = S.groups.filter((x) => x.g !== code); saveLocal();
+        showToastSafeText("GRUPPE NICHT GEFUNDEN", "Nach 30 Tagen ohne Sprung wird eine Gruppe gelöscht");
+        if (mode === "chal" && chalPaste) fillGroupList();
+        return;
+      }
+      rememberGroup(c);
+      openChal(c);
+      flushPending();
+    } catch (e) { onlineFail(e, "GRUPPE NICHT GELADEN"); }
+    finally { grpBusy = false; }
+  }
+  async function groupNew(r) {
+    const c = r.chal;
+    const b = await ON.rpc("tm_group_new", { p_code: myCode(), p_name: meName(), p_nation: S.nation || "", p_hill: c.h, p_gate: c.g, p_wind: c.w, p_seed: c.s, p_tod: c.t,
+      p_dist: c.d, p_points: c.p, p_kind: c.k, p_ghost: typeof c.g2 === "string" && c.g2.length <= 4000 ? c.g2 : null });
+    const gc = groupChal(b);
+    if (!gc) { const e = new Error("leere Antwort"); e.status = 500; throw e; }
+    rememberGroup(gc);
+    return gc;
+  }
+  // Live: solange die Gruppe offen ist, alle 5 Sekunden nachsehen
+  function groupPoll() {
+    clearTimeout(grpT);
+    if (!ON || !chal || !chal.grp || mode !== "chal" || chalPaste) return;
+    grpT = setTimeout(async () => {
+      if (chal && chal.grp && mode === "chal" && !chalPaste && !document.hidden) {
+        try {
+          const c = groupChal(await ON.rpc("tm_group_get", { p_group: chal.grp, p_code: S.oc || null }, 6000), chal);
+          if (c && c.grp === chal.grp && mode === "chal" && !chalPaste) {
+            const changed = JSON.stringify(c.board) !== JSON.stringify(chal.board);
+            chal = c; rememberGroup(c);
+            if (changed) fillChal();
+          }
+        } catch (e) { /* beim nächsten Mal wieder */ }
+      }
+      groupPoll();
+    }, 5000);
+  }
+  // Gruppensprung senden; ohne Verbindung merken und später nachsenden
+  async function postGroup(entry) {
+    const g = chal && chal.grp;
+    if (!ON || !g || !entry || entry.kind === "fall") return;
+    let gh = null;
+    try { gh = ghostPack2(entry.path); } catch (e) { gh = null; }
+    const p = { g, d: entry.dist, p: chalPts(entry.total), k: entry.kind, gh: typeof gh === "string" && gh.length <= 4000 ? gh : null };
+    entry.grpState = "send";
+    try {
+      const c = groupChal(await ON.rpc("tm_group_post", { p_code: myCode(), p_name: meName(), p_nation: S.nation || "", p_group: g, p_dist: p.d, p_points: p.p, p_kind: p.k, p_ghost: p.gh }), chal);
+      if (c && chal && chal.grp === g) { chal = c; rememberGroup(c); }
+      entry.grpState = "ok";
+    } catch (e) {
+      entry.grpState = "fail";
+      if (!e.status || e.status >= 500) { queuePending(p); entry.grpQueued = true; }
+      else onlineFail(e, "NICHT GESENDET");
+    }
+    if (mode === "result" && lastResult === entry) grpRefresh(entry);
+  }
+  function queuePending(p) {
+    const i = S.opend.findIndex((x) => x.g === p.g);
+    if (i >= 0) { if (S.opend[i].p >= p.p) return; S.opend.splice(i, 1); }
+    S.opend.unshift(p);
+    if (S.opend.length > 6) S.opend.length = 6;
+    saveLocal();
+  }
+  // erst nach dem erfolgreichen Senden aus der Liste nehmen; ohne Verbindung beim nächsten Mal weiter
+  async function flushPending() {
+    if (!ON || pendBusy || !S.opend.length) return;
+    pendBusy = true;
+    for (const p of S.opend.slice()) {
+      let again = false;
+      try { await ON.rpc("tm_group_post", { p_code: myCode(), p_name: meName(), p_nation: S.nation || "", p_group: p.g, p_dist: p.d, p_points: p.p, p_kind: p.k, p_ghost: p.gh || null }); }
+      catch (e) { again = !e.status || e.status >= 500; }
+      if (again) break;
+      S.opend = S.opend.filter((x) => x !== p); saveLocal();
+    }
+    pendBusy = false;
+  }
+  // Ergebnistafel im Gruppensprung
+  function grpChip(r, chip) {
+    const me = chal && chal.board.find((x) => x.me);
+    if (r.kind === "fall") { chip.className = "chip chip-warn"; chip.textContent = "STURZ"; }
+    else if (r.grpState === "send") { chip.className = "chip chip-dim"; chip.textContent = "WIRD GESENDET"; }
+    else if (r.grpState === "fail") { chip.className = "chip chip-warn"; chip.textContent = r.grpQueued ? "WIRD NACHGESENDET" : "NICHT GESENDET"; }
+    else if (me) { chip.className = me.r === 1 ? "chip chip-cyan" : "chip chip-dim"; chip.textContent = me.r === 1 ? "FÜHRUNG" : `PLATZ ${me.r}`; }
+    else { chip.className = "chip chip-dim"; chip.textContent = "GRUPPE"; }
+  }
+  function grpListHtml(r) {
+    const b = chal.board, me = b.find((x) => x.me);
+    let rows = b.slice(0, 6);
+    if (me && !rows.includes(me)) rows = rows.slice(0, 5).concat([me]);
+    let h = rows.map((x) => standRow({ rank: x.r, nation: x.c, name: x.n, dist: x.d, total: x.p }, { me: x.me })).join("");
+    if (!me && r.kind !== "fall") h += standRow({ rank: null, nation: S.nation, name: meName(), dist: r.dist, total: chalPts(r.total) }, { me: true });
+    const note = r.grpState === "send" ? "Wird an die Gruppe gesendet …"
+      : r.grpState === "fail" ? (r.grpQueued ? "Keine Verbindung: Der Sprung wird nachgesendet." : "Dieser Sprung wurde nicht gesendet.")
+      : chal.tries > 1 ? `Es zählt dein bester Sprung · ${chal.tries} Versuche` : "Es zählt dein bester Sprung. Die Rangliste sehen alle live.";
+    return h + `<p class="msr-goal">${esc(note)}</p>`;
+  }
+  function grpRefresh(r) {
+    grpChip(r, $("rsChip"));
+    txt($("rsSession"), `${H.name} · Luke ${chal.g} · ${chal.total} Springer`);
+    rankHeader(r);
+    if (rsTab !== "list") vis($("rsRank"), false);
+    else if (rsFill) rsFill();
+  }
+  // Duell-Bildschirm: Gruppe mit Live-Rangliste
+  function fillGroup() {
+    const Hh = Hill.getHill(chal.h), b = chal.board, me = b.find((x) => x.me), leadMe = !!(b[0] && b[0].me);
+    $("chFlag").innerHTML = chal.c ? flag(chal.c) : ""; vis($("chFlag"), !!chal.c);
+    txt($("chName"), chal.n);
+    txt($("chHill"), `${leadMe ? "Du führst" : "führt"} die Gruppe · ${Hh.name} · ${hillSub(Hh)}`);
+    txt($("chCond"), `Luke ${chal.g} · Wind ${WIND_NAME[chal.w]} · ${TOD_NAME[chal.t]}`);
+    txt($("chDist"), fmt1(chal.d) + " m");
+    txt($("chPts"), `${fmt1(chal.p)} Punkte · ${KIND_SHORT[chal.k]}`);
+    let rows = b.slice(0, 6);
+    if (me && !rows.includes(me)) rows = rows.slice(0, 5).concat([me]);
+    $("chBoard").innerHTML = `<span class="ch-lbl">RANGLISTE · <span class="ch-live">LIVE</span> · ${chal.total} SPRINGER</span>` +
+      rows.map((x) => `<span class="chb-row${x.me ? " main" : ""}"><b>${x.r}.</b>${x.c ? flagSpan(x.c) : "<span></span>"}<span class="chb-n">${esc(x.n)}${x.me ? " · DU" : ""}</span><span class="chb-p">${fmt1(x.p)}</span></span>`).join("") +
+      (chal.total > rows.length ? `<span class="chb-more">und ${chal.total - rows.length} weitere</span>` : "");
+    vis($("chBoard"), true);
+    txt($("chNote"), S.tutorialDone
+      ? "Gleicher Wind für alle, der Führende fliegt als Geist mit. Spring so oft du willst, dein bester zählt. Name und Ergebnis sehen alle mit dem Link."
+      : "Zuerst drei kurze Übungssprünge in Zeitlupe, dann geht es los. Name und Ergebnis sehen alle mit dem Link.");
+    groupPoll();
+  }
+  function fillGroupList() {
+    const el = $("chGroups"), L = ON ? S.groups.slice(0, 3) : [];
+    vis(el, L.length > 0);
+    el.innerHTML = L.length ? `<span class="ch-lbl">DEINE GRUPPEN</span>` + L.map((x) => {
+      const Hh = Hill.getHill(x.h);
+      return `<button type="button" class="chg-row" data-g="${x.g}"><span class="chg-h">${esc(Hh.short || Hh.name)}</span><span class="chg-s">${x.n} Springer${x.rk ? ` · Platz ${x.rk}` : ""}</span>${icon("arrow-right", 18)}</button>`;
+    }).join("") : "";
+  }
+  // Beim ersten Mal kurz erklären, was online passiert
+  function askOnline(cb) {
+    askCb = cb;
+    txt($("akTxt"), "Alle springen mit demselben Wind, die Rangliste sehen alle live, egal wie viele mitmachen. Dafür speichern wir Name, Nation und Sprünge bei Supabase (Server in Frankfurt), sichtbar für alle mit dem Link und 30 Tage nach dem letzten Sprung gelöscht. Ändern unter Info → Online.");
+    setOverlay("ask");
+  }
+  // Spielstand online: ohne Geister (groß, auf jedem Gerät neu) und ohne die Online-Angaben dieses Geräts
+  function cloudData() {
+    const o = JSON.parse(JSON.stringify(S));
+    for (const k of ["ghosts", "oc", "osave", "oat", "opend", "repaired"]) delete o[k];
+    return o;
+  }
+  function cloudSoon() {
+    if (!ON || !S.osave || !S.oc || !booted || S.noOnline) return;
+    clearTimeout(cloudT); cloudT = setTimeout(() => cloudNow(false), 8000);
+  }
+  async function cloudNow(manual) {
+    if (!ON || !S.oc || cloudBusy) return false;
+    cloudBusy = true; clearTimeout(cloudT);
+    try {
+      const at = await ON.rpc("tm_save", { p_code: S.oc, p_name: meName(), p_nation: S.nation || "", p_data: cloudData() });
+      S.oat = typeof at === "string" ? at : new Date().toISOString(); saveLocal();
+      if (overlay === "online") fillOnline();
+      return true;
+    } catch (e) { if (manual) onlineFail(e, "NICHT GESICHERT"); return false; }
+    finally { cloudBusy = false; }
+  }
+
   // ------------------------------------------------------------------ Sprung als Bild: Plakat mit Weite, Punkten und der Flugkurve über dem Schanzenprofil
   const cssVar = (n, d) => { try { return getComputedStyle(document.documentElement).getPropertyValue(n).trim() || d; } catch (e) { return d; } };
   const svgImage = (svg) => new Promise((res) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg); });
@@ -8167,10 +8593,16 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     demo = null; demoWait = 0.4;
   }
   function fillChal() {
+    const grp = !chalPaste && !!chal && !!chal.grp;
+    $("scrChal").querySelector(".dialog").classList.toggle("grp", grp);
+    txt($("chKicker"), grp ? "ONLINE-GRUPPE" : chalPaste ? "DUELL" : "HERAUSFORDERUNG");
     vis($("chHave"), !chalPaste); vis($("chPaste"), chalPaste); vis($("btnChOther"), !chalPaste);
-    txt($("chGoTxt"), chalPaste ? "Öffnen" : "Annehmen");
+    txt($("btnChOther"), grp ? "Einladen" : "Anderer Link");
+    txt($("chGoTxt"), chalPaste ? "Öffnen" : grp ? "Springen" : "Annehmen");
     txt($("btnChBack").querySelector("span"), chalPaste ? "Zurück" : "Später");
-    if (chalPaste) { $("chIn").value = ""; return; }
+    txt($("chTgtLbl"), grp ? "FÜHRT MIT" : "ZU SCHLAGEN");
+    if (chalPaste) { $("chIn").value = ""; fillGroupList(); return; }
+    if (grp) { fillGroup(); return; }
     const Hh = Hill.getHill(chal.h);
     $("chFlag").innerHTML = chal.c ? flag(chal.c) : ""; vis($("chFlag"), !!chal.c);
     txt($("chName"), chal.n);
@@ -8189,6 +8621,8 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   }
   function chalGo() {
     if (chalPaste) {
+      const gm = /(?:^|[#&?\s])g=([A-HJ-NP-Z2-9]{7})(?![A-Za-z0-9])/.exec($("chIn").value);
+      if (gm) { openGroup(gm[1]); return; }
       const code = chalCode($("chIn").value), c = code ? chalDecode(code) : null;
       if (!c) { showToastSafeText("KEIN GÜLTIGER LINK", "Den ganzen Link aus WhatsApp einfügen"); return; }
       chal = c; chalPaste = false; fillChal(); return;
@@ -9026,7 +9460,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   $("msList").addEventListener("click", (e) => { const b = e.target.closest("button[data-id]"); if (b && !b.disabled) startMission(b.dataset.id); });
   on("btnHot", () => { if (S.party && !S.party.done) { party = S.party; champ = null; openChampHub(); } else openSetup("hot"); });
   on("btnArChal", () => openChal(null, !chal));
-  on("btnDuel", () => openChal(null, !chal));
+  on("btnDuel", () => openChal(null, !chal || !!chal.grp));
   on("btnChTrain", () => { chalPaste = false; goTitle(); $("btnPlay").click(); });
   on("btnChal", () => shareChal());
   on("btnPic", () => sharePic());
@@ -9090,10 +9524,11 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     else showToastSafe();
   });
   on("btnPauseSettings", () => openSettings("pause"));
-  on("btnQuit", () => { if (ctxMode === "mission" || ctxMode === "daily") { setOverlay(null); openArcade(); } else goTitle(); });
+  on("btnQuit", () => { if (ctxMode === "mission" || ctxMode === "daily") { setOverlay(null); openArcade(); } else if (ctxMode === "chal" && chal && chal.grp) { setOverlay(null); openChal(chal); } else goTitle(); });
   on("btnNext", () => resultNext());
   on("btnReplay", () => startReplay());
   on("btnMenu", () => {
+    if (ctxMode === "chal" && chal && chal.grp) { openChal(chal); return; }
     if (ctxMode === "training" || ctxMode === "chal") { goTitle(); return; }
     if (ctxMode === "mission" || ctxMode === "daily") { openArcade(); return; }
     const b = $("btnMenu").querySelector("span:last-child");
@@ -9419,6 +9854,10 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   function closeInfo() { setOverlay(infoFrom === "settings" ? "settings" : null); }
   function fillInfo() {
     txt($("ifKicker"), `TELEMARK · VERSION ${VERSION}`);
+    vis($("btnOnline"), !!ON);
+    txt($("ifPriv0"), ON
+      ? "Kein Konto, keine Werbung, keine Cookies, keine Analyse. Dein Spielstand bleibt im Browser auf diesem Gerät. Ein Duell-Link enthält Name, Nation und Sprung und geht nur an die, denen du ihn schickst. Online-Gruppen und Online-Spielstand sind freiwillig, Details unter Online."
+      : "Kein Konto, keine Werbung, keine Cookies, keine Analyse. Name, Nation, Bestweiten und Einstellungen speichert das Spiel nur im Browser auf diesem Gerät, es sendet nichts an einen Server. Ein Duell-Link enthält deinen Namen, deine Nation und deinen Sprung und geht nur an die, denen du ihn selbst schickst.");
     const im = SITE.impressum || {};
     const lines = [im.name, im.adresse, im.mail].filter((x) => typeof x === "string" && x.trim());
     $("ifImp").innerHTML = lines.length ? lines.map(esc).join("<br>") : "Privates Spieleprojekt, nicht öffentlich angeboten.";
@@ -9489,6 +9928,74 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     try { const raw = localStorage.getItem(KEY); if (raw) localStorage.setItem(KEY + ".backup", raw); localStorage.setItem(KEY, JSON.stringify(loadState)); location.reload(); }
     catch (e) { softNotice("Speichern ist in diesem Browser nicht möglich"); }
   });
+  // ------------------------------------------------------------------ Online-Fenster: Spielstand per Code, auf dieses Gerät holen, Online-Daten löschen
+  let olFrom = null, olLoad = null, olDelArm = 0;
+  function openOnline(from) { olFrom = from; olLoad = null; setOverlay("online"); }
+  function closeOnline() { setOverlay(olFrom === "info" ? "info" : null); }
+  function fillOnline() {
+    vis($("olOff"), !ON); vis($("olBody"), !!ON);
+    if (!ON) return;
+    const saved = !!(S.osave && S.oc), off = !!S.noOnline;
+    txt($("olSaveTxt"), off ? "Online-Funktionen sind aus. Schalte sie rechts ein, um Gruppen und den Online-Spielstand zu nutzen."
+      : saved ? (S.oat ? `Wird automatisch gesichert, zuletzt am ${dateTimeDE(S.oat)}.` : "Wird automatisch gesichert.")
+      : "Sichere deinen Spielstand online. Mit deinem Code holst du ihn auf jedes Gerät, auch wenn der Browser ihn löscht.");
+    vis($("olCodeBox"), saved); txt($("olCode"), saved ? OL.fmtCode(S.oc) : "");
+    vis($("btnOlSave"), !saved && !off); vis($("btnOlNow"), saved && !off); vis($("btnOlStop"), saved);
+    vis($("olLoadBox"), !!olLoad);
+    $("tgOnline").setAttribute("aria-checked", String(!S.noOnline));
+    txt($("olPriv"), "Freiwillig und nur, wenn du es nutzt: Für Gruppen speichern wir Name, Nation und Sprünge, sichtbar für alle mit dem Gruppen-Link, für den Online-Spielstand deinen Spielstand. Gespeichert bei Supabase Inc. auf Servern in Frankfurt (Art. 6 Abs. 1 lit. b DSGVO). Gruppen werden 30 Tage nach dem letzten Sprung gelöscht, Spielstände nach 13 Monaten ohne Nutzung. Deinen Code speichern wir nur als Prüfwert.");
+  }
+  on("btnOnline", () => openOnline(overlay === "info" ? "info" : null));
+  on("btnOlDone", () => closeOnline());
+  on("btnOlSave", async () => {
+    myCode(); S.osave = true; saveLocal(); fillOnline();
+    if (await cloudNow(true)) showToastSafeText("GESICHERT", "Code aufheben, zum Beispiel als Notiz");
+  });
+  on("btnOlNow", async () => { if (await cloudNow(true)) showToastSafeText("GESICHERT", "Dein Spielstand ist online"); });
+  on("btnOlStop", () => { S.osave = false; saveLocal(); fillOnline(); showToastSafeText("NICHT MEHR SICHERN", "Gesicherter Stand bleibt, bis du ihn löschst"); });
+  on("btnOlCopy", async () => {
+    try { await navigator.clipboard.writeText(OL.fmtCode(S.oc)); showToastSafeText("KOPIERT", "Code in der Zwischenablage"); }
+    catch (e) { const rg = document.createRange(); rg.selectNodeContents($("olCode")); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(rg); }
+  });
+  on("btnOlLoad", async () => {
+    const code = OL.parseCode($("olIn").value);
+    if (!code) { showToastSafeText("KEIN GÜLTIGER CODE", "12 Zeichen, zum Beispiel K7PM-3QXD-9TRA"); return; }
+    try {
+      const j = await ON.rpc("tm_load", { p_code: code });
+      if (!j || !j.d || typeof j.d !== "object" || Array.isArray(j.d)) { showToastSafeText("NICHTS GEFUNDEN", "Zu diesem Code gibt es keinen Spielstand"); return; }
+      const test = Object.assign(JSON.parse(JSON.stringify(DEF)), JSON.parse(JSON.stringify(j.d)));
+      sanitize(test);
+      olLoad = { code, d: j.d, at: typeof j.at === "string" ? j.at : "" };
+      txt($("olLoadTxt"), `Spielstand von ${test.name || "SPRINGER"} vom ${dateTimeDE(olLoad.at)}, ${test.jumps} Sprünge. Dein jetziger Stand wird ersetzt.`);
+      vis($("olLoadBox"), true);
+    } catch (e) { onlineFail(e, "NICHT GELADEN"); }
+  });
+  on("btnOlNo", () => { olLoad = null; vis($("olLoadBox"), false); });
+  on("btnOlYes", () => {
+    if (!olLoad) return;
+    const st = Object.assign({}, olLoad.d, { oc: olLoad.code, osave: true, oat: olLoad.at, ghosts: S.ghosts, opend: [] });
+    try { const raw = localStorage.getItem(KEY); if (raw) localStorage.setItem(KEY + ".backup", raw); localStorage.setItem(KEY, JSON.stringify(st)); location.reload(); }
+    catch (e) { softNotice("Speichern ist in diesem Browser nicht möglich"); }
+  });
+  on("tgOnline", () => { S.noOnline = !S.noOnline; S.onlineAsked = true; saveLocal(); fillOnline(); });
+  on("btnOlDel", async () => {
+    const b = $("btnOlDel"), sp = b.querySelector("span");
+    if (!S.oc) { showToastSafeText("NICHTS ZU LÖSCHEN", "Von diesem Gerät gibt es keine Online-Daten"); return; }
+    if (Date.now() - olDelArm > 4000) {
+      olDelArm = Date.now(); txt(sp, "Wirklich alles löschen? Nochmal tippen"); b.classList.add("warn");
+      setTimeout(() => { if (Date.now() - olDelArm >= 3900) { txt(sp, "Meine Online-Daten löschen"); b.classList.remove("warn"); } }, 4000);
+      return;
+    }
+    olDelArm = 0; txt(sp, "Meine Online-Daten löschen"); b.classList.remove("warn");
+    try {
+      await ON.rpc("tm_forget", { p_code: S.oc });
+      S.oc = null; S.osave = false; S.oat = ""; S.groups = []; S.opend = []; saveLocal(); fillOnline();
+      showToastSafeText("GELÖSCHT", "Spielstand und Gruppen-Ergebnisse sind online gelöscht");
+    } catch (e) { onlineFail(e, "NICHT GELÖSCHT"); }
+  });
+  on("btnAkYes", () => { S.onlineAsked = true; S.noOnline = false; saveLocal(); setOverlay(null); const f = askCb; askCb = null; if (f) f(); });
+  on("btnAkNo", () => { S.onlineAsked = true; S.noOnline = true; saveLocal(); setOverlay(null); const f = askCb; askCb = null; if (f) f(); });
+  $("chGroups").addEventListener("click", (e) => { const b = e.target.closest("[data-g]"); if (b) openGroup(b.dataset.g); });
   // Browser dürfen den Spielstand dann nicht still wegräumen (wo unterstützt; ohne Rückfrage)
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) { /* egal */ }
   // eigenes Hosting: Offline-Speicher, damit das Spiel auch ohne Netz startet
@@ -9504,14 +10011,20 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   txt($("verTxt"), "Version " + VERSION);
   if (S.repaired) { softNotice("Der Spielstand war teilweise beschädigt und wurde repariert."); delete S.repaired; save(); }
   // Herausforderung aus dem Link (#c=…); auch wenn der Link in einem schon offenen Tab landet
-  const chal0 = chalFromLocation();
-  if (chal0) openChal(chal0);
-  window.addEventListener("hashchange", () => { const c = chalFromLocation(); if (c && mode !== "jump") openChal(c); });
+  const grp0 = groupFromLocation(), chal0 = grp0 ? null : chalFromLocation();
+  if (grp0) openGroup(grp0); else if (chal0) openChal(chal0);
+  window.addEventListener("hashchange", () => {
+    const g = groupFromLocation();
+    if (g) { if (mode !== "jump") openGroup(g); return; }
+    const c = chalFromLocation(); if (c && mode !== "jump") openChal(c);
+  });
+  // Online: liegengebliebene Gruppensprünge nachsenden, Spielstand abgleichen
+  if (ON) setTimeout(() => { flushPending(); cloudSoon(); }, 2500);
   requestAnimationFrame((t) => { last = t; frame(t); });
 
   // für Tests
   window.__tm = { get J() { return J; }, get mode() { return mode; }, get comp() { return comp; }, get hot() { return hot; }, get bd() { return bd; },
-    onAction, newJump, get H() { return H; }, S, finishJump, get drag() { return drag; }, padScale: () => padK() * uiS, get chal() { return chal; }, get lastResult() { return lastResult; }, chalUrl, chalDecode, Hap, setHill, get cam() { return cam; }, get st() { return lastSt; }, get Q() { return Q; }, get jc() { return jc; }, renderer, Snd };
+    onAction, newJump, get H() { return H; }, S, finishJump, get drag() { return drag; }, padScale: () => padK() * uiS, get chal() { return chal; }, get lastResult() { return lastResult; }, chalUrl, chalDecode, Hap, setHill, openGroup, get online() { return { on: !!ON, oc: S.oc, osave: S.osave, groups: S.groups, opend: S.opend }; }, cloudNow, get cam() { return cam; }, get st() { return lastSt; }, get Q() { return Q; }, get jc() { return jc; }, renderer, Snd };
 })();
 
 </script>
