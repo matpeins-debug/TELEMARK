@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+@font-face { font-family: "Oswald"; src: url("fonts/Oswald.ttf") format("truetype"); font-weight: 200 700; }
+@font-face { font-family: "Jost"; src: url("fonts/Jost.ttf") format("truetype"); font-weight: 100 900; }
+html, body { margin: 0; background: #E6D6B7; color: #1E2734; -webkit-font-smoothing: antialiased; }
+a { color: #B23524; } a:hover { color: #1E2734; }
+</style>
+<script src="plakat-szene.js"></script>
+</helmet>
+<div data-screen-label="Stilblatt" style="max-width: 1280px; margin: 40px auto 80px; padding: 64px; box-sizing: border-box; background: #F1E7D2; border: 2px solid #141B25; border-radius: 4px; box-shadow: inset 0 0 0 6px #F1E7D2, inset 0 0 0 7px rgba(30,39,52,0.38); display: flex; flex-direction: column; gap: 64px; font-family: 'Iowan Old Style', Charter, Georgia, serif; font-size: 17px; line-height: 1.5;">
+
+  <header style="display: flex; flex-direction: column; gap: 10px;">
+    <div style="font-family: Jost, sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.22em; color: #B23524;">TELEMARK · PLAKAT 1928 · SCHRITT 2</div>
+    <h1 style="margin: 0; font-family: Jost, sans-serif; font-weight: 700; font-size: 72px; line-height: 1; text-transform: uppercase; letter-spacing: 0.01em;">Stilblatt</h1>
+    <p style="margin: 8px 0 0; max-width: 820px; font-size: 20px; color: #3A4454; text-wrap: pretty;">Gilt für alle zehn Orte. Plakatsonne für Früh und Nachmittag, Alpenglühen für den Abend. Maße in px bei 800 px Bildhöhe; im Spiel mit Höhe / 800 skalieren.</p>
+  </header>
+
+  <section style="display: flex; flex-direction: column; gap: 20px;">
+    <div style="display: flex; align-items: baseline; gap: 16px; border-bottom: 2px solid #1E2734; padding-bottom: 8px;">
+      <span style="font-family: Oswald, sans-serif; font-weight: 700; font-size: 28px;">1</span>
+      <h2 style="margin: 0; font-family: Jost, sans-serif; font-weight: 700; font-size: 28px; text-transform: uppercase; letter-spacing: 0.02em;">Druckfarben</h2>
+      <span style="color: #786D59;">gemeinsam für alle Orte, höchstens 10 je Szene</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px 16px;">
+      <div style="display: flex; flex-direction: column; gap: 6px;"><div style="height: 64px; background: #1F56A8; border-radius: 2px;"></div><b style="font-family: Jost, sans-serif;">Kobalt</b><span style="font-family: Oswald, sans-serif; color: #786D59;">#1F56A8</span><span style="font-size: 14px; line-height: 1.35;">Himmel oben</span></div>
+      <div style="display: flex; flex-direction: column; gap: 6px;"><div style="height: 64px; background: #4F86C6; border-radius: 2px;"></div><b style="font-family: Jost, sans-serif;">Himmel</b><span style="font-family: Oswald, sans-serif; color: #786D59;">#4F86C6</span><span style="font-size: 14px; line-height: 1.35;">Himmel Mitte</span></div>
+      <div style="display: flex; flex-direction: column; gap: 6px;"><div style="height: 64px; background: #BFD6EA; border-radius: 2px;"></div><b style="font-family: Jost, sans-serif;">Dunst</b><span style="font-family: Oswald, sans-serif; color: #786D59;">#BFD6EA</span><span style="font-size: 14px; line-height: 1.35;">Horizont, Firn, Mulden</span></div>
+      <div style="display: flex; flex-direction: column; gap: 6px;"><div style="height: 64px; background: #F4EEDF; border-radius: 2px; box-shadow: inset 0 0 0 1px rgba(30,39,52,0.2);"></div><b style="font-family: Jost, sans-serif;">Papierweiß</b><span style="font-family: Oswald, sans-serif; color: #786D59;">#F4EEDF</span><span style="font-size: 14px; line-height: 1.35;">Schnee im Licht, hellste Farbe</span></div>
+      <div style="display: flex; flex-direction: column; gap: 6px;"><div style="height: 64px; background: #8DAFD8; border-radius: 2px;"></div><b style="font-family: Jost, sans-serif;">Schneeschatten</b><span style="font-family: Oswald, sans-serif; color: #786D59;">#8DAFD8</span><span style="font-size: 14px; line-height: 1.35;">Schatten auf Schnee</span></div>
+      <div style="display: flex; flex-direction: column; gap: 6px;"><div style="height: 64px; background: #5C78B8; border-radius: 2px;"></div><b style="font-family: Jost, sans-serif;">Tiefschatten</b><span style="font-family: Oswald, sans-serif; color: #786D59;">#5C78B8</span><span style="font-size: 14px; line-height: 1.35;">Fels, Tiefe, Hangkante</span></div>
+      <div style="display: flex; flex-direction: column; gap: 6px;"><div style="height: 64px; background: #E9A58C; border-radius: 2px;"></div><b style="font-family: Jost, sans-serif;">Alpenglühen</b><span style="font-family: Oswald, sans-serif; color: #786D59;">#E9A58C</span><span style="font-size: 14px; line-height: 1.35;">Gipfel am Abend</span></div>
+      <div style="display: flex; flex-direction: column; gap: 6px;"><div style="height: 64px; background: #6B5C8E; border-radius: 2px;"></div><b style="font-family: Jost, sans-serif;">Abendviolett</b><span style="font-family: Oswald, sans-serif; color: #786D59;">#6B5C8E</span><span style="font-size: 14px; line-height: 1.35;">Abendhimmel, Schatten am Abend</span></div>
+      <div style="display: flex; flex-direction: column; gap: 6px;"><div style="height: 64px; background: #2D5546; border-radius: 2px;"></div><b style="font-family: Jost, sans-serif;">Fichte</b><span style="font-family: Oswald, sans-serif; color: #786D59;">#2D5546</span><span style="font-size: 14px; line-height: 1.35;">Wald, Lichtseite</span></div>
+      <div style="display: flex; flex-direction: column; gap: 6px;"><div style="height: 64px; background: #1D3A33; border-radius: 2px;"></div><b style="font-family: Jost, sans-serif;">Fichte dunkel</b><span style="font-family: Oswald, sans-serif; color: #786D59;">#1D3A33</span><span style="font-size: 14px; line-height: 1.35;">Wald, Schattenseite</span></div>
+      <div style="display: flex; flex-direction: column; gap: 6px;"><div style="height: 64px; background: #8E4A2E; border-radius: 2px;"></div><b style="font-family: Jost, sans-serif;">Holz &amp; Dach</b><span style="font-family: Oswald, sans-serif; color: #786D59;">#8E4A2E</span><span style="font-size: 14px; line-height: 1.35;">Dächer, Balkone, Türen, Wagen</span></div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px 16px; padding-top: 16px; border-top: 1px solid rgba(30,39,52,0.25);">
+      <div style="display: flex; flex-direction: column; gap: 6px;"><div style="height: 40px; background: #C23B2A; border-radius: 2px;"></div><b style="font-family: Jost, sans-serif;">Signalrot</b><span style="font-family: Oswald, sans-serif; color: #786D59;">#C23B2A</span><span style="font-size: 14px; line-height: 1.35;">Fahnen, K-Marke, Kabine</span></div>
+      <div style="display: flex; flex-direction: column; gap: 6px;"><div style="height: 40px; background: #DDA43B; border-radius: 2px;"></div><b style="font-family: Jost, sans-serif;">Ocker</b><span style="font-family: Oswald, sans-serif; color: #786D59;">#DDA43B</span><span style="font-size: 14px; line-height: 1.35;">Ideallinie, Fenster abends</span></div>
+      <div style="display: flex; flex-direction: column; gap: 6px;"><div style="height: 40px; background: #1E2734; border-radius: 2px;"></div><b style="font-family: Jost, sans-serif;">Tinte</b><span style="font-family: Oswald, sans-serif; color: #786D59;">#1E2734</span><span style="font-size: 14px; line-height: 1.35;">Kontur, Ski, Masten</span></div>
+      <div style="display: flex; flex-direction: column; gap: 6px;"><div style="height: 40px; background: #F2C230; border-radius: 2px;"></div><b style="font-family: Jost, sans-serif;">Springergelb</b><span style="font-family: Oswald, sans-serif; color: #786D59;">#F2C230 / #C99A22</span><span style="font-size: 14px; line-height: 1.35;">nur der Springer</span></div>
+      <div style="grid-column: span 2; align-self: center; font-size: 15px; color: #3A4454; text-wrap: pretty;">Diese vier gehören zur Spielebene und zur Oberfläche. In der Landschaft nur als kleine Akzente.</div>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 20px;">
+    <div style="display: flex; align-items: baseline; gap: 16px; border-bottom: 2px solid #1E2734; padding-bottom: 8px;">
+      <span style="font-family: Oswald, sans-serif; font-weight: 700; font-size: 28px;">2</span>
+      <h2 style="margin: 0; font-family: Jost, sans-serif; font-weight: 700; font-size: 28px; text-transform: uppercase; letter-spacing: 0.02em;">Zuordnung je Lichtstimmung</h2>
+      <span style="color: #786D59;">Zwischentöne sind Mischungen zweier Druckfarben, keine neuen Farben</span>
+    </div>
+    <div style="display: grid; grid-template-columns: minmax(160px, 220px) minmax(0, 1fr) minmax(0, 1fr); font-size: 15px;">
+      <div style="padding: 8px 0; font-family: Jost, sans-serif; font-weight: 700; letter-spacing: 0.12em; font-size: 12px; color: #786D59; border-bottom: 1px solid rgba(30,39,52,0.45);">ROLLE</div>
+      <div style="padding: 8px 0; font-family: Jost, sans-serif; font-weight: 700; letter-spacing: 0.12em; font-size: 12px; color: #786D59; border-bottom: 1px solid rgba(30,39,52,0.45);">PLAKATSONNE · FRÜH, NACHMITTAG</div>
+      <div style="padding: 8px 0; font-family: Jost, sans-serif; font-weight: 700; letter-spacing: 0.12em; font-size: 12px; color: #786D59; border-bottom: 1px solid rgba(30,39,52,0.45);">ALPENGLÜHEN · ABEND</div>
+
+      <div style="padding: 10px 12px 10px 0; border-bottom: 1px solid rgba(30,39,52,0.18);">Himmel, 5 Stufen</div>
+      <div style="padding: 10px 0; border-bottom: 1px solid rgba(30,39,52,0.18); display: flex; flex-wrap: wrap; gap: 4px;"><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #1F56A8;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">1F56A8</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #376EB7;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">376EB7</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #4F86C6;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">4F86C6</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #87AED8;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">87AED8</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #BFD6EA;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">BFD6EA</span></span></div>
+      <div style="padding: 10px 0; border-bottom: 1px solid rgba(30,39,52,0.18); display: flex; flex-wrap: wrap; gap: 4px;"><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #4C476A;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">4C476A</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #6B5C8E;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">6B5C8E</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #91728D;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">91728D</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #B0848D;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">B0848D</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #CD958C;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">CD958C</span></span></div>
+
+      <div style="padding: 10px 12px 10px 0; border-bottom: 1px solid rgba(30,39,52,0.18);">Berg: Licht · Schatten · Firn · Fels</div>
+      <div style="padding: 10px 0; border-bottom: 1px solid rgba(30,39,52,0.18); display: flex; flex-wrap: wrap; gap: 4px;"><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #F4EEDF; box-shadow: inset 0 0 0 1px rgba(30,39,52,0.2);"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">F4EEDF</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #8DAFD8;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">8DAFD8</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #BFD6EA;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">BFD6EA</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #5C78B8;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">5C78B8</span></span></div>
+      <div style="padding: 10px 0; border-bottom: 1px solid rgba(30,39,52,0.18); display: flex; flex-wrap: wrap; gap: 4px;"><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #E9A58C;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">E9A58C</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #6B5C8E;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">6B5C8E</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #EFCAB6;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">EFCAB6</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #4E486C;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">4E486C</span></span></div>
+
+      <div style="padding: 10px 12px 10px 0; border-bottom: 1px solid rgba(30,39,52,0.18);">Erdschatten: Licht · Schatten</div>
+      <div style="padding: 10px 0; border-bottom: 1px solid rgba(30,39,52,0.18); color: #786D59;">entfällt</div>
+      <div style="padding: 10px 0; border-bottom: 1px solid rgba(30,39,52,0.18); display: flex; flex-wrap: wrap; gap: 4px;"><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #7A81AF;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">7A81AF</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #6B5C8E;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">6B5C8E</span></span></div>
+
+      <div style="padding: 10px 12px 10px 0; border-bottom: 1px solid rgba(30,39,52,0.18);">Ferne Gipfel: Licht · Schatten</div>
+      <div style="padding: 10px 0; border-bottom: 1px solid rgba(30,39,52,0.18); display: flex; flex-wrap: wrap; gap: 4px;"><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #E4E7E2;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">E4E7E2</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #A1BFDF;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">A1BFDF</span></span></div>
+      <div style="padding: 10px 0; border-bottom: 1px solid rgba(30,39,52,0.18); display: flex; flex-wrap: wrap; gap: 4px;"><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #D2988C;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">D2988C</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #846B8E;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">846B8E</span></span></div>
+
+      <div style="padding: 10px 12px 10px 0; border-bottom: 1px solid rgba(30,39,52,0.18);">Waldsaum fern · Talboden · Talschatten</div>
+      <div style="padding: 10px 0; border-bottom: 1px solid rgba(30,39,52,0.18); display: flex; flex-wrap: wrap; gap: 4px;"><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #476885;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">476885</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #F4EEDF; box-shadow: inset 0 0 0 1px rgba(30,39,52,0.2);"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">F4EEDF</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #8DAFD8;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">8DAFD8</span></span></div>
+      <div style="padding: 10px 0; border-bottom: 1px solid rgba(30,39,52,0.18); display: flex; flex-wrap: wrap; gap: 4px;"><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #40495C;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">40495C</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #8396C2;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">8396C2</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #7575A4;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">7575A4</span></span></div>
+
+      <div style="padding: 10px 12px 10px 0; border-bottom: 1px solid rgba(30,39,52,0.18);">Haus: Wand · Seite · Dach · Dachschnee · Fenster</div>
+      <div style="padding: 10px 0; border-bottom: 1px solid rgba(30,39,52,0.18); display: flex; flex-wrap: wrap; gap: 4px;"><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #F4EEDF; box-shadow: inset 0 0 0 1px rgba(30,39,52,0.2);"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">F4EEDF</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #8DAFD8;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">8DAFD8</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #8E4A2E;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">8E4A2E</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #F4EEDF; box-shadow: inset 0 0 0 1px rgba(30,39,52,0.2);"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">F4EEDF</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #5C78B8;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">5C78B8</span></span></div>
+      <div style="padding: 10px 0; border-bottom: 1px solid rgba(30,39,52,0.18); display: flex; flex-wrap: wrap; gap: 4px;"><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #CBC2C7;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">CBC2C7</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #8D81A2;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">8D81A2</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #805154;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">805154</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #C0B7C0;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">C0B7C0</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #DDA43B;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">DDA43B</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #E7C585;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">E7C585</span></span></div>
+
+      <div style="padding: 10px 12px 10px 0; border-bottom: 1px solid rgba(30,39,52,0.18);">Fichte: Licht · Schatten · Haube Licht · Haube Schatten</div>
+      <div style="padding: 10px 0; border-bottom: 1px solid rgba(30,39,52,0.18); display: flex; flex-wrap: wrap; gap: 4px;"><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #2D5546;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">2D5546</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #1D3A33;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">1D3A33</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #F4EEDF; box-shadow: inset 0 0 0 1px rgba(30,39,52,0.2);"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">F4EEDF</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #8DAFD8;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">8DAFD8</span></span></div>
+      <div style="padding: 10px 0; border-bottom: 1px solid rgba(30,39,52,0.18); display: flex; flex-wrap: wrap; gap: 4px;"><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #40575C;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">40575C</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #1D3A33;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">1D3A33</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #A4ADC5;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">A4ADC5</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #7E8AB7;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">7E8AB7</span></span></div>
+
+      <div style="padding: 10px 12px 10px 0; border-bottom: 1px solid rgba(30,39,52,0.18);">Hang: Zone 1–4 · Kante · Kantenschatten</div>
+      <div style="padding: 10px 0; border-bottom: 1px solid rgba(30,39,52,0.18); display: flex; flex-wrap: wrap; gap: 4px;"><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #F4EEDF; box-shadow: inset 0 0 0 1px rgba(30,39,52,0.2);"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">F4EEDF</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #BFD6EA;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">BFD6EA</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #8DAFD8;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">8DAFD8</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #5C78B8;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">5C78B8</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #5C78B8;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">5C78B8</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #8DAFD8;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">8DAFD8</span></span></div>
+      <div style="padding: 10px 0; border-bottom: 1px solid rgba(30,39,52,0.18); display: flex; flex-wrap: wrap; gap: 4px;"><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #AAACC0;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">AAACC0</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #8192BE;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">8192BE</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #7471A1;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">7471A1</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #544C73;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">544C73</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #484466;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">484466</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #7575A4;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">7575A4</span></span><span style="display: flex; flex-direction: column; gap: 2px;"><span style="width: 52px; height: 22px; background: #EDC2AD;"></span><span style="font-family: Oswald, sans-serif; font-size: 12px; color: #786D59;">EDC2AD Lippe</span></span></div>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 28px;">
+    <div style="display: flex; align-items: baseline; gap: 16px; border-bottom: 2px solid #1E2734; padding-bottom: 8px;">
+      <span style="font-family: Oswald, sans-serif; font-weight: 700; font-size: 28px;">3</span>
+      <h2 style="margin: 0; font-family: Jost, sans-serif; font-weight: 700; font-size: 28px; text-transform: uppercase; letter-spacing: 0.02em;">Formregeln</h2>
+      <span style="color: #786D59;">links heute, rechts neu (Engelberg)</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 14px;">
+      <h3 style="margin: 0; font-family: Jost, sans-serif; font-weight: 700; font-size: 22px; text-transform: uppercase; letter-spacing: 0.03em;">Berge</h3>
+      <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+        <figure style="margin: 0; display: flex; flex-direction: column; gap: 6px;"><div style="width: 360px; height: 191px; background-image: url('assets/vorher.png'); background-size: 1009px auto; background-position: -630px -28px; border-radius: 2px;"></div><figcaption style="font-size: 14px; color: #786D59;">heute: Nadelkegel mit Pixelkanten</figcaption></figure>
+        <figure style="margin: 0; display: flex; flex-direction: column; gap: 6px;"><canvas ref="{{ c_berg_s }}" width="760" height="396" style="width: 380px; height: 198px; display: block; border-radius: 2px; background: #4F86C6;"></canvas><figcaption style="font-size: 14px; color: #786D59;">Plakatsonne</figcaption></figure>
+        <figure style="margin: 0; display: flex; flex-direction: column; gap: 6px;"><canvas ref="{{ c_berg_g }}" width="760" height="396" style="width: 380px; height: 198px; display: block; border-radius: 2px; background: #6B5C8E;"></canvas><figcaption style="font-size: 14px; color: #786D59;">Alpenglühen mit Erdschatten</figcaption></figure>
+      </div>
+      <ul style="margin: 0; padding-left: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 4px 40px; text-wrap: pretty;">
+        <li>Ein Hausberg je Ort als Großform, Umriss aus 15–25 Punkten, keine wiederholten Gipfel.</li>
+        <li>Höchstens drei Flächen: Licht, Schatten, Firn. Fels nur als Rinne, die oben am Grat ansetzt und in Falllinie spitz ausläuft.</li>
+        <li>Licht kommt von links. Ein Grat läuft vom Gipfel zur Basis; links davon Licht, rechts Schatten.</li>
+        <li>Ferne Gipfel liegen hinter dem Hausberg und sind 30–40 % zum Dunst gemischt.</li>
+        <li>Alpenglühen: nur das obere Drittel glüht. Darunter Erdschatten mit welliger Oberkante (±14 px), Licht- und Schattenseite bleiben unterscheidbar.</li>
+        <li>Gletscherspalten als 2-px-Striche quer zur Falllinie, 3–5 Stück.</li>
+      </ul>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 14px;">
+      <h3 style="margin: 0; font-family: Jost, sans-serif; font-weight: 700; font-size: 22px; text-transform: uppercase; letter-spacing: 0.03em;">Schnee und Aufsprunghang</h3>
+      <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+        <figure style="margin: 0; display: flex; flex-direction: column; gap: 6px;"><div style="width: 360px; height: 239px; background-image: url('assets/vorher.png'); background-size: 996px auto; background-position: -617px -320px; border-radius: 2px;"></div><figcaption style="font-size: 14px; color: #786D59;">heute: große graue Fläche</figcaption></figure>
+        <figure style="margin: 0; display: flex; flex-direction: column; gap: 6px;"><canvas ref="{{ c_hang_s }}" width="760" height="506" style="width: 380px; height: 253px; display: block; border-radius: 2px; background: #F4EEDF;"></canvas><figcaption style="font-size: 14px; color: #786D59;">Plakatsonne</figcaption></figure>
+        <figure style="margin: 0; display: flex; flex-direction: column; gap: 6px;"><canvas ref="{{ c_hang_g }}" width="760" height="506" style="width: 380px; height: 253px; display: block; border-radius: 2px; background: #8192BE;"></canvas><figcaption style="font-size: 14px; color: #786D59;">Alpenglühen</figcaption></figure>
+      </div>
+      <ul style="margin: 0; padding-left: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 4px 40px; text-wrap: pretty;">
+        <li>Hangkante als 2,6-px-Linie in Tiefschatten, darunter 7–17 px Kantenschatten. Die Kante bleibt vor jedem Hintergrund klar.</li>
+        <li>Vier Zonen parallel zum Profil, Grenzen bei 112, 214 und 320 px unter der Kante, wellig mit 14–22 px Ausschlag.</li>
+        <li>Muldenschatten als lange Linsen, 180–260 × 7–14 px, in Hangrichtung gedreht.</li>
+        <li>Spuren als 1,6-px-Linien in Muldenfarbe, mit Unterbrechungen.</li>
+        <li>Schnee ist Farbe: im Licht Papierweiß, im Schatten Blau, am Abend Violett. Nie reines Weiß.</li>
+        <li>Schlagschatten fallen nach rechts unten.</li>
+      </ul>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 14px;">
+      <h3 style="margin: 0; font-family: Jost, sans-serif; font-weight: 700; font-size: 22px; text-transform: uppercase; letter-spacing: 0.03em;">Wald</h3>
+      <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+        <figure style="margin: 0; display: flex; flex-direction: column; gap: 6px;"><canvas ref="{{ c_wald_s }}" width="1120" height="374" style="width: 560px; height: 187px; display: block; border-radius: 2px; background: #BFD6EA;"></canvas><figcaption style="font-size: 14px; color: #786D59;">schlank · breit · jung · Gruppe</figcaption></figure>
+        <figure style="margin: 0; display: flex; flex-direction: column; gap: 6px;"><canvas ref="{{ c_wald_g }}" width="1120" height="374" style="width: 560px; height: 187px; display: block; border-radius: 2px; background: #CD958C;"></canvas><figcaption style="font-size: 14px; color: #786D59;">dieselben Formen am Abend</figcaption></figure>
+      </div>
+      <ul style="margin: 0; padding-left: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 4px 40px; text-wrap: pretty;">
+        <li>Drei Silhouetten: schlank (4 Etagen, Breite 0,38 × Höhe), breit (5 Etagen, 0,52), jung (3 Etagen, 0,5).</li>
+        <li>Senkrecht geteilt: linke Hälfte Fichte, rechte Fichte dunkel. Jede Etage trägt eine Schneehaube, auf der Schattenseite in Blau.</li>
+        <li>In Gruppen von 3–6 Bäumen, Höhen ±40 %, hintere zuerst zeichnen.</li>
+        <li>Ferner Wald nur als Zackenband in einer Farbe, keine Einzelbäume.</li>
+      </ul>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 14px;">
+      <h3 style="margin: 0; font-family: Jost, sans-serif; font-weight: 700; font-size: 22px; text-transform: uppercase; letter-spacing: 0.03em;">Ortsbild</h3>
+      <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+        <figure style="margin: 0; display: flex; flex-direction: column; gap: 6px;"><div style="width: 360px; height: 118px; background-image: url('assets/vorher.png'); background-size: 621px auto; background-position: -17px -17px; border-radius: 2px;"></div><figcaption style="font-size: 14px; color: #786D59;">heute: gestreute Kästchen</figcaption></figure>
+        <figure style="margin: 0; display: flex; flex-direction: column; gap: 6px;"><canvas ref="{{ c_ort_s }}" width="760" height="282" style="width: 380px; height: 141px; display: block; border-radius: 2px; background: #F4EEDF;"></canvas><figcaption style="font-size: 14px; color: #786D59;">Plakatsonne</figcaption></figure>
+        <figure style="margin: 0; display: flex; flex-direction: column; gap: 6px;"><canvas ref="{{ c_ort_g }}" width="760" height="282" style="width: 380px; height: 141px; display: block; border-radius: 2px; background: #8396C2;"></canvas><figcaption style="font-size: 14px; color: #786D59;">Alpenglühen, warme Fenster</figcaption></figure>
+      </div>
+      <ul style="margin: 0; padding-left: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 4px 40px; text-wrap: pretty;">
+        <li>Häuser dicht um Kirche und Platz, in 2–3 Reihen gestaffelt, nach vorn größer.</li>
+        <li>Jedes Haus aus Giebelfront (Licht) und Seitenwand (Schatten). Dach fast ganz verschneit, Traufe in Holz.</li>
+        <li>2–3 Fenster je Geschoss. Abends ist jedes dritte heller.</li>
+        <li>Ein Wahrzeichen je Ort steht frei vor ruhigem Grund. Die Bauteile im Einzelnen folgen in Schritt 4.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 20px;">
+    <div style="display: flex; align-items: baseline; gap: 16px; border-bottom: 2px solid #1E2734; padding-bottom: 8px;">
+      <span style="font-family: Oswald, sans-serif; font-weight: 700; font-size: 28px;">4</span>
+      <h2 style="margin: 0; font-family: Jost, sans-serif; font-weight: 700; font-size: 28px; text-transform: uppercase; letter-spacing: 0.02em;">Druck und Textur</h2>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+      <figure style="margin: 0; display: flex; flex-direction: column; gap: 6px;"><canvas ref="{{ c_himmel }}" width="540" height="560" style="width: 270px; height: 280px; display: block; border-radius: 2px; background: #4F86C6;"></canvas><figcaption style="font-size: 14px; color: #786D59;">5 Stufen mit Spritzkante</figcaption></figure>
+      <figure style="margin: 0; display: flex; flex-direction: column; gap: 6px;"><div style="width: 270px; height: 280px; border-radius: 2px; background: linear-gradient(#1F56A8, #BFD6EA);"></div><figcaption style="font-size: 14px; color: #B23524;">nicht so: weicher Verlauf</figcaption></figure>
+      <figure style="margin: 0; display: flex; flex-direction: column; gap: 6px;"><canvas ref="{{ c_zoom_rand }}" width="840" height="560" style="width: 280px; height: 187px; display: block; border-radius: 2px; background: #4F86C6;"></canvas><figcaption style="font-size: 14px; color: #786D59;">Gipfel, 4-fach: Spritzkorn, Passer</figcaption></figure>
+      <figure style="margin: 0; display: flex; flex-direction: column; gap: 6px;"><canvas ref="{{ c_zoom_hang }}" width="840" height="560" style="width: 280px; height: 187px; display: block; border-radius: 2px; background: #F4EEDF;"></canvas><figcaption style="font-size: 14px; color: #786D59;">Hang, 4-fach: Kreidekorn, Zonengrenze</figcaption></figure>
+    </div>
+    <div style="display: grid; grid-template-columns: minmax(160px, 220px) minmax(0, 1fr); font-size: 15px;">
+      <div style="padding: 9px 12px 9px 0; border-bottom: 1px solid rgba(30,39,52,0.18); font-weight: 600;">Stufen</div>
+      <div style="padding: 9px 0; border-bottom: 1px solid rgba(30,39,52,0.18);">Himmel 5, Hang 4, sonst 3. Zwischentöne sind Mischungen der Nachbarfarben.</div>
+      <div style="padding: 9px 12px 9px 0; border-bottom: 1px solid rgba(30,39,52,0.18); font-weight: 600;">Spritzkante</div>
+      <div style="padding: 9px 0; border-bottom: 1px solid rgba(30,39,52,0.18);">An jeder Stufengrenze sinken Punkte der oberen Farbe ein: 2200 je 1280 px Breite, Reichweite 30 px (Hang 26 px), Dichte fällt mit Potenz 2,4, Radius 0,55–1,45 px. Ein Drittel davon steigt in Gegenrichtung auf.</div>
+      <div style="padding: 9px 12px 9px 0; border-bottom: 1px solid rgba(30,39,52,0.18); font-weight: 600;">Kreidekorn</div>
+      <div style="padding: 9px 0; border-bottom: 1px solid rgba(30,39,52,0.18);">Runde Punkte in Papierweiß (abends mit Glühen gemischt), Radius 0,6–1,9 px, 2600 Punkte je Kachel 220 × 220 px, Deckkraft 25–75 %.</div>
+      <div style="padding: 9px 12px 9px 0; border-bottom: 1px solid rgba(30,39,52,0.18); font-weight: 600;">Spritzkorn</div>
+      <div style="padding: 9px 0; border-bottom: 1px solid rgba(30,39,52,0.18);">Runde Punkte in Tinte, Radius 0,5–1,4 px, 1500 je Kachel, Deckkraft 12–42 %.</div>
+      <div style="padding: 9px 12px 9px 0; border-bottom: 1px solid rgba(30,39,52,0.18); font-weight: 600;">Kornstärke</div>
+      <div style="padding: 9px 0; border-bottom: 1px solid rgba(30,39,52,0.18);">Standard 0,4: Kachel über das ganze Bild mit 22 % Deckkraft, auf dem Hang ein zweites Mal mit 24 %. Die Kachel wird einmal erzeugt und nur noch wiederholt.</div>
+      <div style="padding: 9px 12px 9px 0; border-bottom: 1px solid rgba(30,39,52,0.18); font-weight: 600;">Passer</div>
+      <div style="padding: 9px 0; border-bottom: 1px solid rgba(30,39,52,0.18);">Nur die Schattenplatte (Schattenflächen, Fels, Kantenschatten, Seitenwände) um 1,3 / 0,7 px versetzt. Lichtflächen und Spielebene bleiben passgenau.</div>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 20px;">
+    <div style="display: flex; align-items: baseline; gap: 16px; border-bottom: 2px solid #1E2734; padding-bottom: 8px;">
+      <span style="font-family: Oswald, sans-serif; font-weight: 700; font-size: 28px;">5</span>
+      <h2 style="margin: 0; font-family: Jost, sans-serif; font-weight: 700; font-size: 28px; text-transform: uppercase; letter-spacing: 0.02em;">Do und Don't</h2>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px 48px;">
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-family: Jost, sans-serif; font-weight: 700; letter-spacing: 0.16em; font-size: 13px; color: #3F6B55;">SO</div>
+        <ul style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px;">
+          <li>ein Hausberg je Ort als Großform, Licht von links</li>
+          <li>Schnee als Farbe: Papierweiß im Licht, Blau oder Violett im Schatten</li>
+          <li>Verläufe in 3–5 Stufen mit Spritzkante</li>
+          <li>Häuser im Cluster um Kirche und Platz</li>
+          <li>Fichten in Gruppen, Schlagschatten nach rechts</li>
+          <li>Springer mit Tinte-Kontur, Hangkante als klare Linie</li>
+          <li>höchstens 10 Druckfarben je Szene</li>
+        </ul>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="font-family: Jost, sans-serif; font-weight: 700; letter-spacing: 0.16em; font-size: 13px; color: #B23524;">NICHT SO</div>
+        <ul style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px;">
+          <li>weiche Verläufe mit vielen Zwischentönen, Vignette</li>
+          <li>Rauschtexturen mit Pixelkanten</li>
+          <li>generische Nadelkegel, gleiche Gipfel nebeneinander</li>
+          <li>reines #FFFFFF und #000000</li>
+          <li>Einzelhäuser ohne Ortskern</li>
+          <li>echte Logos, Marken, Motive oder Schriftzüge aus Plakaten</li>
+          <li>Farbtöne außerhalb der Palette</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 20px;">
+    <div style="display: flex; align-items: baseline; gap: 16px; border-bottom: 2px solid #1E2734; padding-bottom: 8px;">
+      <span style="font-family: Oswald, sans-serif; font-weight: 700; font-size: 28px;">6</span>
+      <h2 style="margin: 0; font-family: Jost, sans-serif; font-weight: 700; font-size: 28px; text-transform: uppercase; letter-spacing: 0.02em;">Schrift</h2>
+      <span style="color: #786D59;">OFL, selbst gehostet unter fonts/, kein CDN</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px 40px;">
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <div style="font-family: Jost, sans-serif; font-weight: 700; font-size: 44px; line-height: 1; text-transform: uppercase; letter-spacing: 0.02em;">Engelberg</div>
+        <div style="font-size: 15px; color: #3A4454;"><b>Jost</b> 700, Versalien: Titel, Ortsnamen, Kicker (Sperrung 0,22 em)</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <div style="font-family: Oswald, sans-serif; font-weight: 700; font-size: 44px; line-height: 1;">137,5 m · 92 km/h</div>
+        <div style="font-size: 15px; color: #3A4454;"><b>Oswald</b> 500–700: Zahlen, Weiten, Knöpfe</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <div style="font-size: 26px; line-height: 1.2;">Training mit Anhalten · Luke 14</div>
+        <div style="font-size: 15px; color: #3A4454;"><b>Buchschrift</b> wie bisher (Iowan Old Style, Charter, Georgia): Lesetext</div>
+      </div>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const CROPS = {
+  c_berg_s: ["sonne", 60, 196, 660, 344], c_berg_g: ["gluehen", 60, 196, 660, 344],
+  c_hang_s: ["sonne", 0, 400, 600, 400], c_hang_g: ["gluehen", 0, 400, 600, 400],
+  c_ort_s: ["sonne", 740, 470, 540, 200], c_ort_g: ["gluehen", 740, 470, 540, 200],
+  c_himmel: ["sonne", 0, 0, 520, 540],
+  c_zoom_rand: ["sonne", 300, 186, 120, 80], c_zoom_hang: ["sonne", 150, 470, 120, 80],
+};
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.r = {};
+    for (const k of Object.keys(CROPS).concat(["c_wald_s", "c_wald_g"])) this.r[k] = React.createRef();
+  }
+  componentDidMount() { this.paint(); }
+  componentWillUnmount() { clearTimeout(this.wait); }
+  paint() {
+    const R = window.TelemarkPlakat;
+    if (!R || !R.fichten) { this.wait = setTimeout(() => this.paint(), 60); return; }
+    for (const [k, [variant, x, y, w, h]] of Object.entries(CROPS)) {
+      const cv = this.r[k].current; if (!cv) continue;
+      const ctx = cv.getContext("2d"), s = cv.width / w;
+      ctx.setTransform(s, 0, 0, s, -x * s, -y * s);
+      R.draw(ctx, { variant, spiel: false, korn: 0.4, passer: true });
+    }
+    for (const [k, variant] of [["c_wald_s", "sonne"], ["c_wald_g", "gluehen"]]) {
+      const cv = this.r[k].current; if (!cv) continue;
+      const ctx = cv.getContext("2d"), s = cv.width / 900;
+      ctx.setTransform(s, 0, 0, s, 0, 0);
+      R.fichten(ctx, { variant, korn: 0.4, passer: true });
+    }
+  }
+  renderVals() { return Object.assign({}, this.r); }
+}
+</script>
+</body>
+</html>
