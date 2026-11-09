@@ -745,6 +745,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
 .dt.ok { border-left-color: #3D8A5B; } .dt.mid { border-left-color: var(--gold); } .dt.bad { border-left-color: var(--red); }
 .dt-k { font-family: var(--font-label); font-size: 10px; line-height: 12px; font-weight: 600; letter-spacing: 0.12em; color: var(--muted); }
 .dt-v { font-family: var(--font-display); font-weight: 700; font-size: 17px; line-height: 21px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dt-u { font-size: 0.7em; font-weight: 600; margin-left: 0.22em; letter-spacing: 0; }
 .dt-s { font-family: var(--font-body); font-size: 11px; line-height: 13px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .det-cmp { font-family: var(--font-body); font-size: 12.5px; line-height: 17px; color: var(--text-2); margin: 0 4px; }
 .det-cmp b { font-family: var(--font-display); font-weight: 700; color: var(--text); }
@@ -802,6 +803,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
 .hint-wrap.raised { bottom: 104px; }
 .rs-det .dt-v { font-size: 16px; }
 .narrow .rs-det .dt-v { font-size: 14px; letter-spacing: 0; }
+.narrow .rs-det .dt-k { letter-spacing: 0.05em; }
 .narrow .ra-v { font-size: 12.5px; }
 .narrow .ra-v.long { font-size: 11px; }
 .ch-board { display: flex; flex-direction: column; gap: 2px; margin: 2px 0 4px; }
@@ -2770,7 +2772,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 
   // ------------------------------------------------------------------ Zeichenhilfen im Entwurfsraum
   // ctx: aktive Fläche, P: Palette, r: Zufall, OFF: Passer (Schattenplatte versetzt), X0/X1: Breite der Ebene in Entwurfs-px
-  let ctx = null, P = PAL.sonne, r = rng(1), OFF = [1.3, 0.7], X0 = -20, X1 = W + 20;
+  let ctx = null, P = PAL.sonne, r = rng(1), OFF = [1.3, 0.7], X0 = -20, X1 = W + 20, XE = null;
   function path(pts) { ctx.beginPath(); addPath(pts); }
   function addPath(pts) { ctx.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]); ctx.closePath(); }
   function fill(pts, c) { path(pts); ctx.fillStyle = c; ctx.fill(); }
@@ -3305,8 +3307,14 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   }
   // Nahebene: Schneebank unten rechts, Loipe, dazu je Ort eigene Bäume oder Bauten (O.near), nie überall dieselbe Gruppe
   function nearSide(O) {
-    fill([[880, 900], [960, 744], [1060, 718], [1170, 700], [1300, 688], [X1 + 20, 680], [X1 + 20, 900]], P.valley);
-    shade([[960, 744], [1060, 718], [1170, 700], [1300, 688], [X1 + 20, 680], [X1 + 20, 692], [1300, 700], [1180, 712], [1070, 730], [980, 752]], P.valleyShade);
+    // Oberkante; mit XE (feste Ebene) endet der Hang hinter dem Bildrand mit einer Kuppe statt an der Leinwand
+    const top = XE == null ? [[960, 744], [1060, 718], [1170, 700], [1300, 688], [X1 + 20, 680]]
+      : [[960, 744], [1060, 718], [1170, 700], [1300, 688], [XE + 10, 682], [XE + 90, 684], [XE + 160, 700], [XE + 220, 736], [XE + 262, 790], [XE + 285, 900]];
+    fill([[880, 900], ...top, [top[top.length - 1][0], 900]], P.valley);
+    // Schattenband unter der Oberkante (12 px), an der Kuppe etwas nach links versetzt, damit es im Hang bleibt
+    const band = top.filter((p) => p[1] < 880);
+    const lower = band.map(([x, y], i) => (i === 0 ? [980, 752] : [x + (i < 3 ? 10 : 0) - (XE != null && x > XE + 100 ? 8 : 0), y + 12]));
+    shade(band.concat(lower.reverse()), P.valleyShade);
     loipe();
     const N = O.near || {};
     if (N.stadel) stadel(N.stadel[0], N.stadel[1], N.stadel[2]);
@@ -3399,7 +3407,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   // Eine Ebene zeichnen. c: Fläche mit Ursprung Mitte/Horizont in Panorama-Einheiten, ext: { c0, c1 } der Ebene
   function paintLayer(id, c, O, ext, tod, live) {
     ctx = c; P = palFor(tod); OFF = [1.3, 0.7]; r = rng(hash(O.id) ^ 11);
-    X0 = 640 + ext.c0 / U; X1 = 640 + ext.c1 / U;
+    X0 = 640 + ext.c0 / U; X1 = 640 + ext.c1 / U; XE = ext.edge != null ? 640 + ext.edge / U : null;
     c.save(); c.scale(U, U); c.translate(-640, -HOR); c.lineJoin = "round"; c.lineCap = "butt";
     if (id === "far") farLayer(O, live); else if (id === "mid") midLayer(O); else if (id === "near") nearSide(O); else frontSide(O);
     c.restore();
@@ -3611,6 +3619,21 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   "use strict";
   const Hill = root.TMHill;
   const COND = "'Barlow Condensed', 'Avenir Next Condensed', 'HelveticaNeue-CondensedBold', 'Bahnschrift Condensed', 'Roboto Condensed', 'Arial Narrow', sans-serif";
+  // Schrift in der Welt (Banden, Transparente, Anzeigetafel): eine feste Schriftgröße, gezoomt wird mit der Transformation. Sonst
+  // entstünde beim Zoomen in jedem Bild eine neue Schrift samt Messen, was auf dem Handy merklich Zeit kostet. Breiten werden gemerkt.
+  const TPX = 48, tW = new Map();
+  if (typeof document !== "undefined" && document.fonts && document.fonts.addEventListener) document.fonts.addEventListener("loadingdone", () => tW.clear());
+  function wtWidth(ctx, w8, text) {   // Breite je px Schriftgröße
+    const key = w8 + "|" + text; let v = tW.get(key);
+    if (v == null) { ctx.font = `${w8} ${TPX}px ${COND}`; v = ctx.measureText(text).width / TPX; if (tW.size > 300) tW.clear(); tW.set(key, v); }
+    return v;
+  }
+  function wtFill(ctx, w8, text, fs, x, y) {
+    if (!(fs > 0.5) || !text) return;
+    ctx.font = `${w8} ${TPX}px ${COND}`;
+    const s = fs / TPX;
+    ctx.save(); ctx.translate(x, y); ctx.scale(s, s); ctx.fillText(text, 0, 0); ctx.restore();
+  }
   const TAU = Math.PI * 2;
 
   // ------------------------------------------------------------------ Hilfen
@@ -3962,10 +3985,9 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         const len = Math.hypot(bx - ax, by1 - ay1);
         ctx.save(); ctx.translate((ax + bx) / 2, (ay0 + ay1 + by0 + by1) / 4); ctx.rotate(Math.atan2(by1 - ay1, bx - ax));
         ctx.fillStyle = b.fg; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        let fs = 0.44 * ppm; ctx.font = `800 ${fs.toFixed(1)}px ${COND}`;
-        const tw = ctx.measureText(b.text).width;
-        if (tw > len * 0.9) { fs *= len * 0.9 / tw; ctx.font = `800 ${fs.toFixed(1)}px ${COND}`; }
-        ctx.fillText(b.text, 0, fs * 0.05);
+        let fs = 0.44 * ppm; const tw = wtWidth(ctx, "800", b.text) * fs;
+        if (tw > len * 0.9) fs *= len * 0.9 / tw;
+        wtFill(ctx, "800", b.text, fs, 0, fs * 0.05);
         ctx.restore();
       }
     }
@@ -4013,10 +4035,9 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       else if (b.k === "dots") { for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.arc(len * (0.25 + i * 0.25), hb * 0.5, hb * 0.2, 0, TAU); ctx.fill(); } }
       else if (b.k === "two") { ctx.fillStyle = b.cFg2; ctx.fillRect(len * 0.55, 0, len * 0.45, hb); ctx.fillStyle = b.cFg; ctx.fillRect(len * 0.55, hb * 0.78, len * 0.45, hb * 0.1); }
       else if (b.k === "text" && ppm > 6) {
-        let fs = hb * 0.62; ctx.font = `800 ${fs.toFixed(1)}px ${COND}`;
-        const tw = ctx.measureText(b.text).width;
-        if (tw > len * 0.86) { fs *= len * 0.86 / tw; ctx.font = `800 ${fs.toFixed(1)}px ${COND}`; }
-        ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(b.text, len / 2, hb * 0.54);
+        let fs = hb * 0.62; const tw = wtWidth(ctx, "800", b.text) * fs;
+        if (tw > len * 0.86) fs *= len * 0.86 / tw;
+        ctx.textAlign = "center"; ctx.textBaseline = "middle"; wtFill(ctx, "800", b.text, fs, len / 2, hb * 0.54);
       }
       ctx.restore();
       ctx.fillStyle = "rgba(0,0,0,0.25)"; ctx.fillRect(x1 - 1, Math.min(y1, y1 - hb), Math.max(1, 0.05 * ppm), hb);
@@ -4122,10 +4143,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (ppm < 2.5) return;
     const lines = view.screen || [Wd.name, ""];
     ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
-    ctx.fillStyle = "#36D6E7"; ctx.font = `700 ${(0.58 * ppm).toFixed(1)}px ${COND}`;
-    ctx.fillText(lines[0] || "", X(p.x), Y(top - 0.95));
-    ctx.fillStyle = "rgba(255,255,255,0.9)"; ctx.font = `italic 800 ${(1.4 * ppm).toFixed(1)}px ${COND}`;
-    ctx.fillText(lines[1] || "", X(p.x), Y(b + 0.7));
+    ctx.fillStyle = "#36D6E7"; wtFill(ctx, "700", lines[0] || "", 0.58 * ppm, X(p.x), Y(top - 0.95));
+    ctx.fillStyle = "rgba(255,255,255,0.9)"; wtFill(ctx, "italic 800", lines[1] || "", 1.4 * ppm, X(p.x), Y(b + 0.7));
   }
 
   function drawLeader(ctx, p, X, Y, ppm, t, view) {
@@ -4142,7 +4161,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     ctx.fillStyle = "#7FD49B"; ctx.beginPath(); ctx.arc(X(p.x), Y(top + 0.45), Math.max(1.4, 0.2 * ppm), 0, TAU); ctx.fill();
     if (ppm > 7) {
       ctx.fillStyle = "#7FD49B"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-      ctx.font = `800 ${(0.36 * ppm).toFixed(1)}px ${COND}`; ctx.fillText("LEADER", X(p.x), Y(top + 0.1));
+      wtFill(ctx, "800", "LEADER", 0.36 * ppm, X(p.x), Y(top + 0.1));
     }
   }
 
@@ -4190,9 +4209,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     ctx.fillStyle = D("#1A2638"); ctx.fillRect(X(xa), Y(front), (xb - xa) * ppm, (front - b + 0.5) * ppm);
     if (ppm > 4) {
       ctx.fillStyle = "rgba(221,227,235,0.55)"; ctx.textAlign = "left"; ctx.textBaseline = "middle";
-      ctx.font = `800 ${(1.0 * ppm).toFixed(1)}px ${COND}`;
       const step = 36;
-      for (let x = o.x0 + 4; x < o.x1 - 10; x += step) if (x > xMin - 20 && x < xMax) ctx.fillText(Wd.name, X(x), Y(b + 1.75));
+      for (let x = o.x0 + 4; x < o.x1 - 10; x += step) if (x > xMin - 20 && x < xMax) wtFill(ctx, "800", Wd.name, ppm, X(x), Y(b + 1.75));
     }
   }
 
@@ -4295,6 +4313,12 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   // Nahe Ebenen gehören zum Flugbild: in der weiten Übersicht (kleiner Zoom) würden sie über dem Auslauf schweben
   const nearAlpha = (cam, k) => Math.max(0, Math.min(1, (cam.ppm / k - 5) / 5));
   const CX_REF = 90;
+  // Plakat-Orte: Nahebene (Hang, Loipe, Bäume) und Vordergrund (Bande, Zweige) stehen fest in der Welt. Steht die Kamera an ihrem
+  // Ankerpunkt (Welt-x, je Schanze: render.js prepare), zeigen sie das Plakatbild; sonst ziehen sie mit dem Tiefenfaktor zum Hang
+  // vorbei (nah 0,5 / 0,85, vorn 1,15 / 0,85). Die Leinwand reicht nur über den gezeichneten Teil (Entwurfs-c ab c0, Breite w).
+  // Nahebene: der Hang endet rechts hinter dem Bildrand am Anker (edge, mindestens hinter den Bäumen des Entwurfs bei x ≈ 1340)
+  // mit einer Kuppe, damit er im Vorbeiziehen nicht senkrecht abbricht.
+  const ANCHOR = { near: { rel: 0.5 / 0.85, c0: 100, edge: 342 }, front: { rel: 1.15 / 0.85, c0: 130, w: 220 } };
 
   // Panorama-Ebenen (und Himmel) einmal je Schanze, Tageszeit und Bildschirmgröße zeichnen
   function buildPanorama(key, W, Hs, dpr) {
@@ -4309,18 +4333,23 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       if (L0.id === "front" && !pk) continue;
       // Vordergrund ohne Zweige: nur der Streifen unten (spart Speicher)
       const L = L0.id === "front" && !(pk.near && pk.near.zweig) ? Object.assign({}, L0, { top: -95 }) : L0;
-      const wl = Math.ceil(wv + 470 * L.par + 60);
+      const wl0 = Math.ceil(wv + 470 * L.par + 60);
+      // feste Ebenen (Plakat): nur der gezeichnete Teil rechts; sonst die volle Breite, Mitte in der Mitte
+      const A = pk ? ANCHOR[L.id] : null;
+      let c0 = -wl0 / 2, c1 = wl0 / 2, edge = null;
+      if (A) { c0 = A.c0; if (A.w) c1 = c0 + A.w; else { edge = Math.max(wv / 2, A.edge); c1 = edge + 152; } }
+      const wl = Math.ceil(c1 - c0);
       const cv = document.createElement("canvas");
       cv.width = Math.ceil(wl * res); cv.height = Math.ceil((L.top + L.bot) * res);
       const c = cv.getContext("2d");
-      c.setTransform(res, 0, 0, res, wl / 2 * res, L.top * res); // Ursprung: Mitte, Horizont
-      const ext = { c0: -wl / 2 - 4, c1: wl / 2 + 4, bot: L.bot, top: L.top };
+      c.setTransform(res, 0, 0, res, -c0 * res, L.top * res); // Ursprung: Entwurfs-c 0, Horizont
+      const ext = edge != null ? { c0: c0 - 4, c1: c1 + 4, edge, bot: L.bot, top: L.top } : { c0: -wl0 / 2 - 4, c1: wl0 / 2 + 4, bot: L.bot, top: L.top };
       if (pk) PK.paintLayer(L.id, c, pk, ext, TH.name, out.live);
       else if (L.id === "far") drawFar(c, sc, ext, r, out.live);
       else if (L.id === "mid") drawTown(c, sc, ext, r, out.live);
       else drawNear(c, sc, ext, r);
       const ground = L.id === "front" ? null : pk ? PK.layerGround(L.id, TH.name) : L.id === "far" ? (sc.fjord ? TH.water : TH.forestFar) : L.id === "mid" ? TH.valley : TH.nearGround;
-      const lay = { cv, wl, par: L.par, top: L.top, bot: L.bot, id: L.id, ground };
+      const lay = { cv, wl, c0, rel: A ? A.rel : null, par: L.par, top: L.top, bot: L.bot, id: L.id, ground };
       if (L.id === "front") out.front = lay; else out.layers.push(lay);
     }
     return out;
@@ -4815,27 +4844,36 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 
   // Himmel (Mond, Flugzeug) und Panorama-Ebenen mit Parallaxe; liefert Ebenen-Lage für lebende Lichter
   // Lage einer Ebene auf dem Bildschirm (auf ganze Gerätepixel gerundet: Kopie ohne Filterung, schnell)
-  function layerPos(P, L, cam, hor, vOff, k, W) {
-    let uA = clamp(L.wl / 2 - W / (2 * k) + (cam.cx - CX_REF) * L.par, 0, L.wl - W / k);
-    const dpr = P.dpr || 1, sc = P.res / k;
-    const dx = Math.round(-uA * k * dpr) / dpr; uA = -dx / k;
+  // Feste Ebenen (L.rel): Entwurfs-c 0 liegt in der Bildmitte, wenn die Kamera am Ankerpunkt der Ebene steht (anc[L.id]); ohne
+  // Anker oder ganz außerhalb des Bilds off (nur der Boden darunter wird gefüllt).
+  function layerPos(P, L, cam, hor, vOff, k, W, anc) {
+    const dpr = P.dpr || 1, sc = P.res / k, dw = L.cv.width / sc, dh = L.cv.height / sc;
     const dy = Math.round((hor + vOff - L.top * k) * dpr) / dpr;
-    return { dx, dy, dw: L.cv.width / sc, dh: L.cv.height / sc, ox: (L.wl / 2 - uA) * k, oy: dy + L.top * k };
+    if (L.rel != null) {
+      const xa = anc ? anc[L.id] : null;
+      if (xa == null) return { dx: 0, dy, dw, dh, ox: -1e5, oy: dy + L.top * k, off: true };
+      const dx = Math.round((W / 2 + (xa - cam.cx) * cam.ppm * L.rel + L.c0 * k) * dpr) / dpr;
+      return { dx, dy, dw, dh, ox: dx - L.c0 * k, oy: dy + L.top * k, off: dx > W || dx + dw < 0 };
+    }
+    let uA = clamp(L.wl / 2 - W / (2 * k) + (cam.cx - CX_REF) * L.par, 0, L.wl - W / k);
+    const dx = Math.round(-uA * k * dpr) / dpr; uA = -dx / k;
+    return { dx, dy, dw, dh, ox: (L.wl / 2 - uA) * k, oy: dy + L.top * k };
   }
   // Vordergrund (Bande, Zweige): nach Hang, Springer und Partikeln, vor dem Schneefall
-  function drawFront(ctx, P, cam, hor, vs, k, W, Hs) {
+  function drawFront(ctx, P, cam, hor, vs, k, W, Hs, anc) {
     const L = P.front, a = nearAlpha(cam, k);
     if (!L || a <= 0.01) return;
-    const q = layerPos(P, L, cam, hor, vs * 0.45, k, W);
+    const q = layerPos(P, L, cam, hor, vs * 0.45, k, W, anc);
+    if (q.off) return;
     ctx.globalAlpha = a; ctx.drawImage(L.cv, q.dx, q.dy, q.dw, q.dh); ctx.globalAlpha = 1;
   }
-  function drawPanorama(ctx, P, cam, hor, vs, k, W, Hs, t) {
+  function drawPanorama(ctx, P, cam, hor, vs, k, W, Hs, t, anc) {
     const pos = [];
     for (let i = 0; i < P.layers.length; i++) {
       const L = P.layers[i];
       const vOff = i === 0 ? 0 : i === 1 ? vs * 0.12 : vs * 0.3;
-      const q = layerPos(P, L, cam, hor, vOff, k, W), na = i === 2 ? nearAlpha(cam, k) : 1;
-      if (na > 0.01) {
+      const q = layerPos(P, L, cam, hor, vOff, k, W, anc), na = i === 2 ? nearAlpha(cam, k) : 1;
+      if (na > 0.01 && !q.off) {
         if (na < 1) ctx.globalAlpha = na;
         ctx.drawImage(L.cv, q.dx, q.dy, q.dw, q.dh);
         ctx.globalAlpha = 1;
@@ -4900,7 +4938,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     }
   }
 
-  root.TMScene = { buildWorld, drawWorld, buildPanorama, drawPanorama, drawFront, drawSky, drawReflection, drawFlag, FLAGS, setTheme, themeName, D, THEMES };
+  root.TMScene = { buildWorld, drawWorld, buildPanorama, drawPanorama, drawFront, drawSky, drawReflection, drawFlag, FLAGS, setTheme, themeName, D, THEMES, wtFill, wtWidth };
 })(typeof window !== "undefined" ? window : globalThis);
 
 /* TELEMARK – Canvas-Grafik: Flutlicht-Nacht im flachen Vektorstil, Welt in Metern, Kamera in px/m. */
@@ -5419,7 +5457,10 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       for (const p of right) if (p[0] > ex[ex.length - 1] + 1e-6) { ex.push(p[0]); ey.push(p[1]); }
       const place = H.key.split("-")[0], at = (d) => Hill.landAtD(H, d).x;
       const hang = PK.hangPlan(place, top.x, end.x, at(H.K), at(H.K * 0.3), at(H.K * 0.9));
-      const G = { H, left, right, terrainY, rightY, trees, back, masts, world, stars, seeds, end, deckMarks, edgeX: Float64Array.from(ex), edgeY: Float64Array.from(ey), hang };
+      // Ankerpunkte (Welt-x) der festen Plakat-Ebenen: die Nahebene steht im Bild, wenn die Kamera bei 0,8 K ist (spätes Flugbild),
+      // die Bande unten im Auslauf, etwa zwei Sekunden nach einer Landung am K-Punkt
+      const anchor = { near: at(H.K * 0.8), front: at(H.K) + 0.33 * H.K };
+      const G = { H, left, right, terrainY, rightY, trees, back, masts, world, stars, seeds, end, deckMarks, edgeX: Float64Array.from(ex), edgeY: Float64Array.from(ey), hang, anchor };
       this.caches[H.key] = G;
       return G;
     }
@@ -5457,7 +5498,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       }
       if (v.particles) this.particles(S, cam, k, v.particles);
       // Vordergrund der Plakat-Orte (Bande, Zweige): vor dem Hang, hinter dem HUD
-      Scene.drawFront(ctx, this.pano, cam, this.hor, this.vs, k, W, H);
+      Scene.drawFront(ctx, this.pano, cam, this.hor, this.vs, k, W, H, G.anchor);
       if (v.snow) v.snow.draw(ctx, k, atmoFor(v.hill.key).snow);
       if (v.dim) { ctx.fillStyle = "rgba(14,20,28," + v.dim + ")"; ctx.fillRect(0, 0, W, H); }
     }
@@ -5503,7 +5544,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       this.pano.dpr = this.dpr;
       const t = v.t || 0;
       Scene.drawSky(ctx, this.pano, hor, vs, k, W, H, t);
-      Scene.drawPanorama(ctx, this.pano, cam, hor, vs, k, W, H, t);
+      Scene.drawPanorama(ctx, this.pano, cam, hor, vs, k, W, H, t, G.anchor);
     }
 
     path(pts, close) {
@@ -6102,7 +6143,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         // Banner an der Seitenwand in den Farben der Schanze, mit ihrem Namen
         const bh0 = 0.42, bh1 = 0.94, half = 5.2;
         ctx.save();
-        ctx.font = `800 ${(0.42 * pp).toFixed(1)}px ${COND}`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
         for (let sM = 17; sM < Hh.inrunLen - 8; sM += 31) {
           const a = Hill.inrunAt(Hh, sM); if (!vis(a.x, 10)) continue;
           const q = [];
@@ -6112,7 +6153,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
           const [x, y] = S(a.x, a.y - D0 * (bh0 + bh1) / 2);
           ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0); ctx.translate(x, y); ctx.rotate(a.ang * DEG);
           ctx.fillStyle = N(A.acc2 === A.side ? "#F4F1EA" : A.acc2, 0.25);
-          ctx.fillText(A.text, 0, 0.5);
+          Scene.wtFill(ctx, "800", A.text, 0.42 * pp, 0, 0.5);
           ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
         }
         ctx.restore();
@@ -7636,7 +7677,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.28";
+  const VERSION = "0.29";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -9210,23 +9251,24 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   function detailsHtml(r) {
     const tiles = [];
     const T = (k, v, sub, c) => tiles.push(`<div class="dt ${c || ""}"><span class="dt-k">${k}</span><span class="dt-v">${v}</span><span class="dt-s">${sub || "&nbsp;"}</span></div>`);
+    const un = (u) => `<small class="dt-u">${u}</small>`;   // Einheit kleiner: 100,3 km/h passt auch auf schmalen Handys in die Kachel
     const z = r.zone;
     // Messwerte wie im Fernsehen: Anfahrt, Absprung, Höchststand, Flugtempo, Flugzeit, Fluglage, Landung, dann die Wertung
     const ex = r.expert && r.inOk != null;
-    T("ANFAHRT", r.vIn ? `${fmt1(r.vIn)} km/h` : r.v ? `${fmt1(r.v)} km/h` : "–", ex ? `Hocke ${r.inOk} % ideal${r.vLoss >= 0.05 ? ` · −${fmt1(r.vLoss)} km/h` : ""}` : `Höchsttempo · Luke ${r.gate}`, ex ? (r.inOk >= 80 ? "ok" : r.inOk >= 55 ? "mid" : "bad") : "");
+    T("ANFAHRT", r.vIn ? `${fmt1(r.vIn)}${un("km/h")}` : r.v ? `${fmt1(r.v)}${un("km/h")}` : "–", ex ? `Hocke ${r.inOk} % ideal${r.vLoss >= 0.05 ? ` · −${fmt1(r.vLoss)} km/h` : ""}` : `Höchsttempo · Luke ${r.gate}`, ex ? (r.inOk >= 80 ? "ok" : r.inOk >= 55 ? "mid" : "bad") : "");
     T("ABSPRUNG", z === "perfect" ? "perfekt" : r.takeErr != null ? `${Math.abs(r.takeErr)} ms ${r.takeErr > 0 ? "früh" : "spät"}` : "verpasst", z === "perfect" ? (r.takeErr ? `${Math.abs(r.takeErr)} ms daneben` : "voller Abdruck") : z === "good" ? "fast perfekt" : "kostet Weite", z === "perfect" ? "ok" : z === "good" ? "mid" : "bad");
-    T("HÖCHSTSTAND", r.maxH ? `${fmt1(r.maxH)} m` : "–", "über dem Hang");
-    T("FLUGTEMPO", r.vFl ? `${fmt1(r.vFl)} km/h` : "–", r.vLand ? `Landung ${fmt1(r.vLand)} km/h` : "Höchstwert");
-    T("FLUGZEIT", r.ft ? `${fmt1(r.ft)} s` : "–", r.ft ? `Ø ${fmt1(r.dist / r.ft * 3.6)} km/h über Grund` : "");
+    T("HÖCHSTSTAND", r.maxH ? `${fmt1(r.maxH)}${un("m")}` : "–", "über dem Hang");
+    T("FLUGTEMPO", r.vFl ? `${fmt1(r.vFl)}${un("km/h")}` : "–", r.vLand ? `Landung ${fmt1(r.vLand)} km/h` : "Höchstwert");
+    T("FLUGZEIT", r.ft ? `${fmt1(r.ft)}${un("s")}` : "–", r.ft ? `Ø ${fmt1(r.dist / r.ft * 3.6)} km/h über Grund` : "");
     T("FLUGLAGE", r.inField != null ? `${r.inField} %` : "–", r.inLean != null ? `ideal · Vorlage ${r.inLean} % · Balance ${r.inRoll} %` : "", r.inField == null ? "" : r.inField >= 70 ? "ok" : r.inField >= 45 ? "mid" : "bad");
     const why = { late: "zu spät getippt", hard: "harte Landung", roll: "zu schräg", notap: "nicht getippt" }[r.why];
     T("LANDUNG", { telemark: "Telemark", twofoot: "beidbeinig", fall: "Sturz" }[r.kind] || "–", r.dtL != null && r.kind !== "fall" ? `Tipp ${Math.round(r.dtL * 1000)} ms vorher${why && r.kind !== "telemark" ? ` · ${why}` : ""}` : r.kind === "telemark" ? "saubere Landung" : why || "", r.kind === "telemark" ? "ok" : r.kind === "fall" ? "bad" : "mid");
-    T("WEITE", `${fmt1(r.dist)} m`, `${fmtS(Math.round((r.dist - H.K) * 10) / 10)} m zum K-Punkt · ${fmt1(r.distPts)} P.`);
-    T("HALTUNG", `${fmt1(r.style)} P.`, `Noten ${r.judges.map(fmt1).join(" · ")}`);
+    T("WEITE", `${fmt1(r.dist)}${un("m")}`, `${fmtS(Math.round((r.dist - H.K) * 10) / 10)} m zum K-Punkt · ${fmt1(r.distPts)} P.`);
+    T("HALTUNG", `${fmt1(r.style)}${un("P.")}`, `Noten ${r.judges.map(fmt1).join(" · ")}`);
     const wi = windInfo(r.wind || 0);
-    T("WIND", r.windOff ? "aus" : `${fmt1(Math.abs(r.wind || 0))} m/s`, r.windOff ? "" : `${wi.lbl} · ${fmtS(r.windPts)} Punkte`);
+    T("WIND", r.windOff ? "aus" : `${fmt1(Math.abs(r.wind || 0))}${un("m/s")}`, r.windOff ? "" : `${wi.lbl} · ${fmtS(r.windPts)} Punkte`);
     T("LUKE", String(r.gate), `${fmtS(r.gatePts)} Punkte`);
-    T("GESAMT", `${fmt1(r.total)} P.`, r.expert ? "Expertenmodus" : `Wind ${fmtS(r.windPts)} · Luke ${fmtS(r.gatePts)}`);
+    T("GESAMT", `${fmt1(r.total)}${un("P.")}`, r.expert ? "Expertenmodus" : `Wind ${fmtS(r.windPts)} · Luke ${fmtS(r.gatePts)}`);
     const cmp = [];
     if (ctxMode === "comp" && comp) {
       const b = dayBest(comp), s = comp.standings(false).filter((x) => !x.dsq), me = s.find((x) => x.id === "me");
