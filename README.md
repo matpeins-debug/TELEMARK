@@ -1,4 +1,6 @@
-# TELEMARK – Skispringen im Browser
+# Cold Medal · Ski Jumping
+
+Teil der **Cold Medal Games** (Wintersport im Browser).
 
 **Spielen:** https://matpeins-debug.github.io/TELEMARK/
 

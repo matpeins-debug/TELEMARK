@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#0B1526">
-<title>TELEMARK Skispringen</title>
+<title>Cold Medal · Ski Jumping</title>
 <meta name="description" content="Skispringen im Browser: spring gegen deine Freunde, gleiche Schanze, gleicher Wind.">
-<meta property="og:title" content="TELEMARK · Skispringen im Browser">
+<meta property="og:title" content="Cold Medal · Ski Jumping">
 <meta property="og:description" content="Spring gegen deine Freunde: gleiche Schanze, gleicher Wind, ihr Sprung als Geist.">
 <meta property="og:type" content="website">
 <link rel="manifest" href="manifest.webmanifest">
@@ -14,12 +14,12 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="TELEMARK">
+<meta name="apple-mobile-web-app-title" content="Cold Medal">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta property="og:image" content="https://matpeins-debug.github.io/TELEMARK/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="TELEMARK: Skispringer im Flug über der Schanze bei Nacht">
+<meta property="og:image:alt" content="Cold Medal Ski Jumping: Skispringer im Flug über der Schanze bei Nacht">
 <meta property="og:locale" content="de_AT">
 <meta property="og:url" content="https://matpeins-debug.github.io/TELEMARK/">
 <link rel="canonical" href="https://matpeins-debug.github.io/TELEMARK/">
@@ -762,7 +762,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
 #inName.need { outline: 3px solid var(--warn); outline-offset: 1px; }
 
 /* Titel auf schmalen Bildschirmen und Fußzeile: nichts überlappt die Schanzenkarte oder die Knöpfe */
-.narrow .logo { font-size: 64px; line-height: 62px; }
+.narrow .logo { font-size: 54px; line-height: 56px; }
 .title-note { left: 452px; text-align: right; }
 
 /* Ergebnis: langer Name und Gesamtpunkte bleiben in der Karte */
@@ -917,6 +917,10 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 .upd-btn { position: absolute; left: 50%; top: 8px; transform: translateX(-50%); z-index: 60; height: 32px; padding: 0 14px; border: 2px solid var(--ink-deep); border-radius: 4px;
   background: var(--gold); color: var(--ink-deep); font-family: var(--font-label); font-weight: 700; font-size: 13px; letter-spacing: 0.04em; white-space: nowrap; cursor: pointer; box-shadow: 0 3px 0 rgba(20, 27, 37, 0.5); }
 
+/* Schriftzug COLD MEDAL in einer Zeile; Abzeichen am Trainingsknopf sitzt am Knopf */
+.logo { white-space: nowrap; font-size: 66px; line-height: 68px; }
+.btn-col > .btn { position: relative; }
+
 </style>
 </head>
 <body>
@@ -1020,8 +1024,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 <section id="scrTitle" class="screen" hidden>
   <div class="title-col">
     <div class="title-head">
-      <span class="kicker">SKISPRINGEN IM BROWSER</span>
-      <h1 class="logo">TELEMARK</h1>
+      <span class="kicker">SKI JUMPING</span>
+      <h1 class="logo">COLD MEDAL</h1>
     </div>
     <div class="btn-col">
       <button type="button" id="btnPlay" class="btn btn-primary"><span class="btn-two"><span>Training</span><span id="trBadge" class="btn-badge" hidden>ANFÄNGER</span></span><span class="ico" data-icon="arrow-right"></span></button>
@@ -1425,7 +1429,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 <section id="scrPic" class="screen screen-dim3 center" hidden>
   <div class="dialog picdlg panel-strong" role="dialog" aria-label="Dein Sprung als Bild">
     <img id="picImg" class="pic-img" alt="Dein Sprung als Bild">
-    <div class="pic-foot"><span class="hd-text">Lange drücken zum Sichern oder Teilen.</span><a id="picDl" class="btn btn-secondary btn-s" href="#" download="telemark.png"><span>Herunterladen</span></a><button type="button" id="btnPicDone" class="btn btn-primary btn-s"><span>Fertig</span></button></div>
+    <div class="pic-foot"><span class="hd-text">Lange drücken zum Sichern oder Teilen.</span><a id="picDl" class="btn btn-secondary btn-s" href="#" download="cold-medal-ski-jumping.png"><span>Herunterladen</span></a><button type="button" id="btnPicDone" class="btn btn-primary btn-s"><span>Fertig</span></button></div>
   </div>
 </section>
 
@@ -1433,7 +1437,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 <section id="scrOnline" class="screen screen-dim3 center" hidden>
   <div class="dialog hillinfo infodlg oldlg panel-strong" role="dialog" aria-labelledby="olTitle">
     <div class="set-head">
-      <div class="hi-head"><span class="kicker">TELEMARK ONLINE</span><h2 id="olTitle" class="h1">Online</h2></div>
+      <div class="hi-head"><span class="kicker">COLD MEDAL ONLINE</span><h2 id="olTitle" class="h1">Online</h2></div>
       <div class="hi-nav"><button type="button" id="btnOlDone" class="btn btn-primary btn-s"><span>Fertig</span></button></div>
     </div>
     <p id="olOff" class="hi-about" hidden>Online gibt es auf der Spielseite im Browser.</p>
@@ -1475,7 +1479,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 <section id="scrInfo" class="screen screen-dim3 center" hidden>
   <div class="dialog hillinfo infodlg panel-strong" role="dialog" aria-labelledby="ifTitle">
     <div class="set-head">
-      <div class="hi-head"><span id="ifKicker" class="kicker">TELEMARK</span><h2 id="ifTitle" class="h1">Info &amp; Datenschutz</h2></div>
+      <div class="hi-head"><span id="ifKicker" class="kicker">COLD MEDAL</span><h2 id="ifTitle" class="h1">Info &amp; Datenschutz</h2></div>
       <div class="hi-nav"><button type="button" id="btnOnline" class="btn btn-secondary btn-s" hidden><span>Online</span></button><button type="button" id="btnIfDone" class="btn btn-primary btn-s"><span>Fertig</span></button></div>
     </div>
     <div class="hi-body">
@@ -1489,7 +1493,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         </div>
         <div id="ifLoad" class="hi-box" hidden><span id="ifLoadTxt"></span><span class="if-btns"><button type="button" id="btnLoadNo" class="btn-plain">Abbrechen</button><button type="button" id="btnLoadYes" class="btn btn-primary btn-s"><span>Ersetzen</span></button></span></div>
         <span class="hi-k">FANSPIEL</span>
-        <p class="hi-about">TELEMARK ist ein inoffizielles Fanspiel ohne Verbindung zur FIS, zu Verbänden, Veranstaltern oder Schanzenbetreibern. Alle Gegner sind frei erfunden. Orts- und Schanzennamen beschreiben nur die echten Schanzen, Profile, Luken und Rekorde stammen aus öffentlichen Quellen. Alle Marken gehören ihren Inhabern.</p>
+        <p class="hi-about">Cold Medal ist ein inoffizielles Fanspiel ohne Verbindung zur FIS, zu Verbänden, Veranstaltern oder Schanzenbetreibern. Alle Gegner sind frei erfunden. Orts- und Schanzennamen beschreiben nur die echten Schanzen, Profile, Luken und Rekorde stammen aus öffentlichen Quellen. Alle Marken gehören ihren Inhabern.</p>
         <span class="hi-k">IMPRESSUM</span>
         <p id="ifImp" class="hi-about"></p>
       </div>
@@ -6441,7 +6445,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.25";
+  const VERSION = "0.26";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -6812,7 +6816,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     ui.style.width = sw / uiS + "px"; ui.style.height = sh / uiS + "px"; ui.style.transform = `scale(${uiS})`;
     ui.classList.toggle("narrow", sw / uiS < 820);   // schmale Bildschirme (z. B. iPhone SE): kleinerer Schriftzug, damit nichts überlappt
     turnHint(rotated);
-    setTimeout(() => { if (mode === "result" && rsTab === "ana") drawAnaChart(lastResult); }, 30);   // nach dem Start: erst wenn alles da ist
+    setTimeout(() => { if (mode === "result" && rsTab === "ana") drawAnaChart(lastResult); fitLogo(); }, 30);   // nach dem Start: erst wenn alles da ist
   }
   // Hochformat: Das Spiel dreht sich mit, ein kurzer Hinweis sagt, dass man das Handy quer halten soll
   let turnEl = null, turnT = 0;
@@ -7065,8 +7069,18 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (b) return `Bestweite ${fmt1(b.d)} m${b.gate ? ` · Luke ${b.gate}` : ""}`;
     return Hh.record ? `Schanzenrekord ${fmt1(Hh.record.m)} m` : "Noch kein Sprung";
   }
+  // Schriftzug passt in die Spalte, egal welche Schrift das Gerät hat (iPhone: Futura, sonst Ersatz)
+  function fitLogo() {
+    const l = document.querySelector(".logo");
+    if (!l || !l.clientWidth) return;
+    l.style.fontSize = "";
+    const cw = l.clientWidth, sw = l.scrollWidth;
+    if (sw > cw) { const fs = Math.floor(parseFloat(getComputedStyle(l).fontSize) * cw / sw); l.style.fontSize = fs + "px"; l.style.lineHeight = Math.round(fs * 1.04) + "px"; }
+    else l.style.lineHeight = "";
+  }
   function refreshTitle() {
     el.tjFlag.innerHTML = flag(S.nation); txt(el.tjName, S.name || "SPRINGER");
+    requestAnimationFrame(fitLogo);
     $("hillSketch").innerHTML = hillSketch(H);
     txt($("hillName"), H.name); txt($("hillSub"), hillSub(H));
     el.hillStats.textContent = bestText(H);
@@ -8503,13 +8517,13 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     const st = dailyState(), spec = dailySpec(st.date), b = dailyBest(st.tries), Hh = Hill.getHill(spec.key);
     if (!b) return null;
     const wind = spec.wind === "strong" ? "böig" : "wechselnd";
-    return `TELEMARK Tageschallenge ${dateDE(spec.date)}${spec.ev && spec.ev !== "Weltspitze" ? ` · ${spec.ev}` : ""}\n${Hh.name} HS${Hh.HS} · Luke ${spec.gate} · Wind ${wind}\n` +
+    return `Cold Medal · Tageschallenge ${dateDE(spec.date)}${spec.ev && spec.ev !== "Weltspitze" ? ` · ${spec.ev}` : ""}\n${Hh.name} HS${Hh.HS} · Luke ${spec.gate} · Wind ${wind}\n` +
       `Bester Versuch: ${fmt1(b.dist)} m · ${KIND_SHORT[b.kind]} · ${fmt1(b.total)} Punkte (${st.tries.length}/3)\nCode ${shareCode(spec, b)}` + (gameUrl() ? `\nSpring mit: ${gameUrl()}` : "");
   }
   async function shareDaily() {
     const text = shareText();
     if (!text) { showToastSafeText("NOCH KEIN SPRUNG", "Spring zuerst die Tageschallenge"); return; }
-    try { if (navigator.share) { await navigator.share({ title: "TELEMARK", text }); return; } } catch (e) { if (e && e.name === "AbortError") return; }
+    try { if (navigator.share) { await navigator.share({ title: "Cold Medal", text }); return; } } catch (e) { if (e && e.name === "AbortError") return; }
     try { await navigator.clipboard.writeText(text); showToastSafeText("KOPIERT", "Ergebnis in der Zwischenablage"); return; } catch (e) { /* weiter */ }
     // Rückfall: Text zum manuellen Kopieren anzeigen
     openArcade();
@@ -8647,7 +8661,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     const Hh = Hill.getHill(c.h);
     const b = c.r && c.r.length ? chalBoard({ n: c.n, c: c.c, d: c.d, p: c.p, k: c.k, r: c.r.map((x) => ({ n: x[0], c: x[1], d: x[2], p: x[3], k: x[4] })) }) : null;
     const board = b ? ` Rangliste: ${b.slice(0, 4).map((x, i) => `${i + 1}. ${x.n} ${fmt1(x.p)}`).join(" · ")}.` : "";
-    return `${c.n} fordert dich bei TELEMARK heraus: ${fmt1(c.d)} m und ${fmt1(c.p)} Punkte in ${Hh.short || Hh.name} (HS${Hh.HS}).${board} Schaffst du mehr?\n${url}`;
+    return `${c.n} fordert dich zum Skispringen heraus (Cold Medal): ${fmt1(c.d)} m und ${fmt1(c.p)} Punkte in ${Hh.short || Hh.name} (HS${Hh.HS}).${board} Schaffst du mehr?\n${url}`;
   }
   const chalCode = (text) => { const m = /(?:^|[#&?\s])c=([A-Za-z0-9_-]{16,})/.exec(String(text || "")); return m ? m[1] : null; };
   function chalFromLocation() {
@@ -8678,7 +8692,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       if (lastResult === r) txt($("chalBtnTxt"), "Herausfordern");
     }
     const text = chalText(c, chalUrl(c));
-    try { if (navigator.share) { await navigator.share({ title: "TELEMARK", text }); return; } } catch (e) { if (e && e.name === "AbortError") return; }
+    try { if (navigator.share) { await navigator.share({ title: "Cold Medal", text }); return; } } catch (e) { if (e && e.name === "AbortError") return; }
     try { await navigator.clipboard.writeText(text); showToastSafeText("LINK KOPIERT", "In WhatsApp einfügen und senden"); return; } catch (e) { /* weiter */ }
     // Rückfall: Text zum manuellen Kopieren anzeigen
     const ta = $("chalShareTxt"); ta.value = text; vis(ta, true); ta.focus(); ta.select();
@@ -8760,11 +8774,11 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   const groupUrl = (g) => (gameUrl() || location.href.split("#")[0]) + "#g=" + g;
   function groupText(c) {
     const Hh = Hill.getHill(c.h), top = c.board.slice(0, 3).map((x) => `${x.r}. ${x.n} ${fmt1(x.p)}`).join(" · ");
-    return `${meName()} lädt dich in eine TELEMARK-Gruppe ein: ${Hh.short || Hh.name} (HS${Hh.HS}), gleicher Wind für alle, Rangliste live.${top ? ` Stand: ${top}.` : ""} Spring mit:\n${groupUrl(c.grp)}`;
+    return `${meName()} lädt dich zum Skispringen ein (Cold Medal): ${Hh.short || Hh.name} (HS${Hh.HS}), gleicher Wind für alle, Rangliste live.${top ? ` Stand: ${top}.` : ""} Spring mit:\n${groupUrl(c.grp)}`;
   }
   // Teilen-Menü, sonst Zwischenablage, sonst Text zum Kopieren. false: der Browser lässt das Teilen ohne frisches Tippen nicht zu.
   async function shareLink(text) {
-    try { if (navigator.share) { await navigator.share({ title: "TELEMARK", text }); return true; } }
+    try { if (navigator.share) { await navigator.share({ title: "Cold Medal", text }); return true; } }
     catch (e) { if (e && e.name === "AbortError") return true; if (e && e.name === "NotAllowedError") return false; }
     try { await navigator.clipboard.writeText(text); showToastSafeText("LINK KOPIERT", "In WhatsApp einfügen und senden"); return true; } catch (e) { /* weiter */ }
     if (mode === "result") { const ta = $("chalShareTxt"); ta.value = text; vis(ta, true); ta.focus(); ta.select(); }
@@ -9049,9 +9063,9 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     c.font = `italic 800 30px ${FD}`; c.fillStyle = CREAM; c.textAlign = "right"; c.fillText(`${fmt1(r.dist)} m`, lx - 12, ly - 20);
     // Schrift links
     c.textAlign = "left";
-    c.font = `italic 800 74px ${FD}`; c.fillStyle = RED; c.fillText("TELEMARK", 66, 116); c.fillStyle = CREAM; c.fillText("TELEMARK", 60, 110);
+    c.font = `italic 800 70px ${FD}`; c.fillStyle = RED; c.fillText("COLD MEDAL", 66, 116); c.fillStyle = CREAM; c.fillText("COLD MEDAL", 60, 110);
     c.font = `700 17px ${FD}`; c.fillStyle = GOLD;
-    let kx = 64; for (const ch of "SKISPRINGEN IM BROWSER") { c.fillText(ch, kx, 146); kx += c.measureText(ch).width + 3.2; }
+    let kx = 64; for (const ch of "SKI JUMPING") { c.fillText(ch, kx, 146); kx += c.measureText(ch).width + 3.2; }
     let fs = 150; c.font = `italic 800 ${fs}px ${FD}`;
     const big = `${fmt1(r.dist)} m`;
     while (c.measureText(big).width > 520 && fs > 90) { fs -= 6; c.font = `italic 800 ${fs}px ${FD}`; }
@@ -9088,7 +9102,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (blob) {
       try {
         const file = new File([blob], fname, { type: "image/png" });
-        if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share(Object.assign({ files: [file], title: "TELEMARK" }, gameUrl() ? { text: `Spring mit: ${gameUrl()}` } : {})); return; }
+        if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share(Object.assign({ files: [file], title: "Cold Medal" }, gameUrl() ? { text: `Spring mit: ${gameUrl()}` } : {})); return; }
       } catch (e) { if (e && e.name === "AbortError") return; }
     }
     // Rückfall: Bild groß zeigen (lange drücken) und zum Herunterladen anbieten
@@ -10583,7 +10597,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   function openInfo(from) { infoFrom = from; loadState = null; setOverlay("info"); }
   function closeInfo() { setOverlay(infoFrom === "settings" ? "settings" : null); }
   function fillInfo() {
-    txt($("ifKicker"), `TELEMARK · VERSION ${VERSION}`);
+    txt($("ifKicker"), `COLD MEDAL · VERSION ${VERSION}`);
     vis($("btnOnline"), !!ON);
     txt($("ifPriv0"), ON
       ? "Kein Konto, keine Werbung, keine Cookies, keine Analyse. Dein Spielstand bleibt im Browser auf diesem Gerät. Ein Duell-Link enthält Name, Nation und Sprung und geht nur an die, denen du ihn schickst. Online-Gruppen und Online-Spielstand sind freiwillig, Details unter Online."
@@ -10618,7 +10632,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (await offerFile(saveName(), data)) return;
     try {
       const file = new File([data], saveName(), { type: "application/json" });
-      if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: "TELEMARK Spielstand" }); return; }
+      if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: "Cold Medal Spielstand" }); return; }
     } catch (e) { if (e && e.name === "AbortError") return; }
     try {
       const url = URL.createObjectURL(new Blob([data], { type: "application/json" }));
@@ -10641,7 +10655,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         const when = typeof o.date === "string" ? dateDE(o.date.slice(0, 10)) : "unbekannt";
         txt($("ifLoadTxt"), `Spielstand von ${test.name || "SPRINGER"} vom ${when}, ${test.jumps} Sprünge. Dein jetziger Stand wird ersetzt.`);
         vis($("ifLoad"), true);
-      } catch (e) { loadState = null; vis($("ifLoad"), false); softNotice("Diese Datei ist kein TELEMARK-Spielstand"); }
+      } catch (e) { loadState = null; vis($("ifLoad"), false); softNotice("Diese Datei ist kein Cold-Medal-Spielstand"); }
     };
     rd.onerror = () => softNotice("Datei konnte nicht gelesen werden");
     rd.readAsText(file);
@@ -10744,6 +10758,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       updSeen = v; txt($("btnUpd"), `Neue Version ${v} · tippen zum Laden`); vis($("btnUpd"), true);
     }).catch(() => {});
   }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => fitLogo()).catch(() => {});
   on("btnUpd", () => { if (mode === "jump" || mode === "replay") return; location.reload(); });
   if (SITE.web) {
     setTimeout(checkUpdate, 4000);
