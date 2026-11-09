@@ -113,6 +113,108 @@ ctx.restore();
 
 Am Abend braucht die Ankunft beide Fassungen der fernen Ebene (`farLit` und `farErd`). Die zweite wird nur für den Abend gebaut.
 
+## Tiefe (leichter 3D-Effekt)
+
+Die Ebenen bleiben flach. Die Tiefe entsteht nur daraus, dass sie sich unterschiedlich stark bewegen. Tiefenfaktor f je Ebene: Himmel 0,02 · fern 0,08 · mittel 0,22 · nah 0,5 · Hang und Spielebene 0,85.
+
+- **Im Sprung:** Die Kamera bewegt sich ohnehin und erzeugt so schon Parallaxe. Zusätzlich fällt der Schnee in drei Tiefen, jeweils zwischen den Ebenen: klein und langsam hinter dem Ort, mittel vor dem Wald, groß und schnell vor dem Hang (Größe × 0,6 / 1 / 1,75, Tempo × 0,55 / 1 / 1,5). Mechanik und Kamera bleiben unverändert, kein Neigen während des Sprungs.
+- **Ankunft als Dolly:** Zoom je Ebene `1 + 0.07 · (1 − e) · (0.2 + 1.6 · f)`. Nahe Ebenen fahren stärker heran als ferne.
+- **Menü und Titelplakat:** Das Bild folgt dem Neigen des Handys (`deviceorientation`; iOS fragt beim ersten Tippen um Erlaubnis), am Computer der Maus. Verschiebung je Ebene `−cam.x · f · 40` und `−cam.y · f · 22` Entwurfs-px, geglättet mit 6 % je Bild. Dazu 5,5 % Überzoom, damit keine Ränder sichtbar werden. Ohne Eingabe schwenkt das Bild langsam von selbst.
+
+Referenz: `frame()` in `telemark-orte.js` (Optionen `tiefe`, `cam`).
+
+### Tiefe ohne Bewegung
+
+| Mittel | Umsetzung | Funktion |
+|---|---|---|
+| Luftperspektive | Zwei zusätzliche Ketten hinter dem Hausberg, je Ort per Seed erzeugt. Kette 2 ist 70 % zum Horizontton gemischt, Kette 1 42 %, nur Licht- und Schattenfläche. Bei Hügel-Orten liegen sie niedriger (y 418–462). | `hazeRanges`, `paintHaze` (vor den Hauptketten in die ferne Ebene) |
+| Talnebel | Zwei Nebelbänder aus je vier Linsen, Vollton mit dunklerer Unterkante. Eines am Bergfuß (y 524, Höhe 17, 7 px/s), eines vor dem Ort (y 662, Höhe 12, 11 px/s). Bei Holmenkollen über dem Fjord. | `mistAnim` (in `live.anim[0]` und `[1]`) |
+| Wolkenschatten | Nur bei Plakatsonne. Drei Flecken wandern über die Berge (9–14 px/s, Tiefschatten mit 24 % Deckkraft, auf die Bergflächen begrenzt), zwei schneller über den Hang (26–34 px/s, 14 %). | `clouds()` in `frame`, `S.mtnClip`, `S.hillClip` |
+| Vordergrund | Zwei angeschnittene Fichtenzweige oben rechts, Bande „FIRNGOLD Skiwachs“ (erfunden) unten rechts. Tiefenfaktor 1,15, zieht bei der Ankunft zuletzt ein. Liegt hinter dem HUD. | `branch`, `frontLayer` (neue vierte Ebene, `par` 0,7) |
+| Wege | Weg zum Ort, der nach hinten schmäler wird (30 → 3 px), mit sechs Telegrafenmasten (40 → 6 px) und Leitung. Loipe im Vordergrund, deren Spurbreite nach hinten abnimmt. | `wege` (mittlere Ebene), `loipe` (nahe Ebene) |
+
+## Gelände unter dem Anlauf: ein Hang aus einem Stück
+
+Bisher passiert in `index.html` Folgendes:
+- `terrain()` füllt das Gelände unter dem Anlauf (`G.left`) flach mit `C.ground`.
+- `slope()` zeichnet den Aufsprunghang als eigenen Schneekörper und schließt ihn links mit einer geraden Schrägen ab (`slant = 18 %`).
+
+Dadurch wirken Unterbau und Hang wie zwei aufeinandergeklebte Teile mit einer Fuge am Tisch.
+
+Neu (Referenz `buildOverview()` in `telemark-orte.js`): Gelände und Aufsprunghang bilden **eine** durchgehende Oberkante. Die Daten dafür gibt es schon:
+- `G.left` endet bei `[0, −tableH]`.
+- Dort beginnt `Hh.land`.
+- Danach folgt `G.right`.
+
+```js
+const edge = G.left.concat(Hh.land.map((p) => [p.x, p.y]), G.right);   // Weltkoordinaten
+```
+
+1. **Ein Körper:**
+   - Fläche unter `edge` bis zum Bildrand, gefüllt mit `hill[3]`.
+   - Die gerade Schräge (`slant`) entfällt, ebenso die getrennte Füllung mit `C.ground`.
+   - Der Schanzentisch bekommt vorn eine kurze senkrechte Holzfläche von der Tischkante bis `edge` (Tischhöhe `tableH`).
+2. **Alles parallel zur Kante:** Jede Zone ist ein Versatz von `edge` nach unten. So entsteht nirgends eine Fuge.
+
+   | Zone | Versatz unter `edge` | Farbe |
+   |---|---|---|
+   | präparierter Streifen und Licht | 0 bis Zone 1 | `hill[0]` |
+   | Kantenschatten (nur ab Tisch, blendet auf den ersten 2 m ein) | 5–13 px × k | `kante` |
+   | Schneezonen | 168 / 250 / 336 px × k, wellig ±12–18 px | `hill[1]`, `hill[2]`, `hill[3]` |
+3. **Waldgürtel parallel zur Kante:**
+   - Unter dem Anlauf beginnt er direkt an der Kante (Versatz 0,5 m).
+   - Ab dem Tisch rückt er bis 0,3 · K auf 7 m unter die Kante. So bleibt darüber der präparierte Hang frei.
+   - Dicke 9–15 m mit Waldzungen. Zwischen 0,9 · K und dem Ende des Auslaufs läuft er auf 0 aus.
+   - Oben Kronen-Zacken mit Schneehauben, untere Hälfte in der Mischung aus Fichte und Fichte dunkel, innen fünf Reihen Wipfel mit Schnee.
+   - Unter dem Gürtel ein Schattenstreifen von 1 m in `kante`.
+   - Dicke und Versatz in Metern (× `cam.ppm`), damit der Wald mit der Welt mitwächst.
+4. **Baumgruppen** auf dem Schnee unter dem Gürtel, je zwei Fichten, alle 8–14 m.
+5. **Hangkante** (2,2 px, Tiefschatten) nur am Aufsprunghang, also ab x = 0. Unter dem Anlauf bilden die Baumkronen die Kante.
+6. **Abgewandte Flanke:** Die Baumreihe hinter der Kante (`G.back`) läuft über die ganze Länge, auch hinter dem Anlauf, mit `spruce()` statt `pine()`.
+
+## Abwechslung am Hang je Ort
+
+Referenz: `OVT`, `judgeTower`, `schild`, `crowd`, `hump`, `rock` in `telemark-orte.js`.
+
+| Ort | Wald unter dem Anlauf | Dazu |
+|---|---|---|
+| Willingen | Mischwald, Fichte im Wechsel mit kahlem Laubwald | Lichtung mit Heustadel |
+| Engelberg | Fichte | Lichtung mit Chalet |
+| Predazzo | Lärchen (ocker, kahl, einzelne Fichten) | Felsblöcke |
+| Holmenkollen | Birken (weiße Stämme) | Fels |
+| Oberstdorf | Fichte, dicht | Lichtung mit Stadel |
+| Garmisch | lichter Mischwald | zwei Wiesen mit Stadeln |
+| Innsbruck | wenige Fichten | Felsen |
+| Bischofshofen | Fichte, sehr dicht | – |
+| Zakopane | hohe Fichten | – |
+| Planica | kein Hochwald: Latschen als niedrige Polster | Felsblöcke |
+
+In allen Orten gilt außerdem:
+- **Richterturm** hinter der Kante bei etwa 0,6 · K, mit Kabine, Fensterband und zwei Landesfahnen. Holz auf Gitterstützen in Willingen, Engelberg, Holmenkollen, Bischofshofen und Zakopane, verputzter Pfeiler in den übrigen Orten.
+- **Trainerpodest** neben dem Tisch, **Fahne** am Starthaus.
+- **Hütten** am Hang in der Hausform des Orts (`preset(town.house)`).
+- **Größenwechsel bei den Bäumen:** einzelne hohe Fichten ragen aus dem Gürtel (26–48 px), vorn stehen große Einzelbäume (66–92 px), weiter oben kleine Gruppen.
+- **Schanzenschild:** Emailtafel mit Emblem (gekreuzte Ski, Stern, ockerfarbener Ring) und dem Schanzennamen in Jost 700, zum Beispiel TITLIS-SCHANZE, DAL BEN, BERGISEL. Nur Schanzennamen, keine Marken.
+- **Zuschauer** im Auslauf: zwei Reihen mit Hut und Mantel, vereinzelt Landesfähnchen. Im Spiel übernimmt das `Scene.drawWorld`, dort nur die Farben angleichen.
+- **Ebenen in der Übersicht:** Die nahe Ebene des Flugbilds (Schneebank, Vordergrund-Bäume, Fahnen) wird in der Übersicht nicht gezeichnet. Mit dem Höhenversatz würde sie sonst über dem Auslauf schweben. Die großen Fahnen stehen dort auf dem Auslauf (`gp(x) + 3`).
+
+## Vordergrund je Ort
+
+Die nahe Ebene ist je Ort verschieden (`NEAR` in `telemark-orte.js`). Der Zweig oben rechts erscheint nur in Oberstdorf, Bischofshofen und Zakopane.
+
+| Ort | Nahebene |
+|---|---|
+| Willingen | Holzzaun, zwei kleine Fichten |
+| Engelberg | Fichtengruppe |
+| Predazzo | drei Lärchen, kahl mit Schnee auf den Ästen (`larch`) |
+| Holmenkollen | drei Birken (`birch`) |
+| Oberstdorf | zwei Fichten, Zweig |
+| Garmisch | Heustadel (`stadel`) und Zaun, keine Bäume |
+| Innsbruck | nur Zaun |
+| Bischofshofen | zwei Fichten, Heustadel, Zweig |
+| Zakopane | hohe Fichtengruppe, Zweig |
+| Planica | eine Fichte |
+
 ## Leistung
 
 - Statische Ebenen werden wie heute einmal je Ort × Tageszeit × Bildschirmgröße gebaut (`buildPanorama`). Ziel: unter 120 ms auf einem Mittelklasse-Handy. Die meiste Zeit kosten die Spritzpunkte. Bei Bedarf `spray`-Anzahl mit `res` skalieren.
@@ -127,7 +229,7 @@ Nach jedem Schritt am Handy testen und committen.
 2. **Engelberg** vollständig: `ranges`, Ort, Wald, Hang, Springer-Kontur.
 3. Animations-Haken `live.anim` mit Engelberg (Schneefahnen, Titlisbahn, Zug, Rauch, Fahnen).
 4. Die übrigen neun Orte einzeln, in dieser Reihenfolge: Willingen, Innsbruck, Holmenkollen, Zakopane, Oberstdorf, Garmisch, Bischofshofen, Predazzo, Planica.
-5. Ankunft mit Speicher, Überspringen und roter Ampel.
+5. Ankunft mit Speicher, Überspringen und roter Ampel; Schnee in drei Tiefen.
 6. Schriften: `@font-face` für Jost und Oswald, Oswald in `--font-display` und `COND` nach Futura.
 7. Aufräumen: alte Funktionen entfernen, `version.txt` erhöhen, damit `sw.js` neu lädt.
 

@@ -530,11 +530,57 @@
     if (cast) for (const [x, yb, h] of list) shade([[x, yb + 1], [x + h * 0.9, yb + 1 - h * 0.02], [x + h * 0.7, yb + h * 0.06], [x, yb + h * 0.05]], P.valleyShade);
     for (const [x, yb, h, v] of list.slice().sort((a, b) => a[1] - b[1])) spruce(x, yb, h, v);
   }
+  // Nahebene je Ort: eigene Bäume oder Bauten, nie überall dieselbe Gruppe
+  const NEAR = {
+    willingen: { zaun: [968, 1300, 726], spruce: [[1240, 742, 92, 0], [1268, 736, 66, 2]] },
+    engelberg: { spruce: [[1214, 752, 116, 0], [1252, 760, 146, 1], [1286, 744, 100, 0]] },
+    predazzo: { larch: [[1186, 744, 122], [1230, 756, 150], [1272, 738, 110]] },
+    holmenkollen: { birch: [[1196, 744, 118], [1236, 754, 148], [1270, 740, 108]] },
+    oberstdorf: { spruce: [[1244, 752, 108, 0], [1276, 744, 84, 2]], zweig: true },
+    garmisch: { stadel: [1150, 728, 62], zaun: [968, 1140, 738] },
+    innsbruck: { zaun: [988, 1300, 724] },
+    bischofshofen: { spruce: [[1224, 758, 128, 1], [1264, 748, 108, 0]], stadel: [1060, 726, 46], zweig: true },
+    zakopane: { spruce: [[1184, 770, 168, 0], [1228, 782, 198, 0], [1272, 760, 158, 1], [1144, 790, 108, 2]], zweig: true },
+    planica: { spruce: [[1262, 748, 90, 0]] },
+  };
+  function larch(x, yb, h) {
+    const tw = mix(P.wood, I.tinte, 0.25);
+    line([[x, yb], [x, yb - h]], tw, Math.max(1.4, h * 0.03));
+    for (let i = 0; i < 13; i++) {
+      const u = i / 13, y = yb - h * 0.12 - u * h * 0.86, w = h * 0.28 * (1 - u * 0.92);
+      for (const d of [-1, 1]) { line([[x, y], [x + d * w * 0.55, y + 2], [x + d * w, y + 5]], tw, 1.1); }
+      if (i % 2 === 0) line([[x - w * 0.7, y + 2.6], [x - 1, y - 0.6]], P.tSnow, 1.4);
+    }
+  }
+  function birch(x, yb, h) {
+    const tw = mix(P.wood, I.tinte, 0.45), bark = P.abend ? mix(P.wall, I.violett, 0.2) : P.wall;
+    for (let i = 0; i < 9; i++) { const a = -Math.PI / 2 + (i - 4) * 0.2, l = h * (0.3 + (i % 3) * 0.1), y0 = yb - h * (0.45 + (i % 4) * 0.08); line([[x, y0], [x + Math.cos(a) * l * 0.5, y0 + Math.sin(a) * l * 0.6], [x + Math.cos(a) * l * 0.85, y0 + Math.sin(a) * l * 0.85 + l * 0.18]], tw, 0.9); }
+    const w = Math.max(2.4, h * 0.045);
+    rect(x - w / 2, yb - h * 0.92, w, h * 0.92, bark);
+    for (let y = yb - h * 0.85; y < yb - 4; y += h * 0.09) rect(x - w / 2, y, w * (0.4 + (y % 3) * 0.2), 1.6, I.tinte);
+  }
+  function stadel(x, yb, w) {
+    const h = w * 0.5, o = { wall: P.wood, side: mix(P.wood, I.tinte, 0.35), roof: P.wood, k: 0.36, balcony: false };
+    house(x, yb, w, h, o);
+    for (let px = x + 4; px < x + w - 2; px += 4) line([[px, yb], [px, yb - h]], mix(P.wood, I.tinte, 0.3), 0.7);
+    rect(x + w * 0.38, yb - h * 0.62, w * 0.24, h * 0.62, mix(P.wood, I.tinte, 0.5));
+  }
+  function zaun(x0, x1, y) {
+    const post = mix(P.wood, I.tinte, 0.25), slope = (1300 - x0) ? (-0.06) : 0;
+    const yy = (x) => y + (x - x0) * slope;
+    line([[x0, yy(x0) - 9], [x1, yy(x1) - 9]], post, 1.6); line([[x0, yy(x0) - 4], [x1, yy(x1) - 4]], post, 1.6);
+    for (let x = x0; x <= x1; x += 15) { rect(x - 1.2, yy(x) - 14, 2.6, 15, post); rect(x - 1.6, yy(x) - 15.6, 3.4, 2, P.tSnow); }
+  }
   function nearLayer(O) {
     fill([[880, 820], [960, 744], [1060, 718], [1170, 700], [1300, 688], [1300, 820]], P.valley);
     shade([[960, 744], [1060, 718], [1170, 700], [1300, 688], [1300, 700], [1180, 712], [1070, 730], [980, 752]], P.valleyShade);
-    grove([[1196, 764, 150, 0], [1240, 776, 188, 1], [1282, 752, 138, 0], [1158, 786, 104, 2]], true);
-    grove([[968, 790, 92, 1], [1004, 800, 68, 2], [938, 806, 58, 0]], true);
+    loipe();
+    const N = NEAR[O.id] || {};
+    if (N.stadel) stadel(N.stadel[0], N.stadel[1], N.stadel[2]);
+    if (N.zaun) zaun(N.zaun[0], N.zaun[1], N.zaun[2]);
+    if (N.spruce) grove(N.spruce, true);
+    for (const [x, yb, h] of (N.larch || [])) { shade([[x, yb + 1], [x + h * 0.7, yb], [x + h * 0.5, yb + 5], [x, yb + 4]], P.valleyShade); larch(x, yb, h); }
+    for (const [x, yb, h] of (N.birch || [])) { shade([[x, yb + 1], [x + h * 0.7, yb], [x + h * 0.5, yb + 5], [x, yb + 4]], P.valleyShade); birch(x, yb, h); }
   }
 
   // ================================================================ Schanze und Springer (Spielebene)
@@ -756,6 +802,301 @@
   ];
   const BY = {}; ORTE.forEach((o) => (BY[o.id] = o));
 
+  // ================================================================ Tiefe: Luftperspektive, Nebel, Wolkenschatten, Wege, Vordergrund
+  function hazeRanges(O) {
+    const hilly = O.ranges.every((R) => R.style === "huegel");
+    const out = [];
+    for (const lv of [2, 1]) {
+      const rr = rng(hash(O.id) ^ (lv * 7919)), band = hilly ? [418, 462] : lv === 2 ? [292, 372] : [334, 420], ctrl = [[-40, band[1] + 20]];
+      let x = -40 + 60 * rr(), sTurn = true;
+      while (x < 1320) { const y = sTurn ? band[0] + rr() * (band[1] - band[0]) * 0.6 : band[1] - rr() * (band[1] - band[0]) * 0.35; ctrl.push([x, y, sTurn ? "S" : "V"]); x += 90 + rr() * 110; sTurn = !sTurn; }
+      ctrl.push([1330, band[1] + 20]);
+      out.push({ lv, G: buildRange({ style: "dunst", rough: hilly ? 0.05 : 0.2, detail: 0.5, ctrl }, (hash(O.id) ^ (lv * 131)) >>> 0) });
+    }
+    return out;
+  }
+  function paintHaze(H, mode) {
+    const G = H.G, f = H.lv === 2 ? 0.7 : 0.42;
+    let lit = mix(P.alpFar.lit, P.sky[4], f), sh = mix(P.alpFar.shade, P.sky[H.lv === 2 ? 4 : 3], f + 0.05);
+    if (mode === "erd") lit = mix(sh, P.sky[4], 0.25);
+    ctx.save(); path(G.poly); ctx.clip();
+    fill(G.poly, lit);
+    for (const fc of G.faces) shade(fc, sh);
+    for (const q of G.ribs) fill(q, lit);
+    ctx.restore();
+  }
+  function mistAnim(y, h, speed, seed, col, colD) {
+    const rr = rng(seed), segs = [];
+    for (let i = 0; i < 4; i++) segs.push({ x: rr() * 1700, L: 260 + rr() * 380, h: h * (0.6 + rr() * 0.6), dy: (rr() - 0.5) * h * 1.2, ph: rr() * 6 });
+    return (t) => {
+      for (const g of segs) {
+        const cx = ((g.x + t * speed) % 1900) - 300, yy = y + g.dy, top = [], bot = [];
+        for (let k = 0; k <= 14; k++) { const u = k / 14, x = cx - g.L / 2 + u * g.L, env = Math.pow(Math.sin(u * Math.PI), 0.7); top.push([x, yy - g.h * env + Math.sin(u * 9 + g.ph + t * 0.2) * 1.6]); bot.push([x, yy + g.h * 0.35 * env]); }
+        const shp = top.concat(bot.reverse());
+        shade(shp, colD);
+        fill(shp.map((p, i) => [p[0], p[1] + (i < top.length ? 2.2 : -1)]), col);
+      }
+    };
+  }
+  function blobPts(rr, w, h) { const pts = []; for (let k = 0; k < 12; k++) { const a = (k / 12) * 6.2832, j = 0.8 + rr() * 0.3; pts.push([Math.cos(a) * w / 2 * j, Math.sin(a) * h / 2 * j]); } return pts; }
+  function wege() {
+    const C = [[905, 792, 30], [926, 752, 20], [958, 714, 12], [985, 682, 7], [1001, 654, 3]];
+    const L = [], R = [];
+    for (const [x, y, w] of C) { L.push([x - w / 2, y]); R.push([x + w / 2, y]); }
+    fill(L.concat(R.reverse()), P.valleyShade);
+    const mid = C.map(([x, y]) => [x, y]); line(mid, P.valley, 1.2);
+    // Telegrafenmasten: nach hinten kleiner und dichter
+    const poles = [[932, 778, 40], [952, 740, 28], [972, 712, 19], [988, 690, 13], [999, 674, 9], [1007, 661, 6]];
+    const tops = poles.map(([x, y, h]) => [x + 16 * (h / 40), y - h]);
+    for (const [x, y, h] of poles) { const px = x + 16 * (h / 40); line([[px, y], [px, y - h]], P.line, Math.max(0.8, h * 0.06)); line([[px - h * 0.16, y - h * 0.9], [px + h * 0.16, y - h * 0.9]], P.line, Math.max(0.6, h * 0.035)); }
+    ctx.save(); ctx.globalAlpha = 0.9; line(tops.map(([x, y], i) => [x - poles[i][2] * 0.14, y + poles[i][2] * 0.1]), P.line, 0.6); line(tops.map(([x, y], i) => [x + poles[i][2] * 0.14, y + poles[i][2] * 0.1]), P.line, 0.6); ctx.restore();
+  }
+  function loipe() {
+    const pts = (off) => { const o = []; for (let k = 0; k <= 12; k++) { const u = k / 12, x = 1130 - u * 150 + Math.sin(u * 3) * 16, y = 812 - u * 78, sp = 8 * (1 - u * 0.8); o.push([x + off * sp, y]); } return o; };
+    line(pts(-1), P.valleyShade, 1.6); line(pts(1), P.valleyShade, 1.6);
+  }
+  function branch(twig, scale, rr) {
+    const wood = mix(P.wood, I.tinte, 0.35), at = (u) => { const i = Math.min(twig.length - 2, Math.floor(u * (twig.length - 1))), f = u * (twig.length - 1) - i; return [lerp(twig[i][0], twig[i + 1][0], f), lerp(twig[i][1], twig[i + 1][1], f)]; };
+    for (let i = 0; i < twig.length - 1; i++) line([twig[i], twig[i + 1]], wood, (10 - i * 2) * scale);
+    // Nadelbüschel hängen unter dem Zweig, hinten dunkel, vorn hell
+    for (const pass of [0, 1]) for (let u = pass * 0.025; u < 0.98; u += 0.05) {
+      const [px, py] = at(u), L = 112 * scale * (1 - u * 0.5) * (0.78 + rr() * 0.35), wd = 22 * scale * (1 - u * 0.45);
+      const lean = pass ? -0.42 : -0.18, tip = [px + L * lean, py + L], pts = [[px - wd / 2, py - 2]];
+      for (let k = 1; k <= 6; k++) { const v = k / 6, cx = lerp(px, tip[0], v), cy = lerp(py, tip[1], v), hw = wd / 2 * (1 - v * 0.85); pts.push([cx - hw - 6 * scale * (1 - v), cy - 4 * scale]); pts.push([cx - hw * 0.4, cy]); }
+      pts.push(tip);
+      for (let k = 6; k >= 1; k--) { const v = k / 6, cx = lerp(px, tip[0], v), cy = lerp(py, tip[1], v), hw = wd / 2 * (1 - v * 0.85); pts.push([cx + hw * 0.4, cy]); pts.push([cx + hw + 6 * scale * (1 - v), cy - 4 * scale]); }
+      pts.push([px + wd / 2, py - 2]);
+      fill(pts, pass ? P.tree : P.treeD);
+    }
+    const sn = [], sb = [];
+    for (let u = 0; u <= 1.001; u += 0.04) { const [px, py] = at(Math.min(1, u)), th = (15 - u * 10) * scale * (0.75 + 0.5 * Math.abs(Math.sin(u * 19))); sn.push([px, py - th]); sb.push([px, py + 3 * scale]); }
+    fill(sn.concat(sb.reverse()), P.tSnow);
+    shade(sb.slice(0, sb.length).map((p) => [p[0], p[1] + 1]).concat(sb.slice().reverse().map((p) => [p[0], p[1] + 5 * scale])), P.tSnowD);
+  }
+  function frontLayer(O) {
+    // Fichtenzweige oben rechts nur dort, wo der Wald nah ist
+    const rr = rng(31);
+    if ((NEAR[O.id] || {}).zweig) branch([[1320, 2], [1236, 40], [1150, 82], [1068, 132], [1002, 178]], 1, rr);
+    if ((NEAR[O.id] || {}).zweig) branch([[1320, 128], [1270, 150], [1214, 178], [1170, 204]], 0.62, rr);
+    // Bande unten rechts: Emailschild mit erfundener Werbung
+    const bx = 1052, by = 748, bw = 260, bh = 46, post = mix(P.wood, I.tinte, 0.3);
+    for (const x of [bx + 22, bx + 150]) rect(x, by + bh - 2, 6, 60, post);
+    rect(bx, by, bw, bh, I.navy); rect(bx + 4, by + 4, bw - 8, bh - 8, P.abend ? mix(I.navy, I.violett, 0.3) : I.navy);
+    ctx.strokeStyle = P.abend ? mix(I.papier, I.violett, 0.3) : I.papier; ctx.lineWidth = 1.6; ctx.strokeRect(bx + 5, by + 5, bw - 10, bh - 10);
+    ctx.fillStyle = P.abend ? mix(I.papier, I.violett, 0.25) : I.papier; ctx.font = "700 22px Jost, Futura, sans-serif"; ctx.textBaseline = "middle";
+    if ("letterSpacing" in ctx) ctx.letterSpacing = "3px";
+    ctx.fillText("FIRNGOLD", bx + 18, by + bh / 2 + 1);
+    const fw = ctx.measureText("FIRNGOLD").width;
+    ctx.fillStyle = I.ocker; ctx.font = "600 14px Jost, Futura, sans-serif"; ctx.fillText("SKIWACHS", bx + 18 + fw + 12, by + bh / 2 + 1);
+    if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
+    fill([[bx - 3, by + 1], [bx + 30, by - 6], [bx + 90, by - 3], [bx + 160, by - 7], [bx + bw + 4, by - 2], [bx + bw + 4, by + 2], [bx - 3, by + 2]], P.tSnow);
+  }
+
+  // ================================================================ Übersicht vor dem Sprung (1280 × 592, wie Handy quer)
+  const OVH = 592;
+  const OV = {
+    inrun: [[34, 52], [110, 96], [190, 142], [262, 184], [314, 211], [354, 230], [393, 242]],
+    ground: [[-20, 80], [34, 70], [110, 112], [190, 158], [262, 199], [318, 228], [360, 249], [393, 262]],
+    land: [[393, 262], [440, 267], [500, 284], [580, 320], [680, 382], [780, 448], [880, 506], [980, 548], [1080, 572], [1180, 584], [1300, 590]],
+    shoulder: [[393, 256], [399, 300], [410, 360], [428, 430], [450, 510], [468, 610]],
+  };
+  const yOn = (pts, x) => skyY(pts, x);
+  // Gelände unter dem Anlauf je Ort: Baumart, Dicke des Waldgürtels, Lichtungen [x0, x1], Bauten und Felsen [x, Tiefe, Breite]
+  const OVT = {
+    willingen: { typ: "misch", thick: 0.85, ph: 1, gaps: [[110, 190]], stadel: [[132, 34, 30]] },
+    engelberg: { typ: "fichte", thick: 1, gaps: [[196, 252]], huette: [[208, 30, 24]] },
+    predazzo: { typ: "laerche", thick: 1, ph: 2, fels: [[40, 70, 46], [250, 96, 34]] },
+    holmenkollen: { typ: "birke", thick: 0.9, ph: 3, fels: [[200, 80, 30]] },
+    oberstdorf: { typ: "fichte", thick: 1.15, ph: 4, gaps: [[50, 128]], stadel: [[70, 36, 32]] },
+    garmisch: { typ: "misch", thick: 0.55, ph: 5, gaps: [[-40, 110], [250, 320]], stadel: [[24, 40, 30], [266, 44, 26]] },
+    innsbruck: { typ: "fichte", thick: 0.35, ph: 6, sparse: true, fels: [[120, 60, 44], [300, 90, 30]] },
+    bischofshofen: { typ: "fichte", thick: 1.35, ph: 7 },
+    zakopane: { typ: "fichte", thick: 1.5, ph: 8, tall: true },
+    planica: { typ: "latschen", kahl: true, fels: [[30, 50, 60], [170, 90, 48], [320, 60, 40], [470, 120, 34]] },
+  };
+  // Schanzenname je Ort für das Schanzenschild (Schanzennamen, keine Marken)
+  const SCHILD = { willingen: "MÜHLENKOPF", engelberg: "TITLIS-SCHANZE", predazzo: "DAL BEN", holmenkollen: "HOLMENKOLLEN", oberstdorf: "SCHATTENBERG", garmisch: "GUDIBERG",
+    innsbruck: "BERGISEL", bischofshofen: "BISCHOFSHOFEN", zakopane: "WIELKA KROKIEW", planica: "LETALNICA" };
+  const PUTZ = { garmisch: 1, innsbruck: 1, oberstdorf: 1, planica: 1, predazzo: 1 };
+  function judgeTower(O, x, yb) {
+    const putz = PUTZ[O.id], wd = mix(P.wood, I.tinte, 0.2), wdD = mix(P.wood, I.tinte, 0.45), cw = 46, ch = 22, cy = yb - 64;
+    if (putz) { fill([[x - 14, yb], [x - 10, cy], [x + 10, cy], [x + 14, yb]], P.wall); shade([[x + 2, cy], [x + 10, cy], [x + 14, yb], [x + 3, yb]], P.wallSide); for (let y = cy + 8; y < yb - 6; y += 12) rect(x - 4, y, 3, 5, P.win); }
+    else {
+      for (const px of [-15, -5, 5, 15]) line([[x + px * 1.25, yb], [x + px, cy]], wdD, 2);
+      for (let y = cy + 8; y < yb - 4; y += 14) { line([[x - 18, y + 14], [x + 18, y]], wdD, 1); line([[x - 18, y], [x + 18, y + 14]], wdD, 1); }
+      for (let y = cy + 5; y < yb; y += 22) line([[x - 19, y], [x + 19, y]], wd, 1.6);
+    }
+    const wall = putz ? P.wall : P.wood, side = putz ? P.wallSide : wdD;
+    rect(x - cw / 2, cy - ch, cw, ch, wall);
+    shade([[x + cw / 2, cy], [x + cw / 2 + 8, cy - 3], [x + cw / 2 + 8, cy - ch - 3], [x + cw / 2, cy - ch]], side);
+    rect(x - cw / 2 + 4, cy - ch + 6, cw - 8, 8, P.abend ? P.winHi : P.win);
+    for (let k = 1; k < 5; k++) rect(x - cw / 2 + 4 + k * (cw - 8) / 5 - 0.6, cy - ch + 6, 1.2, 8, wall);
+    rect(x - cw / 2 - 3, cy - 2, cw + 6, 2.4, wdD);
+    fill([[x - cw / 2 - 6, cy - ch], [x - cw / 2 + 6, cy - ch - 12], [x + cw / 2 - 2, cy - ch - 12], [x + cw / 2 + 10, cy - ch - 3]], P.roof);
+    fill([[x - cw / 2 - 5, cy - ch - 1], [x - cw / 2 + 6, cy - ch - 13], [x + cw / 2 - 2, cy - ch - 13], [x + cw / 2 + 4, cy - ch - 7]], P.roofSnow);
+    for (const [fx, f] of [[x - 12, O.flag], [x + 12, O.flag]]) { line([[fx, cy - ch - 12], [fx, cy - ch - 36]], I.tinte, 1.2); flagShape(fx, cy - ch - 36, 14, 9, f, () => 0); }
+  }
+  function schild(O, x, yb) {
+    const name = SCHILD[O.id] || O.name.toUpperCase(), post = mix(P.wood, I.tinte, 0.3);
+    ctx.font = "700 17px Jost, Futura, sans-serif"; if ("letterSpacing" in ctx) ctx.letterSpacing = "2px";
+    const tw = ctx.measureText(name).width, w = tw + 62, h = 34, bx = x - w / 2, by = yb - h - 16;
+    rect(bx + 10, by + h - 2, 4, 18, post); rect(bx + w - 14, by + h - 2, 4, 18, post);
+    rect(bx, by, w, h, I.navy); ctx.strokeStyle = P.abend ? mix(I.papier, I.violett, 0.3) : I.papier; ctx.lineWidth = 1.4; ctx.strokeRect(bx + 3.5, by + 3.5, w - 7, h - 7);
+    // Emblem: Kreis mit gekreuzten Ski und Stern
+    const ex = bx + 20, ey = by + h / 2;
+    dot(ex, ey, 11, I.ocker); dot(ex, ey, 9, I.navy);
+    line([[ex - 6, ey + 6], [ex + 6, ey - 6]], I.papier, 1.8); line([[ex - 6, ey - 6], [ex + 6, ey + 6]], I.papier, 1.8);
+    for (let k = 0; k < 5; k++) { const a = -Math.PI / 2 + k * 1.2566; line([[ex, ey - 1], [ex + Math.cos(a) * 3.2, ey - 1 + Math.sin(a) * 3.2]], I.ocker, 1.1); }
+    ctx.fillStyle = P.abend ? mix(I.papier, I.violett, 0.25) : I.papier; ctx.textBaseline = "middle"; ctx.fillText(name, bx + 40, by + h / 2 + 1);
+    if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
+    fill([[bx - 2, by + 1], [bx + w * 0.3, by - 4], [bx + w * 0.7, by - 2], [bx + w + 2, by - 4], [bx + w + 2, by + 2], [bx - 2, by + 2]], P.tSnow);
+  }
+  function crowd(x0, x1, yAt, rr, O) {
+    const cols = [I.tinte, P.wood, I.navy, I.gruen, I.rot, mix(I.tinte, P.wood, 0.4)], skin = P.abend ? mix(I.gluehen, I.violett, 0.35) : mix(I.papier, I.dach, 0.28);
+    for (const row of [0, 1]) for (let x = x0 + row * 3; x < x1; x += 4.2 + rr() * 2.6) {
+      const y = yAt(x) + 6 + row * 7, c = cols[Math.floor(rr() * cols.length)];
+      ctx.beginPath(); ctx.ellipse(x, y, 2.4, 4.6, 0, 0, 6.2832); ctx.fillStyle = c; ctx.fill();
+      dot(x, y - 6, 1.9, skin); rect(x - 2.4, y - 8.6, 4.8, 1.8, rr() < 0.5 ? I.tinte : c);
+      if (rr() < 0.06) { line([[x + 2, y - 4], [x + 2, y - 16]], I.tinte, 0.8); flagShape(x + 2, y - 16, 8, 5, O.flag, () => 0); }
+    }
+  }
+  function hump(x, y, h) {
+    const w = h * 2.2, pts = [];
+    for (let k = 0; k <= 10; k++) { const u = k / 10; pts.push([x - w / 2 + u * w, y - Math.sin(u * Math.PI) * h - (k % 2 ? 0 : 1.2)]); }
+    fill(pts.concat([[x + w / 2, y + 1], [x - w / 2, y + 1]]), P.treeD);
+    fill(pts.slice(0, 6).concat([[x, y + 1], [x - w / 2, y + 1]]), P.tree);
+    fill(pts.slice(1, 5).map((p, i) => [p[0], p[1] + (i % 2 ? 0 : 1)]).concat([[pts[4][0], pts[4][1] + 2.4], [pts[1][0], pts[1][1] + 2.4]]), P.tSnow);
+  }
+  function rock(x, y, w, rr) {
+    const h = w * (0.45 + rr() * 0.2), pts = [[x - w / 2, y], [x - w * 0.36, y - h * 0.7], [x - w * 0.08, y - h], [x + w * 0.22, y - h * 0.86], [x + w / 2, y - h * 0.2], [x + w * 0.46, y]];
+    fill(pts, P.alp.rockLit);
+    shade([[x - w * 0.08, y - h], [x + w * 0.22, y - h * 0.86], [x + w / 2, y - h * 0.2], [x + w * 0.46, y], [x + w * 0.04, y]], P.alp.rock);
+    fill([[x - w * 0.36, y - h * 0.7], [x - w * 0.08, y - h], [x + w * 0.22, y - h * 0.86], [x + w * 0.02, y - h * 0.8], [x - w * 0.2, y - h * 0.62]], P.tSnow);
+    shade([[x - w / 2 - 4, y], [x + w / 2 + w * 0.6, y + 1], [x + w / 2 + w * 0.4, y + 5], [x - w / 2, y + 4]], P.kante);
+  }
+  // Ein Hang aus einem Stück: Gelände unter dem Anlauf und Aufsprunghang bilden eine durchgehende Oberkante.
+  // Alles darunter (präparierter Streifen, Waldgürtel, Schneezonen) läuft parallel zu dieser Kante; keine senkrechte Fuge am Tisch.
+  const sstep = (a, b, x) => { const t = clamp01((x - a) / (b - a)); return t * t * (3 - 2 * t); };
+  function buildOverview(S) {
+    const res = S.res, cv = document.createElement("canvas"); cv.width = Math.round(W * res); cv.height = Math.round(OVH * res);
+    const c = cv.getContext("2d"); c.setTransform(res, 0, 0, res, 0, 0); c.lineJoin = "round"; ctx = c; P = S.P; r = rng(hash(S.O.id) ^ 71);
+    const rr = rng(hash(S.O.id) ^ 73), L = OV.land, prf = (x) => yOn(L, x);
+    const GP = OV.ground.concat(L.slice(1)), gp = (x) => yOn(GP, x), X0 = -20, X1 = 1300, YB = OVH + 20;
+    const V = OVT[S.O.id] || OVT.engelberg;
+    // Bäume auf der abgewandten Flanke, über der Kante sichtbar, in der Baumart des Orts
+    for (let x = X0; x < 1140; x += 8 + rr() * 9) {
+      const nt = x < 380 ? 1.25 : 1, h = (7 + rr() * 9) * nt * (V.tall ? 1.3 : 1), y = gp(x) + 1.5, t = V.typ === "misch" && Math.sin(x * 0.02) > 0.2 ? "laerche" : V.typ;
+      if (t === "latschen") { if (rr() < 0.5) hump(x, y, h * 0.5); }
+      else if (t === "laerche") (rr() < 0.25 ? spruce(x, y, h, 0) : larch(x, y, h * 1.2));
+      else if (t === "birke") (rr() < 0.35 ? spruce(x, y, h, 0) : birch(x, y, h * 1.1));
+      else spruce(x, y, h, rr() < 0.3 ? 2 : 0);
+    }
+    judgeTower(S.O, 706, gp(706) + 2);
+    // Schneekörper: eine Fläche unter der ganzen Kante
+    const top = []; for (let x = X0; x <= X1; x += 6) top.push([x, gp(x)]);
+    const body = top.concat([[X1, YB], [X0, YB]]);
+    ctx.save(); path(body); ctx.clip();
+    rect(X0, 0, X1 - X0, YB, P.hill[3]);
+    const zz = (d, a, f, ph) => (x) => gp(x) + d + Math.sin(x * f + ph) * a + Math.sin(x * f * 2.6 + ph) * a * 0.3;
+    const zs = [null, zz(168, 12, 0.009, 1), zz(250, 16, 0.007, 3), zz(336, 18, 0.006, 5)];
+    for (let k = 2; k >= 0; k--) { const f = zs[k + 1], bt = []; for (let x = X1; x >= X0; x -= 8) bt.push([x, f(x)]); (k === 0 ? fill : shade)(top.concat(bt), P.hill[k]); }
+    for (let k = 1; k <= 3; k++) spray(zs[k], P.hill[k - 1], P.hill[k], X0, X1, 1400, 22);
+    // Waldgürtel parallel zur Kante; Baumart, Dicke, Lichtungen und Felsen je Ort (OVT)
+    const ft = (x) => gp(x) + lerp(3, 58, sstep(300, 560, x));
+    const gapM = (x) => (V.gaps || []).reduce((m, [a, b]) => m * (1 - sstep(a - 14, a + 14, x) * (1 - sstep(b - 14, b + 14, x))), 1);
+    const thick = (x) => (V.typ === "latschen" ? 0 : 1) * (V.thick || 1) * gapM(x) * (76 + Math.sin(x * 0.021 + (V.ph || 0)) * 16 + Math.max(0, Math.sin(x * 0.011 + 1.3 + (V.ph || 0))) * 44) * (1 - sstep(640, 960, x));
+    const fb = (x) => ft(x) + thick(x);
+    const seg = (x) => V.typ === "misch" ? (Math.sin(x * 0.024 + 0.7) > 0.15 ? "laerche" : "fichte") : V.typ;
+    const BASE = { fichte: P.tree, laerche: P.abend ? mix(P.wood, I.violett, 0.3) : mix(I.ocker, P.wood, 0.55), birke: P.abend ? mix(P.wood, I.violett, 0.45) : mix(mix(P.wood, I.violett, 0.4), P.wall, 0.3) };
+    { const a = [], b = []; for (let x = X0; x <= 980; x += 8) { const th = thick(x); a.push([x, fb(x) - 2]); b.push([x, fb(x) + 9 * Math.min(1, th / 30) + Math.sin(x * 0.05) * 2]); } shade(a.concat(b.reverse()), P.kante); }
+    // Gürtel in Abschnitten derselben Baumart zeichnen
+    let xa = X0;
+    while (xa < 980) {
+      const t = seg(xa); let xb = xa; while (xb < 980 && seg(xb) === t) xb += 4.5; xb = Math.min(980, xb + 4.5);
+      const base = BASE[t] || P.tree, mid = mix(base, P.treeD, t === "fichte" ? 0.55 : 0.4), tall = V.tall ? 1.6 : 1;
+      const crown = []; let i = 0;
+      for (let x = xa; x <= xb; x += t === "fichte" ? 4.5 : 3) { const th = thick(x), amp = Math.min(1, th / 40); crown.push([x, ft(x) - (th < 4 ? 0 : t === "fichte" ? (i++ % 2 ? 1.5 : (5 + rr() * 8) * amp * tall) : (2 + Math.abs(Math.sin(x * 0.3)) * 5 + rr() * 2) * amp)]); }
+      const bot = []; for (let x = xb; x >= xa; x -= 4.5) bot.push([x, fb(x) - (Math.round(x) % 9 < 4.5 || thick(x) < 6 ? 0 : 5)]);
+      fill(crown.concat(bot), base);
+      { const p = []; for (let x = xa; x <= xb; x += 8) p.push([x, ft(x) + thick(x) * 0.55 + Math.sin(x * 0.03) * 5]); shade(p.concat(bot), mid); }
+      if (t === "fichte") {
+        for (const u of [0.14, 0.3, 0.48, 0.66, 0.84]) for (let x = xa + rr() * 8; x < xb; x += 7 + rr() * 6) {
+          const th = thick(x); if (th < 14) continue;
+          const y = ft(x) + th * u + (rr() - 0.5) * 5, h = (8 + rr() * 6) * tall, w = h * 0.62;
+          fill([[x, y - h], [x + w / 2, y], [x - w / 2, y]], mix(u < 0.55 ? base : mid, P.treeD, 0.35));
+          fill([[x, y - h], [x - w * 0.18, y - h * 0.45], [x - w / 2, y - 0.5], [x - w * 0.12, y - h * 0.62]], P.tSnow);
+        }
+        for (let k = 1; k < crown.length - 1; k += 2) { const [tx, ty] = crown[k]; if (ty < ft(tx) - 2) fill([[tx, ty], [tx - 2.4, ty + 4], [tx - 0.3, ty + 3]], P.tSnow); }
+        // einzelne hohe Fichten ragen aus dem Gürtel
+        for (let x = xa + 20 + rr() * 30; x < xb - 10; x += 52 + rr() * 70) { if (thick(x) < 30) continue; spruce(x, ft(x) + 10 + rr() * 8, (26 + rr() * 22) * tall, rr() < 0.5 ? 0 : 1); }
+      } else {
+        // Laubwald und Lärchen: Stämme als feine senkrechte Striche, Schnee auf den Ästen
+        const trunk = t === "birke" ? P.wall : mix(P.wood, I.tinte, 0.35);
+        for (let x = xa + rr() * 4; x < xb; x += 3 + rr() * 4) {
+          const th = thick(x); if (th < 10) continue;
+          const y0 = ft(x) + 2 + rr() * th * 0.5, y1 = Math.min(fb(x) - 2, y0 + 10 + rr() * 22);
+          line([[x, y0], [x, y1]], trunk, t === "birke" ? 1.4 : 0.9);
+          if (t === "birke") rect(x - 0.7, y0 + (y1 - y0) * 0.4, 1.4, 1.2, I.tinte);
+          if (rr() < 0.5) line([[x - 2.4, y0 + 2], [x + 0.4, y0 + 0.6]], P.tSnow, 1.2);
+        }
+        for (let x = xa + rr() * 10; x < xb; x += 16 + rr() * 22) { if (thick(x) < 24) continue; const y = ft(x) + 6 + rr() * thick(x) * 0.6; spruce(x, y + 12, 12 + rr() * 6, 0); }
+        for (const [tx, ty] of crown) if (rr() < 0.4 && ty < ft(tx) - 1) dot(tx, ty + 1, 1.2, P.tSnow);
+      }
+      xa = xb;
+    }
+    // Lichtungen mit Stadel oder Hütte, Felsen, Latschen
+    for (const [x, d, w] of (V.stadel || [])) stadel(x, gp(x) + d, w);
+    for (const [x, d, w] of (V.huette || [])) house(x, gp(x) + d, w, w * 0.6, preset("chalet", rr));
+    for (const [x, d, w] of (V.fels || [])) rock(x, gp(x) + d, w, rr);
+    if (V.typ === "latschen") for (let x = X0 + 10; x < 560; x += 9 + rr() * 16) { const y = gp(x) + 14 + rr() * 140; if (rr() < 0.7) hump(x, y, 6 + rr() * 9); }
+    // Kantenschatten unter dem präparierten Streifen, beginnt am Tisch
+    { const a = [], b = []; for (let x = 393; x <= X1; x += 8) { const g = sstep(393, 470, x); a.push([x, gp(x) + 5]); b.push([x, gp(x) + 5 + 8 * g]); } shade(a.concat(b.reverse()), P.kante); }
+    // Mulden im präparierten Streifen und im Auslauf
+    for (const [x, d, Ln, t] of [[620, 34, 150, 6], [800, 52, 200, 8], [1010, 38, 170, 6], [1180, 70, 220, 9]]) { const a = Math.atan2(gp(x + 10) - gp(x - 10), 20); ctx.save(); ctx.translate(x + OFF[0], gp(x) + d + OFF[1]); ctx.rotate(a); ctx.beginPath(); ctx.ellipse(0, 0, Ln / 2, t / 2, 0, 0, 6.2832); ctx.fillStyle = P.mulde; ctx.fill(); ctx.restore(); }
+    // Baumgruppen auf dem Schnee unter dem Wald, in der Baumart des Orts
+    if (!V.kahl) {
+      const g = [];
+      for (let x = X0 + 30; x < 900; x += (V.sparse ? 46 : 64) + rr() * 56) {
+        const y = fb(x) + 40 + rr() * 110, t = seg(x);
+        if (t === "laerche") { larch(x, y, 22 + rr() * 16); continue; }
+        if (t === "birke") { birch(x, y, 20 + rr() * 14); birch(x + 8, y + 3, 16 + rr() * 10); continue; }
+        if (t === "latschen") continue;
+        g.push([x, y, (20 + rr() * 22) * (V.tall ? 1.3 : 1), 0], [x + 11, y + 4, 14 + rr() * 12, 2]);
+      }
+      grove(g, true);
+    }
+    ctx.restore();
+    line(L, P.key, 2.2);
+    // Anlauf: Holzbahn auf Stützen, Starthaus, Schanzentisch
+    const I0 = OV.inrun, G0 = OV.ground, tw = P.wood, tD = mix(P.wood, I.tinte, 0.4);
+    for (let k = 0; k < I0.length - 1; k++) { const [ax, ay] = I0[k], [bx, by] = I0[k + 1]; for (let u = 0; u < 1; u += 0.34) { const x = lerp(ax, bx, u), y = lerp(ay, by, u); line([[x, y + 3], [x, yOn(G0, x) + 2]], tD, 1.6); } }
+    line(I0.map(([x, y]) => [x, y + 2]), tD, 6); line(I0, tw, 4.4); line(I0.map(([x, y]) => [x, y - 2]), P.roofSnow, 1.4);
+    fill([[384, 241], [395, 241], [395, 262], [388, 262]], tD); rect(384, 239.5, 11, 2.2, P.roofSnow);
+    house(12, 66, 26, 16, { wall: P.wood, side: tD, roof: P.wood, k: 0.4, balcony: false });
+    // Flutlichtmasten
+    for (const x of [470, 660, 860, 1060]) { const y = prf(x) - 2; line([[x, y], [x, y - 54]], P.line, 1.6); rect(x - 9, y - 60, 18, 7, P.line); for (let j = 0; j < 4; j++) dot(x - 6 + j * 4, y - 56.5, 1.3, P.abend ? I.ocker : P.wall); }
+    for (const d of [0.55, 0.78]) { const x = lerp(393, 1300, d), y = prf(x); line([[x - 5, y + 1], [x + 5, y + 4]], d === 0.78 ? I.rot : P.key, 3.6); }
+    // Starthaus-Fahne, Trainerpodest am Tisch
+    line([[25, 48], [25, 26]], I.tinte, 1.2); flagShape(25, 26, 13, 8, S.O.flag, () => 0);
+    { const px = 430, py = gp(430) - 2; for (const dx of [-8, 8]) line([[px + dx, py], [px + dx, py - 22]], tD, 1.6); rect(px - 11, py - 24, 22, 3, tw); line([[px - 11, py - 24], [px - 11, py - 31], [px + 11, py - 31], [px + 11, py - 24]], tD, 1); rect(px - 11, py - 25.6, 22, 1.6, P.roofSnow); }
+    // Auslauf: Zuschauer, Hütten im Stil des Orts, Schanzenschild
+    crowd(1000, 1290, gp, rr, S.O);
+    const hs = (S.O.town && S.O.town[0] && S.O.town[0].house) || "chalet";
+    for (const [x, d, w] of [[150, 46, 26], [178, 52, 18], [470, 34, 22], [760, 26, 24]]) { const y = Math.min(OVH - 8, fb(x) + d); house(x, y, w, w * 0.62, preset(hs, rr)); }
+    schild(S.O, 610, Math.min(OVH - 14, fb(610) + 64));
+    // große Einzelbäume vorn, kleine weiter oben: Maßstab und Tiefe
+    const big = V.typ === "latschen" ? [] : [[64, 186, 74], [338, 210, 92], [560, 236, 66]];
+    for (const [x, d, h] of big) {
+      const y = fb(x) + d * 0.55, t = seg(x);
+      if (y > OVH + 30) continue;
+      shade([[x, y + 1], [x + h * 0.9, y], [x + h * 0.7, y + h * 0.06], [x, y + h * 0.05]], P.kante);
+      if (t === "laerche") larch(x, y, h * 1.1); else if (t === "birke") birch(x, y, h); else spruce(x, y, h, 1);
+    }
+    // Fahnen am Auslauf stehen auf dem Hang, nicht in der Nahebene des Flugbilds
+    S.A.ov = (S.O.flags || []).slice(0, 2).map((f, i) => { const x = 1004 + i * 44; return flagAnim(x, gp(x) + 3, 58, f[3], f[4], f[5] || S.O.flag, i * 1.7); });
+    S.ov = cv;
+  }
+
   // ================================================================ Szene bauen und zeichnen
   function build(id, variant, opts) {
     const o = Object.assign({ res: 2 }, opts || {});
@@ -772,11 +1113,19 @@
       if (F.cross) { const [x, y] = F.cross; line([[x, y + 1], [x, y - 15]], I.tinte, 1.8); line([[x - 5, y - 10], [x + 5, y - 10]], I.tinte, 1.8); }
       if (first) for (const d of (F.drift || [])) S.A.far.push(driftAnim(d[0], d[1], d[2], d[0] * 0.01));
     };
-    [cv, c] = mk(); ctx = c; for (const G of geos) paintRange(G, "lit"); farExtras(true); S.farLit = cv;
-    [cv, c] = mk(); ctx = c; for (const G of geos) paintRange(G, "erd"); farExtras(false); S.farErd = cv;
+    const hz = hazeRanges(O);
+    [cv, c] = mk(); ctx = c; for (const h of hz) paintHaze(h, "lit"); for (const G of geos) paintRange(G, "lit"); farExtras(true); S.farLit = cv;
+    [cv, c] = mk(); ctx = c; for (const h of hz) paintHaze(h, "erd"); for (const G of geos) paintRange(G, "erd"); farExtras(false); S.farErd = cv;
+    S.mtnClip = new Path2D(); for (const G of geos.concat(hz.map((h) => h.G))) { const p = G.poly; S.mtnClip.moveTo(p[0][0], p[0][1]); for (const q of p) S.mtnClip.lineTo(q[0], q[1]); S.mtnClip.closePath(); }
+    S.hillClip = new Path2D(); S.hillClip.moveTo(-20, prof(-20)); for (let x = -20; x <= 980; x += 20) S.hillClip.lineTo(x, prof(x)); S.hillClip.lineTo(980, 830); S.hillClip.lineTo(-20, 830); S.hillClip.closePath();
+    const cr = rng(hash(O.id) ^ 55);
+    S.clouds = { m: [0, 1, 2].map((i) => ({ x: i * 620 + cr() * 300, y: 270 + cr() * 150, v: 9 + cr() * 5, pts: blobPts(cr, 320 + cr() * 180, 60 + cr() * 50) })), h: [0, 1].map((i) => ({ x: i * 900 + cr() * 300, y: 480 + cr() * 220, v: 26 + cr() * 8, pts: blobPts(cr, 280 + cr() * 120, 46 + cr() * 30) })) };
+    const mistC = P.abend ? mix(P.valley, P.sky[4], 0.45) : mix(I.papier, I.dunst, 0.45), mistD = P.abend ? mix(P.valleyShade, P.sky[3], 0.3) : I.dunst;
+    S.A.far.push(mistAnim(O.fjord ? O.fjord.y0 + 8 : 524, 17, 7, hash(O.id) ^ 3, mistC, mistD));
     [cv, c] = mk(); ctx = c; r = rng(hash(O.id) ^ 23);
     valley(O);
     valleyDetail(O);
+    wege();
     const M = O.mid || {};
     if (M.river) river(M.river);
     if (M.viaduct) viaduct(M.viaduct);
@@ -792,13 +1141,16 @@
     if (M.ferry) S.A.mid.push(ferryAnim(M.ferry));
     if (M.sleigh) S.A.mid.push(sleighAnim(M.sleigh));
     S.mid = cv;
+    S.A.mid.push(mistAnim(O.fjord ? 568 : 662, 12, 11, hash(O.id) ^ 9, mistC, mistD));
     [cv, c] = mk(); ctx = c; nearLayer(O); S.near = cv;
     (O.flags || []).forEach((f, i) => S.A.near.push(flagAnim(f[0], f[1], f[2], f[3], f[4], f[5] || O.flag, i * 1.7)));
     [cv, c] = mk(); ctx = c; r = rng(5); hillLayer(); S.hill = cv;
     [cv, c] = mk(); ctx = c; spielLayer(); S.spiel = cv;
+    [cv, c] = mk(); ctx = c; frontLayer(O); S.front = cv;
     const fr = rng(hash(O.id) ^ 99), n = Math.round(70 * (O.snow || 0.5));
-    S.flakes = []; for (let i = 0; i < n; i++) S.flakes.push({ x: fr() * 1320, y: fr() * 820, v: 26 + fr() * 34, rad: 0.9 + fr() * 1.5, ph: fr() * 6.3 });
+    S.flakes = []; for (let i = 0; i < Math.max(n, 30); i++) S.flakes.push({ x: fr() * 1320, y: fr() * 820, v: 26 + fr() * 34, rad: 0.9 + fr() * 1.5, ph: fr() * 6.3 });
     S.grain = grainPattern(variant);
+    if (o.uebersicht !== false) buildOverview(S);
     return S;
   }
 
@@ -808,29 +1160,52 @@
     P = S.P; OFF = [1.3, 0.7]; ctx = c;
     const k = c.canvas.width / W, intro = ti != null && ti < INTRO;
     const ez = (a, d) => (!intro ? 1 : ease((ti - a) / d));
-    const z = 1 + 0.07 * (1 - ez(0, 3.4));
-    const T = (dx, dy) => c.setTransform(k * z, 0, 0, k * z, ((1 - z) * W * 0.5 + dx * z) * k, ((1 - z) * H * 0.55 + dy * z) * k);
+    // Tiefe: jede Ebene verschiebt sich mit ihrem Tiefenfaktor f; bei der Ankunft zoomen nahe Ebenen stärker (Dolly)
+    const DY = o.uebersicht ? -150 : 0, dz = 1 - ez(0, 3.4), tf = o.tiefe || 0, cam = o.cam || { x: 0, y: 0 }, over = 1 + 0.055 * tf;
+    const T = (dx, dy, f) => {
+      f = f || 0;
+      const z = over * (1 + 0.07 * dz * (tf > 0 ? 0.2 + f * 1.6 : 1)), px = dx - cam.x * f * 40 * tf, py = dy + DY - cam.y * f * 22 * tf;
+      c.setTransform(k * z, 0, 0, k * z, ((1 - z) * W * 0.5 + px * z) * k, ((1 - z) * H * 0.55 + py * z) * k);
+    };
+    const DEPTH = [0.12, 0.4, 1];
+    const flakes = (d) => {
+      T(0, 0, DEPTH[d]);
+      const sz = [0.6, 1, 1.75][d], sp = [0.55, 1, 1.5][d];
+      for (let i = d; i < S.flakes.length; i += 3) { const f = S.flakes[i], y = ((f.y + t * f.v * sp) % 830) - 15, x = ((((f.x + t * 14 * sp + Math.sin(t * 0.8 + f.ph) * 8) % 1320) + 1320) % 1320) - 20; dot(x, y, f.rad * sz, P.chalk); }
+    };
     c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, c.canvas.width, c.canvas.height);
-    T(0, 0); c.drawImage(S.sky, 0, 0, W, H);
+    T(0, 0, 0.02); c.drawImage(S.sky, 0, 0, W, H);
     const fo = (1 - ez(0, 1.6)) * 90, mo = (1 - ez(0.35, 1.5)) * 70, no = (1 - ez(0.8, 1.4)) * 180;
     // Licht auf den Gipfeln: morgens fließt es von oben herab, abends steigt der Erdschatten hinauf
     let shift = null;
     if (!P.abend) { if (intro) shift = lerp(-260, 560, ez(1.0, 2.4)); }
     else shift = intro ? lerp(560, 0, ez(1.0, 2.6)) : 0;
-    T(0, fo);
+    T(0, fo, 0.08);
     if (shift == null || shift >= 540) c.drawImage(S.farLit, 0, 0, W, H);
     else {
       c.save(); c.beginPath(); c.moveTo(-40, -40); c.lineTo(W + 40, -40); for (let x = W + 40; x >= -40; x -= 40) c.lineTo(x, erdLine(x) + shift); c.closePath(); c.clip(); c.drawImage(S.farLit, 0, 0, W, H); c.restore();
       c.save(); c.beginPath(); c.moveTo(-40, H + 200); c.lineTo(W + 40, H + 200); for (let x = W + 40; x >= -40; x -= 40) c.lineTo(x, erdLine(x) + shift); c.closePath(); c.clip(); c.drawImage(S.farErd, 0, 0, W, H); c.restore();
     }
     for (const a of S.A.far) a(t);
-    T(0, mo); c.drawImage(S.mid, 0, 0, W, H); for (const a of S.A.mid) a(t);
-    T(0, no * 0.5); c.drawImage(S.near, 0, 0, W, H); for (const a of S.A.near) a(t);
-    T(-no * 0.9, no * 0.7); c.drawImage(S.hill, 0, 0, W, H);
-    if (o.spiel && (!intro || ti > INTRO - 0.4)) { T(0, 0); c.drawImage(S.spiel, 0, 0, W, H); }
-    T(0, 0);
-    const drift = 14;
-    for (const f of S.flakes) { const y = ((f.y + t * f.v) % 830) - 15, x = ((((f.x + t * drift + Math.sin(t * 0.8 + f.ph) * 8) % 1320) + 1320) % 1320) - 20; dot(x, y, f.rad, P.chalk); }
+    const clouds = (list, clip, col, al) => {
+      c.save(); c.clip(clip); c.globalAlpha = al;
+      for (const b of list) { const x = ((b.x + t * b.v) % (W + 900)) - 450; fill(b.pts.map((p) => [p[0] + x, p[1] + b.y]), col); }
+      c.restore();
+    };
+    if (!P.abend && o.wolken !== false) clouds(S.clouds.m, S.mtnClip, P.alp.rock, 0.24);
+    flakes(0);
+    T(0, mo, 0.22); c.drawImage(S.mid, 0, 0, W, H); for (const a of S.A.mid) a(t);
+    if (!o.uebersicht) { T(0, no * 0.5, 0.5); c.drawImage(S.near, 0, 0, W, H); for (const a of S.A.near) a(t); }
+    flakes(1);
+    if (o.uebersicht) { const z0 = over; c.setTransform(k * z0, 0, 0, k * z0, (1 - z0) * W * 0.5 * k - cam.x * 0.85 * 40 * tf * k, (1 - z0) * OVH * 0.55 * k - cam.y * 0.85 * 22 * tf * k); c.drawImage(S.ov, 0, 0, W, OVH); for (const a of (S.A.ov || [])) a(t); }
+    else {
+    T(-no * 0.9, no * 0.7, 0.85); c.drawImage(S.hill, 0, 0, W, H);
+    if (!P.abend && o.wolken !== false) clouds(S.clouds.h, S.hillClip, P.hill[3], 0.14);
+    if (o.spiel && (!intro || ti > INTRO - 0.4)) { T(0, 0, 0.85); c.drawImage(S.spiel, 0, 0, W, H); }
+    if (o.vorne !== false) { T(no * 0.8, no * 0.4, 1.15); c.drawImage(S.front, 0, 0, W, H); }
+    }
+    flakes(2);
+    c.setTransform(k, 0, 0, k, 0, 0);
     if (o.korn > 0) {
       const pat = c.createPattern(S.grain, "repeat");
       if (pat.setTransform) pat.setTransform(new DOMMatrix().scale(0.5));
@@ -858,5 +1233,5 @@
     ctx.restore();
   }
 
-  window.TelemarkOrte = { ORTE, PAL, INK: I, build, frame, INTRO };
+  window.TelemarkOrte = { ORTE, PAL, INK: I, build, frame, INTRO, OVH };
 })();

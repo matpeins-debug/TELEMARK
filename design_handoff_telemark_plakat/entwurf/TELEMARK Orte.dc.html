@@ -32,13 +32,30 @@ button { font: inherit; }
   <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px;">
     <button onClick="{{ setSonne }}" style="height: 40px; padding: 0 16px; border-radius: 4px; border: 1.5px solid #DDA43B; background: {{ sonneBg }}; color: {{ sonneFg }}; font-family: Jost, sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.08em; cursor: pointer;">PLAKATSONNE</button>
     <button onClick="{{ setGluehen }}" style="height: 40px; padding: 0 16px; border-radius: 4px; border: 1.5px solid #DDA43B; background: {{ gluehenBg }}; color: {{ gluehenFg }}; font-family: Jost, sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.08em; cursor: pointer;">ALPENGLÜHEN</button>
-    <button onClick="{{ replay }}" style="height: 40px; padding: 0 16px; margin-left: auto; border-radius: 4px; border: 2px solid #0E131B; background: #C23B2A; color: #FBF4E4; font-family: Jost, sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.08em; cursor: pointer; box-shadow: 0 3px 0 #0E131B;">ANKUNFT ABSPIELEN</button>
+    <button onClick="{{ tilt }}" style="height: 40px; padding: 0 16px; margin-left: auto; border-radius: 4px; border: 1.5px solid rgba(241,231,210,0.45); background: {{ tiltBg }}; color: {{ tiltFg }}; font-family: Jost, sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.08em; cursor: pointer;">HANDY NEIGEN</button>
+    <button onClick="{{ replay }}" style="height: 40px; padding: 0 16px; border-radius: 4px; border: 2px solid #0E131B; background: #C23B2A; color: #FBF4E4; font-family: Jost, sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.08em; cursor: pointer; box-shadow: 0 3px 0 #0E131B;">ANKUNFT ABSPIELEN</button>
   </div>
 
-  <div style="position: relative; width: 100%; aspect-ratio: 16 / 10; border-radius: 4px; overflow: hidden; background: #1F56A8; box-shadow: 0 0 0 1px rgba(241,231,210,0.18);">
+  <div onPointerMove="{{ onMove }}" onPointerLeave="{{ onLeave }}" style="position: relative; width: 100%; aspect-ratio: 16 / 10; border-radius: 4px; overflow: hidden; background: #1F56A8; box-shadow: 0 0 0 1px rgba(241,231,210,0.18); touch-action: pan-y;">
     <canvas ref="{{ stage }}" width="2560" height="1600" style="position: absolute; inset: 0; width: 100%; height: 100%; display: block;"></canvas>
   </div>
 
+  <div style="margin-top: -12px; font-size: 14px; color: #B9AE96;">Im Flug. Tiefe: Maus oder Finger über das Bild bewegen. Ohne Eingabe schwenkt das Bild langsam von selbst. Stärke im Tweaks-Panel.</div>
+  <div style="display: flex; flex-direction: column; gap: 10px; padding-top: 10px;">
+    <div style="display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;">
+      <h2 style="margin: 0; font-family: Jost, sans-serif; font-weight: 700; font-size: 26px; text-transform: uppercase; letter-spacing: 0.02em;">Übersicht vor dem Sprung</h2>
+      <span style="font-size: 15px; color: #B9AE96;">Handy quer · Anlauf und Aufsprunghang als ein Hang, Wald und Schneezonen laufen parallel zur Kante</span>
+    </div>
+    <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 3fr); gap: 14px; align-items: start;">
+      <figure style="margin: 0; display: flex; flex-direction: column; gap: 6px;">
+        <img src="assets/vorher-schanze.png" alt="Bisher: leere Fläche unter dem Anlauf" style="width: 100%; display: block; border-radius: 3px;">
+        <figcaption style="font-size: 14px; color: #B9AE96;">bisher: leere Fläche, harte Schrägkante</figcaption>
+      </figure>
+      <div onPointerMove="{{ onMove }}" onPointerLeave="{{ onLeave }}" style="position: relative; width: 100%; aspect-ratio: 1280 / 592; border-radius: 4px; overflow: hidden; background: #1F56A8; box-shadow: 0 0 0 1px rgba(241,231,210,0.18); touch-action: pan-y;">
+        <canvas ref="{{ stage2 }}" width="2560" height="1184" style="position: absolute; inset: 0; width: 100%; height: 100%; display: block;"></canvas>
+      </div>
+    </div>
+  </div>
   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px 32px; padding: 6px 0 10px; border-bottom: 1px solid rgba(241,231,210,0.2);">
     <div style="display: flex; flex-direction: column; gap: 4px;">
       <div style="font-family: Jost, sans-serif; font-weight: 700; font-size: 36px; line-height: 1.05; text-transform: uppercase; letter-spacing: 0.02em;">{{ name }}</div>
@@ -68,7 +85,7 @@ button { font: inherit; }
   </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;ankunft&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Ablauf&quot;}, &quot;animation&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Ablauf&quot;}, &quot;springer&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Prüfen&quot;}, &quot;korn&quot;: {&quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0.4, &quot;min&quot;: 0, &quot;max&quot;: 1, &quot;step&quot;: 0.05, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Druck&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;tiefe&quot;: {&quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0.6, &quot;min&quot;: 0, &quot;max&quot;: 1, &quot;step&quot;: 0.05, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Tiefe&quot;}, &quot;ankunft&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Ablauf&quot;}, &quot;animation&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Ablauf&quot;}, &quot;springer&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Prüfen&quot;}, &quot;korn&quot;: {&quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0.4, &quot;min&quot;: 0, &quot;max&quot;: 1, &quot;step&quot;: 0.05, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Druck&quot;}}">
 const META = [["willingen", "Willingen"], ["engelberg", "Engelberg"], ["predazzo", "Predazzo"], ["holmenkollen", "Holmenkollen"], ["oberstdorf", "Oberstdorf"], ["garmisch", "Garmisch-Partenkirchen"], ["innsbruck", "Innsbruck"], ["bischofshofen", "Bischofshofen"], ["zakopane", "Zakopane"], ["planica", "Planica"]];
 class Component extends DCLogic {
   constructor(p) {
@@ -77,11 +94,12 @@ class Component extends DCLogic {
     try { saved = JSON.parse(localStorage.getItem("telemark-orte-v1") || "{}"); } catch (e) {}
     this.state = { ort: saved.ort || "engelberg", licht: saved.licht || "sonne", ready: false };
     this.stage = React.createRef();
+    this.stage2 = React.createRef();
     this.trefs = {};
     META.forEach(([id]) => (this.trefs[id] = React.createRef()));
   }
   componentDidMount() { this.boot(); }
-  componentWillUnmount() { cancelAnimationFrame(this.raf); clearInterval(this.tick); clearTimeout(this.wait); clearTimeout(this.tt); }
+  componentWillUnmount() { if (this.onOri) window.removeEventListener("deviceorientation", this.onOri); cancelAnimationFrame(this.raf); clearInterval(this.tick); clearTimeout(this.wait); clearTimeout(this.tt); }
   boot() {
     const T = window.TelemarkOrte;
     if (!T) { this.wait = setTimeout(() => this.boot(), 60); return; }
@@ -108,7 +126,13 @@ class Component extends DCLogic {
     const t = (this.props.animation ?? true) ? (now - this.start) / 1000 : 2;
     let ti = this.introAt != null ? (now - this.introAt) / 1000 : null;
     if (ti != null && ti > this.T.INTRO) { this.introAt = null; ti = null; }
-    this.T.frame(this.S, cv.getContext("2d"), t, ti, { spiel: this.props.springer ?? true, korn: this.props.korn ?? 0.4 });
+    const tgt = this.ptr || this.gyro || { x: Math.sin(t * 0.23) * 0.75, y: Math.sin(t * 0.16 + 1) * 0.5 };
+    const cam = this.cam || (this.cam = { x: 0, y: 0 });
+    cam.x += (tgt.x - cam.x) * 0.06; cam.y += (tgt.y - cam.y) * 0.06;
+    const fo = { spiel: this.props.springer ?? true, korn: this.props.korn ?? 0.4, tiefe: this.props.tiefe ?? 0.6, cam };
+    this.T.frame(this.S, cv.getContext("2d"), t, ti, fo);
+    const cv2 = this.stage2.current;
+    if (cv2) this.T.frame(this.S, cv2.getContext("2d"), t, null, Object.assign({}, fo, { uebersicht: true }));
   }
   thumbs() {
     clearTimeout(this.tt);
@@ -116,10 +140,18 @@ class Component extends DCLogic {
     const step = () => {
       if (i >= META.length) return;
       const id = META[i++][0], cv = this.trefs[id].current;
-      if (cv) { const S = this.T.build(id, licht, { res: 0.4 }); this.T.frame(S, cv.getContext("2d"), 1.5, null, { spiel: false, korn: 0.3 }); }
+      if (cv) { const S = this.T.build(id, licht, { res: 0.4, uebersicht: false }); this.T.frame(S, cv.getContext("2d"), 1.5, null, { spiel: false, korn: 0.3 }); }
       this.tt = setTimeout(step, 30);
     };
     step();
+  }
+  toggleTilt() {
+    if (this.state.tilt) { window.removeEventListener("deviceorientation", this.onOri); this.gyro = null; this.setState({ tilt: false }); return; }
+    this.onOri = (e) => { if (e.gamma == null) return; this.gyro = { x: Math.max(-1, Math.min(1, e.gamma / 25)), y: Math.max(-1, Math.min(1, ((e.beta || 0) - 40) / 25)) }; };
+    const on = () => { window.addEventListener("deviceorientation", this.onOri); this.setState({ tilt: true }); };
+    const D = window.DeviceOrientationEvent;
+    if (D && typeof D.requestPermission === "function") D.requestPermission().then((r) => { if (r === "granted") on(); }, () => {});
+    else on();
   }
   save() { try { localStorage.setItem("telemark-orte-v1", JSON.stringify({ ort: this.state.ort, licht: this.state.licht })); } catch (e) {} }
   pick(ort) { this.setState({ ort }, () => { this.save(); this.rebuild(true); }); }
@@ -132,13 +164,17 @@ class Component extends DCLogic {
     });
     const on = (v) => this.state.licht === v;
     return {
-      orte, stage: this.stage,
+      orte, stage: this.stage, stage2: this.stage2,
       name: cur ? cur.name : "", sub: cur ? cur.land + " · " + cur.schanze : "",
       oertlich: cur ? cur.info.oertlich : [], typisch: cur ? cur.info.typisch : [], bewegt: cur ? cur.info.bewegt : [],
       sonneBg: on("sonne") ? "#DDA43B" : "transparent", sonneFg: on("sonne") ? "#1E2734" : "#F1E7D2",
       gluehenBg: on("gluehen") ? "#DDA43B" : "transparent", gluehenFg: on("gluehen") ? "#1E2734" : "#F1E7D2",
       setSonne: () => this.setLicht("sonne"), setGluehen: () => this.setLicht("gluehen"),
       replay: () => { this.introAt = performance.now(); },
+      onMove: (e) => { const b = e.currentTarget.getBoundingClientRect(); this.ptr = { x: ((e.clientX - b.left) / b.width) * 2 - 1, y: ((e.clientY - b.top) / b.height) * 2 - 1 }; },
+      onLeave: () => { this.ptr = null; },
+      tilt: () => this.toggleTilt(),
+      tiltBg: this.state.tilt ? "#F1E7D2" : "transparent", tiltFg: this.state.tilt ? "#1E2734" : "#F1E7D2",
     };
   }
 }

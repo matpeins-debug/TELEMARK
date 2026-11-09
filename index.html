@@ -69,6 +69,8 @@ body { font-family: var(--font-body); -webkit-font-smoothing: antialiased; -webk
 #app { position: fixed; inset: 0; overflow: hidden; background: var(--sky); }
 #stage { position: absolute; left: 0; top: 0; overflow: hidden; transform-origin: 0 0; touch-action: none;
   user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+/* Druckkorn des Plakats über der Leinwand (Kreide- und Spritzpunkte, 22 %), unter dem HUD; vom Renderer gesetzt */
+#printLayer { position: absolute; inset: 0; pointer-events: none; background-repeat: repeat; opacity: 0.22; }
 #scene { position: absolute; left: 0; top: 0; display: block; }
 #ui { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
 [hidden] { display: none !important; }
@@ -2958,12 +2960,36 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (G.forest) fill(G.forest, R.far ? P.forestFar : P.forest);
     ctx.restore();
   }
+  // Luftperspektive: zwei zusätzliche Ketten hinter dem Hausberg, je Ort per Seed; Kette 2 zu 70 %, Kette 1 zu 42 % zum Horizontton
+  // gemischt, nur Licht- und Schattenfläche. Bei Hügel-Orten niedriger. Erzeugt über die ganze Breite der fernen Ebene (±600 Einheiten).
+  function hazeRanges(O) {
+    const hilly = O.ranges.every((R) => R.style === "huegel"), out = [];
+    for (const lv of [2, 1]) {
+      const rr = rng(hash(O.id) ^ (lv * 7919)), band = hilly ? [418, 462] : lv === 2 ? [292, 372] : [334, 420], ctrl = [[-720, band[1] + 20]];
+      let x = -720 + 60 * rr(), sTurn = true;
+      while (x < 1990) { const y = sTurn ? band[0] + rr() * (band[1] - band[0]) * 0.6 : band[1] - rr() * (band[1] - band[0]) * 0.35; ctrl.push([x, y, sTurn ? "S" : "V"]); x += 90 + rr() * 110; sTurn = !sTurn; }
+      ctrl.push([2000, band[1] + 20]);
+      out.push({ lv, G: buildRange({ style: "dunst", rough: hilly ? 0.05 : 0.2, detail: 0.5, ctrl }, (hash(O.id) ^ (lv * 131)) >>> 0) });
+    }
+    return out;
+  }
+  function paintHaze(Hz, mode) {
+    const G = Hz.G, f = Hz.lv === 2 ? 0.7 : 0.42;
+    let lit = mix(P.alpFar.lit, P.sky[4], f);
+    const sh = mix(P.alpFar.shade, P.sky[Hz.lv === 2 ? 4 : 3], f + 0.05);
+    if (mode === "erd") lit = mix(sh, P.sky[4], 0.25);
+    ctx.save(); path(G.poly); ctx.clip();
+    fill(G.poly, lit);
+    for (const fc of G.faces) shade(fc, sh);
+    for (const q of G.ribs) fill(q, lit);
+    ctx.restore();
+  }
   // Schattengrenze am Abend: gemeinsame Höhe, wie der Erdschatten (darüber glühen die Gipfel)
   const erdLine = (x) => 372 + Math.sin(x * 0.011) * 10 + Math.sin(x * 0.037) * 4;
   const GEO = new Map();
   function geoFor(O) {
     let g = GEO.get(O.id);
-    if (!g) { g = O.ranges.map((R, i) => buildRange(R, (hash(O.id) + i * 977) >>> 0)); GEO.set(O.id, g); }
+    if (!g) { g = { ranges: O.ranges.map((R, i) => buildRange(R, (hash(O.id) + i * 977) >>> 0)), haze: hazeRanges(O) }; GEO.set(O.id, g); }
     return g;
   }
 
@@ -2994,6 +3020,26 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       ctx.save(); ctx.translate(x + OFF[0] + (rr() - 0.5) * 30, y + OFF[1]); ctx.beginPath(); ctx.ellipse(0, 0, L / 2, t / 2, -0.04, 0, 6.2832); ctx.fillStyle = P.valleyShade; ctx.fill(); ctx.restore();
     }
     grove([[662, 680, 34, 0], [686, 686, 26, 2], [762, 704, 46, 1], [792, 710, 32, 0], [820, 702, 24, 2]], true);
+  }
+  // Weg zum Ort, nach hinten schmäler (30 → 3 px), mit sechs Telegrafenmasten (40 → 6 px) und Leitung
+  function wege() {
+    const C = [[905, 792, 30], [926, 752, 20], [958, 714, 12], [985, 682, 7], [1001, 654, 3]];
+    const L = [], R = [];
+    for (const [x, y, w] of C) { L.push([x - w / 2, y]); R.push([x + w / 2, y]); }
+    fill(L.concat(R.reverse()), P.valleyShade);
+    line(C.map(([x, y]) => [x, y]), P.valley, 1.2);
+    const poles = [[932, 778, 40], [952, 740, 28], [972, 712, 19], [988, 690, 13], [999, 674, 9], [1007, 661, 6]];
+    const tops = poles.map(([x, y, h]) => [x + 16 * (h / 40), y - h]);
+    for (const [x, y, h] of poles) { const px = x + 16 * (h / 40); line([[px, y], [px, y - h]], P.line, Math.max(0.8, h * 0.06)); line([[px - h * 0.16, y - h * 0.9], [px + h * 0.16, y - h * 0.9]], P.line, Math.max(0.6, h * 0.035)); }
+    ctx.save(); ctx.globalAlpha = 0.9;
+    line(tops.map(([x, y], i) => [x - poles[i][2] * 0.14, y + poles[i][2] * 0.1]), P.line, 0.6);
+    line(tops.map(([x, y], i) => [x + poles[i][2] * 0.14, y + poles[i][2] * 0.1]), P.line, 0.6);
+    ctx.restore();
+  }
+  // Loipe im Vordergrund, die Spurbreite nimmt nach hinten ab
+  function loipe() {
+    const pts = (off) => { const o = []; for (let k = 0; k <= 12; k++) { const u = k / 12, x = 1130 - u * 150 + Math.sin(u * 3) * 16, y = 812 - u * 78, sp = 8 * (1 - u * 0.8); o.push([x + off * sp, y]); } return o; };
+    line(pts(-1), P.valleyShade, 1.6); line(pts(1), P.valleyShade, 1.6);
   }
   function river(Rv) {
     const top = [], bot = [], x0 = Math.max(X0 - 20, Rv.x0 || 460);
@@ -3229,24 +3275,99 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (cast) for (const [x, yb, h] of list) shade([[x, yb + 1], [x + h * 0.9, yb + 1 - h * 0.02], [x + h * 0.7, yb + h * 0.06], [x, yb + h * 0.05]], P.valleyShade);
     for (const [x, yb, h, v] of list.slice().sort((a, b) => a[1] - b[1])) spruce(x, yb, h, v);
   }
+  // Lärche (kahl, Schnee auf den Ästen), Birke (weißer Stamm), Heustadel, Holzzaun: für die Nahebene einzelner Orte
+  function larch(x, yb, h) {
+    const tw = mix(P.wood, I.tinte, 0.25);
+    line([[x, yb], [x, yb - h]], tw, Math.max(1.4, h * 0.03));
+    for (let i = 0; i < 13; i++) {
+      const u = i / 13, y = yb - h * 0.12 - u * h * 0.86, w = h * 0.28 * (1 - u * 0.92);
+      for (const d of [-1, 1]) line([[x, y], [x + d * w * 0.55, y + 2], [x + d * w, y + 5]], tw, 1.1);
+      if (i % 2 === 0) line([[x - w * 0.7, y + 2.6], [x - 1, y - 0.6]], P.tSnow, 1.4);
+    }
+  }
+  function birch(x, yb, h) {
+    const tw = mix(P.wood, I.tinte, 0.45), bark = P.abend ? mix(P.wall, I.violett, 0.2) : P.wall;
+    for (let i = 0; i < 9; i++) { const a = -Math.PI / 2 + (i - 4) * 0.2, l = h * (0.3 + (i % 3) * 0.1), y0 = yb - h * (0.45 + (i % 4) * 0.08); line([[x, y0], [x + Math.cos(a) * l * 0.5, y0 + Math.sin(a) * l]], tw, 0.8); }
+    const w = Math.max(2.4, h * 0.045);
+    rect(x - w / 2, yb - h * 0.92, w, h * 0.92, bark);
+    for (let y = yb - h * 0.85; y < yb - 4; y += h * 0.09) rect(x - w / 2, y, w * (0.4 + (y % 3) * 0.2), 1.6, I.tinte);
+  }
+  function stadel(x, yb, w) {
+    const h = w * 0.5;
+    house(x, yb, w, h, { wall: P.wood, side: mix(P.wood, I.tinte, 0.35), roof: P.wood, k: 0.36, balcony: false });
+    for (let px = x + 4; px < x + w - 2; px += 4) line([[px, yb], [px, yb - h]], mix(P.wood, I.tinte, 0.3), 0.7);
+    rect(x + w * 0.38, yb - h * 0.62, w * 0.24, h * 0.62, mix(P.wood, I.tinte, 0.5));
+  }
+  function zaun(x0, x1, y) {
+    const post = mix(P.wood, I.tinte, 0.25), yy = (x) => y - (x - x0) * 0.06;
+    line([[x0, yy(x0) - 9], [x1, yy(x1) - 9]], post, 1.6); line([[x0, yy(x0) - 4], [x1, yy(x1) - 4]], post, 1.6);
+    for (let x = x0; x <= x1; x += 15) { rect(x - 1.2, yy(x) - 14, 2.6, 15, post); rect(x - 1.6, yy(x) - 15.6, 3.4, 2, P.tSnow); }
+  }
+  // Nahebene: Schneebank unten rechts, Loipe, dazu je Ort eigene Bäume oder Bauten (O.near), nie überall dieselbe Gruppe
   function nearSide(O) {
     fill([[880, 900], [960, 744], [1060, 718], [1170, 700], [1300, 688], [X1 + 20, 680], [X1 + 20, 900]], P.valley);
     shade([[960, 744], [1060, 718], [1170, 700], [1300, 688], [X1 + 20, 680], [X1 + 20, 692], [1300, 700], [1180, 712], [1070, 730], [980, 752]], P.valleyShade);
-    grove([[1196, 764, 150, 0], [1240, 776, 188, 1], [1282, 752, 138, 0], [1158, 786, 104, 2]], true);
-    grove([[968, 790, 92, 1], [1004, 800, 68, 2], [938, 806, 58, 0]], true);
+    loipe();
+    const N = O.near || {};
+    if (N.stadel) stadel(N.stadel[0], N.stadel[1], N.stadel[2]);
+    if (N.zaun) zaun(N.zaun[0], N.zaun[1], N.zaun[2]);
+    if (N.spruce) grove(N.spruce, true);
+    for (const [x, yb, h] of (N.larch || [])) { shade([[x, yb + 1], [x + h * 0.7, yb], [x + h * 0.5, yb + 5], [x, yb + 4]], P.valleyShade); larch(x, yb, h); }
+    for (const [x, yb, h] of (N.birch || [])) { shade([[x, yb + 1], [x + h * 0.7, yb], [x + h * 0.5, yb + 5], [x, yb + 4]], P.valleyShade); birch(x, yb, h); }
+  }
+  // Vordergrund (vierte Ebene, Tiefenfaktor 1,15): angeschnittene Fichtenzweige oben rechts, wo der Wald nah ist (O.near.zweig),
+  // und die Bande unten rechts, ein Emailschild mit erfundener Werbung. Liegt vor dem Hang, hinter dem HUD.
+  const lerp2 = (a, b, t) => a + (b - a) * t;
+  function branch(twig, scale, rr) {
+    const wood = mix(P.wood, I.tinte, 0.35), at = (u) => { const i = Math.min(twig.length - 2, Math.floor(u * (twig.length - 1))), f = u * (twig.length - 1) - i; return [lerp2(twig[i][0], twig[i + 1][0], f), lerp2(twig[i][1], twig[i + 1][1], f)]; };
+    for (let i = 0; i < twig.length - 1; i++) line([twig[i], twig[i + 1]], wood, (10 - i * 2) * scale);
+    for (const pass of [0, 1]) for (let u = pass * 0.025; u < 0.98; u += 0.05) {
+      const [px, py] = at(u), L = 112 * scale * (1 - u * 0.5) * (0.78 + rr() * 0.35), wd = 22 * scale * (1 - u * 0.45);
+      const lean = pass ? -0.42 : -0.18, tip = [px + L * lean, py + L], pts = [[px - wd / 2, py - 2]];
+      for (let k = 1; k <= 6; k++) { const v = k / 6, cx = lerp2(px, tip[0], v), cy = lerp2(py, tip[1], v), hw = wd / 2 * (1 - v * 0.85); pts.push([cx - hw - 6 * scale * (1 - v), cy - 4 * scale]); pts.push([cx - hw * 0.4, cy]); }
+      pts.push(tip);
+      for (let k = 6; k >= 1; k--) { const v = k / 6, cx = lerp2(px, tip[0], v), cy = lerp2(py, tip[1], v), hw = wd / 2 * (1 - v * 0.85); pts.push([cx + hw * 0.4, cy]); pts.push([cx + hw + 6 * scale * (1 - v), cy - 4 * scale]); }
+      pts.push([px + wd / 2, py - 2]);
+      fill(pts, pass ? P.tree : P.treeD);
+    }
+    const sn = [], sb = [];
+    for (let u = 0; u <= 1.001; u += 0.04) { const [px, py] = at(Math.min(1, u)), th = (15 - u * 10) * scale * (0.75 + 0.5 * Math.abs(Math.sin(u * 19))); sn.push([px, py - th]); sb.push([px, py + 3 * scale]); }
+    fill(sn.concat(sb.slice().reverse()), P.tSnow);
+    shade(sb.map((p) => [p[0], p[1] + 1]).concat(sb.slice().reverse().map((p) => [p[0], p[1] + 5 * scale])), P.tSnowD);
+  }
+  function frontSide(O) {
+    const rr = rng(31), N = O.near || {};
+    if (N.zweig) { branch([[1320, 2], [1236, 40], [1150, 82], [1068, 132], [1002, 178]], 1, rr); branch([[1320, 128], [1270, 150], [1214, 178], [1170, 204]], 0.62, rr); }
+    const bx = 1052, by = 748, bw = 260, bh = 46, post = mix(P.wood, I.tinte, 0.3);
+    for (const x of [bx + 22, bx + 150]) rect(x, by + bh - 2, 6, 60, post);
+    rect(bx, by, bw, bh, I.navy); rect(bx + 4, by + 4, bw - 8, bh - 8, P.abend ? mix(I.navy, I.violett, 0.3) : I.navy);
+    ctx.strokeStyle = P.abend ? mix(I.papier, I.violett, 0.3) : I.papier; ctx.lineWidth = 1.6; ctx.strokeRect(bx + 5, by + 5, bw - 10, bh - 10);
+    // Schrift: ohne Jost (kommt mit den Schriften) breiter, darum auf die Tafel einpassen
+    const FONT = "Jost, Futura, 'Avenir Next', 'Century Gothic', sans-serif";
+    if ("letterSpacing" in ctx) ctx.letterSpacing = "3px";
+    ctx.font = "700 22px " + FONT; let fw = ctx.measureText("FIRNGOLD").width;
+    ctx.font = "600 14px " + FONT; const sw = ctx.measureText("SKIWACHS").width, fit = Math.min(1, (bw - 36 - 12) / (fw + sw));
+    fw *= fit;
+    ctx.textBaseline = "middle"; ctx.textAlign = "left";
+    ctx.fillStyle = P.abend ? mix(I.papier, I.violett, 0.25) : I.papier; ctx.font = "700 " + (22 * fit).toFixed(1) + "px " + FONT; ctx.fillText("FIRNGOLD", bx + 18, by + bh / 2 + 1);
+    ctx.fillStyle = I.ocker; ctx.font = "600 " + (14 * fit).toFixed(1) + "px " + FONT; ctx.fillText("SKIWACHS", bx + 18 + fw + 12, by + bh / 2 + 1);
+    if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
+    fill([[bx - 3, by + 1], [bx + 30, by - 6], [bx + 90, by - 3], [bx + 160, by - 7], [bx + bw + 4, by - 2], [bx + bw + 4, by + 2], [bx - 3, by + 2]], P.tSnow);
   }
 
   // ------------------------------------------------------------------ Ebenen des Panoramas
   // Ferne Ebene: Ketten von hinten nach vorn; abends glühen nur die Gipfel über dem Erdschatten. Seilbahnen hängen hier.
   function farLayer(O, live) {
     rect(X0 - 20, BASE - 2, X1 - X0 + 40, 220, P.forest);
-    const geos = geoFor(O);
-    for (const G of geos) paintRange(G, "lit");
+    const geo = geoFor(O);
+    for (const Hz of geo.haze) paintHaze(Hz, "lit");
+    for (const G of geo.ranges) paintRange(G, "lit");
     if (P.abend) {
       ctx.save(); ctx.beginPath(); ctx.moveTo(X0 - 40, 900);
       for (let x = X0 - 40; x <= X1 + 80; x += 40) ctx.lineTo(x, erdLine(x));
       ctx.lineTo(X1 + 80, 900); ctx.closePath(); ctx.clip();
-      for (const G of geos) paintRange(G, "erd");
+      for (const Hz of geo.haze) paintHaze(Hz, "erd");
+      for (const G of geo.ranges) paintRange(G, "erd");
       ctx.restore();
     }
     const F = O.far || {};
@@ -3263,6 +3384,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     r = rng(hash(O.id) ^ 23);
     valley(O);
     valleyDetail(O);
+    wege();
     const M = O.mid || {};
     if (M.river) river(M.river);
     if (M.viaduct) viaduct(M.viaduct);
@@ -3279,13 +3401,144 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     ctx = c; P = palFor(tod); OFF = [1.3, 0.7]; r = rng(hash(O.id) ^ 11);
     X0 = 640 + ext.c0 / U; X1 = 640 + ext.c1 / U;
     c.save(); c.scale(U, U); c.translate(-640, -HOR); c.lineJoin = "round"; c.lineCap = "butt";
-    if (id === "far") farLayer(O, live); else if (id === "mid") midLayer(O); else nearSide(O);
+    if (id === "far") farLayer(O, live); else if (id === "mid") midLayer(O); else if (id === "near") nearSide(O); else frontSide(O);
     c.restore();
   }
   // Farbe unter einer Ebene (wo ihre Fläche endet)
   const layerGround = (id, tod) => (id === "far" ? palFor(tod).forest : palFor(tod).valley);
   // höchster Gipfel in Panorama-Einheiten über dem Horizont
   const peakOf = (O) => Math.max(...O.ranges.map((R) => Math.max(...R.ctrl.map((p) => (HOR - p[1]) * U))));
+
+  // ------------------------------------------------------------------ Hang je Ort (Übersicht des Entwurfs, 1280 × 592)
+  // Gelände unter dem Anlauf: Baumart, Dicke des Waldgürtels, Lichtungen [x0, x1], Bauten und Felsen [x, Tiefe, Breite] in Übersichts-px.
+  // Umrechnung ins Spiel (hangPlan): x links vom Tisch (393) entlang des Anlaufs, rechts entlang des Aufsprunghangs; 3,5 px ≈ 1 m.
+  const OVT = {
+    willingen: { typ: "misch", thick: 0.85, ph: 1, gaps: [[110, 190]], stadel: [[132, 34, 30]] },
+    engelberg: { typ: "fichte", thick: 1, gaps: [[196, 252]], huette: [[208, 30, 24]] },
+    predazzo: { typ: "laerche", thick: 1, ph: 2, fels: [[40, 70, 46], [250, 96, 34]] },
+    holmenkollen: { typ: "birke", thick: 0.9, ph: 3, fels: [[200, 80, 30]] },
+    oberstdorf: { typ: "fichte", thick: 1.15, ph: 4, gaps: [[50, 128]], stadel: [[70, 36, 32]] },
+    garmisch: { typ: "misch", thick: 0.55, ph: 5, gaps: [[-40, 110], [250, 320]], stadel: [[24, 40, 30], [266, 44, 26]] },
+    innsbruck: { typ: "fichte", thick: 0.35, ph: 6, sparse: true, fels: [[120, 60, 44], [300, 90, 30]] },
+    bischofshofen: { typ: "fichte", thick: 1.35, ph: 7 },
+    zakopane: { typ: "fichte", thick: 1.5, ph: 8, tall: true },
+    planica: { typ: "latschen", kahl: true, fels: [[30, 50, 60], [170, 90, 48], [320, 60, 40], [470, 120, 34]] },
+  };
+  // Schanzenname je Ort für das Schanzenschild (Schanzennamen, keine Marken); Richterturm verputzt statt Holz auf Gitterstützen
+  const SCHILD = { willingen: "MÜHLENKOPF", engelberg: "TITLIS-SCHANZE", predazzo: "DAL BEN", holmenkollen: "HOLMENKOLLEN", oberstdorf: "SCHATTENBERG", garmisch: "GUDIBERG",
+    innsbruck: "BERGISEL", bischofshofen: "BISCHOFSHOFEN", zakopane: "WIELKA KROKIEW", planica: "LETALNICA" };
+  const PUTZ = { garmisch: 1, innsbruck: 1, oberstdorf: 1, planica: 1, predazzo: 1 };
+  const HOUSE = { willingen: "fachwerk", engelberg: "chalet", predazzo: "italien", holmenkollen: "nordisch", oberstdorf: "chalet", garmisch: "bayern",
+    innsbruck: "chalet", bischofshofen: "chalet", zakopane: "goral", planica: "chalet" };
+  // Plan des Hangs für eine Schanze in Weltmetern: x am Hang, Tiefen relativ zur Kante bzw. zum Gürtel, Größen in m. Fest je Schanze.
+  // place: Ort (ohne Variante), topX: Anlaufbeginn (x < 0), endX: Ende des Auslaufs, xK: x am K-Punkt, x03/x09: x bei 0,3·K und 0,9·K.
+  function hangPlan(place, topX, endX, xK, x03, x09) {
+    const V = OVT[place] || OVT.engelberg, M = 3.5;
+    const ox = (o) => (o < 393 ? (o - 393) / (393 - 34) * -topX : (o - 393) / (1300 - 393) * endX);
+    const rr = rng(hash(place) ^ 0x7a11), tall = V.tall ? 1.3 : 1, out = { V, typ: V.typ, tall, x03, x09, endX, topX };
+    out.gaps = (V.gaps || []).map(([a, b]) => [ox(a), ox(b)]);
+    // Bauten und Felsen: Tiefe unter der Kante (m), Breite (m)
+    out.huts = (V.huette || []).map(([x, d, w]) => ({ x: ox(x), d: d / M, w: w / M, kind: "chalet" }));
+    out.stadel = (V.stadel || []).map(([x, d, w]) => ({ x: ox(x), d: d / M, w: w / M }));
+    out.fels = (V.fels || []).map(([x, d, w], i) => ({ x: ox(x), d: d / M, w: w / M, seed: hash(place) + i * 31 }));
+    // Hütten am Hang in der Hausform des Orts, Tiefe unter dem Gürtel
+    out.slopeHuts = [[150, 46, 26], [178, 52, 18], [470, 34, 22], [760, 26, 24]].map(([x, d, w]) => ({ x: ox(x), d: d / M, w: w / M, kind: HOUSE[place] || "chalet" }));
+    // große Einzelbäume vorn (Tiefe unter dem Gürtel, Höhe), kleine Gruppen je zwei Fichten alle 8–14 m
+    out.big = V.typ === "latschen" ? [] : [[64, 186, 74], [338, 210, 92], [560, 236, 66]].map(([x, d, h]) => ({ x: ox(x), d: d * 0.55 / M, h: h / M }));
+    out.groups = [];
+    if (!V.kahl) for (let x = topX - 60 + rr() * 6; x < ox(900); x += (V.sparse ? 12 : 8) + rr() * 6) out.groups.push({ x, d: 11 + rr() * 32, h1: (5.7 + rr() * 6.3) * tall, h2: 4 + rr() * 3.4 });
+    // Wipfel im Gürtel: fünf Reihen (Anteil der Dicke), alle 2–3,7 m, Höhe 2,3–4 m
+    out.inner = [];
+    for (const u of [0.14, 0.3, 0.48, 0.66, 0.84]) for (let x = topX - 440 + rr() * 2.3; x < x09 + (endX - x09) * 0.6; x += 2 + rr() * 1.7) out.inner.push({ x, u, j: (rr() - 0.5) * 1.4, h: (2.3 + rr() * 1.7) * tall });
+    out.inner.sort((a, b) => a.x - b.x);
+    // einzelne hohe Fichten ragen aus dem Gürtel
+    out.tallTrees = [];
+    for (let x = topX - 420 + rr() * 9; x < x09; x += 15 + rr() * 20) out.tallTrees.push({ x, d: 3 + rr() * 2.3, h: (7.4 + rr() * 6.3) * tall, v: rr() < 0.5 ? 0 : 1 });
+    // Latschen: niedrige Polster auf dem Schnee (Planica)
+    out.humps = [];
+    if (V.typ === "latschen") for (let x = topX - 60; x < ox(560); x += 2.6 + rr() * 4.6) if (rr() < 0.7) out.humps.push({ x, d: 4 + rr() * 40, h: 1.7 + rr() * 2.6 });
+    out.sign = { x: ox(610), d: 64 / M, text: SCHILD[place] || place.toUpperCase() };
+    out.ph = V.ph || 0; out.thick = V.thick || 1;
+    return out;
+  }
+
+  // ------------------------------------------------------------------ Kleinbauten im Hang (gezeichnet in lokalen Einheiten, der Aufrufer skaliert)
+  const FLAGS = {
+    de: (q) => { q(0, 1, 0, 1 / 3, I.tinte); q(0, 1, 1 / 3, 2 / 3, I.rot); q(0, 1, 2 / 3, 1, I.ocker); },
+    ch: (q) => { q(0, 1, 0, 1, I.rot); q(0.2, 0.8, 0.4, 0.6, I.papier); q(0.4, 0.6, 0.2, 0.8, I.papier); },
+    it: (q) => { q(0, 1 / 3, 0, 1, I.gruen); q(1 / 3, 2 / 3, 0, 1, I.papier); q(2 / 3, 1, 0, 1, I.rot); },
+    no: (q) => { q(0, 1, 0, 1, I.rot); q(0.27, 0.45, 0, 1, I.papier); q(0, 1, 0.36, 0.64, I.papier); q(0.31, 0.41, 0, 1, I.navy); q(0, 1, 0.43, 0.57, I.navy); },
+    at: (q) => { q(0, 1, 0, 1, I.rot); q(0, 1, 1 / 3, 2 / 3, I.papier); },
+    pl: (q) => { q(0, 1, 0, 0.5, I.papier); q(0, 1, 0.5, 1, I.rot); },
+    si: (q) => { q(0, 1, 0, 1 / 3, I.papier); q(0, 1, 1 / 3, 2 / 3, I.kobalt); q(0, 1, 2 / 3, 1, I.rot); },
+    by: (q) => { for (let i = 0; i < 5; i++) for (let j = 0; j < 3; j++) q(i / 5, (i + 1) / 5, j / 3, (j + 1) / 3, (i + j) % 2 ? I.papier : I.himmel); },
+  };
+  const FLAG_OF = { willingen: "de", engelberg: "ch", predazzo: "it", holmenkollen: "no", oberstdorf: "de", garmisch: "de", innsbruck: "at", bischofshofen: "at", zakopane: "pl", planica: "si" };
+  function flagShape(x, y0, w, h, kind, wv) {
+    const pt = (u, v) => [x + u * w, y0 + v * h + wv(u)];
+    const q = (u0, u1, v0, v1, col) => { const pts = []; for (let i = 0; i <= 6; i++) pts.push(pt(u0 + (u1 - u0) * i / 6, v0)); for (let i = 6; i >= 0; i--) pts.push(pt(u0 + (u1 - u0) * i / 6, v1)); fill(pts, col); };
+    (FLAGS[kind] || FLAGS.at)(q);
+  }
+  // Richterturm: Kabine mit Fensterband und zwei Landesfahnen; Holz auf Gitterstützen oder verputzter Pfeiler. Fuß bei (x, yb).
+  function judgeTower(place, x, yb) {
+    const putz = PUTZ[place], wd = mix(P.wood, I.tinte, 0.2), wdD = mix(P.wood, I.tinte, 0.45), cw = 46, ch = 22, cy = yb - 64;
+    if (putz) { fill([[x - 14, yb], [x - 10, cy], [x + 10, cy], [x + 14, yb]], P.wall); shade([[x + 2, cy], [x + 10, cy], [x + 14, yb], [x + 3, yb]], P.wallSide); for (let y = cy + 8; y < yb - 6; y += 12) rect(x - 4, y, 3, 5, P.win); }
+    else {
+      for (const px of [-15, -5, 5, 15]) line([[x + px * 1.25, yb], [x + px, cy]], wdD, 2);
+      for (let y = cy + 8; y < yb - 4; y += 14) { line([[x - 18, y + 14], [x + 18, y]], wdD, 1); line([[x - 18, y], [x + 18, y + 14]], wdD, 1); }
+      for (let y = cy + 5; y < yb; y += 22) line([[x - 19, y], [x + 19, y]], wd, 1.6);
+    }
+    const wall = putz ? P.wall : P.wood, side = putz ? P.wallSide : wdD;
+    rect(x - cw / 2, cy - ch, cw, ch, wall);
+    shade([[x + cw / 2, cy], [x + cw / 2 + 8, cy - 3], [x + cw / 2 + 8, cy - ch - 3], [x + cw / 2, cy - ch]], side);
+    rect(x - cw / 2 + 4, cy - ch + 6, cw - 8, 8, P.abend ? P.winHi : P.win);
+    for (let k = 1; k < 5; k++) rect(x - cw / 2 + 4 + k * (cw - 8) / 5 - 0.6, cy - ch + 6, 1.2, 8, wall);
+    rect(x - cw / 2 - 3, cy - 2, cw + 6, 2.4, wdD);
+    fill([[x - cw / 2 - 6, cy - ch], [x - cw / 2 + 6, cy - ch - 12], [x + cw / 2 - 2, cy - ch - 12], [x + cw / 2 + 10, cy - ch - 3]], P.roof);
+    fill([[x - cw / 2 - 5, cy - ch - 1], [x - cw / 2 + 6, cy - ch - 13], [x + cw / 2 - 2, cy - ch - 13], [x + cw / 2 + 4, cy - ch - 7]], P.roofSnow);
+    const f = FLAG_OF[place] || "at";
+    for (const fx of [x - 12, x + 12]) { line([[fx, cy - ch - 12], [fx, cy - ch - 36]], I.tinte, 1.2); flagShape(fx, cy - ch - 36, 14, 9, f, () => 0); }
+  }
+  // Schanzenschild: Emailtafel mit Emblem (gekreuzte Ski, Stern, ockerfarbener Ring) und Schanzennamen; Mitte unten bei (x, yb)
+  function schild(name, x, yb) {
+    const post = mix(P.wood, I.tinte, 0.3);
+    ctx.font = "700 17px Jost, Futura, 'Avenir Next', 'Century Gothic', sans-serif"; if ("letterSpacing" in ctx) ctx.letterSpacing = "2px";
+    const tw = ctx.measureText(name).width, w = tw + 62, h = 34, bx = x - w / 2, by = yb - h - 16;
+    rect(bx + 10, by + h - 2, 4, 18, post); rect(bx + w - 14, by + h - 2, 4, 18, post);
+    rect(bx, by, w, h, I.navy); ctx.strokeStyle = P.abend ? mix(I.papier, I.violett, 0.3) : I.papier; ctx.lineWidth = 1.4; ctx.strokeRect(bx + 3.5, by + 3.5, w - 7, h - 7);
+    const ex = bx + 20, ey = by + h / 2;
+    dot(ex, ey, 11, I.ocker); dot(ex, ey, 9, I.navy);
+    line([[ex - 6, ey + 6], [ex + 6, ey - 6]], I.papier, 1.8); line([[ex - 6, ey - 6], [ex + 6, ey + 6]], I.papier, 1.8);
+    for (let k = 0; k < 5; k++) { const a = -Math.PI / 2 + k * 1.2566; line([[ex, ey - 1], [ex + Math.cos(a) * 3.2, ey - 1 + Math.sin(a) * 3.2]], I.ocker, 1.1); }
+    ctx.fillStyle = P.abend ? mix(I.papier, I.violett, 0.25) : I.papier; ctx.textBaseline = "middle"; ctx.textAlign = "left"; ctx.fillText(name, bx + 40, by + h / 2 + 1);
+    if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
+    fill([[bx - 2, by + 1], [bx + w * 0.3, by - 4], [bx + w * 0.7, by - 2], [bx + w + 2, by - 4], [bx + w + 2, by + 2], [bx - 2, by + 2]], P.tSnow);
+  }
+  function rock(x, y, w, rr) {
+    const h = w * (0.45 + rr() * 0.2), pts = [[x - w / 2, y], [x - w * 0.36, y - h * 0.7], [x - w * 0.08, y - h], [x + w * 0.22, y - h * 0.86], [x + w / 2, y - h * 0.2], [x + w * 0.46, y]];
+    fill(pts, P.alp.rockLit);
+    shade([[x - w * 0.08, y - h], [x + w * 0.22, y - h * 0.86], [x + w / 2, y - h * 0.2], [x + w * 0.46, y], [x + w * 0.04, y]], P.alp.rock);
+    fill([[x - w * 0.36, y - h * 0.7], [x - w * 0.08, y - h], [x + w * 0.22, y - h * 0.86], [x + w * 0.02, y - h * 0.8], [x - w * 0.2, y - h * 0.62]], P.tSnow);
+    shade([[x - w / 2 - 4, y], [x + w / 2 + w * 0.6, y + 1], [x + w / 2 + w * 0.4, y + 5], [x - w / 2, y + 4]], P.kante);
+  }
+  function hump(x, y, h) {
+    const w = h * 2.2, pts = [];
+    for (let k = 0; k <= 10; k++) { const u = k / 10; pts.push([x - w / 2 + u * w, y - Math.sin(u * Math.PI) * h - (k % 2 ? 0 : 1.2)]); }
+    fill(pts.concat([[x + w / 2, y + 1], [x - w / 2, y + 1]]), P.treeD);
+    fill(pts.slice(0, 6).concat([[x, y + 1], [x - w / 2, y + 1]]), P.tree);
+    fill(pts.slice(1, 5).map((p, i) => [p[0], p[1] + (i % 2 ? 0 : 1)]).concat([[pts[4][0], pts[4][1] + 2.4], [pts[1][0], pts[1][1] + 2.4]]), P.tSnow);
+  }
+  // Zeichnen in eine fremde Fläche (Spielwelt): Palette der Tageszeit, Passer in lokalen Einheiten
+  const BUILD = {
+    house: (type, x, yb, w, h, seed) => house(x, yb, w, h, preset(type, rng(seed || 3))),
+    stadel: (x, yb, w) => stadel(x, yb, w),
+    rock: (x, y, w, seed) => rock(x, y, w, rng(seed || 5)),
+    hump: (x, y, h) => hump(x, y, h),
+    judge: (place, x, yb) => judgeTower(place, x, yb),
+    schild: (name, x, yb) => schild(name, x, yb),
+    flag: (x, y0, w, h, kind) => flagShape(x, y0, w, h, kind, () => 0),
+  };
+  function drawWith(c, tod, kind, ...args) { ctx = c; P = palFor(tod); OFF = [1.3, 0.7]; BUILD[kind](...args); }
 
   // ------------------------------------------------------------------ Himmel: fünf Stufen mit Spritzkanten, einmal je Bildgröße
   const SKY_Y = [0, 118, 222, 318, 412, 560];
@@ -3347,7 +3600,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     return { cv, w, up, h, dpr, m };
   }
 
-  root.TMPlakat = { INK: I, PAL, palFor, mix, rng, hash, U, HOR, BASE, paintLayer, layerGround, peakOf, buildSky, skyX, grainTile, sprayStrip, erdLine };
+  root.TMPlakat = { INK: I, PAL, palFor, mix, rng, hash, U, HOR, BASE, paintLayer, layerGround, peakOf, buildSky, skyX, grainTile, sprayStrip, erdLine,
+    hangPlan, drawWith, OVT, FLAG_OF };
 })(typeof window !== "undefined" ? window : globalThis);
 
 /* TELEMARK – Kulisse: Zuschauer, Banden und Objekte an der Schanze, Panorama je Schanze (Nacht, flacher Vektorstil).
@@ -3478,12 +3732,14 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     ctx.restore();
   }
 
-  // ------------------------------------------------------------------ Farben der Zuschauer (gedeckt, Flutlicht bei Nacht)
-  const JACKET = ["#2E4A6B", "#6B2E35", "#2F5A48", "#7A6230", "#4A4F5C", "#8A4B2A", "#3D3566", "#2B5C6E", "#5E2F52", "#6E7480", "#24344C", "#5C4A3A", "#3F5E7A", "#734040"];
-  const JACKET_HI = ["#B8463A", "#C99A3A", "#3E78B8", "#D3D8E0", "#2F8F6A"];
+  // ------------------------------------------------------------------ Farben der Zuschauer: Druckfarben des Plakats (Mantel und Hut)
+  const PI0 = root.TMPlakat.INK, pm = root.TMPlakat.mix;
+  const JACKET = [PI0.tinte, PI0.dach, PI0.navy, PI0.gruen, pm(PI0.tinte, PI0.dach, 0.4), pm(PI0.navy, PI0.tief, 0.35), pm(PI0.gruen, PI0.tinte, 0.3), pm(PI0.rot, PI0.dach, 0.55),
+    pm(PI0.tief, PI0.tinte, 0.45), pm(PI0.violett, PI0.tinte, 0.3), pm(PI0.dach, PI0.tinte, 0.3), pm(PI0.fichte, PI0.navy, 0.4)];
+  const JACKET_HI = [PI0.rot, PI0.ocker, PI0.himmel, pm(PI0.papier, PI0.dunst, 0.3), pm(PI0.gruen, PI0.papier, 0.2)];
   const SKIN = ["#E2BC9E", "#C9966F", "#8E5F43"];
-  const HAT = ["#C8463A", "#E3E7EE", "#2E4A6B", "#D3A23C", "#3E78B8", "#2F5A48", "#1C2330", "#7A3A5A", "#B8463A"];
-  const SHADE = "#0B1424";
+  const HAT = [PI0.rot, PI0.papier, PI0.navy, PI0.ocker, PI0.himmel, PI0.gruen, PI0.tinte, pm(PI0.rot, PI0.violett, 0.4), PI0.tinte];
+  const SHADE = PI0.tinte;
   const HOME = { holmenkollen: "NOR", oberstdorf: "GER", garmisch: "GER", innsbruck: "AUT", bischofshofen: "AUT", "predazzo-lh": "ITA", "predazzo-nh": "ITA",
     zakopane: "POL", willingen: "GER", engelberg: "SUI", planica: "SLO" };
   const GUEST = ["POL", "SLO", "AUT", "GER", "NOR", "JPN", "SUI", "FIN", "CZE", "ITA", "USA"];
@@ -3829,21 +4085,14 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     }
   }
 
+  // Richterturm hinter der Kante wie auf dem Plakat (plakat.js): Kabine mit Fensterband und zwei Landesfahnen, Holz auf Gitterstützen
+  // oder verputzter Pfeiler je Ort. Eine Einheit des Entwurfs = 0,152 m (Kabine rund 7 m breit, Turm rund 15 m hoch).
   function drawJudges(ctx, H, p, X, Y, ppm) {
-    const g = (x) => Hill.groundAt(H, x).y;
-    const x0 = p.x - 3, x1 = p.x + 3, base = g(x1) - 1.5, top = g(x0) + 9.5;
-    ctx.fillStyle = D("#1B2940"); ctx.fillRect(X(x0), Y(top), (x1 - x0) * ppm, (top - base) * ppm);
-    ctx.fillStyle = D("#2B3D5A"); ctx.fillRect(X(x0 - 0.4), Y(top + 0.45), (x1 - x0 + 0.8) * ppm, 0.45 * ppm);
-    // Glasfront mit fünf Richtern
-    ctx.fillStyle = TH.judgesGlass; ctx.fillRect(X(x0 + 0.35), Y(top - 0.7), (x1 - x0 - 0.7) * ppm, 1.9 * ppm);
-    if (ppm > 3) {
-      ctx.fillStyle = D("#1B2940");
-      for (let i = 1; i < 5; i++) ctx.fillRect(X(x0 + 0.35 + i * (x1 - x0 - 0.7) / 5) - 0.06 * ppm, Y(top - 0.7), 0.12 * ppm, 1.9 * ppm);
-      ctx.fillStyle = "#3A2E28";
-      for (let i = 0; i < 5; i++) { ctx.beginPath(); ctx.arc(X(x0 + 0.35 + (i + 0.5) * (x1 - x0 - 0.7) / 5), Y(top - 1.75), 0.2 * ppm, 0, TAU); ctx.fill(); }
-      ctx.fillStyle = TH.night ? "rgba(246,200,112,0.35)" : TH.glass;
-      for (let i = 0; i < 3; i++) ctx.fillRect(X(x0 + 0.8 + i * 1.8), Y(top - 4.2), 0.9 * ppm, 1.0 * ppm);
-    }
+    const s = 0.152 * ppm;
+    if (s * 46 < 3) return;
+    ctx.save(); ctx.translate(X(p.x), Y(p.y) + 2 * s); ctx.scale(s, s); ctx.lineJoin = "round"; ctx.lineCap = "butt";
+    PK.drawWith(ctx, TH.name, "judge", H.key.split("-")[0], 0, 0);
+    ctx.restore();
   }
 
   function drawCamTower(ctx, p, h, X, Y, ppm, t) {
@@ -4028,6 +4277,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         mid: { train: { y: 668, x0: 560, x1: 1300, speed: 38 } },
         town: [{ house: "chalet", cx: 1040, w: 440, y0: 592, y1: 648, extra: [{ t: "abbey", x0: 934, x1: 1118, yb: 606, h: 31 }, { t: "hotel", x: 786, yb: 598, w: 76, h: 50 }], skip: [[780, 870, 1], [890, 1146, 1]] }],
         flags: [[1010, 736, 66, 28, 28, "ch"], [1050, 728, 60, 28, 28, "ch"], [824, 530, 26, 14, 14, "ch"]],
+        near: { spruce: [[1214, 752, 116, 0], [1252, 760, 146, 1], [1286, 744, 100, 0]] },
       },
     },
     // Planica: Ponce-Kamm über die ganze Breite, links der Jalovec am Talschluss; im Tal nur das Nordische Zentrum, rechts Rateče
@@ -4039,8 +4289,11 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   };
   const sceneFor = (key) => SCENES[key] || SCENES[key.split("-")[0]] || SCENES.oberstdorf;
 
-  // mid.bot 100 statt 78: Mulden und Fichtengruppen im Talboden der Plakat-Orte reichen bis v ≈ 95; near.top 40: nahe Fichten ragen höher
-  const LAYERS = [{ id: "far", par: 0.08, top: 205, bot: 34 }, { id: "mid", par: 0.22, top: 125, bot: 100 }, { id: "near", par: 0.5, top: 40, bot: 150 }];
+  // mid.bot 100 statt 78: Mulden und Fichtengruppen im Talboden der Plakat-Orte reichen bis v ≈ 95; near.top 40: nahe Fichten ragen höher.
+  // front: vierte Ebene der Plakat-Orte (Bande, Zweige), vor dem Hang gezeichnet (drawFront); ohne Zweige nur der untere Streifen.
+  const LAYERS = [{ id: "far", par: 0.08, top: 205, bot: 34 }, { id: "mid", par: 0.22, top: 125, bot: 100 }, { id: "near", par: 0.5, top: 40, bot: 150 }, { id: "front", par: 0.7, top: 265, bot: 168 }];
+  // Nahe Ebenen gehören zum Flugbild: in der weiten Übersicht (kleiner Zoom) würden sie über dem Auslauf schweben
+  const nearAlpha = (cam, k) => Math.max(0, Math.min(1, (cam.ppm / k - 5) / 5));
   const CX_REF = 90;
 
   // Panorama-Ebenen (und Himmel) einmal je Schanze, Tageszeit und Bildschirmgröße zeichnen
@@ -4052,7 +4305,10 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     const peak = pk ? PK.peakOf(pk) : sc.wall ? Math.max(...sc.wall.crest.map((q) => q[1])) + 8 : Math.max(...sc.far.peaks.map((q) => q[1]));
     const sky = PK.buildSky(W, Hs, dpr, TH.name, pk ? pk.moon[0] : PK.skyX(sc.moon, W, Hs));
     const out = { key, W, H: Hs, res, dpr, theme: TH.name, peak, sky, layers: [], live: { blink: [], cable: null, cables: [], ferry: null, moonX: sc.moon }, sc };
-    for (const L of LAYERS) {
+    for (const L0 of LAYERS) {
+      if (L0.id === "front" && !pk) continue;
+      // Vordergrund ohne Zweige: nur der Streifen unten (spart Speicher)
+      const L = L0.id === "front" && !(pk.near && pk.near.zweig) ? Object.assign({}, L0, { top: -95 }) : L0;
       const wl = Math.ceil(wv + 470 * L.par + 60);
       const cv = document.createElement("canvas");
       cv.width = Math.ceil(wl * res); cv.height = Math.ceil((L.top + L.bot) * res);
@@ -4063,8 +4319,9 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       else if (L.id === "far") drawFar(c, sc, ext, r, out.live);
       else if (L.id === "mid") drawTown(c, sc, ext, r, out.live);
       else drawNear(c, sc, ext, r);
-      const ground = pk ? PK.layerGround(L.id, TH.name) : L.id === "far" ? (sc.fjord ? TH.water : TH.forestFar) : L.id === "mid" ? TH.valley : TH.nearGround;
-      out.layers.push({ cv, wl, par: L.par, top: L.top, bot: L.bot, id: L.id, ground });
+      const ground = L.id === "front" ? null : pk ? PK.layerGround(L.id, TH.name) : L.id === "far" ? (sc.fjord ? TH.water : TH.forestFar) : L.id === "mid" ? TH.valley : TH.nearGround;
+      const lay = { cv, wl, par: L.par, top: L.top, bot: L.bot, id: L.id, ground };
+      if (L.id === "front") out.front = lay; else out.layers.push(lay);
     }
     return out;
   }
@@ -4557,21 +4814,35 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   }
 
   // Himmel (Mond, Flugzeug) und Panorama-Ebenen mit Parallaxe; liefert Ebenen-Lage für lebende Lichter
+  // Lage einer Ebene auf dem Bildschirm (auf ganze Gerätepixel gerundet: Kopie ohne Filterung, schnell)
+  function layerPos(P, L, cam, hor, vOff, k, W) {
+    let uA = clamp(L.wl / 2 - W / (2 * k) + (cam.cx - CX_REF) * L.par, 0, L.wl - W / k);
+    const dpr = P.dpr || 1, sc = P.res / k;
+    const dx = Math.round(-uA * k * dpr) / dpr; uA = -dx / k;
+    const dy = Math.round((hor + vOff - L.top * k) * dpr) / dpr;
+    return { dx, dy, dw: L.cv.width / sc, dh: L.cv.height / sc, ox: (L.wl / 2 - uA) * k, oy: dy + L.top * k };
+  }
+  // Vordergrund (Bande, Zweige): nach Hang, Springer und Partikeln, vor dem Schneefall
+  function drawFront(ctx, P, cam, hor, vs, k, W, Hs) {
+    const L = P.front, a = nearAlpha(cam, k);
+    if (!L || a <= 0.01) return;
+    const q = layerPos(P, L, cam, hor, vs * 0.45, k, W);
+    ctx.globalAlpha = a; ctx.drawImage(L.cv, q.dx, q.dy, q.dw, q.dh); ctx.globalAlpha = 1;
+  }
   function drawPanorama(ctx, P, cam, hor, vs, k, W, Hs, t) {
     const pos = [];
     for (let i = 0; i < P.layers.length; i++) {
       const L = P.layers[i];
       const vOff = i === 0 ? 0 : i === 1 ? vs * 0.12 : vs * 0.3;
-      let uA = clamp(L.wl / 2 - W / (2 * k) + (cam.cx - CX_REF) * L.par, 0, L.wl - W / k);
-      // auf ganze Gerätepixel runden: Kopie ohne Filterung (schnell)
-      const dpr = P.dpr || 1, sc = P.res / k;
-      const dx = Math.round(-uA * k * dpr) / dpr; uA = -dx / k;
-      const dy = Math.round((hor + vOff - L.top * k) * dpr) / dpr;
-      const dw = L.cv.width / sc, dh = L.cv.height / sc;
-      ctx.drawImage(L.cv, dx, dy, dw, dh);
-      const yb = dy + dh;
-      if (yb < Hs) { ctx.fillStyle = L.ground; ctx.fillRect(0, yb - 1, W, Hs - yb + 2); }
-      pos.push({ ox: (L.wl / 2 - uA) * k, oy: dy + L.top * k });
+      const q = layerPos(P, L, cam, hor, vOff, k, W), na = i === 2 ? nearAlpha(cam, k) : 1;
+      if (na > 0.01) {
+        if (na < 1) ctx.globalAlpha = na;
+        ctx.drawImage(L.cv, q.dx, q.dy, q.dw, q.dh);
+        ctx.globalAlpha = 1;
+      }
+      const yb = q.dy + q.dh;
+      if (yb < Hs && L.ground) { ctx.fillStyle = L.ground; ctx.fillRect(0, yb - 1, W, Hs - yb + 2); }
+      pos.push({ ox: q.ox, oy: q.oy });
       if (i === 0) drawReflection(ctx, P, pos, W, k, t);
       // lebende Lichter dieser Ebene
       const live = P.live;
@@ -4629,7 +4900,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     }
   }
 
-  root.TMScene = { buildWorld, drawWorld, buildPanorama, drawPanorama, drawSky, drawReflection, drawFlag, FLAGS, setTheme, themeName, D, THEMES };
+  root.TMScene = { buildWorld, drawWorld, buildPanorama, drawPanorama, drawFront, drawSky, drawReflection, drawFlag, FLAGS, setTheme, themeName, D, THEMES };
 })(typeof window !== "undefined" ? window : globalThis);
 
 /* TELEMARK – Canvas-Grafik: Flutlicht-Nacht im flachen Vektorstil, Welt in Metern, Kamera in px/m. */
@@ -5013,6 +5284,15 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     let s = seed >>> 0 || 1;
     return () => { s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; };
   }
+  // Oberkante aus einem Stück (Gelände unter dem Anlauf, Aufsprunghang, Gelände hinter dem Auslauf): y an der Stelle x (Weltmeter)
+  function edgeAt(G, x) {
+    const ex = G.edgeX, ey = G.edgeY, n = ex.length;
+    if (x <= ex[0]) return ey[0];
+    if (x >= ex[n - 1]) return ey[n - 1];
+    let lo = 0, hi = n - 1;
+    while (hi - lo > 1) { const m = (lo + hi) >> 1; if (ex[m] > x) hi = m; else lo = m; }
+    return ey[lo] + (ey[hi] - ey[lo]) * (x - ex[lo]) / ((ex[hi] - ex[lo]) || 1);
+  }
   // Mulden und Spuren im Hang, je Schanze fest: Lage längs des Hangs als Welt-x, Tiefe unter der Kante und Größe in Entwurfs-px.
   // Wie im Entwurf: Mulden 180–260 × 7–14 px in drei Tiefen (Zone 1, 2, 3), Spuren in 36–120 px Tiefe.
   function hillMarks(Hh) {
@@ -5039,6 +5319,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       this.caches = {};
       this.G = null;
       this.bgCache = null;
+      this.gKey = null; this.gSame = 0; this.gCache = null;
     }
 
     resize(w, h, dpr) {
@@ -5126,7 +5407,19 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       // Markierungen am Anlauf (alle 1,5 m), damit man das Tempo sieht
       const deckMarks = [];
       for (let s = 1.5; s < H.inrunLen - 1; s += 1.5) deckMarks.push(s);
-      const G = { H, left, right, terrainY, rightY, trees, back, masts, world, stars, seeds, end, deckMarks };
+      // Baumreihe der abgewandten Flanke auch hinter dem Anlauf (eigener Zufall, damit alles andere gleich bleibt); Form je Baum fest
+      const rb = rng(PK.hash(H.key) ^ 0xbac);
+      for (let x = left[0][0] + 10; x < -4; x += 3 + rb() * 4) back.push({ x, y: terrainY(x) + 2.2 + rb() * 0.8, h: (2.2 + rb() * 2.6) * 1.25 });
+      back.sort((a, b) => a.x - b.x);
+      for (const t of back) { const f = Math.sin(t.x * 91.7) * 43758.5453; t.v = Math.floor((f - Math.floor(f)) * 3); }
+      // Oberkante aus einem Stück und Plan des Hangs (Waldgürtel, Lichtungen, Gruppen, Hütten) je Ort
+      const ex = [], ey = [];
+      for (const p of left) { ex.push(p[0]); ey.push(p[1]); }
+      for (const p of land) if (p.x > ex[ex.length - 1] + 1e-6) { ex.push(p.x); ey.push(p.y); }
+      for (const p of right) if (p[0] > ex[ex.length - 1] + 1e-6) { ex.push(p[0]); ey.push(p[1]); }
+      const place = H.key.split("-")[0], at = (d) => Hill.landAtD(H, d).x;
+      const hang = PK.hangPlan(place, top.x, end.x, at(H.K), at(H.K * 0.3), at(H.K * 0.9));
+      const G = { H, left, right, terrainY, rightY, trees, back, masts, world, stars, seeds, end, deckMarks, edgeX: Float64Array.from(ex), edgeY: Float64Array.from(ey), hang };
       this.caches[H.key] = G;
       return G;
     }
@@ -5146,12 +5439,12 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       const vis = (x, y, m) => x > xMin - (m || 0) && x < xMax + (m || 0) && y > yMin - (m || 0) && y < yMax + (m || 0);
 
       this.background(G, cam, k, v);
-      this.terrain(G, v.hill, cam, S, xMin, xMax, k, vis);
+      this.backTrees(G, cam, k, xMin, xMax);
       this.lights(G, S, cam, k, vis, v.t);
-      this.slope(G, v.hill, S, xMin, xMax, cam, k, v);
-      this.inrun(v.hill, S, cam, k, v, xMin, xMax);
-      // Druckkorn über der Landschaft; die Spielebene (Fahnen, Linien, Springer) bleibt sauber darüber
-      this.grainPass(0.22);
+      // Zuschauer, Banden und Objekte hinter der Schneeoberfläche (bewegt, darum immer live)
+      Scene.drawWorld(ctx, v.hill, G.world, cam, { W, H, t: v.t, focus: v.focus, screen: v.screen }, G.rightY);
+      this.groundLayer(G, v.hill, S, xMin, xMax, cam, k, v);
+      this.grainLayer();
       if (v.flags) this.windFlags(v.hill, S, cam, k, v);
       if (v.best && v.best.d > 40) this.beam(v.hill, S, cam, k, v.best);
       if (v.ideal) this.idealLine(S, cam, k, v.ideal);
@@ -5163,32 +5456,51 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         this.jumper(S, cam, k, v.jumper);
       }
       if (v.particles) this.particles(S, cam, k, v.particles);
+      // Vordergrund der Plakat-Orte (Bande, Zweige): vor dem Hang, hinter dem HUD
+      Scene.drawFront(ctx, this.pano, cam, this.hor, this.vs, k, W, H);
       if (v.snow) v.snow.draw(ctx, k, atmoFor(v.hill.key).snow);
       if (v.dim) { ctx.fillStyle = "rgba(14,20,28," + v.dim + ")"; ctx.fillRect(0, 0, W, H); }
     }
 
     // Druckkorn (Stilblatt): eine Kachel aus Kreide- und Spritzpunkten, einmal je Tageszeit und Bildgröße erzeugt, dann gekachelt.
     // a: Deckkraft (Bild 22 %, auf dem Hang ein zweites Mal 24 %). Ein gesetzter Clip bleibt wirksam. Keine Vignette.
-    grainPass(a) {
-      if (typeof document === "undefined") return;
-      const ctx = this.ctx, key = this.theme + "|" + this.H + "|" + this.dpr;
-      if (!this.grain || this.grain.key !== key) {
-        const tile = PK.grainTile(this.theme, this.H / 800 * this.dpr);
-        this.grain = { key, pat: ctx.createPattern(tile, "repeat") };
+    // Muster des Korns in Gerätepixeln (unter der dpr-Abbildung des Spiels 1:1)
+    // Schaltet die Bildgüte herunter, bleibt die feinere Kachel (kein Neubau mitten im Sprung); neu nur bei feinerer Auflösung.
+    grainPat() {
+      const key = this.theme + "|" + this.H;
+      if (!this.grain || this.grain.key !== key || this.dpr > this.grain.dpr + 0.01) {
+        const pat = this.ctx.createPattern(PK.grainTile(this.theme, this.H / 800 * this.dpr), "repeat");
+        if (pat.setTransform && typeof DOMMatrix !== "undefined") pat.setTransform(new DOMMatrix().scale(1 / this.dpr));
+        this.grain = { key, pat, dpr: this.dpr };
       }
-      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = a;
-      ctx.fillStyle = this.grain.pat; ctx.fillRect(0, 0, this.cv.width, this.cv.height);
-      ctx.restore();
+      return this.grain.pat;
+    }
+    // Korn über dem ganzen Bild (22 %): eine ruhende Ebene direkt über der Leinwand, die der Browser nur noch überblendet.
+    // Neu nur bei anderer Tageszeit oder Bildhöhe.
+    grainLayer() {
+      if (typeof document === "undefined" || !this.cv.isConnected) return;
+      const dpr = Math.min(3, window.devicePixelRatio || 1), key = this.theme + "|" + this.H + "|" + dpr;
+      if (this.grainEl && this.grainEl.key === key) return;
+      let el = this.grainEl && this.grainEl.el;
+      if (!el) { el = document.createElement("div"); el.id = "printLayer"; el.setAttribute("aria-hidden", "true"); this.cv.after(el); }
+      const tile = PK.grainTile(this.theme, this.H / 800 * dpr);
+      el.style.backgroundImage = `url(${tile.toDataURL("image/png")})`;
+      el.style.backgroundSize = `${tile.width / dpr}px ${tile.height / dpr}px`;
+      this.grainEl = { el, key };
     }
 
     background(G, cam, k, v) {
       const ctx = this.ctx, W = this.W, H = this.H;
       const vs = Math.max(-80, Math.min(80, cam.cy * 0.55)) * k; // Kamera tiefer -> Horizont höher
       const hor = H * 0.64 + vs;
+      this.hor = hor; this.vs = vs;
       const key = G.H.key;
-      if (!this.pano || this.pano.key !== key || this.pano.W !== W || this.pano.H !== H || this.pano.dpr !== this.dpr || this.pano.theme !== Scene.themeName()) {
-        this.pano = Scene.buildPanorama(key, W, H, this.dpr); this.pano.dpr = this.dpr;
+      // Neu bauen nur bei anderem Ort, anderer Tageszeit oder Bildgröße, oder wenn die Bildschärfe über die gebaute steigt. Sinkt sie
+      // (Bildrate halten), wird die vorhandene Fassung verkleinert kopiert: kein Bau mitten im Sprung.
+      if (!this.pano || this.pano.key !== key || this.pano.W !== W || this.pano.H !== H || this.dpr > this.pano.built + 0.01 || this.pano.theme !== Scene.themeName()) {
+        this.pano = Scene.buildPanorama(key, W, H, this.dpr); this.pano.built = this.dpr;
       }
+      this.pano.dpr = this.dpr;
       const t = v.t || 0;
       Scene.drawSky(ctx, this.pano, hor, vs, k, W, H, t);
       Scene.drawPanorama(ctx, this.pano, cam, hor, vs, k, W, H, t);
@@ -5203,57 +5515,58 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 
     // Fichte wie auf dem Plakat (plakat.js): Form v 0 schlank (4 Etagen), 1 breit (5), 2 jung (3); dunkle Silhouette, Lichtseite
     // links, Schneehauben (die beschatteten als versetzte Schattenplatte). Fuß x/yb und Höhe h in Bildschirm-px; klein nur Silhouette.
-    spruce(x, yb, h, v) {
-      const ctx = this.ctx, P = C.pal;
+    // cast: Schlagschatten nach rechts. B: Sammelpfade (viele kleine Bäume in einem Zug, siehe batch/flush), sonst sofort gezeichnet.
+    spruce(x, yb, h, v, cast, B) {
+      const own = !B;
+      if (own) B = this.batch();
       const tiers = v === 1 ? 5 : v === 2 ? 3 : 4, wk = v === 1 ? 0.52 : v === 2 ? 0.5 : 0.38;
-      const w = h * wk, top = yb - h, th = (h * 0.86) / tiers, R = [[x, top]], tips = [];
+      const w = h * wk, top = yb - h, th = (h * 0.86) / tiers, o = this.H / 390 * PK.U;
+      if (cast) { const c = B.c; c.moveTo(x + 1.3 * o, yb + 1 + 0.7 * o); c.lineTo(x + h * 0.9 + 1.3 * o, yb + 1 - h * 0.02 + 0.7 * o); c.lineTo(x + h * 0.7 + 1.3 * o, yb + h * 0.06 + 0.7 * o); c.lineTo(x + 1.3 * o, yb + h * 0.05 + 0.7 * o); c.closePath(); }
+      // rechte Seite: Spitzen und Kerben, dann Stamm (Punkte als Abstand zur Mitte)
+      const R = this._sp || (this._sp = new Float64Array(32));
+      let n = 0;
       for (let i = 0; i < tiers; i++) {
         const yE = top + h * 0.06 + th * (i + 1), hw = (w / 2) * (0.34 + 0.66 * (i + 1) / tiers);
-        R.push([x + hw, yE]); tips.push([hw, yE]);
-        if (i < tiers - 1) R.push([x + hw * 0.4, yE - th * 0.32]);
+        R[n++] = hw; R[n++] = yE;
+        if (i < tiers - 1) { R[n++] = hw * 0.4; R[n++] = yE - th * 0.32; }
       }
-      R.push([x + w * 0.05, R[R.length - 1][1]], [x + w * 0.05, yb]);
-      const L = R.slice(1).reverse().map((q) => [2 * x - q[0], q[1]]);
-      this.path(R.concat(L), true); ctx.fillStyle = P.treeD; ctx.fill();
-      if (h < 7) return;
-      this.path(L.concat([[x, top], [x, yb]]), true); ctx.fillStyle = P.tree; ctx.fill();
-      const lit = new Path2D(), sh = new Path2D(), e = h * 0.007, o = this.H / 390 * PK.U;
-      const quad = (p, q) => { p.moveTo(q[0][0], q[0][1]); for (let i = 1; i < 4; i++) p.lineTo(q[i][0], q[i][1]); p.closePath(); };
+      R[n++] = w * 0.05; R[n++] = R[n - 3]; R[n++] = w * 0.05; R[n++] = yb;
+      const d = B.d;
+      d.moveTo(x, top);
+      for (let i = 0; i < n; i += 2) d.lineTo(x + R[i], R[i + 1]);
+      for (let i = n - 2; i >= 0; i -= 2) d.lineTo(x - R[i], R[i + 1]);
+      d.closePath();
+      if (h < 7) { if (own) this.flush(B); return; }
+      const l = B.l;
+      l.moveTo(x - R[n - 2], R[n - 1]);
+      for (let i = n - 4; i >= 0; i -= 2) l.lineTo(x - R[i], R[i + 1]);
+      l.lineTo(x, top); l.lineTo(x, yb); l.closePath();
+      const e = h * 0.007, s = B.s, sh = B.sh, ox = 1.3 * o, oy = 0.7 * o;
       for (let i = 0; i < tiers; i++) {
-        const [hw, yE] = tips[i], a = i === 0 ? 0 : 0.42, ax = hw * a * 0.85, ay = yE - th * (1 - a * 0.7), t = th * 0.2;
-        quad(lit, [[x - ax, ay - t * 0.6], [x - hw - e, yE - e * 0.5], [x - hw * 0.72, yE - t * 1.2], [x - ax * 0.6, ay + t * 0.4]]);
-        quad(sh, [[x + ax + 1.3 * o, ay - t * 0.6 + 0.7 * o], [x + hw + e + 1.3 * o, yE - e * 0.5 + 0.7 * o], [x + hw * 0.72 + 1.3 * o, yE - t * 1.2 + 0.7 * o], [x + ax * 0.6 + 1.3 * o, ay + t * 0.4 + 0.7 * o]]);
+        const hw = (w / 2) * (0.34 + 0.66 * (i + 1) / tiers), yE = top + h * 0.06 + th * (i + 1);
+        const a = i === 0 ? 0 : 0.42, ax = hw * a * 0.85, ay = yE - th * (1 - a * 0.7), t = th * 0.2;
+        s.moveTo(x - ax, ay - t * 0.6); s.lineTo(x - hw - e, yE - e * 0.5); s.lineTo(x - hw * 0.72, yE - t * 1.2); s.lineTo(x - ax * 0.6, ay + t * 0.4); s.closePath();
+        sh.moveTo(x + ax + ox, ay - t * 0.6 + oy); sh.lineTo(x + hw + e + ox, yE - e * 0.5 + oy); sh.lineTo(x + hw * 0.72 + ox, yE - t * 1.2 + oy); sh.lineTo(x + ax * 0.6 + ox, ay + t * 0.4 + oy); sh.closePath();
       }
-      ctx.fillStyle = P.tSnow; ctx.fill(lit); ctx.fillStyle = P.tSnowD; ctx.fill(sh);
+      if (own) this.flush(B);
+    }
+    batch() { return { c: new Path2D(), d: new Path2D(), l: new Path2D(), s: new Path2D(), sh: new Path2D() }; }
+    flush(B) {
+      const ctx = this.ctx, P = C.pal;
+      ctx.fillStyle = P.kante; ctx.fill(B.c);
+      ctx.fillStyle = P.treeD; ctx.fill(B.d); ctx.fillStyle = P.tree; ctx.fill(B.l);
+      ctx.fillStyle = P.tSnow; ctx.fill(B.s); ctx.fillStyle = P.tSnowD; ctx.fill(B.sh);
     }
 
-    terrain(G, Hh, cam, S, xMin, xMax, k, vis) {
-      const ctx = this.ctx, H = this.H;
-      const form = (x) => { const f = Math.sin(x * 91.7) * 43758.5453; return Math.floor((f - Math.floor(f)) * 3); };
-      // entfernte Baumreihe neben dem Aufsprunghang
-      const bp = Math.min(cam.ppm, 11 * k);
+    // Baumreihe hinter der Kante (abgewandte Flanke) über die ganze Länge, auch hinter dem Anlauf; fern, darum begrenzt groß
+    backTrees(G, cam, k, xMin, xMax) {
+      const bp = Math.min(cam.ppm, 11 * k), B = this.batch();
       for (const t of G.back) {
         if (t.x < xMin - 10 || t.x > xMax + 10) continue;
-        const g = S(t.x, t.y - 2.2);
-        this.spruce(g[0], g[1] - 2.2 * bp, Math.max(2, t.h * bp), form(t.x));
+        const sx = cam.ax + (t.x - cam.cx) * cam.ppm, sy = cam.ay - (t.y - 2.2 - cam.cy) * cam.ppm - 2.2 * bp;
+        this.spruce(sx, sy, Math.max(2, t.h * bp), t.v, false, B);
       }
-      // Gelände (dunkel) unter Anlauf und hinter dem Auslauf
-      const pts = [];
-      for (const p of G.left) pts.push(S(p[0], p[1]));
-      const L = Hh.land;
-      const step = Math.max(1, Math.floor(2 / Math.max(0.5, cam.ppm * Hh.ds)));
-      for (let i = 0; i < L.length; i += step) pts.push(S(L[i].x, L[i].y));
-      pts.push(S(G.end.x, G.end.y));
-      for (const p of G.right) pts.push(S(p[0], p[1]));
-      const bottom = H + 40;
-      pts.push([pts[pts.length - 1][0], bottom]); pts.push([pts[0][0], bottom]);
-      ctx.fillStyle = C.ground; this.path(pts, true); ctx.fill();
-      for (const t of G.trees) {
-        if (t.x < xMin - 20 || t.x > xMax + 20) continue;
-        const [x, y] = S(t.x, t.y);
-        if (y - t.h * cam.ppm > H + 10) continue;
-        this.spruce(x, y, Math.max(2.5, t.h * cam.ppm), form(t.x));
-      }
+      this.flush(B);
     }
 
     lights(G, S, cam, k, vis, t) {
@@ -5278,60 +5591,85 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         const hw = Math.max(9, 0.9 * cam.ppm);
         ctx.fillStyle = Scene.D("#26303F"); ctx.fillRect(tx - hw, ty - hw * 0.4, hw * 2, hw * 0.8);
         ctx.fillStyle = C.flood ? C.warm : "#C3CAD4";
-        for (let i = 0; i < 4; i++) { ctx.beginPath(); ctx.arc(tx - hw * 0.66 + i * hw * 0.44, ty, Math.max(1.5, hw * 0.17), 0, 6.283); ctx.fill(); }
-        if (C.flood) {
-          const gr = ctx.createRadialGradient(tx, ty, 0, tx, ty, hw * 2.4);
-          gr.addColorStop(0, "rgba(255,231,176,0.32)"); gr.addColorStop(1, "rgba(255,231,176,0)");
-          ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(tx, ty, hw * 2.4, 0, 6.283); ctx.fill();
-        }
+        const lr = Math.max(1.5, hw * 0.17); ctx.beginPath();
+        for (let i = 0; i < 4; i++) { const lx = tx - hw * 0.66 + i * hw * 0.44; ctx.moveTo(lx + lr, ty); ctx.arc(lx, ty, lr, 0, 6.283); }
+        ctx.fill();
+        if (C.flood) { const R = hw * 2.4; ctx.drawImage(this.glowSprite(), tx - R, ty - R, 2 * R, 2 * R); }
       }
+    }
+
+    // Gelände und Aufsprunghang aus einem Stück: eine Oberkante (G.edge) vom Gelände unter dem Anlauf über den Hang bis hinter
+    // den Auslauf; darunter läuft alles parallel zur Kante. Keine Fuge am Tisch, keine eigene Füllung für das Gelände.
+    // Ruhender Teil vor der Welt: Schneekörper mit Zonen und Wald, Hangkante, Marken, Anlauf und Druckkorn. Steht die Kamera (Menü,
+    // Übersicht), wird er einmal in eine eigene Fläche gezeichnet und danach nur kopiert; im Sprung (Kamera bewegt) direkt gezeichnet.
+    groundLayer(G, Hh, S, xMin, xMax, cam, k, v) {
+      const ctx = this.ctx, q = (x) => Math.round(x * 512);
+      const key = q(cam.cx) + "," + q(cam.cy) + "," + q(cam.ppm) + "," + q(cam.ax) + "," + q(cam.ay) + "|" + this.W + "x" + this.H + "@" + this.dpr + "|" + this.theme + "|" + Hh.key + "|" + (v.gate == null ? "" : v.gate);
+      if (key === this.gKey) this.gSame++; else { this.gKey = key; this.gSame = 0; }
+      const draw = () => { this.slope(G, Hh, S, xMin, xMax, cam, k, v); this.inrun(Hh, S, cam, k, v, xMin, xMax); };
+      if (this.gSame < 2 || typeof document === "undefined") { draw(); return; }
+      let F = this.gCache;
+      if (!F || F.cv.width !== this.cv.width || F.cv.height !== this.cv.height) {
+        const cv = document.createElement("canvas"); cv.width = this.cv.width; cv.height = this.cv.height;
+        F = this.gCache = { cv, c: cv.getContext("2d"), key: null };
+      }
+      if (F.key !== key) {
+        F.c.setTransform(1, 0, 0, 1, 0, 0); F.c.clearRect(0, 0, F.cv.width, F.cv.height); F.c.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+        const c0 = this.ctx; this.ctx = F.c;
+        try { draw(); } finally { this.ctx = c0; }
+        F.key = key;
+      }
+      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(F.cv, 0, 0); ctx.restore();
     }
 
     slope(G, Hh, S, xMin, xMax, cam, k, v) {
       const ctx = this.ctx, H = this.H;
-      const L = Hh.land;
-      let i0 = 0, i1 = L.length - 1;
-      while (i0 < L.length - 1 && L[i0 + 1].x < xMin - 4) i0++;
-      while (i1 > 0 && L[i1 - 1].x > xMax + 4) i1--;
-      const pts = [];
-      let last = null;
+      // Oberkante in Bildschirmpunkten (x steigt), Punkte unter 2 px Abstand entfallen
+      const ex = G.edgeX, ey = G.edgeY, n = ex.length, pts = this._edge || (this._edge = []);
+      pts.length = 0;
+      let i0 = 0, i1 = n - 1;
+      while (i0 < n - 1 && ex[i0 + 1] < xMin - 40) i0++;
+      while (i1 > 0 && ex[i1 - 1] > xMax + 40) i1--;
+      let lx = -1e9, ly = -1e9;
       for (let i = i0; i <= i1; i++) {
-        const p = S(L[i].x, L[i].y);
-        if (last && Math.abs(p[0] - last[0]) + Math.abs(p[1] - last[1]) < 2 && i !== i1) continue;
-        pts.push(p); last = p;
+        const x = cam.ax + (ex[i] - cam.cx) * cam.ppm, y = cam.ay - (ey[i] - cam.cy) * cam.ppm;
+        if (i !== i0 && i !== i1 && Math.abs(x - lx) + Math.abs(y - ly) < 2) continue;
+        pts.push([x, y]); lx = x; ly = y;
       }
       if (pts.length < 2) return;
-      // Zuschauer, Banden und Objekte (hinter der Oberfläche)
-      Scene.drawWorld(ctx, Hh, G.world, cam, { W: this.W, H: this.H, t: v.t, focus: v.focus, screen: v.screen }, G.rightY);
-      // Schneekörper
-      const U0 = S(0, -Hh.tableH);
-      const bottom = H + 60;
-      const slant = (bottom - U0[1]) * 0.18;
-      const body = new Path2D();
-      body.moveTo(pts[0][0], pts[0][1]);
+      const bottom = H + 60, body = new Path2D();
+      body.moveTo(pts[0][0], bottom);
       for (const p of pts) body.lineTo(p[0], p[1]);
-      body.lineTo(pts[pts.length - 1][0], bottom);
-      body.lineTo(i0 === 0 ? U0[0] + slant : pts[0][0], bottom);
-      body.closePath();
+      body.lineTo(pts[pts.length - 1][0], bottom); body.closePath();
       ctx.fillStyle = C.snowBody; ctx.fill(body);
-      // linker Rand des Schneekörpers (schräg unter dem Tisch), damit die Spritzkanten ohne Clip im Körper bleiben
-      const p0 = pts[0], edge = i0 === 0 ? (y) => p0[0] + slant * Math.max(0, y - p0[1]) / Math.max(1, bottom - p0[1]) : null;
-      this.hillZones(G, Hh, pts, S, cam, k, body, edge);
-      // Hangkante als klare Linie
-      ctx.strokeStyle = C.pal.key; ctx.lineWidth = Math.max(1, 2.6 * PK.U * k); ctx.lineJoin = "round"; ctx.lineCap = "round";
-      ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
-      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
-      ctx.stroke(); ctx.lineCap = "butt";
+      this.hillZones(G, Hh, pts, cam, k, body);
+      // Hangkante als klare Linie, nur am Aufsprunghang (unter dem Anlauf bilden die Baumkronen die Kante)
+      const L = Hh.land;
+      let j0 = 0, j1 = L.length - 1;
+      while (j0 < L.length - 1 && L[j0 + 1].x < xMin - 4) j0++;
+      while (j1 > 0 && L[j1 - 1].x > xMax + 4) j1--;
+      if (j1 > j0) {
+        ctx.strokeStyle = C.pal.key; ctx.lineWidth = Math.max(1, 2.6 * PK.U * k); ctx.lineJoin = "round"; ctx.lineCap = "round";
+        ctx.beginPath(); lx = -1e9; ly = -1e9;
+        for (let i = j0; i <= j1; i++) {
+          const x = cam.ax + (L[i].x - cam.cx) * cam.ppm, y = cam.ay - (L[i].y - cam.cy) * cam.ppm;
+          if (i === j0) ctx.moveTo(x, y); else if (Math.abs(x - lx) + Math.abs(y - ly) >= 2 || i === j1) ctx.lineTo(x, y); else continue;
+          lx = x; ly = y;
+        }
+        ctx.stroke(); ctx.lineCap = "butt";
+      }
+      this.podium(G, Hh, cam, k);
       // Markierungen
       this.markers(Hh, S, cam, k, v);
     }
 
-    // Hang wie auf dem Plakat: vier Zonen parallel zum Profil (Grenzen 112, 214, 320 Entwurfs-px darunter, wellig) mit Spritzkanten,
-    // Muldenschatten, Spuren, Kantenschatten und abends der glühenden Lippe. Tiefen in Bildschirm-px (Entwurfs-px × Höhe/800, nicht
-    // in Metern). Wellen, Mulden und Spritzpunkte hängen am Hang (Welt-x), damit beim Mitfahren nichts schwimmt. Flächen im Clip des
-    // Schneekörpers; die Spritzkanten ohne Clip (geschert und geclippt zeichnen manche Browser sehr langsam), dafür mit Randprüfung.
-    hillZones(G, Hh, pts, S, cam, k, body, edge) {
-      const ctx = this.ctx, W = this.W, H = this.H, P = C.pal, u = PK.U * k, n = pts.length;
+    // Hang wie auf dem Plakat: vier Zonen parallel zur Kante mit Spritzkanten, Muldenschatten, Spuren, Kantenschatten ab dem Tisch und
+    // abends die glühende Lippe; dann Waldgürtel, Baumgruppen, Hütten (hangDetails). Zonentiefen in Bildschirm-px: im Flugbild 112/214/320
+    // Entwurfs-px (× 0,4875 × k), in der weiten Übersicht 168/250/336 Übersichts-px (× 390/592 × k), dazwischen nach Zoom gemischt.
+    // Wellen, Mulden und Spritzpunkte hängen am Hang (Welt-x), damit beim Mitfahren nichts schwimmt. Flächen im Clip des Schneekörpers;
+    // die Spritzkanten ohne Clip (geschert und geclippt zeichnen manche Browser sehr langsam).
+    hillZones(G, Hh, pts, cam, k, body) {
+      const ctx = this.ctx, W = this.W, H = this.H, P = C.pal, u = PK.U * k, uo = 390 / 592 * k, n = pts.length;
       const profY = (x) => {
         if (x <= pts[0][0]) return pts[0][1];
         let lo = 0, hi = n - 1;
@@ -5341,42 +5679,51 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         return a[1] + (b[1] - a[1]) * (x - a[0]) / ((b[0] - a[0]) || 1);
       };
       const xw = (x) => cam.cx + (x - cam.ax) / cam.ppm;          // Bildschirm-x → Welt-x (m)
+      const sx = (x) => cam.ax + (x - cam.cx) * cam.ppm;          // Welt-x → Bildschirm-x
+      const zo = smooth01((cam.ppm / k - 4) / 14);                  // 0 = weite Übersicht, 1 = Flugbild
       const F = 28 / PK.U;                                          // Entwurfs-px je m beim Bezugszoom im Flug
-      const zr = Math.max(0.25, Math.min(1, cam.ppm / (20 * k)));    // in der weiten Übersicht flachere Wellen
       const zl = Math.max(0.3, Math.min(1.3, cam.ppm / (28 * k)));   // Mulden wachsen mit dem Zoom
-      const ZONES = [[112, 14, 0.009, 1], [214, 18, 0.007, 3], [320, 22, 0.006, 5]];
-      const depth = (z, x) => { const [d, a, f, ph] = ZONES[z], q = xw(x) * F; return (d + (Math.sin(q * f + ph) + Math.sin(q * f * 2.7 + ph) * 0.35) * a * zr) * u; };
+      const ZF = [[112, 14, 0.009, 1], [214, 18, 0.007, 3], [320, 22, 0.006, 5]], ZO = [[168, 12, 0.009, 1], [250, 16, 0.007, 3], [336, 18, 0.006, 5]];
+      const depth = (z, x) => {
+        const w = xw(x), f = ZF[z], o = ZO[z], q = w * F, qo = w * 3.5;
+        const fl = (f[0] + (Math.sin(q * f[2] + f[3]) + Math.sin(q * f[2] * 2.7 + f[3]) * 0.35) * f[1]) * u;
+        const ov = (o[0] + (Math.sin(qo * o[2] + o[3]) + Math.sin(qo * o[2] * 2.6 + o[3]) * 0.3) * o[1]) * uo;
+        return ov + (fl - ov) * zo;
+      };
       const xa = Math.max(pts[0][0], -24), xb = Math.min(pts[n - 1][0], W + 24);
       if (xb <= xa) return;
       const xs = [];
       for (let x = xa; x < xb; x += 14) xs.push(x);
       xs.push(xb);
       const prof = xs.map(profY);
-      const top = Math.min(-40, Math.min(...prof) - 20);
+      let top = -40; for (const y of prof) if (y - 20 < top) top = y - 20;
       const ox = 1.3 * u, oy = 0.7 * u;   // Passer: die Schattenplatte liegt leicht versetzt
-      // Zonen von unten nach oben: jeweils alles über der Grenze (im Clip also zwischen Profil und Grenze)
-      const B = ZONES.map((_, z) => xs.map((x, i) => [x, prof[i] + depth(z, x)]));
+      const B = [0, 1, 2].map((z) => xs.map((x, i) => [x, prof[i] + depth(z, x)]));
       ctx.save(); ctx.clip(body);
+      // Zonen als Bänder von unten nach oben (Zone 3 ist der Körper selbst); Zone 0 reicht nach oben über die Kante (der Clip schneidet)
       for (let z = 2; z >= 0; z--) {
+        if (z > 0 && B[z - 1].every((p) => p[1] > H + 4)) continue;   // ganzes Band unter dem Bild
         ctx.save(); if (z > 0) ctx.translate(ox, oy);
-        ctx.beginPath(); ctx.moveTo(xa, top);
-        for (const p of B[z]) ctx.lineTo(p[0], p[1]);
-        ctx.lineTo(xb, top); ctx.closePath();
+        ctx.beginPath();
+        if (z > 0) { const up = B[z - 1]; ctx.moveTo(up[0][0], up[0][1] - 2); for (const p of up) ctx.lineTo(p[0], p[1] - 2); }
+        else { ctx.moveTo(xa, top); ctx.lineTo(xb, top); }
+        for (let i = B[z].length - 1; i >= 0; i--) ctx.lineTo(B[z][i][0], B[z][i][1]);
+        ctx.closePath();
         ctx.fillStyle = P.hill[z]; ctx.fill(); ctx.restore();
       }
       ctx.restore();
-      // Spritzkanten: Punkte der oberen Zone sinken in die untere
-      const key = this.theme + "|" + this.H + "|" + this.dpr;
-      if (!this.strips || this.strips.key !== key) this.strips = { key, t: [0, 1, 2].map((z) => PK.sprayStrip(P.hill[z], P.hill[z + 1], u, this.dpr, 512, 11 + z)) };
-      const anchor = S(0, 0)[0];
-      for (let z = 0; z < 3; z++) this.sprayAlong(B[z], this.strips.t[z], anchor, edge);
+      // Spritzkanten: Punkte der oberen Zone sinken in die untere (ohne Clip; links vom Körper nichts)
+      const key = this.theme + "|" + this.H;   // wie das Korn: beim Herunterschalten bleiben die feineren Kanten
+      if (!this.strips || this.strips.key !== key || this.dpr > this.strips.dpr + 0.01) this.strips = { key, dpr: this.dpr, t: [0, 1, 2].map((z) => PK.sprayStrip(P.hill[z], P.hill[z + 1], u, this.dpr, 512, 11 + z)) };
+      const anchor = sx(0);
+      for (let z = 0; z < 3; z++) this.sprayAlong(B[z], this.strips.t[z], anchor, pts[0][0], 2);
       ctx.save(); ctx.clip(body);
-      // Muldenschatten: lange Linsen in Hangrichtung
+      // Muldenschatten: lange Linsen in Hangrichtung (nur am Aufsprunghang)
       if (!G.marks) G.marks = hillMarks(Hh);
       const ang = (x) => Math.atan2(profY(x + 6) - profY(x - 6), 12);
       ctx.save(); ctx.translate(ox, oy);
       for (const m of G.marks.mulden) {
-        const x = S(m.x, 0)[0];
+        const x = sx(m.x);
         if (x < -160 || x > W + 160) continue;
         const y = profY(x) + m.d * u;
         if (y < -30 || y > H + 30) continue;
@@ -5388,7 +5735,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       // Spuren: dünne Linien in Muldenfarbe, mit Unterbrechungen
       ctx.strokeStyle = P.mulde; ctx.lineWidth = Math.max(0.8, 1.6 * u); ctx.lineCap = "butt"; ctx.beginPath();
       for (const sp of G.marks.spuren) {
-        const a = Math.max(-10, S(sp.x0, 0)[0]), b = Math.min(W + 10, S(sp.x1, 0)[0]);
+        const a = Math.max(-10, sx(sp.x0)), b = Math.min(W + 10, sx(sp.x1));
         if (b <= a) continue;
         for (let x = a; ; x += 10) {
           const xx = Math.min(x, b), y = profY(xx) + (sp.d + Math.sin(xw(xx) * F * 0.02) * 2) * u;
@@ -5397,33 +5744,147 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         }
       }
       ctx.stroke();
-      // Kantenschatten 7–17 px unter der Kante (Schattenplatte), abends die glühende Lippe direkt an der Kante
-      ctx.save(); ctx.translate(ox, oy); ctx.beginPath();
-      xs.forEach((x, i) => (i ? ctx.lineTo(x, prof[i] + 7 * u) : ctx.moveTo(x, prof[i] + 7 * u)));
-      for (let i = xs.length - 1; i >= 0; i--) ctx.lineTo(xs[i], prof[i] + (17 + Math.sin(xw(xs[i]) * F * 0.03) * 2) * u);
-      ctx.closePath(); ctx.fillStyle = P.kante; ctx.fill(); ctx.restore();
-      if (P.lip) {
-        ctx.beginPath();
-        xs.forEach((x, i) => (i ? ctx.lineTo(x, prof[i] - 4 * u) : ctx.moveTo(x, prof[i] - 4 * u)));
-        for (let i = xs.length - 1; i >= 0; i--) ctx.lineTo(xs[i], prof[i] + 6 * u);
-        ctx.closePath(); ctx.fillStyle = P.lip; ctx.fill();
+      // Kantenschatten 7–17 px unter der Kante, nur ab dem Tisch und auf den ersten 2 m eingeblendet; abends die glühende Lippe
+      const x0 = sx(0), x2 = sx(2);
+      let ia = 0; while (ia < xs.length - 1 && xs[ia + 1] < x0) ia++;
+      if (xs[xs.length - 1] > x0) {
+        const g = (x) => smooth01((x - x0) / Math.max(1, x2 - x0));
+        ctx.save(); ctx.translate(ox, oy); ctx.beginPath();
+        const xa2 = Math.max(xs[ia], x0);
+        ctx.moveTo(xa2, profY(xa2) + 7 * u);
+        for (let i = ia; i < xs.length; i++) if (xs[i] > xa2) ctx.lineTo(xs[i], prof[i] + 7 * u);
+        for (let i = xs.length - 1; i >= ia; i--) { const x = Math.max(xs[i], xa2); ctx.lineTo(x, profY(x) + (7 + (10 + Math.sin(xw(x) * F * 0.03) * 2) * g(x)) * u); }
+        ctx.closePath(); ctx.fillStyle = P.kante; ctx.fill(); ctx.restore();
+        if (P.lip) {
+          ctx.beginPath(); ctx.moveTo(xa2, profY(xa2) - 4 * u);
+          for (let i = ia; i < xs.length; i++) if (xs[i] > xa2) ctx.lineTo(xs[i], prof[i] - 4 * u);
+          for (let i = xs.length - 1; i >= ia; i--) { const x = Math.max(xs[i], xa2); ctx.lineTo(x, profY(x) + 6 * u * g(x)); }
+          ctx.closePath(); ctx.fillStyle = P.lip; ctx.fill();
+        }
       }
-      this.grainPass(0.24);
+      this.hangDetails(G, Hh, cam, k);
       ctx.restore();
+      // Korn ein zweites Mal auf dem Hang (24 %): als Musterfüllung des Körpers, nicht über das ganze Bild
+      ctx.globalAlpha = 0.24; ctx.fillStyle = this.grainPat(); ctx.fill(body); ctx.globalAlpha = 1;
     }
 
-    // Spritzstreifen entlang einer Grenzlinie b (Bildschirmpunkte, x steigend): je Abschnitt ein geschertes Stück der Kachel
-    sprayAlong(b, T, anchor, edge) {
-      const ctx = this.ctx, dpr = this.dpr, H = this.H, s = T.dpr;
-      for (let i = 0; i < b.length - 1; i++) {
-        const x0 = b[i][0], y0 = b[i][1], x1 = b[i + 1][0], y1 = b[i + 1][1], sw = x1 - x0;
-        if (sw <= 0.05 || Math.min(y0, y1) - T.up > H || Math.max(y0, y1) - T.up + T.h < 0) continue;
-        if (edge && x0 < edge(Math.max(y0, y1) + T.h)) continue;
-        const sx = (((x0 - anchor) % T.w) + T.w) % T.w;
+    // Spritzstreifen entlang einer Grenzlinie b (Bildschirmpunkte, x steigend): je Abschnitt ein geschertes Stück der Kachel.
+    // xLeft: linker Rand des Schneekörpers (davor wird nichts gezeichnet)
+    sprayAlong(b, T, anchor, xLeft, step) {
+      const ctx = this.ctx, dpr = this.dpr, H = this.H, s = T.dpr, st = step || 1;
+      for (let i = 0; i < b.length - 1; i += st) {
+        const j = Math.min(b.length - 1, i + st);
+        const x0 = b[i][0], y0 = b[i][1], x1 = b[j][0], y1 = b[j][1], sw = x1 - x0;
+        if (sw <= 0.05 || x0 < xLeft || Math.min(y0, y1) - T.up > H || Math.max(y0, y1) - T.up + T.h < 0) continue;
+        const sxs = (((x0 - anchor) % T.w) + T.w) % T.w;
         ctx.setTransform(dpr, dpr * (y1 - y0) / sw, 0, dpr, dpr * x0, dpr * y0);
-        ctx.drawImage(T.cv, sx * s, 0, Math.min(sw, T.m) * s, T.cv.height, 0, -T.up, Math.min(sw, T.m), T.h);
+        ctx.drawImage(T.cv, sxs * s, 0, Math.min(sw, T.m) * s, T.cv.height, 0, -T.up, Math.min(sw, T.m), T.h);
       }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    // Unter der Kante, in Weltmetern (wächst mit der Welt): Waldgürtel mit Kronen-Zacken, dunklerer unterer Hälfte, fünf Reihen Wipfeln mit
+    // Schnee und einzelnen hohen Fichten, darunter ein Schattenstreifen von 1 m; Lichtungen mit Hütte, Felsen, Latschen, Baumgruppen alle
+    // 8–14 m, große Einzelbäume vorn, Hütten in der Hausform des Orts und in der Übersicht das Schanzenschild. Plan je Ort: plakat.js.
+    hangDetails(G, Hh, cam, k) {
+      const ctx = this.ctx, W = this.W, H = this.H, P = C.pal, pp = cam.ppm, Hp = G.hang, tod = this.theme;
+      const X = (x) => cam.ax + (x - cam.cx) * pp, Y = (y) => cam.ay - (y - cam.cy) * pp;
+      const xl = cam.cx - (cam.ax + 80) / pp, xr = cam.cx + (W - cam.ax + 80) / pp;
+      const E = (x) => edgeAt(G, x);
+      const ss = (a, b, x) => smooth01((x - a) / (b - a));
+      const off = (x) => (x < 0 ? 0.5 : 0.5 + 6.5 * ss(0, Hp.x03, x));
+      const gap = (x) => { let m = 1; for (const [a, b] of Hp.gaps) m *= 1 - ss(a - 4, a + 4, x) * (1 - ss(b - 4, b + 4, x)); return m; };
+      const th = (x) => (Hp.typ === "latschen" ? 0 : Hp.thick) * gap(x) * (12 + 2.5 * Math.sin(x * 0.0735 + Hp.ph) + 7 * Math.max(0, Math.sin(x * 0.0385 + 1.3 + Hp.ph))) * (1 - ss(Hp.x09, Hp.endX, x));
+      const ft = (x) => E(x) - off(x), fb = (x) => ft(x) - th(x);
+      const cols = this.hangCols && this.hangCols.tod === tod ? this.hangCols : (this.hangCols = { tod, base: P.tree, mid: PK.mix(P.tree, P.treeD, 0.55), c1: PK.mix(P.tree, P.treeD, 0.35), c2: PK.mix(PK.mix(P.tree, P.treeD, 0.55), P.treeD, 0.35) });
+      const rnd = (i) => { const f = Math.sin(i * 12.9898 + 78.233) * 43758.5453; return f - Math.floor(f); };
+      // sichtbarer Bereich des Gürtels (Welt-x), Raster der Kronen 1,3 m
+      const D = 1.3, ga = Math.max(xl, G.edgeX[0]), gb = Math.min(xr, Hp.endX);
+      if (gb > ga && Hp.typ !== "latschen") {
+        const i0 = Math.floor(ga / D) - 1, i1 = Math.ceil(gb / D) + 1;
+        // Schattenstreifen unter dem Gürtel
+        const sh = new Path2D(), crown = new Path2D(), mid = new Path2D();
+        for (let i = i0; i <= i1; i++) { const x = i * D, t = th(x); (i === i0 ? sh.moveTo : sh.lineTo).call(sh, X(x) + 1.3 * k * PK.U, Y(fb(x) + 0.6) + 0.7 * k * PK.U); }
+        for (let i = i1; i >= i0; i--) { const x = i * D, t = th(x); sh.lineTo(X(x) + 1.3 * k * PK.U, Y(fb(x) - Math.min(1, t / 8.6) * (1 + 0.15 * Math.sin(x * 0.17))) + 0.7 * k * PK.U); }
+        sh.closePath(); ctx.fillStyle = P.kante; ctx.fill(sh);
+        // Gürtel: Kronen oben, Unterkante mit Kerben
+        const tall = Hp.tall;
+        for (let i = i0; i <= i1; i++) {
+          const x = i * D, t = th(x), amp = Math.min(1, t / 11.4);
+          const sp = t < 1.1 ? 0 : (i & 1 ? 0.43 : (1.43 + rnd(i) * 2.29) * amp * tall);
+          (i === i0 ? crown.moveTo : crown.lineTo).call(crown, X(x), Y(ft(x) + sp));
+        }
+        for (let i = i1; i >= i0; i--) { const x = i * D; crown.lineTo(X(x), Y(fb(x) + ((i & 1) && th(x) >= 1.7 ? 1.4 : 0))); }
+        crown.closePath(); ctx.fillStyle = cols.base; ctx.fill(crown);
+        // untere Hälfte dunkler (Schattenplatte)
+        for (let i = i0; i <= i1; i++) { const x = i * D; (i === i0 ? mid.moveTo : mid.lineTo).call(mid, X(x) + 1.3 * k * PK.U, Y(ft(x) - th(x) * 0.55 + 1.4 * Math.sin(x * 0.105)) + 0.7 * k * PK.U); }
+        for (let i = i1; i >= i0; i--) { const x = i * D; mid.lineTo(X(x) + 1.3 * k * PK.U, Y(fb(x) + ((i & 1) && th(x) >= 1.7 ? 1.4 : 0)) + 0.7 * k * PK.U); }
+        mid.closePath(); ctx.fillStyle = cols.mid; ctx.fill(mid);
+        // Wipfel im Gürtel: fünf Reihen kleiner Fichten mit Schnee auf der Lichtseite (gesammelt, ab 2,5 px Höhe)
+        const inner = Hp.inner, t1 = new Path2D(), t2 = new Path2D(), sn = new Path2D();
+        let lo = 0, hi = inner.length;
+        while (lo < hi) { const m = (lo + hi) >> 1; if (inner[m].x < ga - 3) lo = m + 1; else hi = m; }
+        if (Hp.inner[0] && Hp.inner[0].h * pp >= 2.5) for (let q = lo; q < inner.length && inner[q].x < gb + 3; q++) {
+          const e = inner[q], t = th(e.x);
+          if (t < 4) continue;
+          const y = ft(e.x) - t * e.u + e.j, h = e.h, w = h * 0.62, bx = X(e.x), by = Y(y), hp = h * pp, wp = w * pp;
+          const p = e.u < 0.55 ? t1 : t2;
+          p.moveTo(bx, by - hp); p.lineTo(bx + wp / 2, by); p.lineTo(bx - wp / 2, by); p.closePath();
+          if (hp >= 6) { sn.moveTo(bx, by - hp); sn.lineTo(bx - wp * 0.18, by - hp * 0.45); sn.lineTo(bx - wp / 2, by - 0.14 * pp); sn.lineTo(bx - wp * 0.12, by - hp * 0.62); sn.closePath(); }
+        }
+        ctx.fillStyle = cols.c1; ctx.fill(t1); ctx.fillStyle = cols.c2; ctx.fill(t2); ctx.fillStyle = P.tSnow; ctx.fill(sn);
+        // einzelne hohe Fichten ragen aus dem Gürtel
+        for (const e of Hp.tallTrees) {
+          if (e.x < ga - 10 || e.x > gb + 10 || th(e.x) < 8.6) continue;
+          this.spruce(X(e.x), Y(ft(e.x) - e.d), e.h * pp, e.v);
+        }
+      }
+      // Lichtungen mit Hütte, Stadel, Felsen (Tiefe unter der Kante), Latschen (Planica)
+      const sU = pp / 3.5;   // Übersichts-px → Bildschirm-px
+      for (const h of Hp.huts) if (h.x > xl - 10 && h.x < xr + 10) this.inWorld(X(h.x - h.w / 2), Y(E(h.x) - h.d), sU, "house", h.kind, 0, 0, h.w * 3.5, h.w * 3.5 * 0.6, 11);
+      for (const h of Hp.stadel) if (h.x > xl - 10 && h.x < xr + 10) this.inWorld(X(h.x - h.w / 2), Y(E(h.x) - h.d), sU, "stadel", 0, 0, h.w * 3.5);
+      for (const f of Hp.fels) if (f.x > xl - 10 && f.x < xr + 10) this.inWorld(X(f.x), Y(E(f.x) - f.d), sU, "rock", 0, 0, f.w * 3.5, f.seed);
+      for (const m of Hp.humps) if (m.x > xl - 4 && m.x < xr + 4) this.inWorld(X(m.x), Y(E(m.x) - m.d), sU, "hump", 0, 0, m.h * 3.5);
+      // Baumgruppen je zwei Fichten unter dem Gürtel (klein: gesammelt gezeichnet)
+      const Bt = this.batch();
+      for (const g of Hp.groups) {
+        if (g.x < xl - 6 || g.x > xr + 6) continue;
+        const y = fb(g.x) - g.d, y2 = y - 1.1;
+        this.spruce(X(g.x), Y(y), g.h1 * pp, 0, true, g.h1 * pp < 60 ? Bt : null);
+        this.spruce(X(g.x + 3.1), Y(y2), g.h2 * pp, 2, true, g.h2 * pp < 60 ? Bt : null);
+      }
+      this.flush(Bt);
+      // Hütten am Hang in der Hausform des Orts (Tiefe unter dem Gürtel)
+      for (const h of Hp.slopeHuts) if (h.x > xl - 10 && h.x < xr + 10) this.inWorld(X(h.x - h.w / 2), Y(fb(h.x) - h.d), sU, "house", h.kind, 0, 0, h.w * 3.5, h.w * 3.5 * 0.62, 23);
+      // große Einzelbäume vorn
+      for (const b of Hp.big) if (b.x > xl - 20 && b.x < xr + 20) this.spruce(X(b.x), Y(fb(b.x) - b.d), b.h * pp, 1, true);
+      // Schanzenschild: nur in der weiten Übersicht (Bildschirmgröße wie im Entwurf), beim Heranzoomen ausgeblendet
+      const sa = 1 - smooth01((pp / k - 5) / 4);
+      if (sa > 0.02 && Hp.sign.x > xl && Hp.sign.x < xr) {
+        ctx.save(); ctx.globalAlpha = sa; ctx.translate(X(Hp.sign.x), Math.min(H - 14 * 390 / 592 * k, Y(fb(Hp.sign.x) - Hp.sign.d))); ctx.scale(390 / 592 * k, 390 / 592 * k);
+        PK.drawWith(ctx, tod, "schild", Hp.sign.text, 0, 0); ctx.restore();
+      }
+    }
+    // Kleinbau aus plakat.js an einer Bildschirmstelle, in lokalen Einheiten (Übersichts-px) mit Maßstab s gezeichnet
+    inWorld(x, y, s, kind, ...args) {
+      const ctx = this.ctx;
+      if (s * 40 < 1.5) return;
+      ctx.save(); ctx.translate(x, y); ctx.scale(s, s); ctx.lineJoin = "round";
+      PK.drawWith(ctx, this.theme, kind, ...args);
+      ctx.restore();
+    }
+    // Trainerpodest neben dem Tisch: Holzbühne auf zwei Stützen an der Kante
+    podium(G, Hh, cam, k) {
+      const x = 12.5, sx = cam.ax + (x - cam.cx) * cam.ppm;
+      if (sx < -40 || sx > this.W + 40 || cam.ppm < 3 * k) return;
+      const ctx = this.ctx, P = C.pal, s = cam.ppm / 5, y = cam.ay - (edgeAt(G, x) - cam.cy) * cam.ppm - 2 * s;
+      const tw = P.wood, tD = PK.mix(P.wood, PK.INK.tinte, 0.4);
+      ctx.save(); ctx.translate(sx, y); ctx.scale(s, s); ctx.lineCap = "butt";
+      ctx.strokeStyle = tD; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-8, 0); ctx.lineTo(-8, -22); ctx.moveTo(8, 0); ctx.lineTo(8, -22); ctx.stroke();
+      ctx.fillStyle = tw; ctx.fillRect(-11, -24, 22, 3);
+      ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-11, -24); ctx.lineTo(-11, -31); ctx.lineTo(11, -31); ctx.lineTo(11, -24); ctx.stroke();
+      ctx.fillStyle = P.roofSnow; ctx.fillRect(-11, -25.6, 22, 1.6);
+      ctx.restore();
     }
 
     board(x, y, label, bg, fg, w, k) {
@@ -5935,14 +6396,27 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       ctx.globalAlpha = 1;
     }
 
+    // Lichthof der Flutlichtlampen, einmal als Bild gezeichnet (statt eines Verlaufs je Mast und Bild)
+    glowSprite() {
+      if (this._glow) return this._glow;
+      const g = document.createElement("canvas"); g.width = g.height = 64;
+      const c = g.getContext("2d"), gr = c.createRadialGradient(32, 32, 0, 32, 32, 32);
+      gr.addColorStop(0, "rgba(255,231,176,0.32)"); gr.addColorStop(1, "rgba(255,231,176,0)");
+      c.fillStyle = gr; c.fillRect(0, 0, 64, 64);
+      return (this._glow = g);
+    }
+
+    // Schneestaub in Kreide (nie reines Weiß); in vier Deckkraftstufen gesammelt gezeichnet
     particles(S, cam, k, list) {
-      const ctx = this.ctx;
-      ctx.fillStyle = C.chalk;   // Schneestaub in Kreide, nie reines Weiß
+      const ctx = this.ctx, sc = Math.min(1.6, cam.ppm / 22), paths = [null, null, null, null];
       for (const p of list) {
-        const [x, y] = S(p.x, p.y);
-        ctx.globalAlpha = Math.max(0, p.a);
-        ctx.beginPath(); ctx.arc(x, y, Math.max(0.8, p.r * Math.min(1.6, cam.ppm / 22)), 0, 6.283); ctx.fill();
+        if (p.a <= 0.02) continue;
+        const x = cam.ax + (p.x - cam.cx) * cam.ppm, y = cam.ay - (p.y - cam.cy) * cam.ppm, r = Math.max(0.8, p.r * sc);
+        const b = Math.min(3, Math.floor(p.a * 4)), q = paths[b] || (paths[b] = new Path2D());
+        q.moveTo(x + r, y); q.arc(x, y, r, 0, 6.283);
       }
+      ctx.fillStyle = C.chalk;
+      for (let b = 0; b < 4; b++) if (paths[b]) { ctx.globalAlpha = (b + 0.6) / 4; ctx.fill(paths[b]); }
       ctx.globalAlpha = 1;
     }
 
@@ -6219,17 +6693,26 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         f.x = nx / W; f.y = ny / H;
       }
     }
+    // Flocken in Kreide (Papierweiß, abends mit Glühen): in drei Tiefenstufen (klein und blass hinten, groß vorn) je ein Strich-Pfad
     draw(ctx, k, dens) {
-      ctx.lineCap = "round"; ctx.strokeStyle = C.chalk || "#F4EEDF";   // Flocken in Kreide (Papierweiß, abends mit Glühen)
+      ctx.lineCap = "round"; ctx.strokeStyle = C.chalk || "#F4EEDF";
       const n = Math.round(this.f.length * Math.min(1, (dens == null ? 0.8 : dens) / 1.25));
+      const P = this._paths || (this._paths = []);
+      for (let i = 0; i < 6; i++) P[i] = null;
       for (let i = 0; i < n; i++) {
         const f = this.f[i];
         const x = f.x * this.W, y = f.y * this.H;
         const px = f.px == null ? x : f.px, py = f.py == null ? y : f.py;
-        const len = Math.hypot(x - px, y - py);
-        ctx.globalAlpha = Math.min(0.7, 0.22 + f.z * 0.32) * (len > 40 ? 0.55 : 1);
-        ctx.lineWidth = Math.max(0.9, f.z * 1.6 * k);
-        ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(x + (len < 0.5 ? 0.3 : 0), y); ctx.stroke();
+        const len = Math.hypot(x - px, y - py), b = (f.z < 0.85 ? 0 : f.z < 1.25 ? 1 : 2) * 2 + (len > 40 ? 1 : 0);
+        const q = P[b] || (P[b] = new Path2D());
+        q.moveTo(px, py); q.lineTo(x + (len < 0.5 ? 0.3 : 0), y);
+      }
+      for (let b = 0; b < 6; b++) {
+        if (!P[b]) continue;
+        const z = [0.65, 1.05, 1.48][b >> 1];
+        ctx.globalAlpha = Math.min(0.7, 0.22 + z * 0.32) * (b & 1 ? 0.55 : 1);
+        ctx.lineWidth = Math.max(0.9, z * 1.6 * k);
+        ctx.stroke(P[b]);
       }
       ctx.globalAlpha = 1;
     }
@@ -7153,7 +7636,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.27";
+  const VERSION = "0.28";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -7506,7 +7989,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     const sorted = Q.win.slice().sort((a, b) => a - b), base = sorted[Math.floor(sorted.length * 0.1)], med = sorted[sorted.length >> 1];
     if (med > base * 1.3 && med > 13) { Q.slowT += dtReal; Q.fastT = 0; } else if (med <= base * 1.08) { Q.fastT += dtReal; Q.slowT = 0; } else { Q.slowT = 0; Q.fastT = 0; }
     if (Q.slowT > 1.5 && Q.dpr > 1) { Q.dpr = Math.max(1, Q.dpr - 0.25); Q.slowT = 0; Q.win.length = 0; Q.upAfter = Math.min(30, Q.upAfter * 2); renderer.resize(W, Hs, Q.dpr); }
-    else if (Q.fastT > Q.upAfter && Q.dpr < Q.max) { Q.dpr = Math.min(Q.max, Q.dpr + 0.25); Q.fastT = 0; Q.win.length = 0; renderer.resize(W, Hs, Q.dpr); }
+    // Hochschalten kostet ein neues Bild (und evtl. ein neues Panorama): nie während Sprung oder Wiederholung, nur in Ruhe
+    else if (Q.fastT > Q.upAfter && Q.dpr < Q.max && mode !== "jump" && mode !== "replay") { Q.dpr = Math.min(Q.max, Q.dpr + 0.25); Q.fastT = 0; Q.win.length = 0; renderer.resize(W, Hs, Q.dpr); }
   }
   function layout() {
     const vw = window.innerWidth, vh = window.innerHeight;
