@@ -857,6 +857,36 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
 .ol-code b { font-size: 18px; letter-spacing: 0.03em; }
 .ol-code .btn-plain { padding: 0 8px; }
 .narrow .ol-code .ch-lbl { display: none; }
+/* Einrichten: Erklärung zu Gegnern und Wind, gesperrtes Skiflug-Format (antippbar) */
+.su-hint b { color: var(--text); font-weight: 700; }
+.seg button.locked { opacity: 0.38; }
+/* Spielmodus sichtbar im Spiel: Experte (rot) oder Anfänger (Akzent) */
+.pp-mode { align-self: flex-start; margin-top: 3px; padding: 1px 7px; border-radius: 3px; font-family: var(--font-label); font-weight: 700; font-size: 10.5px; line-height: 16px; letter-spacing: 0.12em; color: #FFF8EC; background: var(--warn); }
+.pp-mode.beg { background: var(--hi); }
+/* Podest mit Springern: Figuren stehen direkt auf ihrer Stufe, die Fläche darüber wird genutzt */
+.podium { align-items: stretch; }
+.pd { justify-content: flex-end; }
+.pd-fig { display: block; width: 100%; flex: 1 1 0; min-height: 0; max-height: 170px; margin-top: 2px; }
+.pd-name { display: flex; align-items: center; justify-content: center; gap: 5px; }
+.pd-name .flag, .pd-name .pd-sw { flex: none; }
+.pd-nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.pd-block { flex-direction: column; align-items: center; gap: 0; padding-top: 3px; line-height: 1; }
+.pd-block b { font-size: 24px; line-height: 26px; }
+.pd-block .pd-pts { font-size: 13px; line-height: 15px; color: rgba(20, 27, 37, 0.72); }
+.pd-1 .pd-block { height: 64px; }
+.pd-2 .pd-block { height: 52px; }
+.pd-3 .pd-block { height: 46px; }
+/* Richter: Noten erscheinen nacheinander, darunter was sie gekostet haben (in Punkten und Metern) */
+.res-why { margin: -3px 0 1px; font-size: 11.5px; line-height: 15px; color: var(--muted); font-family: var(--font-body); }
+.judges span { animation: judgeIn 0.34s cubic-bezier(0.2, 0.9, 0.3, 1.3) both; }
+.judges span:nth-child(2) { animation-delay: 0.1s; }
+.judges span:nth-child(3) { animation-delay: 0.2s; }
+.judges span:nth-child(4) { animation-delay: 0.3s; }
+.judges span:nth-child(5) { animation-delay: 0.4s; }
+@keyframes judgeIn { from { opacity: 0; transform: translateY(7px) scale(0.75); } }
+/* Luke: große Knöpfe mit Abstand, damit man sich nicht vertippt */
+.gate-box .mini-btn { width: 46px; height: 46px; font-size: 24px; }
+.gate-box .gate-row { gap: 14px; }
 
 </style>
 </head>
@@ -871,6 +901,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   <div id="playerPanel" class="panel hud-tl">
     <div class="pp-row"><span id="ppFlag" class="flag"></span><span id="ppName" class="pp-name">MAT</span><span id="ppNation" class="pp-nat">AUT</span></div>
     <span id="ppSub" class="pp-sub">Training · Luke 12</span>
+    <span id="ppMode" class="pp-mode" hidden></span>
   </div>
   <div class="hud-tr">
     <div id="windPanel" class="panel wind-panel">
@@ -1042,6 +1073,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     <div class="res-rows">
       <div class="res-row"><span class="rr-l">Weite</span><div id="rsDistTxt" class="rr-m"></div><span id="rsDistPts" class="num rr-p"></span></div>
       <div class="res-row"><span class="rr-l">Haltung</span><div id="rsJudges" class="rr-m judges"></div><span id="rsStyle" class="num rr-p"></span></div>
+      <p id="rsStyleWhy" class="res-why"></p>
       <div class="res-row"><span class="rr-l">Wind</span><div id="rsWindTxt" class="rr-m"></div><span id="rsWindPts" class="num rr-p"></span></div>
       <div id="rsGateRow" class="res-row"><span class="rr-l">Luke</span><div id="rsGateTxt" class="rr-m"></div><span id="rsGatePts" class="num rr-p"></span></div>
       <div class="res-sep"></div>
@@ -1143,12 +1175,14 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     <div id="suComp" class="su-body">
       <div class="set-row"><span class="lbl">Gegner</span><div id="segLevel" class="seg" role="radiogroup" aria-label="Stärke der Gegner"><button type="button" data-v="easy">Einsteiger</button><button type="button" data-v="mid">Fortgeschritten</button><button type="button" data-v="pro">Profi</button></div></div>
       <div class="set-row"><span class="lbl">Wind</span><div id="segCompWind" class="seg" role="radiogroup" aria-label="Wind im Wettkampf"><button type="button" data-v="var">Wechselnd</button><button type="button" data-v="strong">Böig</button></div></div>
+      <p id="suCompHint" class="su-note su-hint"></p>
       <p id="suCompNote" class="su-note">50 Springer im 1. Durchgang, die besten 30 springen im Finale in umgekehrter Reihenfolge. Die Jury legt die Luke fest.</p>
     </div>
     <div id="suChamp" class="su-body" hidden>
       <div class="set-row"><span class="lbl">Format</span><div id="segChFmt" class="seg" role="radiogroup" aria-label="Format der Meisterschaft"><button type="button" data-v="tour">Tournee</button><button type="button" data-v="season4">Saison kurz</button><button type="button" data-v="season">Saison</button><button type="button" data-v="flight">Skiflug</button></div></div>
       <div class="set-row"><span class="lbl">Gegner</span><div id="segChLevel" class="seg" role="radiogroup" aria-label="Stärke der Gegner"><button type="button" data-v="easy">Einsteiger</button><button type="button" data-v="mid">Fortgeschritten</button><button type="button" data-v="pro">Profi</button></div></div>
       <div class="set-row"><span class="lbl">Wind</span><div id="segChWind" class="seg" role="radiogroup" aria-label="Wind in der Meisterschaft"><button type="button" data-v="var">Wechselnd</button><button type="button" data-v="strong">Böig</button></div></div>
+      <p id="suChHint" class="su-note su-hint"></p>
       <p id="suChNote" class="su-note"></p>
     </div>
     <div id="suHot" class="su-body" hidden>
@@ -1319,6 +1353,8 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
         <div class="set-row"><span class="lbl">Tageszeit</span><div id="segTod" class="seg" role="radiogroup" aria-label="Tageszeit"><button type="button" data-v="auto">Auto</button><button type="button" data-v="morning">Früh</button><button type="button" data-v="afternoon">Tag</button><button type="button" data-v="evening">Abend</button></div></div>
         <div class="set-row"><span class="lbl">Tempo (Training)</span><div id="segSpeed" class="seg" role="radiogroup" aria-label="Tempo im Training"><button type="button" data-v="1">Normal</button><button type="button" data-v="0.75">75 %</button><button type="button" data-v="0.5">50 %</button></div></div>
         <div class="set-row"><span class="lbl">Hilfen anzeigen</span><button type="button" id="tgAssist" class="toggle" role="switch" aria-checked="true"><i></i></button></div>
+        <div class="set-row"><span class="lbl">Anfängermodus</span><button type="button" id="tgBeginner" class="toggle" role="switch" aria-checked="false" aria-describedby="beginnerNote"><i></i></button></div>
+        <p id="beginnerNote" class="set-note">Im Training hält das Spiel vor dem Absprung und vor der Landung an, du tippst im perfekten Moment. Mit Tipps im Flug. Zählt nicht für Bestweiten und Duelle.</p>
         <div class="set-row"><span class="lbl">Expertenmodus</span><button type="button" id="tgExpert" class="toggle" role="switch" aria-checked="false" aria-describedby="expertNote"><i></i></button></div>
         <p id="expertNote" class="set-note">Anfahrtshocke selbst halten, an der Kante loslassen. Keine Hilfen im Sprung.</p>
         <div class="set-row"><span class="lbl">Fluglage-Kasten</span><div id="segGauge" class="seg" role="radiogroup" aria-label="Fluglage-Kasten zusätzlich zum Springer"><button type="button" data-v="off">Aus</button><button type="button" data-v="left">Links</button><button type="button" data-v="right">Rechts</button></div></div>
@@ -4429,6 +4465,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
       this.inrun(v.hill, S, cam, k, v, xMin, xMax);
       if (v.flags) this.windFlags(v.hill, S, cam, k, v);
       if (v.best && v.best.d > 40) this.beam(v.hill, S, cam, k, v.best);
+      if (v.ideal) this.idealLine(S, cam, k, v.ideal);
       if (v.ghost) this.jumper(S, cam, k, v.ghost, true);
       if (v.jumper && v.jumper.visible !== false) {
         if (v.jumper.shadow) this.shadow(v.hill, S, cam, k, v.jumper);
@@ -5050,6 +5087,32 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
           rect(-hw * 0.78, hh * 0.48, -hw * 0.48, hh * 0.78, lit);
         }
       }
+    }
+
+    // Anfänger: so fliegt ein perfekter Sprung (gleiche Luke, gleicher Wind), gestrichelt, am Ende der Landepunkt
+    idealLine(S, cam, k, ideal) {
+      const ctx = this.ctx, P = ideal.path;
+      if (!P || P.length < 2) return;
+      ctx.save();
+      ctx.lineCap = "round"; ctx.lineJoin = "round";
+      const line = (w, col, dash) => {
+        ctx.strokeStyle = col; ctx.lineWidth = w; ctx.setLineDash(dash);
+        ctx.beginPath();
+        for (let i = 0; i < P.length; i++) { const [x, y] = S(P[i][0], P[i][1]); if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y); }
+        ctx.stroke();
+      };
+      line(Math.max(3, 0.12 * cam.ppm), "rgba(20,27,37,0.28)", []);
+      line(Math.max(2, 0.07 * cam.ppm), "rgba(255,214,120,0.95)", [10, 7]);
+      ctx.setLineDash([]);
+      const [ex, ey] = S(P[P.length - 1][0], P[P.length - 1][1]);
+      ctx.fillStyle = "rgba(255,214,120,0.95)"; ctx.beginPath(); ctx.arc(ex, ey, Math.max(3.5, 0.18 * cam.ppm), 0, 6.283); ctx.fill();
+      if (ideal.label && cam.ppm > 6) {
+        ctx.font = `700 11px ${COND}`; ctx.textAlign = "center";
+        const tw = ctx.measureText(ideal.label).width + 14;
+        ctx.fillStyle = "rgba(20,27,37,0.85)"; this.rrect(ex - tw / 2, ey + 8, tw, 17, 3); ctx.fill();
+        ctx.fillStyle = "#FFD678"; ctx.fillText(ideal.label, ex, ey + 20.5);
+      }
+      ctx.restore();
     }
 
     beam(Hh, S, cam, k, best) {
@@ -6447,7 +6510,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     tutorialDone: false, bests: {}, compBest: {}, jumps: 0, telemarks: 0, sumD: 0, level: "mid", compWind: "var",
     hot: { n: 2, names: ["SPIELER 1", "SPIELER 2", "SPIELER 3", "SPIELER 4", "SPIELER 5", "SPIELER 6", "SPIELER 7", "SPIELER 8"], rounds: 2, wind: "var", fmt: "one" },
     chFmt: "tour", chLevel: "mid", chWind: "var", champ: null, party: null, champBest: {},
-    gaugeLeft: false, gaugeSide: "off", flv: 3, hand: "right", sens: 1, ghosts: {}, tops: {}, tod: "evening", missions: {}, daily: null, look: null, expert: false,
+    gaugeLeft: false, gaugeSide: "off", flv: 4, hand: "right", sens: 1, ghosts: {}, tops: {}, tod: "auto", missions: {}, daily: null, look: null, expert: false, beginner: false,
     oc: null, osave: false, oat: "", groups: [], opend: [], noOnline: false, onlineAsked: false };
   let S = JSON.parse(JSON.stringify(DEF));
   try {
@@ -6470,6 +6533,8 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
       if ((old.flv || 0) < 2) { S.gaugeSide = "off"; S.flv = 2; if (old.tutorialDone) S.lookNew = 2; }
       // 0.18: jede Schanze mit eigener Tageszeit (umstellbar über den Tageszeit-Knopf)
       if ((old.flv || 0) < 3) { S.tod = "auto"; S.flv = 3; }
+      // 0.23: Tageszeit wieder „Je Schanze“ als Standard (vorher stand sie bei vielen auf Abend)
+      if ((old.flv || 0) < 4) { S.tod = "auto"; S.flv = 4; }
     }
   } catch (e) {
     // kein Speicher oder unlesbar: unlesbaren Stand als Rohkopie aufheben
@@ -6987,12 +7052,15 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
       if (practice && practiceLeft === 1) wind = Object.assign(wind, { mode: "side", side: (seed & 1 ? 1 : -1) * 0.42, gustR: 0.06 });
     }
     const expert = !!S.expert && ctxMode !== "hot" && !practice;
+    const beginner = !!S.beginner && !expert && ctxMode === "training" && !practice;
     J = new Ph.Jump(H, { gate, refGate, wind, seed: jseed, inrunCtl: expert });
     jc = { seed: jseed, practice, light: "red", tLight: 0.9 + Math.random() * 1.2, rec: [], recT: -1, slow: practice ? [0.5, 0.7, 1][clamp(3 - practiceLeft, 0, 2)] : (ctxMode === "training" ? trainSpeed() : 1),
       drag: null, timing: null, toastT: 0, doneT: 0, dragged: false, finished: false, who, colors,
       countdown: ctxMode === "comp" || ctxMode === "hot" ? 10 : null, ghostRec: [], ghostT: -1, toLead: null, speedT: 0,
-      noAssist: (ctxMode === "mission" && !!ms.m.noAssist) || expert, expert, target: ctxMode === "mission" ? missionTarget(ms.m, H) : null,
+      noAssist: (ctxMode === "mission" && !!ms.m.noAssist) || expert, expert, beginner, freeze: null, target: ctxMode === "mission" ? missionTarget(ms.m, H) : null,
       prevBest: S.bests[H.key] ? S.bests[H.key].d : null };
+    vis($("ppMode"), expert || beginner); txt($("ppMode"), expert ? "EXPERTENMODUS" : beginner ? "ANFÄNGERMODUS" : "");
+    $("ppMode").classList.toggle("beg", beginner);
     jc.toLead = toLeadDist();
     jc.duel = ctxMode === "comp" && comp.ko && comp.round === 1 && comp.duelOf("me") && comp.res[comp.duelOf("me")].r1 ? comp.byId[comp.duelOf("me")].name : null;
     if (ctxMode === "mission") renderer.setTheme(ms.m.tod || todFor(H));
@@ -7018,9 +7086,39 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   function startInrun() {
     if (!J || J.phase !== "gate" || jc.light !== "green") return;
     J.start(); vib(15);
+    if (jc.beginner) jc.ideal = idealFlight();
+  }
+  // Ideale Flugkurve für Anfänger: derselbe Sprung, aber perfekt gesprungen (wie die KI-Spitze ohne Fehler)
+  function idealFlight() {
+    try {
+      const j = new Ph.Jump(H, { gate: J.gate, refGate: J.refGate, wind: CP.shiftWind(J.wind, J.t), seed: jc.seed });
+      j.start();
+      const path = [], dt = 1 / 120;
+      for (let i = 0; i < 120 * 40 && !j.landing; i++) {
+        if (j.phase === "inrun" && j.tapTime == null && j.s / Math.max(1, j.v) <= Ph.P.tauIdeal) j.tap();
+        if (j.phase === "flight") {
+          j.u = (j.pOpt || 0) - (j.dist == null ? -0.45 : j.dist); j.ur = -(j.distR || 0);
+          if (j.prepTime == null && j.tau != null && j.tau <= Ph.P.teleBest) j.tap();
+          if (i % 4 === 0) path.push([j.x, j.y]);
+        }
+        j.step(dt);
+      }
+      if (!j.landing || path.length < 4) return null;
+      const g = Hill.groundAt(H, j.landing.x);
+      path.push([j.landing.x, g.y]);
+      return { path, d: j.landing.dist, label: `IDEAL ${fmt1(j.landing.dist)} m` };
+    } catch (e) { return null; }
   }
 
+  // Luke verstellen: Fehltipps neben die Knöpfe starten den Sprung nicht (Schutzzone um den Kasten, kurz nach dem Verstellen kein Start)
+  let gateTapT = 0;
+  function nearGateBox(e) {
+    if (!el.gateBox || el.gateBox.hidden) return false;
+    const r = el.gateBox.getBoundingClientRect(), m = 30;
+    return e.clientX > r.left - m && e.clientX < r.right + m && e.clientY > r.top - m && e.clientY < r.bottom + m;
+  }
   function changeGate(d) {
+    gateTapT = performance.now();
     if (!J || J.phase !== "gate" || ctxMode !== "training") return;
     S.gates[H.key] = clamp(gateFor(H) + d, 1, H.gates); save();
     J.gate = S.gates[H.key]; J.s = H.gatePos[J.gate];
@@ -7062,6 +7160,8 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     if (mode === "replay") { endReplay(); return true; }
     if (mode !== "jump" || !J || jc.finished) return false;
     if (J.phase === "gate") { startInrun(); return true; }
+    if (jc.freeze === "takeoff" && J.phase === "inrun") { jc.freeze = null; takeoffTap(); return true; }
+    if (jc.freeze === "land") jc.freeze = null;
     if (J.phase === "inrun") {
       if (jc.expert) return false;   // Experte: Daumen halten = Hocke, Absprung beim Loslassen (releaseInrun)
       if (J.tapTime == null && jc.pendTap == null) timedTap(ev);
@@ -7111,7 +7211,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
           showToast("STURZ", sub, "warn", 2.4, true); vib([70, 50, 120]);
         }
         txt(el.distVal, fmt1(L.dist) + " m");
-        if (ctxMode === "training" && L.kind !== "fall" && (jc.prevBest == null || L.dist > jc.prevBest)) { vis(el.distChip, true); txt(el.distChip, "NEUE BESTWEITE"); }
+        if (ctxMode === "training" && !jc.beginner && L.kind !== "fall" && (jc.prevBest == null || L.dist > jc.prevBest)) { vis(el.distChip, true); txt(el.distChip, "NEUE BESTWEITE"); }
         if (ctxMode !== "training" && jc.toLead != null && L.kind !== "fall" && L.dist >= jc.toLead) { vis(el.distChip, true); txt(el.distChip, ctxMode === "chal" ? (chal.grp && chal.board[0] && chal.board[0].me ? "WEITER ALS DEIN BESTER" : `WEITER ALS ${chal.n}`) : jc.duel ? "ÜBER DER DUELL-LINIE" : "ÜBER DER FÜHRUNGSLINIE"); }
       }
       if (ev.type === "stopped") { jc.doneT = 0; Snd.stopped(J.landing ? J.landing.kind : null); }
@@ -7138,6 +7238,13 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     }, 1800);
   }
 
+  // Anfängermodus: genau im perfekten Moment anhalten (Absprung an der Kante, Telemark vor der Landung), bis getippt wird
+  function beginnerStop() {
+    if (jc.freeze) return true;
+    if (J.phase === "inrun" && J.tapTime == null && jc.pendTap == null && J.s / Math.max(1, J.v) <= Ph.P.tauIdeal) { jc.freeze = "takeoff"; Snd.beep(880, 0.08, 0.06); vib(20); return true; }
+    if (J.phase === "flight" && J.prepTime == null && !J.noseDive && J.tau != null && J.tau <= Ph.P.teleBest) { jc.freeze = "land"; Snd.beep(880, 0.08, 0.06); vib(20); return true; }
+    return false;
+  }
   function stepJump(dtReal) {
     const dt = dtReal * jc.slow;
     if (J.phase === "gate") { jc.gt = (jc.gt || 0) + dtReal; if (jc.light === "green") jc.gg = (jc.gg || 0) + dtReal; }
@@ -7163,6 +7270,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     acc += dt;
     let n = 0;
     while (acc >= STEP && n < 200) {
+      if (jc.beginner && beginnerStop()) { acc = 0; break; }
       if (jc.pendTap != null && J.t + STEP * 0.5 >= jc.pendTap) {
         jc.pendTap = null;
         if (J.phase === "inrun" && J.tapTime == null) takeoffTap();
@@ -7264,13 +7372,13 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     if (ctxMode === "chal") return chal.grp ? `Online-Gruppe · ${chal.total} Springer · Luke ${st.gate}` : `Herausforderung von ${chal.n} · Luke ${st.gate}`;
     if (ctxMode === "mission") return `${ms.m.title}${ms.m.n || ms.m.hills ? ` · Sprung ${ms.res.length + 1}/${missionJumps(ms.m)}` : ""} · Luke ${st.gate}`;
     if (ctxMode === "daily") return `Tageschallenge · Versuch ${dc.tries.length + 1}/3 · Luke ${st.gate}`;
-    return `Training${jc && jc.slow < 1 ? ` · Tempo ${Math.round(jc.slow * 100)} %` : ""} · Luke ${st.gate}`;
+    return `Training${jc && jc.slow < 1 ? ` · Tempo ${Math.round(jc.slow * 100)} %` : ""}${jc && jc.beginner ? " mit Anhalten" : ""} · Luke ${st.gate}`;
   }
 
   function updateHud(st, live) {
-    const assist = (S.assist || (jc && jc.practice)) && !(jc && jc.noAssist);   // noAssist: Mission ohne Hilfen oder Expertenmodus
+    const assist = (S.assist || (jc && (jc.practice || jc.beginner))) && !(jc && jc.noAssist);   // noAssist: Mission ohne Hilfen oder Expertenmodus
     const ph = st.phase;
-    txt(el.ppSub, subLine(st) + (jc && jc.expert ? " · Experte" : ""));
+    txt(el.ppSub, subLine(st));
     const w = J.wind.mode === "off" ? 0 : (ph === "flight" ? J.windVec(Math.max(0, J.x)).w : J.wind.display(J.t));
     const wi = windInfo(w);
     txt(el.windVal, wi.val); txt(el.windLbl, wi.lbl);
@@ -7284,7 +7392,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     const atGate = ph === "gate" && !jc.finished;
     vis(el.startBox, live && atGate);
     vis(el.gateBox, live && atGate && ctxMode === "training");
-    vis(el.goalBox, live && (ctxMode === "mission" || ctxMode === "daily") && atGate);
+    vis(el.goalBox, live && atGate && !!jc.goal);
     if (atGate) {
       el.lightR.className = "light" + (jc.light === "red" ? " on-r" : "");
       el.lightG.className = "light" + (jc.light === "green" ? " on-g" : "");
@@ -7320,6 +7428,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
       if (ph === "inrun" && J.tapTime == null && tauEdge < 0.3 && tauEdge > 0.11) pill = "JETZT TIPPEN";
       if (ph === "flight" && J.prepTime == null && J.tau != null && J.tau < 0.55 && J.tau > 0.18) pill = "JETZT TIPPEN";
     }
+    if (jc && live && jc.freeze) pill = "JETZT TIPPEN";
     vis(el.tapPill, !!pill);
     const inFlight = ph === "flight";
     const showFl = live && inFlight && !J.noseDive && gaugeShown() && !jc.expert;
@@ -7364,23 +7473,28 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     vis(el.landBox, lz && jc.practice);   // danach zeigt der Ring am Springer die Landung
     if (lz) el.landMark.style.left = (clamp((1.15 - J.tau) / 1.15, 0, 1) * 100).toFixed(1) + "%";
     let hint = null;
-    if (live && assist) {
+    if (live && jc.freeze) hint = jc.freeze === "takeoff"
+      ? ["tap", "Jetzt tippen: Absprung!", "Genau jetzt an der Kante ist der perfekte Moment", "center"]
+      : ["tap", "Jetzt tippen: Telemark!", "Kurz vor dem Boden die Landung vorbereiten", "center"];
+    if (!hint && live && assist) {
       if (ph === "gate" && jc.light === "green" && jc.practice) hint = ["tap", "Tippen zum Start", "", "center"];
       else if (inFlight && !lz && st.tf > 0.15 && st.tf < 2.8 && !jc.dragged) hint = ["pad", "Daumen halten & nach oben schieben", "hoch = Vorlage · runter = aufrecht · seitlich = Balance", "center"];
       else if (inFlight && !lz && jc.practice && J.wind.mode === "side" && st.tf > 0.5 && st.tf < 2.6) hint = ["lr", "Seitenwind!", `Daumen nach ${J.wind.side > 0 ? "links" : "rechts"} dagegen halten, bis die Ski parallel sind`, "center"];
     }
     // Trainer im Training: liegt die Fluglage länger daneben, sagt ein Satz, wohin der Daumen muss (der Springer zeigt das Warum)
-    if (live && assist && !hint && inFlight && !lz && jc.dragged && (ctxMode === "training" || jc.practice) && st.tf > 0.9 && !J.noseDive && J.prepTime == null) {
+    if (live && assist && !hint && inFlight && !lz && jc.dragged && (ctxMode === "training" || jc.practice) && st.tf > (jc.beginner ? 0.4 : 0.9) && !J.noseDive && J.prepTime == null) {
       const e = st.p - st.pOpt, r = st.r || 0;
       const k = e < -0.3 ? "up" : e > 0.42 ? "down" : Math.abs(r) > 0.35 ? (r > 0 ? "left" : "right") : null;
       if (k !== jc.coachK) { jc.coachK = k; jc.coachT0 = J.t; }
-      if (k && J.t - jc.coachT0 > 0.45) jc.coachShow = { k, until: J.t + 0.9 };
+      if (k && J.t - jc.coachT0 > (jc.beginner ? 0.2 : 0.45)) jc.coachShow = { k, until: J.t + 0.9 };
       if (jc.coachShow && J.t < jc.coachShow.until) hint = {
         up: ["drag", "Daumen höher: flach hinlegen", "zu aufrecht, das bremst"],
         down: ["drag", "Daumen etwas zurück", "zu viel Vorlage, Kopf unter den Ski"],
         left: ["lr", "Daumen nach links", "Ski wieder parallel"],
         right: ["lr", "Daumen nach rechts", "Ski wieder parallel"] }[jc.coachShow.k].concat("center");
     }
+    if (live && jc.beginner && !hint && inFlight && jc.dragged && !J.noseDive && J.prepTime == null && st.tf > 0.4 && Math.abs(st.p - st.pOpt) <= 0.16 && Math.abs(st.r || 0) <= 0.2)
+      hint = ["pad", "Gut so, halten!", "Die Fluglage stimmt. Vor der Landung hält das Spiel an.", "center"];
     // nach dem Update zweimal erklären, was die goldenen Linien bedeuten (sobald sie zum ersten Mal leuchten)
     if (live && !hint && inFlight && !lz && !jc.expert && S.lookNew > 0 && ((jc.airQ || 0) > 0.6 || jc.lookT)) {
       if (!jc.lookT) { jc.lookT = J.t; S.lookNew--; save(); }
@@ -7455,11 +7569,11 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     if (mine) {
       S.jumps++; S.sumD += sc.dist; if (sc.kind === "telemark") S.telemarks++;
       const b = S.bests[H.key];
-      newBest = sc.kind !== "fall" && (!b || sc.dist > b.d);
+      newBest = !jc.beginner && sc.kind !== "fall" && (!b || sc.dist > b.d);
       const how = jumpRecord(sc);
       if (newBest) S.bests[H.key] = how;
       const tp = S.tops[H.key];
-      if (sc.kind !== "fall" && !jc.practice && (!tp || sc.total > tp.pts)) S.tops[H.key] = how;
+      if (sc.kind !== "fall" && !jc.practice && !jc.beginner && (!tp || sc.total > tp.pts)) S.tops[H.key] = how;
       if (ctxMode === "training" && !jc.practice && newBest && jc.ghostRec.length > 4) S.ghosts[H.key] = { d: sc.dist, path: jc.ghostRec };
     }
     if (jc.practice) { practiceLeft = Math.max(0, practiceLeft - 1); if (practiceLeft === 0) { S.tutorialDone = true; S.physicsNew = false; S.flightNew = false; } }
@@ -7468,7 +7582,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
       v: J.vTakeoff * 3.6, ft: J.tf, maxH: J.stats.maxH, path: jc.ghostRec, hillKey: H.key, ctx: ctxMode,
       vIn: J.stats.vMaxIn * 3.6, vFl: J.stats.vMaxFl * 3.6, vLand: J.stats.vLand * 3.6, dtL: J.landing.dtL, expert: !!jc.expert,
       inOk: J.stats.inT > 0.5 ? Math.round(100 * J.stats.inOk / J.stats.inT) : null, vLoss: J.stats.vLoss * 3.6 }, sc);
-    if (mine && !jc.practice) {
+    if (mine && !jc.practice && !jc.beginner) {
       const t = S.st || (S.st = {});
       if (sc.kind === "fall") t.falls = (t.falls || 0) + 1; if (sc.zone === "perfect") t.perfect = (t.perfect || 0) + 1; t.n = (t.n || 0) + 1; t.pts = (t.pts || 0) + sc.total;
       // Messwert-Rekorde (für Statistik-Fans): schnellste Anfahrt, höchster Flug, Flugtempo, längste Flugzeit, weitester Sprung, Expertensprünge
@@ -7485,7 +7599,8 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     if (ctxMode === "mission") missionRecord(entry);
     if (ctxMode === "daily") dailyRecord(entry);
     // Herausforderung: jeder gestandene Trainingssprung und jeder Versuch einer Herausforderung kann als Link raus
-    if ((ctxMode === "training" && !jc.practice) || ctxMode === "chal") entry.chal = sc.kind === "fall" ? null : chalFromJump(sc);
+    if ((ctxMode === "training" && !jc.practice && !jc.beginner) || ctxMode === "chal") entry.chal = sc.kind === "fall" ? null : chalFromJump(sc);
+    entry.beginner = !!jc.beginner;
     if (ctxMode === "chal") chalRecord(entry);
     if (ctxMode === "chal" && chal && chal.grp) postGroup(entry);
     lastResult = entry;
@@ -7692,6 +7807,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     else if (ctxMode === "daily") { chip.className = r.dailyBest ? "chip chip-cyan" : "chip chip-dim"; chip.textContent = r.dailyBest ? "BESTER VERSUCH" : `VERSUCH ${dc.tries.length}/3`; }
     else if (ctxMode === "chal" && chal && chal.grp) grpChip(r, chip);
     else if (ctxMode === "chal") { chip.className = r.chalWin > 0 ? "chip chip-cyan" : r.chalWin < 0 ? "chip chip-warn" : "chip chip-dim"; chip.textContent = r.chalWin > 0 ? "GEWONNEN" : r.chalWin < 0 ? "VERLOREN" : "GLEICHSTAND"; }
+    else if (r.beginner && r.kind !== "fall") { chip.className = "chip chip-dim"; chip.textContent = "ANFÄNGERMODUS"; }
     else if (r.newBest) { chip.className = "chip chip-cyan"; chip.textContent = "NEUE BESTWEITE"; }
     else if (r.kind === "fall") { chip.className = "chip chip-warn"; chip.textContent = "STURZ"; }
     else { chip.className = "chip chip-dim"; chip.textContent = ctxMode === "hot" ? `DURCHGANG ${hot.round}` : (r.practice ? "ÜBUNGSSPRUNG" : "TRAINING"); }
@@ -7700,6 +7816,11 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     txt($("rsDistTxt"), `${fmt1(r.dist)} m · K-Punkt ${H.K} m`);
     txt($("rsDistPts"), fmt1(r.distPts));
     $("rsJudges").innerHTML = r.judges.map((v, i) => `<span class="${r.struck.includes(i) ? "struck" : ""}">${fmt1(v)}</span>`).join("");
+    // Was die Richter abgezogen haben und was das in Metern bedeutet (höchste und tiefste Note fallen weg)
+    const lost = Math.max(0, 60 - r.style), m = lost / H.meterValue;
+    txt($("rsStyleWhy"), r.kind === "fall" ? `Sturz: hohe Abzüge, zusammen ${fmt1(lost)} Punkte weniger (≈ ${fmt1(m)} m).`
+      : r.kind === "twofoot" ? `Ohne Telemark zieht jeder Richter rund 2 Punkte ab, dazu Flug −${fmt1(r.flightDed)}. Zusammen −${fmt1(lost)} P. ≈ ${fmt1(m)} m.`
+      : `Telemark! Abzug je Richter: Flug −${fmt1(r.flightDed)}, Landung −${fmt1(r.landDed)}. Zusammen −${fmt1(lost)} P. ≈ ${fmt1(m)} m.`);
     txt($("rsStyle"), fmt1(r.style));
     const wi = windInfo(r.wind);
     txt($("rsWindTxt"), r.windOff ? "Wind aus" : `${wi.lbl} ${wi.val}`);
@@ -7932,7 +8053,47 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     if (g.type === "land" || g.type === "takeoff") { const d = g.d(Hh); return { d, label: `★★★ ${fmt1(d)} m` }; }
     return null;
   }
+  // Ziel am Start: was es braucht, als Punkte und als Weite (Weite bei guten Haltungsnoten, rund 54 Punkte, ohne Wind)
+  const ptsToDist = (pts) => Math.ceil((H.K + (pts + 0.1 - H.kValue - 54) / H.meterValue) * 2) / 2;
+  function startGoal() {
+    if (jc.practice) return null;
+    const lead = (name, need) => need <= 0
+      ? ["DU FÜHRST", "Sicher landen", "Ein gestandener Sprung hält dich vorn."]
+      : [`ZUR FÜHRUNG VOR ${String(name).toUpperCase()}`, `${fmt1(need)} Punkte`, `Das sind etwa ${fmt1(ptsToDist(need))} m bei guten Haltungsnoten.`];
+    const open = ["Du eröffnest", `Der K-Punkt (${H.K} m) gibt ${H.kValue} Punkte, jeder Meter mehr ${fmt1(H.meterValue)}.`];
+    if (ctxMode === "comp" && comp) {
+      const opp = comp.ko && comp.round === 1 ? comp.duelOf("me") : null, or = opp && comp.res[opp] && comp.res[opp].r1;
+      if (opp && or && !or.dsq) return [`K.-O.-DUELL GEGEN ${comp.byId[opp].name.toUpperCase()}`, `Über ${fmt1(or.total)} Punkte`, `Das sind etwa ${fmt1(ptsToDist(or.total))} m bei guten Haltungsnoten.`];
+      if (opp) return [`K.-O.-DUELL GEGEN ${comp.byId[opp].name.toUpperCase()}`, "Du legst vor", `${comp.byId[opp].name} springt nach dir, mehr Punkte kommen weiter.`];
+      const st = comp.standings(false).filter((x) => x.id !== "me" && !x.dsq);
+      if (!st.length) return [comp.round === 1 ? "1. DURCHGANG" : "FINALE"].concat(open);
+      return lead(st[0].name, st[0].total - (comp.round === 2 && comp.res.me.r1 ? comp.res.me.r1.total : 0));
+    }
+    if (ctxMode === "hot" && hot) {
+      const cur = hot.current(), others = hot.standings().filter((x) => x.id !== cur.id && x.r[hot.round - 1]);
+      if (!others.length) return [`DURCHGANG ${hot.round}`, `${cur.name} eröffnet`, open[1]];
+      return lead(others[0].name, others[0].total - hot.res[cur.id].total);
+    }
+    if (ctxMode === "chal" && chal) {
+      if (chal.grp && chal.board[0] && chal.board[0].me) return ["DEIN BESTER IN DER GRUPPE", `${fmt1(chal.p)} Punkte`, `${fmt1(chal.d)} m. Gleicher Wind wie damals, schaffst du mehr?`];
+      return [chal.grp ? `${chal.n} FÜHRT DIE GRUPPE` : `${chal.n} FORDERT DICH HERAUS`, `Über ${fmt1(chal.p)} Punkte`, `${chal.n} sprang ${fmt1(chal.d)} m. Gleicher Wind: Mit guten Haltungsnoten reicht etwas mehr.`];
+    }
+    if (ctxMode === "training") {
+      if (jc.beginner) return ["ANFÄNGERMODUS", "Das Spiel hält an, wenn du tippen musst", "Die gelbe Linie zeigt den perfekten Flug."];
+      const b = S.bests[H.key];
+      if (b) return ["DEINE BESTWEITE", `${fmt1(b.d)} m`, `${fmt1(b.pts)} Punkte von Luke ${b.gate}. K-Punkt ${H.K} m, HS ${H.HS} m.`];
+      return ["TRAINING", `K-Punkt ${H.K} m`, `Dort gibt es ${H.kValue} Punkte, jeder Meter mehr ${fmt1(H.meterValue)}. HS ${H.HS} m.`];
+    }
+    return null;
+  }
   function fillGoalBox() {
+    jc.goal = ctxMode === "mission" || ctxMode === "daily";
+    if (!jc.goal) {
+      const g = startGoal();
+      jc.goal = !!g;
+      if (g) { txt(el.goalKicker, g[0]); txt(el.goalTitle, g[1]); txt(el.goalText, g[2]); txt(el.goalStars, ""); }
+      return;
+    }
     if (ctxMode === "mission") {
       const m = ms.m;
       txt(el.goalKicker, `MISSION ${missionIndex(m)}${missionJumps(m) > 1 ? ` · SPRUNG ${ms.res.length + 1}/${missionJumps(m)}` : ""}`);
@@ -8776,12 +8937,12 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   function openSetup(kind) {
     setupKind = kind;
     mode = "setup"; showScreen("setup");
-    txt($("suKicker"), kind === "comp" ? "WETTKAMPF" : kind === "champ" ? "MEISTERSCHAFT" : "PARTYMODUS");
-    txt($("suTitle"), kind === "comp" ? "Einzelwettkampf" : kind === "champ" ? "Mehrere Stationen, eine Wertung" : "Mehrere Spieler, ein Handy");
+    txt($("suKicker"), kind === "comp" ? "WETTKAMPF" : kind === "champ" ? "MEHRERE STATIONEN, EINE WERTUNG" : "PARTYMODUS");
+    txt($("suTitle"), kind === "comp" ? "Einzelwettkampf" : kind === "champ" ? "Meisterschaft" : "Mehrere Spieler, ein Handy");
     vis($("suComp"), kind === "comp"); vis($("suHot"), kind === "hot"); vis($("suChamp"), kind === "champ");
     vis($("suHill"), kind === "comp" || (kind === "hot" && S.hot.fmt !== "tour"));
     fillSetupHill();
-    segSet("segLevel", S.level); segSet("segCompWind", S.compWind);
+    segSet("segLevel", S.level); segSet("segCompWind", S.compWind); setupHint("suCompHint", S.level, S.compWind);
     segSet("segRounds", S.hot.rounds); segSet("segHotWind", S.hot.wind);
     if (kind === "hot") {
       if (S.name && S.hot.names[0] === "SPIELER 1") S.hot.names[0] = S.name.toUpperCase().slice(0, 12);   // Spieler 1 ist meist der Besitzer des Handys
@@ -9008,15 +9169,56 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     vis($("btnFnAgain"), !inCh); vis($("btnFnChamp"), inCh);
     if (inCh) txt($("btnFnChamp").querySelector("span"), (party || champ).done ? "Endstand" : "Gesamtwertung");
   }
+  // Teamfarben der KI-Springer nach Nation (Anzug, Helm, Streifen), damit auf dem Podest echte Springer stehen
+  const NAT_LOOK = {
+    AUT: ["#C8102E", "#FFFFFF", "#FFFFFF"], GER: ["#1E242C", "#FFCE00", "#DD0000"], SUI: ["#D52B1E", "#FFFFFF", "#FFFFFF"], NOR: ["#BA0C2F", "#FFFFFF", "#00205B"],
+    SLO: ["#0B4EA2", "#FFFFFF", "#DD0000"], POL: ["#DC143C", "#FFFFFF", "#FFFFFF"], JPN: ["#F2F6FB", "#BC002D", "#BC002D"], FIN: ["#003580", "#FFFFFF", "#FFFFFF"],
+    ITA: ["#1E6FD9", "#FFFFFF", "#009246"], CZE: ["#11457E", "#FFFFFF", "#D7141A"], FRA: ["#0055A4", "#FFFFFF", "#EF4135"], USA: ["#3C3B6E", "#B22234", "#FFFFFF"],
+  };
+  function natLook(code) {
+    const c = NAT_LOOK[code] || ["#5A6B85", "#F2F6FB", "#EEF2F7"];
+    return lookFor({ suit: c[0], helmet: c[1], accent: c[2], pattern: "split", visor: "#20262F", ski: "#E4EAF2" });
+  }
+  // Podest: die drei Springer stehen auf ihren Stufen und feiern (Sieger mit beiden Armen oben), alle wippen leicht
+  let podFigs = [];
   function podium(top, el) {
-    const order = [1, 0, 2];
-    (el || $("fnPodium")).innerHTML = order.map((i) => {
+    const order = [1, 0, 2], box = el || $("fnPodium");
+    box.innerHTML = order.map((i) => {
       const x = top[i];
       if (!x) return "<div></div>";
       const mark = x.color ? `<span class="pd-sw" style="background:${x.color}"></span>` : `<span class="flag">${flag(x.nation)}</span>`;
       const r = Math.min(3, x.rank || i + 1);
-      return `<div class="pd pd-${r}${x.me ? " me" : ""}">${mark}<span class="pd-name">${esc(x.name)}</span><span class="pd-pts">${fmt1(x.total)}</span><div class="pd-block">${x.rank || i + 1}</div></div>`;
+      return `<div class="pd pd-${r}${x.me ? " me" : ""}"><span class="pd-name">${mark}<span class="pd-nm">${esc(x.name)}</span></span><canvas class="pd-fig" data-i="${i}" aria-hidden="true"></canvas><div class="pd-block"><b>${x.rank || i + 1}</b><span class="pd-pts">${fmt1(x.total)}</span></div></div>`;
     }).join("");
+    podFigs = Array.from(box.querySelectorAll(".pd-fig")).map((cv) => {
+      const i = +cv.dataset.i, x = top[i];
+      const look = x.me ? lookFor(S.look) : x.color ? lookFor({ suit: x.color, helmet: x.color, accent: "#EEF2F7", visor: "#20262F" }) : natLook(x.nation);
+      return { cv, look, rank: Math.min(3, x.rank || i + 1), ph: i * 1.7 };
+    });
+  }
+  function drawPodium(t) {
+    const figs = podFigs.filter((f) => f.cv.isConnected && f.cv.clientWidth > 0 && f.cv.clientHeight > 20);
+    if (!figs.length) return;
+    const dpr = Math.min(2.5, (window.devicePixelRatio || 1) * uiS);
+    // gleiche Größe für alle drei: nach der niedrigsten Fläche
+    const hMin = Math.min(...figs.map((f) => f.cv.clientHeight)), sc = clamp((hMin - 4) / 54, 0.5, 2.4);
+    for (const f of figs) {
+      const cw = f.cv.clientWidth, ch = f.cv.clientHeight, bw = Math.round(cw * dpr), bh = Math.round(ch * dpr);
+      if (f.cv.width !== bw || f.cv.height !== bh) { f.cv.width = bw; f.cv.height = bh; }
+      const c = f.cv.getContext("2d");
+      c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, cw, ch);
+      // Sieger: beide Arme hoch und Fäuste; Zweiter: Faust und Winken; Dritter: Hand heben (in Schleife)
+      const mood = f.rank === 1 ? "great" : f.rank === 2 ? "good" : "ok";
+      const span = f.rank === 1 ? [1.3, 3.7] : f.rank === 2 ? [1.3, 4.1] : [1.9, 3.9];
+      const tl = span[0] + ((t * 0.9 + f.ph) % (span[1] - span[0]));
+      const pose = RM.gest.outrun("telemark", tl, mood);
+      // auf dem Podest ohne lange Ski: nur die Schuhe
+      pose.sf = [[pose.ab[0] - 5, -1.2], [pose.ab[0] + 9, -1.2]]; pose.sn = [[pose.af[0] - 5, -1.8], [pose.af[0] + 9, -1.8]];
+      const bob = Math.sin(t * 3.1 + f.ph) * 1.6 * sc + (f.rank === 1 ? Math.max(0, Math.sin(t * 6.2 + f.ph)) * -1.2 * sc : 0);
+      c.save(); c.translate(cw / 2 - 2 * sc, ch - 1 + bob); c.scale(sc, sc);
+      RM.drawFigure(c, pose, f.look);
+      c.restore();
+    }
   }
 
   // ------------------------------------------------------------------ Hot-Seat
@@ -9058,6 +9260,17 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   // ------------------------------------------------------------------ Meisterschaft und Party-Tournee
   // Ablauf je Station wie im Einzelwettkampf (Tafel, Sprung, Endstand); dazwischen die Übersicht mit Kalender und Gesamtwertung.
   // Gespeichert wird nach jedem eigenen Sprung, nach jedem Durchgang und beim Verlassen; KI-Sprünge sind reproduzierbar.
+  // Was die Stufen und der Wind bedeuten (die Stufe ändert nur das KI-Feld, nicht die eigene Physik oder Wertung)
+  const LEVEL_HINT = {
+    easy: "Die Gegner machen viele Fehler, mit sauberen Sprüngen gewinnst du.",
+    mid: "Die Besten springen sauber, zum Sieg braucht es einen guten Absprung.",
+    pro: "Weltklasse-Feld, gewinnen nur mit fast perfekten Sprüngen.",
+  };
+  const WIND_HINT = { var: ["Wechselnd", "leichter Wind, der sich langsam ändert."], strong: ["Böig", "stärkerer Wind mit plötzlichen Böen und Seitenwind."] };
+  function setupHint(id, level, wind) {
+    const w = WIND_HINT[wind] || WIND_HINT.var, L = CP.LEVELS[level] || CP.LEVELS.mid;
+    $(id).innerHTML = `<b>${L.label}:</b> ${LEVEL_HINT[level] || LEVEL_HINT.mid} Es ändern sich nur die Gegner. <b>${w[0]}:</b> ${w[1]} Windpunkte gleichen ihn aus.`;
+  }
   const CH_TXT = {
     tour: "Alle Punkte zählen. Im 1. Durchgang springst du im K.-o.-Duell: Wer gewinnt, ist im Finale, dazu die fünf besten Verlierer.",
     season4: "Punkte nach Platz: 100 für den Sieg, dann 80, 60, 50, 45 … bis 1 Punkt für Platz 30.",
@@ -9076,12 +9289,14 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   function fillChampSetup() {
     if (S.chFmt === "flight" && !flyUnlocked()) S.chFmt = "tour";
     segSet("segChFmt", S.chFmt); segSet("segChLevel", S.chLevel); segSet("segChWind", S.chWind);
-    $("segChFmt").querySelector('button[data-v="flight"]').disabled = !flyUnlocked();
+    const fb = $("segChFmt").querySelector('button[data-v="flight"]');
+    fb.classList.toggle("locked", !flyUnlocked()); fb.setAttribute("aria-disabled", String(!flyUnlocked()));
+    setupHint("suChHint", S.chLevel, S.chWind);
     const hs = CP.FORMATS[S.chFmt].hills.filter((k) => flyUnlocked() || k !== "planica");
     let note = S.chFmt === "flight" ? "Planica HS240, Tag 1 und Tag 2. " : `${hs.length} Stationen: ${hs.map(hillShort).join(" · ")}. `;
-    note += CH_TXT[S.chFmt] + " Je Station zwei Durchgänge, der Führende springt im gelben Trikot. Gespeichert wird nach jedem Sprung.";
+    note += CH_TXT[S.chFmt] + " Je Station zwei Durchgänge, der Führende springt in Gelb. Gespeichert wird nach jedem Sprung.";
     if (S.chFmt === "season" && !flyUnlocked()) note += " Ohne freigeschaltete Flugschanze endet die Saison am Holmenkollen.";
-    if (!flyUnlocked()) note += ` Skiflug-Woche ab ${FLY_STARS} Sternen in Arcade.`;
+    if (!flyUnlocked()) note += ` Skiflug ab ${FLY_STARS} Sternen in Arcade (du hast ${starTotal()}).`;
     txt($("suChNote"), note);
   }
   function startChamp() {
@@ -9424,6 +9639,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     $("tgAssist").setAttribute("aria-checked", String(S.assist && !S.expert));
     $("tgAssist").disabled = !!S.expert;
     $("tgExpert").setAttribute("aria-checked", String(!!S.expert));
+    $("tgBeginner").setAttribute("aria-checked", String(!!S.beginner));
     $("tgSound").setAttribute("aria-checked", String(S.sound));
     $("tgVibe").setAttribute("aria-checked", String(S.vibe));
     $("tgMusic").setAttribute("aria-checked", String(S.music !== false));
@@ -9490,14 +9706,17 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   on("hotMinus", () => { readHotNames(); S.hot.n = clamp(S.hot.n - 1, 2, 8); save(); fillHotNames(); });
   on("hotPlus", () => { readHotNames(); S.hot.n = clamp(S.hot.n + 1, 2, 8); save(); fillHotNames(); });
   const seg = (id, f) => $(id).addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; f(b.dataset.v); });
-  seg("segLevel", (v) => { S.level = v; save(); segSet("segLevel", v); });
-  seg("segCompWind", (v) => { S.compWind = v; save(); segSet("segCompWind", v); });
+  seg("segLevel", (v) => { S.level = v; save(); segSet("segLevel", v); setupHint("suCompHint", S.level, S.compWind); });
+  seg("segCompWind", (v) => { S.compWind = v; save(); segSet("segCompWind", v); setupHint("suCompHint", S.level, S.compWind); });
   seg("segRounds", (v) => { S.hot.rounds = +v; save(); segSet("segRounds", v); });
   seg("segHotWind", (v) => { S.hot.wind = v; save(); segSet("segHotWind", v); });
   seg("segHotFmt", (v) => { S.hot.fmt = v; save(); fillHotFmt(); });
-  seg("segChFmt", (v) => { if (v === "flight" && !flyUnlocked()) return; S.chFmt = v; save(); fillChampSetup(); });
-  seg("segChLevel", (v) => { S.chLevel = v; save(); segSet("segChLevel", v); });
-  seg("segChWind", (v) => { S.chWind = v; save(); segSet("segChWind", v); });
+  seg("segChFmt", (v) => {
+    if (v === "flight" && !flyUnlocked()) { showToastSafeText("SKIFLUG NOCH GESPERRT", `Ab ${FLY_STARS} Sternen in Arcade, du hast ${starTotal()}`); return; }
+    S.chFmt = v; save(); fillChampSetup();
+  });
+  seg("segChLevel", (v) => { S.chLevel = v; save(); segSet("segChLevel", v); setupHint("suChHint", S.chLevel, S.chWind); });
+  seg("segChWind", (v) => { S.chWind = v; save(); segSet("segChWind", v); setupHint("suChHint", S.chLevel, S.chWind); });
   seg("segCpTab", (v) => { cpTab = v; renderChampHub(); });
   on("btnBdSkip", () => { if (bd) bd.fast = true; });
   on("btnBdGo", () => boardGo());
@@ -9667,7 +9886,8 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   // Tempo im Training (alte Spielstände: „Zeitlupe an“ = 50 %)
   seg("segSpeed", (v) => { S.speed = +v; S.slow = +v < 1; save(); segSet("segSpeed", v); if (jc && !jc.practice && ctxMode === "training") jc.slow = trainSpeed(); });
   toggle("tgAssist", "assist");
-  toggle("tgExpert", "expert", () => { if (S.expert) softNotice("Experte: Daumen in der Anfahrt halten (Hocke), an der Kante loslassen. Keine Hilfen."); });
+  toggle("tgExpert", "expert", () => { if (S.expert) { S.beginner = false; save(); fillSettings(); softNotice("Experte: Daumen in der Anfahrt halten (Hocke), an der Kante loslassen. Keine Hilfen."); } });
+  toggle("tgBeginner", "beginner", () => { if (S.beginner) { S.expert = false; save(); fillSettings(); softNotice("Anfänger: Im Training hält das Spiel im perfekten Moment an, dann tippen."); } });
   toggle("tgSound", "sound", () => { if (!S.sound) Snd.off(); else { Snd.unlock(); Snd.set("crowd", 0.07, null, 0.4); Snd.beep(880, 0.12); } });
   toggle("tgVibe", "vibe", () => vib(20));
   on("tgMusic", () => { S.music = S.music === false; save(); fillSettings(); if (!S.music) Snd.stadiumOff(); });
@@ -9691,6 +9911,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
   stage.addEventListener("pointerdown", (e) => {
     if (interactive(e.target)) return;
     if (overlay) return;
+    if (mode === "jump" && J && J.phase === "gate" && (nearGateBox(e) || performance.now() - gateTapT < 450)) return;
     if (mode !== "jump" && mode !== "replay") return;
     e.preventDefault();
     const p = toStage(e);
@@ -9842,9 +10063,11 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
     const focus = st ? { x: st.x, landed: (st.phase === "outrun" || st.phase === "done") && st.kind !== "fall" } : null;
     // Menüs und Tafeln: Hintergrund mit 30 Bildern je Sekunde zeichnen (halbe Arbeit, spart Akku); Sprung und Wiederholung immer flüssig
     menuAcc += dtReal;
+    if (mode === "final" || mode === "champ") drawPodium(tAnim);
     if (mode !== "jump" && mode !== "replay" && menuAcc < 1 / 31) { if (overlay === "jumper") drawJumperPreview(tAnim); return; }
     menuAcc = 0;
     renderer.draw({ hill: H, cam, t: tAnim, jumper: jv, ghost, gate: J && J.phase === "gate" ? J.gate : null, best,
+      ideal: mode === "jump" && jc && jc.ideal && J && J.phase !== "gate" ? jc.ideal : null,
       particles, flags: true, windNow: wNow, snow, focus, screen: screenText(st),
       speedLines: st && st.phase === "inrun" ? { a: clamp((st.v - 3) / 20, 0, 1) * 0.85, ang: st.ang } : null,
       dim });
