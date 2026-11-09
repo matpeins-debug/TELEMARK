@@ -70,7 +70,12 @@ body { font-family: var(--font-body); -webkit-font-smoothing: antialiased; -webk
 #stage { position: absolute; left: 0; top: 0; overflow: hidden; transform-origin: 0 0; touch-action: none;
   user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
 /* Druckkorn des Plakats über der Leinwand (Kreide- und Spritzpunkte, 22 %), unter dem HUD; vom Renderer gesetzt */
-#printLayer { position: absolute; inset: 0; pointer-events: none; background-repeat: repeat; opacity: 0.22; }
+#printLayer { position: absolute; inset: 0; pointer-events: none; background-repeat: repeat; opacity: 0.22; transform: translateZ(0); }
+/* Kulisse (Himmel, Berge, Ort, nahe Ebene) als eigene Ebenen hinter der Leinwand; der Renderer setzt Größe und Lage */
+#bgLayers { position: absolute; left: 0; top: 0; overflow: hidden; pointer-events: none; contain: strict; }
+/* Leistungsanzeige (Einstellungen: Bildrate anzeigen) */
+.fps-meter { position: absolute; right: 6px; bottom: 4px; z-index: 50; pointer-events: none; font: 600 11px/14px ui-monospace, Menlo, monospace;
+  color: #F5EDDA; background: rgba(14, 20, 28, 0.62); padding: 2px 6px; border-radius: 3px; white-space: pre; }
 #scene { position: absolute; left: 0; top: 0; display: block; }
 #ui { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
 [hidden] { display: none !important; }
@@ -204,6 +209,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   border-radius: 17px; background: var(--hi); color: var(--hi-ink); font-family: var(--font-display); font-weight: 700; font-size: 17px; letter-spacing: 0.04em; white-space: nowrap; }
 .hint-wrap { position: absolute; left: 0; right: 0; bottom: 18px; display: flex; justify-content: center; }
 .hint-wrap.right { justify-content: flex-end; padding-right: 24px; }
+.hint-wrap.left { justify-content: flex-start; padding-left: 24px; }
 .hint { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px 0 12px; border-radius: 20px; font-size: 14px; font-weight: 600; white-space: nowrap; }
 .hint .ico { color: var(--hi); }
 .hint-sub { color: var(--muted); font-weight: 500; }
@@ -880,6 +886,11 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 /* Anfänger: goldener Kreis im Daumenfeld = wohin der Daumen gerade muss */
 .pad-goal { position: absolute; left: 0; top: 0; width: 34px; height: 34px; border-radius: 50%; border: 2px dashed rgba(240, 195, 94, 0.95); background: rgba(240, 195, 94, 0.12); box-shadow: 0 0 10px rgba(240, 195, 94, 0.35); }
 .pad-goal.in { border-style: solid; background: rgba(240, 195, 94, 0.32); }
+/* Anfänger, Halt im Flug: der gelbe Kreis ruft (Welle nach außen), das Feld ist voll sichtbar */
+.pad.call { opacity: 1; }
+.pad.call .pad-goal::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid rgba(240, 195, 94, 0.9); animation: goalCall 1.1s ease-out infinite; }
+.pad.call .pad-goal.in::after { animation: none; opacity: 0; }
+@keyframes goalCall { from { transform: scale(0.8); opacity: 1; } to { transform: scale(2.1); opacity: 0; } }
 /* Sprunganalyse im Training */
 .rs-anabox { display: flex; flex-direction: column; gap: 3px; flex: 1 1 0; min-height: 0; overflow-y: auto; touch-action: pan-y; overscroll-behavior: contain; }
 .an-head { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 15px; line-height: 18px; flex: none; }
@@ -1417,12 +1428,13 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         <div class="set-row"><span class="lbl">Tempo (Training)</span><div id="segSpeed" class="seg" role="radiogroup" aria-label="Tempo im Training"><button type="button" data-v="1">Normal</button><button type="button" data-v="0.75">75 %</button><button type="button" data-v="0.5">50 %</button></div></div>
         <div class="set-row"><span class="lbl">Hilfen anzeigen</span><button type="button" id="tgAssist" class="toggle" role="switch" aria-checked="true"><i></i></button></div>
         <div class="set-row"><span class="lbl">Anfängermodus</span><button type="button" id="tgBeginner" class="toggle" role="switch" aria-checked="false" aria-describedby="beginnerNote"><i></i></button></div>
-        <p id="beginnerNote" class="set-note">Im Training hält das Spiel vor dem Absprung an: drücken und halten. Im Flug lenkst du mit dem Finger, ein goldener Kreis zeigt wohin. Vor der Landung hält es wieder an: loslassen. Zählt nicht für Bestweiten und Duelle.</p>
+        <p id="beginnerNote" class="set-note">Im Training hält das Spiel vor dem Absprung an: drücken und halten. Gleich nach dem Abheben hält es noch einmal: den Punkt mit dem Finger in den gelben Kreis schieben und dort bleiben. Vor der Landung hält es wieder an: loslassen. Zählt nicht für Bestweiten und Duelle.</p>
         <div class="set-row"><span class="lbl">Expertenmodus</span><button type="button" id="tgExpert" class="toggle" role="switch" aria-checked="false" aria-describedby="expertNote"><i></i></button></div>
         <p id="expertNote" class="set-note">Anfahrtshocke selbst halten, an der Kante loslassen. Keine Hilfen im Sprung.</p>
         <div class="set-row"><span class="lbl">Fluglage-Kasten</span><div id="segGauge" class="seg" role="radiogroup" aria-label="Fluglage-Kasten zusätzlich zum Springer"><button type="button" data-v="off">Aus</button><button type="button" data-v="left">Links</button><button type="button" data-v="right">Rechts</button></div></div>
         <div class="set-row"><span class="lbl">Empfindlichkeit</span><div id="segSens" class="seg" role="radiogroup" aria-label="Empfindlichkeit des Daumenfelds"><button type="button" data-v="0.75">Ruhig</button><button type="button" data-v="1">Mittel</button><button type="button" data-v="1.35">Direkt</button></div></div>
         <div class="set-row set-pair"><div class="pair"><span class="lbl">Ton</span><button type="button" id="tgSound" class="toggle" role="switch" aria-checked="true"><i></i></button></div><div class="pair"><span class="lbl">Musik</span><button type="button" id="tgMusic" class="toggle" role="switch" aria-checked="true"><i></i></button></div><div id="rowVibe" class="pair"><span class="lbl">Vibration</span><button type="button" id="tgVibe" class="toggle" role="switch" aria-checked="true"><i></i></button></div></div>
+        <div class="set-row"><span class="lbl">Bildrate anzeigen</span><button type="button" id="tgFps" class="toggle" role="switch" aria-checked="false"><i></i></button></div>
       </div>
     </div>
   </div>
@@ -4881,41 +4893,84 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       const yb = q.dy + q.dh;
       if (yb < Hs && L.ground) { ctx.fillStyle = L.ground; ctx.fillRect(0, yb - 1, W, Hs - yb + 2); }
       pos.push({ ox: q.ox, oy: q.oy });
-      if (i === 0) drawReflection(ctx, P, pos, W, k, t);
-      // lebende Lichter dieser Ebene
-      const live = P.live;
-      for (const b of live.blink) {
-        if (b.layer !== i) continue;
-        const on = Math.sin(t * 2.4 + b.ph) > 0.2;
-        const x = pos[i].ox + b.c * k, y = pos[i].oy + b.v * k;
-        ctx.fillStyle = on ? "rgba(255,70,70,0.95)" : "rgba(120,30,30,0.6)";
-        ctx.beginPath(); ctx.arc(x, y, Math.max(1, 1.3 * k), 0, TAU); ctx.fill();
-        if (on) { ctx.fillStyle = "rgba(255,70,70,0.15)"; ctx.beginPath(); ctx.arc(x, y, 4 * k, 0, TAU); ctx.fill(); }
+    }
+    drawLive(ctx, P, pos, W, k, t);
+    return pos;
+  }
+  // Lebende Lichter der Ebenen: Spiegelung, Blinklichter, Gondeln, Fähre (auf der Leinwand, an der Lage ihrer Ebene)
+  function drawLive(ctx, P, pos, W, k, t) {
+    drawReflection(ctx, P, pos, W, k, t);
+    const live = P.live;
+    for (const b of live.blink) {
+      const q = pos[b.layer]; if (!q) continue;
+      const on = Math.sin(t * 2.4 + b.ph) > 0.2;
+      const x = q.ox + b.c * k, y = q.oy + b.v * k;
+      ctx.fillStyle = on ? "rgba(255,70,70,0.95)" : "rgba(120,30,30,0.6)";
+      ctx.beginPath(); ctx.arc(x, y, Math.max(1, 1.3 * k), 0, TAU); ctx.fill();
+      if (on) { ctx.fillStyle = "rgba(255,70,70,0.15)"; ctx.beginPath(); ctx.arc(x, y, 4 * k, 0, TAU); ctx.fill(); }
+    }
+    if (live.cable || live.cables.length) {
+      // Gondeln pendeln zwischen Tal- und Bergstation
+      for (const cb of live.cable ? [live.cable, ...live.cables] : live.cables) {
+        const { A, B } = cb, u = (Math.sin(t * (cb.sp || 0.07) + (cb.ph || 0)) * 0.5 + 0.5);
+        const x = pos[0].ox + (A[0] + (B[0] - A[0]) * u) * k, y = pos[0].oy + (A[1] + (B[1] - A[1]) * u) * k;
+        ctx.fillStyle = TH.night ? "rgba(255,226,160,0.95)" : "#C8463A"; ctx.fillRect(x - 1.4 * k, y, 2.8 * k, 1.8 * k);
       }
-      if (i === 0 && (live.cable || live.cables.length)) {
-        // Gondeln pendeln zwischen Tal- und Bergstation
-        for (const cb of live.cable ? [live.cable, ...live.cables] : live.cables) {
-          const { A, B } = cb, u = (Math.sin(t * (cb.sp || 0.07) + (cb.ph || 0)) * 0.5 + 0.5);
-          const x = pos[0].ox + (A[0] + (B[0] - A[0]) * u) * k, y = pos[0].oy + (A[1] + (B[1] - A[1]) * u) * k;
-          ctx.fillStyle = TH.night ? "rgba(255,226,160,0.95)" : "#C8463A"; ctx.fillRect(x - 1.4 * k, y, 2.8 * k, 1.8 * k);
-        }
-      }
-      if (i === 0 && live.ferry) {
-        const f = live.ferry, span = f.c1 - f.c0, u = ((t * 2.2) % (span + 200)) - 100;
-        const x = pos[0].ox + (f.c0 + u) * k, y = pos[0].oy + f.v * k;
-        ctx.fillStyle = TH.night ? "#0E1A2C" : "#E8ECF1"; ctx.fillRect(x - 9 * k, y - 2 * k, 18 * k, 2.6 * k);
-        ctx.fillStyle = TH.night ? "rgba(255,226,160,0.9)" : TH.glass; for (let j = 0; j < 6; j++) ctx.fillRect(x - 7 * k + j * 2.6 * k, y - 1.5 * k, 1.1 * k, 0.9 * k);
-        if (TH.night) {
-          const g = ctx.createLinearGradient(0, y + 0.8 * k, 0, y + 9 * k); g.addColorStop(0, "rgba(255,210,122,0.22)"); g.addColorStop(1, "rgba(255,210,122,0)");
-          ctx.fillStyle = g; ctx.fillRect(x - 7 * k, y + 0.8 * k, 15 * k, 8 * k);
-        } else { ctx.fillStyle = TH.struct; ctx.fillRect(x - 9.5 * k, y + 0.6 * k, 19 * k, 0.9 * k); }
-      }
+    }
+    if (live.ferry) {
+      const f = live.ferry, span = f.c1 - f.c0, u = ((t * 2.2) % (span + 200)) - 100;
+      const x = pos[0].ox + (f.c0 + u) * k, y = pos[0].oy + f.v * k;
+      ctx.fillStyle = TH.night ? "#0E1A2C" : "#E8ECF1"; ctx.fillRect(x - 9 * k, y - 2 * k, 18 * k, 2.6 * k);
+      ctx.fillStyle = TH.night ? "rgba(255,226,160,0.9)" : TH.glass; for (let j = 0; j < 6; j++) ctx.fillRect(x - 7 * k + j * 2.6 * k, y - 1.5 * k, 1.1 * k, 0.9 * k);
+      if (TH.night) {
+        const g = ctx.createLinearGradient(0, y + 0.8 * k, 0, y + 9 * k); g.addColorStop(0, "rgba(255,210,122,0.22)"); g.addColorStop(1, "rgba(255,210,122,0)");
+        ctx.fillStyle = g; ctx.fillRect(x - 7 * k, y + 0.8 * k, 15 * k, 8 * k);
+      } else { ctx.fillStyle = TH.struct; ctx.fillRect(x - 9.5 * k, y + 0.6 * k, 19 * k, 0.9 * k); }
+    }
+  }
+
+  // ------------------------------------------------------------------ Kulisse als Ebenen im Browser
+  // Himmel und Panorama-Ebenen sind fertige Bilder. Statt sie in jedem Bild auf die Leinwand zu kopieren, liegen sie als eigene
+  // Elemente hinter der (durchsichtigen) Leinwand und werden nur verschoben: das erledigt die Grafikkarte, die Leinwand zeichnet
+  // nur noch Schanze, Springer und Vordergrund. Die lebenden Lichter zeichnet weiter die Leinwand (drawLive).
+  const bgPos = (e, x, y) => { const v = `translate3d(${x}px,${y}px,0)`; if (e._t !== v) { e._t = v; e.style.transform = v; } };
+  const bgShow = (e, on) => { if (e._on !== on) { e._on = on; e.style.visibility = on ? "" : "hidden"; } };
+  const bgAlpha = (e, a) => { const v = a >= 0.995 ? "" : a.toFixed(3); if (e._a !== v) { e._a = v; e.style.opacity = v; } };
+  function mountPanorama(root, P, k) {
+    root.textContent = "";
+    const add = (e, css) => { e.style.cssText = "position:absolute;left:0;top:0;pointer-events:none;transform-origin:0 0;" + css; e._t = e._on = e._a = undefined; root.appendChild(e); return e; };
+    const fill = (bg, move) => add(document.createElement("div"), `width:100%;height:100%;background:${bg};${move ? "will-change:transform;" : ""}`);
+    const M = { P, layers: [] }, S = P.sky, sc = P.res / k;
+    if (S) {
+      M.skyTop = fill(S.top, false);
+      M.sky = add(S.cv, `width:${S.cv.width / S.res}px;height:${S.cv.height / S.res}px;will-change:transform;`);
+      M.skyBot = fill(S.bot, true);
+    }
+    for (const L of P.layers) {
+      const c = add(L.cv, `width:${L.cv.width / sc}px;height:${L.cv.height / sc}px;will-change:transform;`);
+      M.layers.push({ c, g: L.ground ? fill(L.ground, true) : null });
+    }
+    return M;
+  }
+  function placePanorama(M, P, cam, hor, vs, k, W, Hs, anc) {
+    const S = P.sky, pos = [];
+    if (S && M.sky) {
+      const dpr = P.dpr || 1, h = S.cv.height / S.res;
+      const y0 = Math.round((hor + (S.ya - PK.HOR) * S.s) * dpr) / dpr;
+      bgPos(M.sky, 0, y0); bgPos(M.skyBot, 0, y0 + h - 1);
+    }
+    for (let i = 0; i < P.layers.length; i++) {
+      const L = P.layers[i], m = M.layers[i];
+      const vOff = i === 0 ? 0 : i === 1 ? vs * 0.12 : vs * 0.3;
+      const q = layerPos(P, L, cam, hor, vOff, k, W, anc), na = i === 2 ? nearAlpha(cam, k) : 1, on = na > 0.01 && !q.off;
+      bgShow(m.c, on);
+      if (on) { bgPos(m.c, q.dx, q.dy); bgAlpha(m.c, na); }
+      if (m.g) { const yb = q.dy + q.dh; bgShow(m.g, yb < Hs); bgPos(m.g, 0, yb - 1); }
+      pos.push({ ox: q.ox, oy: q.oy });
     }
     return pos;
   }
 
-  // Himmel in fünf Stufen mit Spritzkanten (eine Fläche je Bildgröße, am Horizont angeheftet; abends mit flachem Mond).
-  // Darüber und darunter die Randfarben. Sonne, Sterne und Flugzeug gibt es auf dem Plakat nicht.
   function drawSky(ctx, P, hor, vs, k, W, Hs, t) {
     const S = P.sky;
     if (!S) return;
@@ -4938,7 +4993,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     }
   }
 
-  root.TMScene = { buildWorld, drawWorld, buildPanorama, drawPanorama, drawFront, drawSky, drawReflection, drawFlag, FLAGS, setTheme, themeName, D, THEMES, wtFill, wtWidth };
+  root.TMScene = { buildWorld, drawWorld, buildPanorama, drawPanorama, drawFront, drawSky, drawReflection, drawLive, mountPanorama, placePanorama, drawFlag, FLAGS, setTheme, themeName, D, THEMES, wtFill, wtWidth };
 })(typeof window !== "undefined" ? window : globalThis);
 
 /* TELEMARK – Canvas-Grafik: Flutlicht-Nacht im flachen Vektorstil, Welt in Metern, Kamera in px/m. */
@@ -5358,6 +5413,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       this.G = null;
       this.bgCache = null;
       this.gKey = null; this.gSame = 0; this.gCache = null;
+      this.bgRoot = null; this.bgM = null;   // Kulisse als Ebenen im Browser (hinter der Leinwand)
+      this.lite = false;                      // leichtere Fassung bei kleiner Bildschärfe (ohne zweites Korn, gröbere Spritzkanten)
     }
 
     resize(w, h, dpr) {
@@ -5365,6 +5422,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       this.cv.width = Math.round(w * dpr); this.cv.height = Math.round(h * dpr);
       this.cv.style.width = w + "px"; this.cv.style.height = h + "px";
       this.bgCache = null;
+      if (this.bgRoot) { this.bgRoot.style.width = w + "px"; this.bgRoot.style.height = h + "px"; }
     }
 
     setLook(l) { this.look = Object.assign({}, DEFAULT_LOOK, l || {}); }
@@ -5472,6 +5530,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       this.G = G;
       ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
       const cam = v.cam;
+      ctx.clearRect(0, 0, W, H);   // die Kulisse liegt hinter der Leinwand (oder wird gleich darübergemalt)
       const k = H / 390; // Grundmaßstab der Szene
       const S = (x, y) => [cam.ax + (x - cam.cx) * cam.ppm, cam.ay - (y - cam.cy) * cam.ppm];
       this.S = S;
@@ -5543,8 +5602,19 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       }
       this.pano.dpr = this.dpr;
       const t = v.t || 0;
-      Scene.drawSky(ctx, this.pano, hor, vs, k, W, H, t);
-      Scene.drawPanorama(ctx, this.pano, cam, hor, vs, k, W, H, t, G.anchor);
+      if (typeof document !== "undefined" && this.cv.isConnected) {
+        // Himmel und Ebenen als eigene Elemente hinter der Leinwand: nur noch verschieben, nicht mehr kopieren
+        if (!this.bgRoot) {
+          const r = this.bgRoot = document.createElement("div");
+          r.id = "bgLayers"; r.setAttribute("aria-hidden", "true"); r.style.width = W + "px"; r.style.height = H + "px";
+          this.cv.before(r);
+        }
+        if (!this.bgM || this.bgM.P !== this.pano) this.bgM = Scene.mountPanorama(this.bgRoot, this.pano, k);
+        Scene.drawLive(ctx, this.pano, Scene.placePanorama(this.bgM, this.pano, cam, hor, vs, k, W, H, G.anchor), W, k, t);
+      } else {
+        Scene.drawSky(ctx, this.pano, hor, vs, k, W, H, t);
+        Scene.drawPanorama(ctx, this.pano, cam, hor, vs, k, W, H, t, G.anchor);
+      }
     }
 
     path(pts, close) {
@@ -5757,7 +5827,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       const key = this.theme + "|" + this.H;   // wie das Korn: beim Herunterschalten bleiben die feineren Kanten
       if (!this.strips || this.strips.key !== key || this.dpr > this.strips.dpr + 0.01) this.strips = { key, dpr: this.dpr, t: [0, 1, 2].map((z) => PK.sprayStrip(P.hill[z], P.hill[z + 1], u, this.dpr, 512, 11 + z)) };
       const anchor = sx(0);
-      for (let z = 0; z < 3; z++) this.sprayAlong(B[z], this.strips.t[z], anchor, pts[0][0], 2);
+      for (let z = 0; z < 3; z++) this.sprayAlong(B[z], this.strips.t[z], anchor, pts[0][0], this.lite ? 3 : 2);
       ctx.save(); ctx.clip(body);
       // Muldenschatten: lange Linsen in Hangrichtung (nur am Aufsprunghang)
       if (!G.marks) G.marks = hillMarks(Hh);
@@ -5806,7 +5876,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       this.hangDetails(G, Hh, cam, k);
       ctx.restore();
       // Korn ein zweites Mal auf dem Hang (24 %): als Musterfüllung des Körpers, nicht über das ganze Bild
-      ctx.globalAlpha = 0.24; ctx.fillStyle = this.grainPat(); ctx.fill(body); ctx.globalAlpha = 1;
+      if (!this.lite) { ctx.globalAlpha = 0.24; ctx.fillStyle = this.grainPat(); ctx.fill(body); ctx.globalAlpha = 1; }
     }
 
     // Spritzstreifen entlang einer Grenzlinie b (Bildschirmpunkte, x steigend): je Abschnitt ein geschertes Stück der Kachel.
@@ -6068,10 +6138,17 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         }
       }
       // ---- Fahrbahn (Deck) als Band
+      // nur der sichtbare Teil der Spur (je ein Punkt jenseits der Bildränder): nah am Anlauf sonst tausende Punkte je Bild
       const surf = [], sIdx = [];
-      const step = Math.max(1, Math.floor(3 / Math.max(0.5, pp * ds)));
-      for (let i = I.length - 1; i >= 0; i -= step) { surf.push(I[i]); sIdx.push(i); }
-      if (surf[surf.length - 1] !== I[0]) { surf.push(I[0]); sIdx.push(0); }
+      const step = Math.max(1, Math.floor(6 / Math.max(0.5, pp * ds))), cx0 = xMin - 3, cx1 = xMax + 3;   // alle ~6 px ein Punkt
+      let prev = -1;
+      for (let i = I.length - 1; i >= 0; i -= step) {
+        if (I[i].x < cx0) { prev = i; continue; }
+        if (prev >= 0 && !surf.length) { surf.push(I[prev]); sIdx.push(prev); }
+        surf.push(I[i]); sIdx.push(i);
+        if (I[i].x > cx1) break;
+      }
+      if (surf.length && surf[surf.length - 1] !== I[0] && surf[surf.length - 1].x <= cx1) { surf.push(I[0]); sIdx.push(0); }
       const top = surf.map((p) => S(p.x, p.y));
       const bot = surf.map((p, j) => S(p.x, p.y - dth(sIdx[j]))).reverse();
       // ---- Geländer hinter der Spur
@@ -7677,7 +7754,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.29";
+  const VERSION = "0.30";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -7818,7 +7895,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     hot: { n: 2, names: ["SPIELER 1", "SPIELER 2", "SPIELER 3", "SPIELER 4", "SPIELER 5", "SPIELER 6", "SPIELER 7", "SPIELER 8"], rounds: 2, wind: "var", fmt: "one" },
     chFmt: "tour", chLevel: "mid", chWind: "var", champ: null, party: null, champBest: {},
     gaugeLeft: false, gaugeSide: "off", flv: 4, hand: "right", sens: 1, ghosts: {}, tops: {}, tod: "auto", missions: {}, daily: null, look: null, expert: false, beginner: false,
-    oc: null, osave: false, oat: "", groups: [], opend: [], noOnline: false, onlineAsked: false };
+    oc: null, osave: false, oat: "", groups: [], opend: [], noOnline: false, onlineAsked: false, qdpr: 0, fps: false };
   let S = JSON.parse(JSON.stringify(DEF));
   try {
     const raw = localStorage.getItem(KEY);
@@ -8019,19 +8096,39 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 
   // ------------------------------------------------------------------ Bühne & Skalierung
   let W = 844, Hs = 390, rotated = false, uiS = 1, origin = { x: 0, y: 0 };
-  // Bildrate halten: Fallen Bilder aus, rendert die Szene stufenweise mit weniger Pixeln (höchstens doppelte Dichte, mindestens einfache).
-  // Grundtakt = schnellste typische Bildfolge des Geräts (60 oder 120 Hz); langsam = Median deutlich darüber.
-  const Q = { max: Math.min(2, window.devicePixelRatio || 1), dpr: Math.min(2, window.devicePixelRatio || 1), win: [], slowT: 0, fastT: 0, upAfter: 6 };
+  // Bildrate halten. Schon wenige ausgefallene Bilder wirken als Stocken; darum zählt der Anteil der Bilder, die deutlich länger
+  // brauchen als der Grundtakt des Bildschirms (60 oder 120 Hz, im Stromsparmodus 30), nicht der Mittelwert. Fallen mehr als 6 %
+  // aus, rendert die Szene mit weniger Pixeln (2 → 1,75 → 1,5 → 1,25 → 1; ab 1,5 ohne zweites Korn auf dem Hang). Die Stufe wird
+  // gemerkt (nächster Start gleich richtig). Höher geht es nur in Ruhe (nicht im Sprung), nach einer Weile ganz ohne Ausfall.
+  const DPR_MAX = Math.min(2, window.devicePixelRatio || 1);
+  const Q = { max: DPR_MAX, dpr: clamp(+S.qdpr || DPR_MAX, 1, DPR_MAX), win: [], n: 0, fastT: 0, upAfter: 8, slow: 0, base: 16.7, el: null };
+  function setQuality(d) {
+    d = clamp(Math.round(d * 4) / 4, 1, Q.max);
+    if (d === Q.dpr) return;
+    Q.dpr = d; Q.win.length = 0; Q.fastT = 0;
+    renderer.lite = d <= 1.5;
+    renderer.resize(W, Hs, d);
+    S.qdpr = d; save();
+  }
   function qualityTick(dtReal) {
     const ms = dtReal * 1000;
-    if (!(ms > 2 && ms < 120) || document.hidden) return;
-    Q.win.push(ms); if (Q.win.length > 90) Q.win.shift();
-    if (Q.win.length < 60) return;
-    const sorted = Q.win.slice().sort((a, b) => a - b), base = sorted[Math.floor(sorted.length * 0.1)], med = sorted[sorted.length >> 1];
-    if (med > base * 1.3 && med > 13) { Q.slowT += dtReal; Q.fastT = 0; } else if (med <= base * 1.08) { Q.fastT += dtReal; Q.slowT = 0; } else { Q.slowT = 0; Q.fastT = 0; }
-    if (Q.slowT > 1.5 && Q.dpr > 1) { Q.dpr = Math.max(1, Q.dpr - 0.25); Q.slowT = 0; Q.win.length = 0; Q.upAfter = Math.min(30, Q.upAfter * 2); renderer.resize(W, Hs, Q.dpr); }
-    // Hochschalten kostet ein neues Bild (und evtl. ein neues Panorama): nie während Sprung oder Wiederholung, nur in Ruhe
-    else if (Q.fastT > Q.upAfter && Q.dpr < Q.max && mode !== "jump" && mode !== "replay") { Q.dpr = Math.min(Q.max, Q.dpr + 0.25); Q.fastT = 0; Q.win.length = 0; renderer.resize(W, Hs, Q.dpr); }
+    if (!(ms > 2 && ms < 101) || document.hidden) { Q.win.length = 0; return; }
+    Q.win.push(ms); if (Q.win.length > 120) Q.win.shift();
+    if (++Q.n % 15 || Q.win.length < 60) return;
+    const sorted = Q.win.slice().sort((a, b) => a - b), base = sorted[Math.floor(sorted.length * 0.15)];
+    let slow = 0, sum = 0; for (const x of Q.win) { sum += x; if (x > base * 1.45) slow++; }
+    Q.base = base; Q.slow = slow / Q.win.length; Q.fps = 1000 * Q.win.length / sum;
+    if (Q.el) Q.el.textContent = `${Math.round(Q.fps)} fps · ${Math.round(Q.slow * 100)} % Ruckler · Schärfe ${Q.dpr.toFixed(2).replace(".", ",")}`;
+    if (Q.slow > 0.06 && Q.dpr > 1) { setQuality(Q.dpr - 0.25); Q.upAfter = Math.min(60, Q.upAfter * 2); return; }
+    // Reserve messen nur im Sprung (dort ist die volle Last), hochschalten erst danach, wenn wieder Ruhe ist
+    const busy = mode === "jump" || mode === "replay";
+    if (busy) Q.fastT = Q.slow === 0 ? Q.fastT + 15 * base / 1000 : 0;
+    else if (Q.fastT > Q.upAfter && Q.dpr < Q.max) setQuality(Q.dpr + 0.25);
+  }
+  // Leistungsanzeige (Einstellungen): Bilder je Sekunde, Anteil ausgefallener Bilder, Bildschärfe
+  function fpsMeter() {
+    if (S.fps && !Q.el) { Q.el = document.createElement("div"); Q.el.className = "fps-meter"; Q.el.textContent = "…"; stage.appendChild(Q.el); }
+    else if (!S.fps && Q.el) { Q.el.remove(); Q.el = null; }
   }
   function layout() {
     const vw = window.innerWidth, vh = window.innerHeight;
@@ -8044,6 +8141,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     W = sw; Hs = sh; origin = { x: ox, y: oy };
     stage.style.width = sw + "px"; stage.style.height = sh + "px";
     stage.style.transform = rotated ? `translate(${vw}px, 0px) rotate(90deg)` : `translate(${ox}px, ${oy}px)`;
+    renderer.lite = Q.dpr <= 1.5;
     renderer.resize(sw, sh, Q.dpr);
     uiS = clamp(Math.min(sw / 780, sh / 390), 0.62, 1.7);
     ui.style.width = sw / uiS + "px"; ui.style.height = sh / uiS + "px"; ui.style.transform = `scale(${uiS})`;
@@ -8066,6 +8164,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   window.addEventListener("resize", layout);
   window.addEventListener("orientationchange", () => setTimeout(layout, 120));
   layout();
+  fpsMeter();
   applyColor();
 
   // ------------------------------------------------------------------ Ton (WebAudio) und Vibration: src/audio.js
@@ -8703,15 +8802,22 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     }, 1800);
   }
 
-  // Anfängermodus: genau im perfekten Moment anhalten (Absprung an der Kante, Telemark vor der Landung), bis getippt wird
+  // Anfängermodus: genau im perfekten Moment anhalten (Absprung an der Kante, Telemark vor der Landung), bis getippt wird.
+  // Dazwischen ein Halt gleich nach dem Abheben: erst weiter, wenn der Finger den Punkt einen Moment im gelben Kreis hält.
+  const FLY_IN = 0.17;   // Abstand Fluglage – Ziel, ab dem der Punkt im gelben Kreis liegt (wie padGoal.in)
+  const flyOff = () => Math.hypot(J.u + (J.dist || 0) - (J.pOpt || 0), J.ur + (J.distR || 0));
   function beginnerStop() {
     if (jc.freeze) return true;
     if (J.phase === "inrun" && J.tapTime == null && jc.pendTap == null && J.s / Math.max(1, J.v) <= Ph.P.tauIdeal) { jc.freeze = "takeoff"; Snd.beep(880, 0.08, 0.06); vib(20); return true; }
+    if (J.phase === "flight" && !jc.flyStop && J.tf >= 0.3 && J.prepTime == null && !J.noseDive) { jc.freeze = "fly"; jc.flyStop = true; jc.flyIn = 0; Snd.beep(880, 0.08, 0.06); vib(20); return true; }
     if (J.phase === "flight" && J.prepTime == null && !J.noseDive && J.tau != null && J.tau <= Ph.P.teleBest) { jc.freeze = "land"; Snd.beep(880, 0.08, 0.06); vib(20); return true; }
     return false;
   }
   function stepJump(dtReal) {
-    const dt = dtReal * (jc.beginner && J.phase === "flight" ? Math.min(jc.slow, (drag && drag.flight) || keys.up || keys.down || keys.left || keys.right ? 0.7 : 0.35) : jc.slow);
+    // Anfänger im Flug in Zeitlupe (mit Finger 70 %, ohne 35 %); das Tempo gleitet über, statt zu springen (sonst stockt der Springer)
+    const tsGoal = jc.beginner && J.phase === "flight" ? Math.min(jc.slow, (drag && drag.flight) || keys.up || keys.down || keys.left || keys.right ? 0.7 : 0.35) : jc.slow;
+    jc.ts = jc.ts == null ? tsGoal : jc.ts + (tsGoal - jc.ts) * (1 - Math.exp(-dtReal / 0.18));
+    const dt = dtReal * jc.ts;
     if (J.phase === "gate") { jc.gt = (jc.gt || 0) + dtReal; if (jc.light === "green") jc.gg = (jc.gg || 0) + dtReal; }
     if (J.phase === "gate" && jc.light === "red") {
       jc.tLight -= dtReal;
@@ -8730,6 +8836,11 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (J.phase === "flight" && (keys.up || keys.down)) J.u = clamp(J.u + (keys.up ? 1 : -1) * 1.5 * S.sens * dt, -1.6, 1.6);
     if (J.phase === "flight" && (keys.left || keys.right)) J.ur = clamp(J.ur + (keys.right ? 1 : -1) * 1.2 * S.sens * dt, -1.6, 1.6);
     if (J.phase === "flight" && drag && !drag.flight) padAnchor(drag.x, drag.y);
+    // Halt im Flug: weiter, sobald der Punkt gut eine halbe Sekunde im gelben Kreis liegt (Finger auf dem Schirm oder Pfeiltasten)
+    if (jc.freeze === "fly") {
+      jc.flyIn = flyOff() < FLY_IN && (drag || jc.kb) ? jc.flyIn + dtReal : 0;
+      if (jc.flyIn > 0.55) { jc.freeze = null; jc.goalSeen = true; Snd.beep(1320, 0.06, 0.05); vib(12); }
+    }
     const danger = J.phase === "flight" && !J.noseDive && (J.p > Ph.P.dangerP || Math.abs(J.r) > Ph.P.rollDanger);
     if (danger) { if (!jc.dangerVib) { vib([25, 40, 25]); jc.dangerVib = true; } } else jc.dangerVib = false;
     acc += dt;
@@ -8872,7 +8983,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       el.gateMinus.disabled = J.gate <= 1; el.gatePlus.disabled = J.gate >= H.gates;
     }
     // Tempo: ganze km/h mit Tacho; nach dem Absprung die Absprunggeschwindigkeit mit Komma (wie im TV)
-    const showSpeed = ph === "inrun" || (ph === "flight" && jc.speedT > 0);
+    const flyStop = jc.freeze === "fly";   // Anfänger: Halt nach dem Abheben, nur der gelbe Kreis zählt
+    const showSpeed = !flyStop && (ph === "inrun" || (ph === "flight" && jc.speedT > 0));
     vis(el.speedBox, live && showSpeed);
     if (showSpeed) {
       const kmh = ph === "inrun" ? st.v * 3.6 : J.vTakeoff * 3.6;
@@ -8881,7 +8993,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       el.tachoFill.style.width = clamp(kmh, 0, 100).toFixed(1) + "%";
     }
     const tauEdge = ph === "inrun" ? J.s / Math.max(1, J.v) : 0;
-    const showTiming = assist && ((ph === "inrun" && tauEdge < 1.6) || (ph === "flight" && st.tf < 0.7 && jc.timing));
+    const showTiming = assist && !flyStop && ((ph === "inrun" && tauEdge < 1.6) || (ph === "flight" && st.tf < 0.7 && jc.timing));
     vis(el.timingBox, live && showTiming);
     if (showTiming) {
       const pos = jc.timing ? jc.timing.pos : clamp((0.5 - tauEdge) / 0.5, 0, 1);
@@ -8895,7 +9007,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       if (ph === "inrun" && J.tapTime == null && tauEdge < 0.3 && tauEdge > 0.11) pill = "JETZT TIPPEN";
       if (ph === "flight" && J.prepTime == null && J.tau != null && J.tau < 0.55 && J.tau > 0.18) pill = "JETZT TIPPEN";
     }
-    if (jc && live && jc.freeze) pill = jc.freeze === "takeoff" ? "DRÜCKEN & HALTEN" : drag ? "LOSLASSEN" : "JETZT TIPPEN";
+    if (jc && live && jc.freeze) pill = jc.freeze === "takeoff" ? "DRÜCKEN & HALTEN" : jc.freeze === "fly" ? (drag || jc.kb ? null : "FINGER AUFLEGEN") : drag ? "LOSLASSEN" : "JETZT TIPPEN";
     if (jc && live && jc.beginner && !jc.freeze && ph === "flight" && !drag && J.prepTime == null && !J.noseDive) pill = "FINGER AUFLEGEN";
     vis(el.tapPill, !!pill);
     if (pill && el.tapPillText.textContent !== pill) el.tapPillText.textContent = pill;
@@ -8932,6 +9044,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         el.padGoal.classList.toggle("in", jc.goalOff < 0.17);
       }
       vis(el.padGoal, !!jc.beginner);
+      el.pad.classList.toggle("call", jc.freeze === "fly");
       // nach dem Mitgehen tritt der Ring zurück; am Rand leuchtet er auf
       el.pad.classList.toggle("edge", edge);
       el.pad.classList.toggle("quiet", !jc.beginner && !edge && st.tf > 1.1 && Math.hypot(du, dr) < PAD_R * 0.7);
@@ -8952,6 +9065,10 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     let hint = null;
     if (live && jc.freeze) hint = jc.freeze === "takeoff"
       ? ["tap", "Jetzt drücken und halten: Absprung!", "Finger danach liegen lassen, damit lenkst du den Flug", "center"]
+      : jc.freeze === "fly" ? (!drag && !jc.kb ? ["pad", "Finger auflegen und halten", "darunter erscheint der gelbe Kreis", "center"]
+        // neben den Finger, nicht darunter: die Tafel steht auf der anderen Bildseite
+        : flyOff() < FLY_IN ? ["pad", "Genau so: im gelben Kreis bleiben", "der Kreis wandert, der Finger geht mit", drag && drag.x < W / 2 ? "right" : "left"]
+        : ["drag", "Punkt in den gelben Kreis schieben", "dort fliegt der Springer am weitesten", drag && drag.x < W / 2 ? "right" : "left"])
       : drag ? ["tap", "Jetzt loslassen: Telemark!", "Kurz vor dem Boden die Landung vorbereiten", "center"]
       : ["tap", "Jetzt tippen: Telemark!", "Kurz vor dem Boden die Landung vorbereiten", "center"];
     // Anfänger ohne Finger im Flug: in Zeitlupe weiter, bis er liegt (der Kreis erscheint genau darunter)
@@ -8959,11 +9076,11 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       hint = ["pad", "Finger auflegen und halten", "Der Kreis erscheint unter deinem Finger, damit lenkst du", "center"];
     // Anfänger: dem goldenen Kreis folgen (oben = flacher liegen, unten = aufrichten, seitlich = Balance gegen Seitenwind)
     if (live && !hint && jc.beginner && inFlight && padOn && !lz && J.prepTime == null && !J.noseDive && jc.goalOff != null) {
-      if (st.tf < 1.6 && !jc.goalSeen) hint = ["pad", "Daumen in den goldenen Kreis", "oben = flacher liegen · unten = aufrichten · seitlich = Balance", "center"];
+      if (st.tf < 1.6 && !jc.goalSeen) hint = ["pad", "Daumen in den gelben Kreis", "oben = flacher liegen · unten = aufrichten · seitlich = Balance", "center"];
       else if (jc.goalOff >= 0.17) {
         const sw = Math.abs(J.distR || 0) > 0.22;
         hint = sw ? ["lr", `Seitenwind: Kreis nach ${-(J.distR || 0) > 0 ? "rechts" : "links"} folgen`, "Daumen hinterher, bis die Ski parallel sind", "center"]
-          : ["drag", "Dem goldenen Kreis folgen", "Böen schieben ihn weg, der Daumen geht mit", "center"];
+          : ["drag", "Im gelben Kreis bleiben", "Böen schieben ihn weg, der Daumen geht mit", "center"];
       }
       if (jc.goalOff < 0.17 && st.tf > 0.5) jc.goalSeen = true;
     }
@@ -8996,7 +9113,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (hint) {
       if (el.hintIcon.dataset.icon !== hint[0]) { el.hintIcon.dataset.icon = hint[0]; el.hintIcon.innerHTML = icon(hint[0], 22); }
       txt(el.hintText, hint[1]); txt(el.hintSub, hint[2]);
-      el.hint.classList.toggle("right", hint[3] === "right");
+      el.hint.classList.toggle("right", hint[3] === "right"); el.hint.classList.toggle("left", hint[3] === "left");
     }
   }
 
@@ -9589,7 +9706,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     }
     if (ctxMode === "training") {
       if (jc.grpNew) return ["GRUPPE STARTEN", "Dein Sprung legt die Gruppe an", "Danach schickst du den Link. Alle springen mit demselben Wind wie du."];
-      if (jc.beginner) return ["ANFÄNGERMODUS", "Das Spiel hält an, wenn du tippen musst", "Die gelbe Linie zeigt den perfekten Flug."];
+      if (jc.beginner) return ["ANFÄNGERMODUS", "Das Spiel hält an, wenn du etwas tun musst", "Beim Absprung, am Anfang des Flugs und vor der Landung. Die gelbe Linie zeigt den perfekten Flug."];
       const b = S.bests[H.key];
       if (b) return ["DEINE BESTWEITE", `${fmt1(b.d)} m`, `${fmt1(b.pts)} Punkte von Luke ${b.gate}. K-Punkt ${H.K} m, HS ${H.HS} m.`];
       return ["TRAINING", `K-Punkt ${H.K} m`, `Dort gibt es ${H.kValue} Punkte, jeder Meter mehr ${fmt1(H.meterValue)}. HS ${H.HS} m.`];
@@ -11363,6 +11480,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     $("tgSound").setAttribute("aria-checked", String(S.sound));
     $("tgVibe").setAttribute("aria-checked", String(S.vibe));
     $("tgMusic").setAttribute("aria-checked", String(S.music !== false));
+    $("tgFps").setAttribute("aria-checked", String(!!S.fps));
     vis($("rowVibe"), Hap.ok);
   }
   let settingsFrom = null;
@@ -11613,9 +11731,10 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   seg("segSpeed", (v) => { S.speed = +v; S.slow = +v < 1; save(); segSet("segSpeed", v); if (jc && !jc.practice && ctxMode === "training") jc.slow = trainSpeed(); });
   toggle("tgAssist", "assist");
   toggle("tgExpert", "expert", () => { if (S.expert) { S.beginner = false; save(); fillSettings(); softNotice("Experte: Daumen in der Anfahrt halten (Hocke), an der Kante loslassen. Keine Hilfen."); } });
-  toggle("tgBeginner", "beginner", () => { if (S.beginner) { S.expert = false; save(); fillSettings(); softNotice("Anfänger: Vor dem Absprung drücken und halten, im Flug dem goldenen Kreis folgen, vor der Landung loslassen."); } refreshTitle(); });
+  toggle("tgBeginner", "beginner", () => { if (S.beginner) { S.expert = false; save(); fillSettings(); softNotice("Anfänger: Vor dem Absprung drücken und halten, im Flug mit dem Finger im gelben Kreis bleiben, vor der Landung loslassen."); } refreshTitle(); });
   toggle("tgSound", "sound", () => { if (!S.sound) Snd.off(); else { Snd.unlock(); Snd.set("crowd", 0.07, null, 0.4); Snd.beep(880, 0.12); } });
   toggle("tgVibe", "vibe", () => vib(20));
+  toggle("tgFps", "fps", () => fpsMeter());
   on("tgMusic", () => { S.music = S.music === false; save(); fillSettings(); if (!S.music) Snd.stadiumOff(); });
   function showToastSafe() { if (jc) showToast("NICHT MÖGLICH", "Im Wettkampf zählt jeder Sprung", "warn", 1.8, false); }
 
@@ -11683,12 +11802,12 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       if (e.target && e.target.tagName === "BUTTON" && e.key === "Enter") return;
       e.preventDefault(); if (!e.repeat) { keys.hold = true; onAction(e); } return;
     }
-    if (e.key === "ArrowUp" || e.key === "w" || e.key === "W") { keys.up = true; if (J && jc) jc.dragged = true; e.preventDefault(); }
-    if (e.key === "ArrowDown" || e.key === "s" || e.key === "S") { keys.down = true; if (J && jc) jc.dragged = true; e.preventDefault(); }
+    if (e.key === "ArrowUp" || e.key === "w" || e.key === "W") { keys.up = true; if (J && jc) jc.dragged = jc.kb = true; e.preventDefault(); }
+    if (e.key === "ArrowDown" || e.key === "s" || e.key === "S") { keys.down = true; if (J && jc) jc.dragged = jc.kb = true; e.preventDefault(); }
     if (mode === "title" && (e.key === "ArrowLeft" || e.key === "ArrowRight")) cycleHill(e.key === "ArrowLeft" ? -1 : 1);
     if (mode === "jump" && J && /^(ArrowLeft|ArrowRight|a|A|d|D)$/.test(e.key)) {
       if (/^(ArrowLeft|a|A)$/.test(e.key)) keys.left = true; else keys.right = true;
-      if (jc) jc.dragged = true; e.preventDefault();
+      if (jc) jc.dragged = jc.kb = true; e.preventDefault();
     }
     if (mode === "jump" && J && J.phase === "gate" && (e.key === "+" || e.key === "-")) changeGate(e.key === "+" ? 1 : -1);
   });
