@@ -3639,7 +3639,11 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     }
     dot(x, hy, hr, skin());
     const hc = tone(o.hatC || I.rot);
-    if (o.hat === "goral") {
+    if (o.hat === "tuch") {
+      // helles Kopftuch, unter dem Kinn gebunden
+      ctx.beginPath(); ctx.ellipse(x, hy - hr * 0.1, hr * 1.15, hr * 1.12, 0, Math.PI * 0.92, Math.PI * 2.08); ctx.closePath(); ctx.fillStyle = hc; ctx.fill();
+      fill([[x - hr * 0.3, hy + hr * 0.9], [x + hr * 0.3, hy + hr * 0.9], [x + hr * 0.15, hy + hr * 1.4], [x - hr * 0.2, hy + hr * 1.5]], hc);
+    } else if (o.hat === "goral") {
       // flacher schwarzer Góralenhut mit breiter Krempe und einem Band aus weißen Kaurimuscheln
       fill([[x - hr * 0.86, hy - hr * 0.62], [x + hr * 0.86, hy - hr * 0.62], [x + hr * 0.76, hy - hr * 1.3], [x - hr * 0.76, hy - hr * 1.3]], hc);
       rect(x - hr * 1.9, hy - hr * 0.84, hr * 3.8, hr * 0.32, hc);
@@ -4322,6 +4326,126 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       }
     };
   }
+  // Planica: die Schanzen des Nordischen Zentrums nebeneinander, von der Großschanze bis zu den Kinderschanzen (acht Schanzen an einem
+  // Ort gibt es nur hier). Je Schanze: bewaldeter Hügel, Aufsprunghang als Schneeband, Anlauf auf Stützen, Starthaus. J = [Fuß x, y, Maßstab]
+  function nebenSchanze(x, yb, s) {
+    const st = mix(P.wall, P.wallSide, 0.35), sn = P.valley, snD = mix(sn, P.valleyShade, 0.55);
+    // Aufsprunghang: breite Schneebahn den Waldhang hinunter, unten der Auslauf
+    const prof = (u) => [x - 64 * s + u * 82 * s, yb - 47 * s * Math.pow(1 - u, 1.6)];
+    const top = [], bot = [];
+    for (let i = 0; i <= 12; i++) { const u = i / 12, [px, py] = prof(u); top.push([px, py]); bot.push([px + 6 * s, py + (15 - 9 * u) * s]); }
+    fill(top.concat(bot.reverse(), [[x - 66 * s, yb - 40 * s]]), sn);
+    fill([[x - 8 * s, yb - 1.5 * s], [x + 30 * s, yb - 1], [x + 34 * s, yb + 1.2], [x - 14 * s, yb + 1.2]], sn);
+    shade([prof(0.55), prof(0.75), prof(1), [x + 30 * s, yb - 1], [x + 34 * s, yb + 1.2], [x - 10 * s, yb + 1.2], [prof(0.55)[0] + 5 * s, prof(0.55)[1] + 8 * s]], snD);
+    line(top, P.valleyShade, Math.max(0.5, 0.7 * s));
+    // Tisch, Anlauf (helle Bahn auf dem dunklen Wald), Starthaus oben
+    const t0 = [x - 64 * s, yb - 49 * s], t1 = [x - 108 * s, yb - 86 * s];
+    rect(t0[0] - 2.4 * s, t0[1], 4.8 * s, 4 * s, st);
+    line([t0, t1], st, Math.max(1.2, 3 * s)); line([t0, t1], sn, Math.max(0.6, 1.3 * s));
+    rect(t1[0] - 3.5 * s, t1[1] - 6 * s, 7 * s, 6 * s, st); rect(t1[0] - 4 * s, t1[1] - 7.2 * s, 8 * s, 1.6, P.roofSnow);
+    return t1;
+  }
+  // Waldhang am Fuß der Ponce, in den die Schanzen gebaut sind (Ränder als Fichtenspitzen)
+  function schanzenHang(x0, x1, ytop, yb) {
+    const pts = [[x0 - 20, yb + 1]];
+    for (let i = 0; i <= 8; i++) { const u = i / 8; pts.push([x0 - 20 + u * 44, yb - (yb - ytop) * Math.pow(u, 0.8) - (i % 2 ? 5 : 0)]); }
+    pts.push([x1 - 24, ytop]);
+    for (let i = 0; i <= 8; i++) { const u = i / 8; pts.push([x1 - 24 + u * 48, ytop + (yb - ytop) * Math.pow(u, 1.2) - (i % 2 ? 5 : 0)]); }
+    pts.push([x1 + 24, yb + 1]);
+    fill(pts, P.forest);
+    // verschneite Fichtenspitzen auf dem Hang, damit er nicht als dunkle Fläche steht
+    const rr = rng(311), lit = mix(P.forest, P.tSnow, 0.55);
+    for (let i = 0; i < 90; i++) {
+      const u = rr(), v = rr(), px = x0 + 10 + u * (x1 - x0 - 20), py = ytop + 8 + v * (yb - ytop - 14), hh = 4 + rr() * 4;
+      fill([[px, py - hh], [px + hh * 0.36, py], [px - hh * 0.36, py]], mix(P.forest, I.tinte, 0.15));
+      fill([[px, py - hh], [px + hh * 0.16, py - hh * 0.55], [px - hh * 0.2, py - hh * 0.5]], lit);
+    }
+  }
+  // Zentralbau des Nordischen Zentrums: niedriger Bau mit Holzlamellen und Glasband, das Panoramadach als flache Welle mit Schnee
+  function nordicCenter(x0, x1, yb, h) {
+    const wd = mix(P.wood, P.wall, 0.4), wdD = mix(wd, I.tinte, 0.3), glass = P.abend ? P.winHi : mix(I.tief, I.himmel, 0.3);
+    const roof = []; for (let i = 0; i <= 24; i++) { const u = i / 24; roof.push([x0 + (x1 - x0) * u, yb - h - Math.sin(u * Math.PI * 2.1 + 0.3) * h * 0.28 - u * h * 0.25]); }
+    shade([[x1, yb], [x1 + 6, yb - 2.4], [x1 + 6, roof[24][1] - 2.4], [x1, roof[24][1]]], wdD);
+    fill([[x0, yb]].concat(roof, [[x1, yb]]), wd);
+    for (let x = x0 + 2.4; x < x1 - 1; x += 2.6) line([[x, yb - 0.5], [x, yb - h * 0.42]], wdD, 0.45);
+    rect(x0 + 5, yb - h * 0.72, x1 - x0 - 10, h * 0.26, glass);
+    line(roof, P.roofSnow, 2.2);
+  }
+  // Zipline (die steilste der Welt) vom Turm der Großschanze ins Tal: alle 14 s saust ein Fahrer hinunter, erst langsam, dann schnell
+  function ziplineAnim(a, b) {
+    return (t) => {
+      const u = (t % 14) / 7; if (u > 1) return;
+      const v = u * u, x = a[0] + (b[0] - a[0]) * v, y = a[1] + (b[1] - a[1]) * v;
+      rect(x - 1.2, y - 0.6, 2.4, 1.4, P.line);
+      line([[x, y + 0.8], [x - 0.6, y + 4]], P.line, 0.4);
+      fill([[x - 1.6, y + 4], [x + 0.6, y + 3.2], [x + 2.4, y + 4.6], [x - 0.6, y + 5.6]], tone(I.rot));
+      dot(x + 2.6, y + 3.6, 0.9, skin());
+    };
+  }
+  function planicaMid(M, live) {
+    let top = null;
+    if (M.hang) schanzenHang(M.hang[0], M.hang[1], M.hang[2], M.hang[3]);
+    for (const J of (M.schanzen || [])) { const t1 = nebenSchanze(J[0], J[1], J[2]); if (!top) top = t1; }
+    if (M.nordic) nordicCenter(M.nordic[0], M.nordic[1], M.nordic[2], M.nordic[3]);
+    if (M.zipline && top) {
+      const a = [top[0] + 2, top[1] - 4], b = M.zipline;
+      line([a, b], P.line, 0.5);
+      rect(b[0] - 1, b[1] - 1, 2, 6, P.line);
+      ANIM(live, 1, ziplineAnim(a, b), Math.min(a[0], b[0]) - 4, Math.max(a[0], b[0]) + 4);
+    }
+  }
+  // Oberkrainer Musik vor dem Nordischen Zentrum: ein Harmonikaspieler (der Balg geht auf und zu), daneben tanzt ein Paar Polka:
+  // es hüpft im Takt und dreht sich langsam umeinander
+  function polka(x, yb, h, live) {
+    const pr = person(x, yb, h, { coat: mix(I.gruen, I.tinte, 0.3), vest: I.rot, hat: "filz", hatC: I.tinte, arms: [null, null] });
+    ANIM(live, LI, (t) => {
+      const b = (Math.sin(t * 5.6) + 1) / 2, w = h * (0.1 + 0.12 * b), cy = yb - h * 0.55, kw = h * 0.09, kh = h * 0.26, [ls, rs] = pr.sh;
+      const red = tone(I.rot), redD = mix(red, I.tinte, 0.3), coat = tone(mix(I.gruen, I.tinte, 0.3));
+      const xl = x - w / 2 - kw, xr = x + w / 2;
+      for (let i = 0; i < 6; i++) rect(x - w / 2 + (i * w) / 6, cy - kh * 0.42, w / 6 + 0.2, kh * 0.84, i % 2 ? mix(I.tinte, red, 0.3) : tone(mix(I.papier, I.schatten, 0.2)));
+      rect(xl, cy - kh / 2, kw, kh, red); rect(xl + kw * 0.15, cy - kh * 0.42, kw * 0.35, kh * 0.84, tone(I.papier));
+      rect(xr, cy - kh / 2, kw, kh, redD); dot(xr + kw * 0.5, cy - kh * 0.15, kw * 0.12, tone(I.papier)); dot(xr + kw * 0.5, cy + kh * 0.15, kw * 0.12, tone(I.papier));
+      limb(ls[0], ls[1], xl + kw * 0.4, cy, h * 0.085, coat, skin());
+      limb(rs[0], rs[1], xr + kw * 0.6, cy + kh * 0.1, h * 0.085, mix(coat, I.tinte, 0.25), skin());
+    }, x - h * 0.6, x + h * 0.6);
+    ANIM(live, LI, notesAnim(x + h * 0.05, yb - h * 1.05, x * 0.019), x, x + h * 0.8);
+    const cx = x + h * 1.15;
+    ANIM(live, LI, (t) => {
+      const beat = t * 2.1, hop = Math.abs(Math.sin(beat * Math.PI)) * h * 0.05, th = t * 1.5, r = h * 0.2;
+      const pos = [{ d: 1, o: { coat: I.navy, legs: mix(I.tinte, I.dach, 0.2), vest: I.rot, hat: "filz", hatC: I.tinte } }, { d: -1, o: { coat: mix(I.dach, I.tinte, 0.2), skirt: I.rot, apron: I.papier, legs: I.tinte, hat: "tuch", hatC: I.papier } }];
+      const list = pos.map((Q, i) => ({ x: cx + Q.d * r * Math.cos(th), y: yb + Q.d * Math.sin(th) * h * 0.04, hop: i ? Math.abs(Math.sin((beat + 0.5) * Math.PI)) * h * 0.05 : hop, o: Q.o, d: Q.d }));
+      list.sort((p, q) => p.y - q.y);
+      const mid = [cx, yb - h * 0.6];
+      for (const L of list) {
+        const inner = L.x < cx ? 1 : 0, sideOut = inner ? 0 : 1, hh = L.o.skirt ? h * 0.92 : h;
+        const hands = [null, null];
+        hands[inner ? 1 : 0] = [mid[0] + (L.x < cx ? -1 : 1) * h * 0.02, mid[1] - L.hop];
+        hands[inner ? 0 : 1] = [L.x + (inner ? -1 : 1) * h * 0.22, yb - hh * 0.62 - L.hop];
+        person(L.x, L.y - L.hop, hh, Object.assign({ hands }, L.o));
+      }
+    }, cx - h * 0.6, cx + h * 0.6);
+  }
+  // Slowenisches Bienenhaus (Čebelnjak): Holzhütte mit Pultdach, vorn eine Wand aus bemalten Stirnbrettern der Bienenstöcke
+  // (panjske končnice), jedes in einer Grundfarbe mit kleinem Motiv; Schnee auf dem Dach
+  function bienenhaus(x, yb, k) {
+    ctx.save(); ctx.translate(x, yb); ctx.scale(k, k); ctx.translate(-x, -yb);
+    const w = 46, h = 24, wd = tone(mix(P.wood, I.ocker, 0.1)), wdD = mix(wd, I.tinte, 0.42);
+    shade([[x - 2, yb + 0.8], [x + w + 10, yb], [x + w + 8, yb + 3], [x, yb + 3]], P.valleyShade);
+    shade([[x + w, yb], [x + w + 7, yb - 3], [x + w + 7, yb - h - 1], [x + w, yb - h]], wdD);
+    rect(x, yb - h, w, h, wd);
+    for (const px of [x + 0.5, x + w - 2.5]) rect(px, yb - h, 2, h, wdD);
+    const C = [I.ocker, I.rot, I.himmel, I.gruen, I.papier, mix(I.ocker, I.rot, 0.4)];
+    for (let r_ = 0; r_ < 3; r_++) for (let c = 0; c < 6; c++) {
+      const px = x + 3.4 + c * 6.6, py = yb - h + 2.6 + r_ * 6.8, col = tone(C[(c * 2 + r_ * 3) % C.length]);
+      rect(px, py, 5.6, 5.4, col);
+      const m = tone(C[(c * 2 + r_ * 3 + 3) % C.length]);
+      if ((c + r_) % 3 === 0) dot(px + 2.8, py + 2.7, 1.3, m); else if ((c + r_) % 3 === 1) { rect(px + 1.2, py + 1.4, 3.2, 1, m); rect(px + 1.2, py + 3.2, 3.2, 1, m); } else fill([[px + 2.8, py + 1], [px + 4.6, py + 4.4], [px + 1, py + 4.4]], m);
+      dot(px + 2.8, py + 4.9, 0.45, tone(I.tinte));
+    }
+    fill([[x - 4, yb - h + 0.5], [x + w + 9, yb - h - 4], [x + w + 9, yb - h - 1.2], [x - 4, yb - h + 3]], tone(mix(P.wood, I.tinte, 0.5)));
+    fill([[x - 3.6, yb - h + 0.4], [x + w + 8.6, yb - h - 4.1], [x + w + 8.2, yb - h - 6.4], [x - 3, yb - h - 2]], P.roofSnow);
+    ctx.restore();
+  }
   // Straßenbahn (rot-cremefarben, zwei Wagenteile, Stromabnehmer); fährt nach rechts, x = Heck
   function tramAt(x, yb) {
     const H = 11.5, cream = tone(mix(I.papier, I.ocker, 0.14)), red = tone(I.rot), win = P.abend ? P.win : mix(I.tief, I.himmel, 0.35);
@@ -4365,6 +4489,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     goralKapelle: (it, live) => goralKapelle(it[1], it[2], it[3], live),
     riesenfahne: (it, live) => riesenfahne(it[1], it[2], it[3], it[4] || 4, live),
     oscypek: (it, live) => oscypek(it[1], it[2], it[3] || 1, live),
+    polka: (it, live) => polka(it[1], it[2], it[3], live),
+    bienenhaus: (it) => bienenhaus(it[1], it[2], it[3] || 1),
     herde: (it, live) => { heuraufe(it[1] + 84 * it[3], it[2] + 1.5 * it[3], it[3] * 1.15); ANIM(live, LI, herdeAnim([it[1], it[2], it[3]]), it[1] - 10, it[1] + 120 * it[3]); },
 
   };
@@ -4463,6 +4589,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (M.city) city(M.city, live);
     if (M.dachl) dachl(M.dachl, live);
     if (M.funicular) { const f = M.funicular; line([[f[0], f[1]], [f[2], f[3]]], P.line, 1.6); station(f[0], f[1]); station(f[2], f[3]); ANIM(live, 1, funicularAnim(f), Math.min(f[0], f[2]) - 8, Math.max(f[0], f[2]) + 8); }
+    if (M.schanzen) planicaMid(M, live);
     for (const st of (M.stogi || [])) stog(st[0], st[1], st[2]);
     for (const b of (M.bacowki || [])) bacowka(b[0], b[1], b[2], live);
     if (M.kulig) { const K = Object.assign({}, M.kulig, { x0: X0 - 40, x1: X1 + 40 }); for (const d of [-1.4, 1.4]) line([[K.x0, K.y + d * 0.5 + 0.8], [K.x1, K.y + d * 0.5 + 0.8]], P.valleyShade, 0.6); ANIM(live, 1, kuligAnim(K), K.x0, K.x1); }
@@ -4564,7 +4691,19 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     no: (q) => { q(0, 1, 0, 1, I.rot); q(0.27, 0.45, 0, 1, I.papier); q(0, 1, 0.36, 0.64, I.papier); q(0.31, 0.41, 0, 1, I.navy); q(0, 1, 0.43, 0.57, I.navy); },
     at: (q) => { q(0, 1, 0, 1, I.rot); q(0, 1, 1 / 3, 2 / 3, I.papier); },
     pl: (q) => { q(0, 1, 0, 0.5, I.papier); q(0, 1, 0.5, 1, I.rot); },
-    si: (q) => { q(0, 1, 0, 1 / 3, I.papier); q(0, 1, 1 / 3, 2 / 3, I.kobalt); q(0, 1, 2 / 3, 1, I.rot); },
+    // Slowenien: Weiß-Blau-Rot mit dem Wappen oben am Mast (blauer Schild mit rotem Rand, weißer Triglav, Wellen, drei goldene Sterne)
+    si: (q, pt) => {
+      const wt = mix(I.papier, I.schatten, 0.2);
+      q(0, 1, 0, 1 / 3, wt); q(0, 1, 1 / 3, 2 / 3, I.kobalt); q(0, 1, 2 / 3, 1, I.rot);
+      const edge = []; for (let i = 0; i <= 8; i++) edge.push(pt(i / 8, 0)); line(edge, mix(I.schatten, I.tinte, 0.35), 0.5);
+      const S = (pts) => pts.map(([a, b]) => pt(0.27 + a * 0.09, 0.35 + b * 0.21));
+      fill(S([[-1, -1], [1, -1], [1, 0.3], [0.52, 0.86], [0, 1.02], [-0.52, 0.86], [-1, 0.3]]), I.rot);
+      fill(S([[-0.78, -0.84], [0.78, -0.84], [0.78, 0.28], [0.4, 0.72], [0, 0.86], [-0.4, 0.72], [-0.78, 0.28]]), I.kobalt);
+      fill(S([[-0.78, 0.3], [-0.42, -0.06], [-0.2, 0.1], [0, -0.42], [0.2, 0.1], [0.42, -0.06], [0.78, 0.3], [0.4, 0.72], [0, 0.86], [-0.4, 0.72]]), I.papier);
+      line(S([[-0.5, 0.42], [-0.25, 0.36], [0, 0.42], [0.25, 0.36], [0.5, 0.42]]), I.kobalt, 0.45);
+      line(S([[-0.36, 0.6], [-0.18, 0.54], [0, 0.6], [0.18, 0.54], [0.36, 0.6]]), I.kobalt, 0.45);
+      for (const st of S([[-0.36, -0.62], [0.36, -0.62], [0, -0.4]])) dot(st[0], st[1], 0.55, I.ocker);
+    },
     by: (q) => { for (let i = 0; i < 5; i++) for (let j = 0; j < 3; j++) q(i / 5, (i + 1) / 5, j / 3, (j + 1) / 3, (i + j) % 2 ? I.papier : I.himmel); },
     // Tirol: weiß-rot, in der Mitte der Wappenschild mit dem roten Tiroler Adler und goldener Krone (ohne ihn wäre es die polnische Fahne)
     tirol: (q, pt) => {
@@ -5644,6 +5783,29 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       moon: 0.58,
       far: { col: "#183243", snow: 0.42, base: 30, jag: 0.2, peaks: [[-620, 138, 160, 1.0], [-480, 156, 130, 0.9], [-340, 188, 90, 0.68], [-210, 148, 150, 1.1], [-70, 166, 140, 0.85], [70, 154, 160, 1.0], [210, 170, 130, 0.8], [350, 150, 160, 1.1], [490, 162, 140, 0.85], [640, 140, 160, 1.1]] },
       town: { kind: "village", v0: 18, v1: 62, dens: 0.18, church: { c: 160, type: "spire", h: 34 } },
+      // Plakat (Schritt 4): die Ponce-Wand der Julischen Alpen über die ganze Breite, links hinten der Jalovec am Talschluss.
+      // Im Tal kein Dorf: das Nordische Zentrum mit seiner Schanzenreihe (Großschanze bis Kinderschanze), der flache Zentralbau,
+      // die Zipline vom Turm der Großschanze, Kozolci (slowenische Heuharfen). Vorn Oberkrainer Musik mit Harmonika und einem
+      // Paar, das Polka tanzt, ein Bienenhaus mit bemalten Stirnbrettern und die slowenische Fahne mit Wappen.
+      plakat: {
+        id: "planica", moon: [986, 178],
+        ranges: [
+          { style: "alpin", far: true, rough: 0.26, tree: 520, ctrl: [[40, 548], [120, 360], [176, 262], [204, 202, "S"], [232, 254, "V"], [262, 300], [330, 548]] },
+          { style: "alpin", rough: 0.22, rocky: 1.2, tree: 478, ctrl: [[-720, 420], [-620, 388, "S"], [-520, 410, "V"], [-420, 376, "S"], [-320, 404, "V"], [-220, 370, "S"], [-120, 398, "V"],
+            [-40, 384], [40, 332], [100, 290], [152, 248, "S"], [192, 292, "V"], [252, 272, "S"], [322, 312, "V"], [402, 282, "S"], [472, 314, "V"], [552, 292, "S"], [632, 322, "V"],
+            [712, 296, "S"], [792, 332, "V"], [872, 302, "S"], [952, 338, "V"], [1042, 314, "S"], [1132, 348, "V"], [1222, 326, "S"], [1330, 352],
+            [1440, 338, "S"], [1560, 362, "V"], [1680, 342, "S"], [1800, 366, "V"], [1990, 356]] },
+        ],
+        far: { drift: [[204, 202, 0.9], [152, 248, 1.1], [402, 282, 0.8], [712, 296, 0.8], [1042, 314, 0.7]] },
+        mid: { hang: [640, 1004, 556, 646], schanzen: [[778, 640, 1], [862, 642, 0.78], [920, 644, 0.55], [962, 645, 0.4], [992, 646, 0.27]], nordic: [1040, 1160, 652, 13], zipline: [1032, 656],
+          kozolci: [[1176, 664], [1238, 652], [1300, 668]] },
+        flags: [[1012, 736, 66, 38, 24, "si"]],
+        near: { items: [
+          ["drift", 804, 912, 789, 6], ["polka", 826, 785, 35],
+          ["drift", 1076, 1158, 789, 6], ["bienenhaus", 1090, 786, 1],
+          ["drift", 1232, 1334, 778, 8], ["spruce", [[1262, 772, 104, 0], [1300, 779, 80, 2]]],
+        ] },
+      },
     },
   };
   const sceneFor = (key) => SCENES[key] || SCENES[key.split("-")[0]] || SCENES.oberstdorf;
@@ -9154,7 +9316,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.43";
+  const VERSION = "0.44";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
