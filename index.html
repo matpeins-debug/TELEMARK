@@ -4545,6 +4545,144 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       }
     }, x0, x1);
   }
+  // Garmisch-Partenkirchen: Maibaum im Ort, weiß-blau gedreht, drei Kränze, an den Seiten die Zunftzeichen paarweise, oben ein Fichtenwipfel
+  function maibaum(x, yb, h) {
+    const w = Math.max(1.6, h * 0.022), wt = mix(I.papier, P.wall, 0.3), bl = P.abend ? mix(I.himmel, I.violett, 0.35) : I.himmel;
+    shade([[x, yb + 0.5], [x + h * 0.4, yb], [x + h * 0.36, yb + 2], [x, yb + 2]], P.valleyShade);
+    rect(x - w / 2, yb - h, w, h, wt);
+    ctx.save(); ctx.beginPath(); ctx.rect(x - w / 2, yb - h, w, h); ctx.clip();
+    for (let yy = yb; yy > yb - h - 8; yy -= 6) fill([[x - w, yy], [x + w, yy - 2.6], [x + w, yy - 5.2], [x - w, yy - 2.6]], bl);
+    ctx.restore();
+    const kr = tone(I.gruen);
+    for (const f of [0.86, 0.6, 0.34]) { const ky = yb - h * f; ctx.beginPath(); ctx.ellipse(x, ky, h * 0.06, h * 0.012, 0, 0, 6.2832); ctx.strokeStyle = kr; ctx.lineWidth = 1.2; ctx.stroke(); }
+    const sign = [I.rot, I.ocker, I.gruen, I.navy, I.dach, I.rot];
+    for (let i = 0; i < 3; i++) {
+      const sy = yb - h * (0.78 - i * 0.18);
+      for (const d of [-1, 1]) {
+        line([[x, sy], [x + d * h * 0.08, sy]], tone(I.tinte), 0.6);
+        rect(x + d * h * 0.08 - h * 0.022, sy - h * 0.005, h * 0.044, h * 0.05, tone(sign[(i * 2 + (d > 0 ? 1 : 0)) % sign.length]));
+        dot(x + d * h * 0.08, sy + h * 0.022, h * 0.01, tone(I.papier));
+      }
+    }
+    spruce(x, yb - h + h * 0.02, h * 0.1, 2);
+  }
+  // Schuhplattler: drei Burschen in Lederhosen, weißem Hemd, grüner Weste, Hut mit Gamsbart. Im Takt: auf die Schenkel klatschen,
+  // ein Bein seitlich hochziehen und auf den Schuh schlagen, in die Hände klatschen, anderes Bein. Bei jedem Schlag ein kleiner Hupfer.
+  function platterAnim(xs, yb, h) {
+    return (t) => {
+      const shirt = tone(mix(I.himmel, I.papier, 0.55)), vest = tone(mix(I.gruen, I.tinte, 0.2)), leder = tone(mix(I.dach, I.tinte, 0.3)), sock = tone(mix(I.papier, I.schatten, 0.25)), shoe = tone(I.tinte), hat = tone(mix(I.gruen, I.tinte, 0.5));
+      xs.forEach((x0, i) => {
+        const beat = t * 2.2 + i * 0.0, k = Math.floor(beat) % 4, f = beat % 1, hop = Math.sin(Math.min(1, f * 1.6) * Math.PI) * h * 0.035;
+        const yb2 = yb - hop, x = x0, lw = h * 0.07;
+        const hipY = yb2 - h * 0.46, shY = yb2 - h * 0.78, sw = h * 0.15;
+        const legUp = k === 1 ? -1 : k === 3 ? 1 : 0;
+        const legs = [];
+        for (const d of [-1, 1]) {
+          if (d === legUp) { const kx = x + d * h * 0.2, ky = hipY + h * 0.06, fx = x + d * h * 0.1, fy = yb2 - h * 0.24; legs.push([d, kx, ky, fx, fy]); }
+          else legs.push([d, x + d * h * 0.06, yb2 - h * 0.22, x + d * h * 0.07, yb2]);
+        }
+        for (const [d, kx, ky, fx, fy] of legs) {
+          ctx.lineCap = "round";
+          line([[x + d * h * 0.05, hipY], [kx, ky]], leder, lw * 1.25);
+          line([[kx, ky], [fx, fy - h * 0.03]], sock, lw);
+          ctx.lineCap = "butt";
+          rect(fx - h * 0.04, fy - h * 0.035, h * 0.08, h * 0.035, shoe);
+        }
+        fill([[x - sw * 0.85, shY], [x + sw * 0.85, shY], [x + sw * 0.75, hipY + h * 0.02], [x - sw * 0.75, hipY + h * 0.02]], shirt);
+        fill([[x - sw * 0.8, shY + h * 0.01], [x - sw * 0.2, shY + h * 0.01], [x - sw * 0.25, hipY], [x - sw * 0.7, hipY]], vest);
+        fill([[x + sw * 0.2, shY + h * 0.01], [x + sw * 0.8, shY + h * 0.01], [x + sw * 0.7, hipY], [x + sw * 0.25, hipY]], vest);
+        rect(x - sw * 0.7, hipY - h * 0.01, sw * 1.4, h * 0.08, leder);
+        line([[x - sw * 0.4, shY], [x - sw * 0.4, hipY]], leder, h * 0.018); line([[x + sw * 0.4, shY], [x + sw * 0.4, hipY]], leder, h * 0.018);
+        // Hände je Takt
+        let hl, hr;
+        if (k === 0) { hl = [x - h * 0.13, hipY + h * 0.08]; hr = [x + h * 0.13, hipY + h * 0.08]; }
+        else if (k === 2) { hl = [x - h * 0.015, shY + h * 0.12]; hr = [x + h * 0.015, shY + h * 0.12]; }
+        else { const L = legs.find((q) => q[0] === legUp); hl = legUp < 0 ? [L[3], L[4] - h * 0.02] : [x - h * 0.28, shY - h * 0.08]; hr = legUp > 0 ? [L[3], L[4] - h * 0.02] : [x + h * 0.28, shY - h * 0.08]; }
+        limb(x - sw * 0.8, shY + h * 0.03, hl[0], hl[1], h * 0.075, shirt, skin());
+        limb(x + sw * 0.8, shY + h * 0.03, hr[0], hr[1], h * 0.075, mix(shirt, I.schatten, 0.25), skin());
+        const hx = x, hy = shY - h * 0.1, hrr = h * 0.08;
+        dot(hx, hy, hrr, skin());
+        fill([[hx - hrr * 0.75, hy - hrr * 0.6], [hx + hrr * 0.75, hy - hrr * 0.6], [hx + hrr * 0.6, hy - hrr * 1.5], [hx - hrr * 0.6, hy - hrr * 1.5]], hat);
+        rect(hx - hrr * 1.5, hy - hrr * 0.78, hrr * 3, hrr * 0.3, hat);
+        line([[hx + hrr * 0.5, hy - hrr * 1.4], [hx + hrr * 0.9, hy - hrr * 2.4]], tone(mix(I.dach, I.tinte, 0.5)), hrr * 0.5);
+        dot(hx + hrr * 0.95, hy - hrr * 2.5, hrr * 0.32, tone(mix(I.papier, I.dach, 0.4)));
+      });
+    };
+  }
+  function platter(x, yb, h, n, live) {
+    const xs = []; for (let i = 0; i < n; i++) xs.push(x + i * h * 0.62);
+    for (const xx of xs) shade([[xx - h * 0.16, yb + 0.6], [xx + h * 0.3, yb + 0.2], [xx + h * 0.24, yb + 2.4], [xx - h * 0.12, yb + 2.4]], P.valleyShade);
+    ANIM(live, LI, platterAnim(xs, yb, h), x - h * 0.5, x + n * h * 0.62 + h * 0.3);
+  }
+  // Eisstockschießen auf einer Eisbahn: der Schütze schiebt den Stock, er gleitet zur Daube und bleibt liegen; dann der nächste
+  function eisstock(x0, x1, y, live) {
+    const ice = P.abend ? mix(I.schatten, I.violett, 0.35) : mix(I.dunst, I.himmel, 0.15);
+    fill([[x0, y - 3], [x1, y - 3.6], [x1 + 2, y + 2.4], [x0 - 2, y + 2.8]], ice);
+    line([[x0, y - 3], [x1, y - 3.6]], P.valley, 1.2);
+    for (let i = 0; i < 8; i++) { const xx = x0 + 6 + i * (x1 - x0 - 12) / 8; line([[xx, y - 1 + (i % 3) * 0.6], [xx + 8, y - 0.8 + (i % 3) * 0.6]], mix(ice, I.papier, 0.5), 0.5); }
+    dot(x1 - 10, y - 0.4, 1.1, tone(I.rot));
+    ANIM(live, LI, (t) => {
+      const u = (t % 7) / 7, coat = tone(I.navy), coat2 = tone(mix(I.gruen, I.tinte, 0.2));
+      const swing = u < 0.12 ? Math.sin((u / 0.12) * Math.PI) : 0, sx = x0 + 6;
+      person(sx, y + 0.5, 30, { coat, hat: "filz", hatC: mix(I.gruen, I.tinte, 0.5), hands: [[sx - 7, y - 16], [sx + 6 + swing * 6, y - 8 - swing * 4]] });
+      const v = u < 0.12 ? 0 : Math.min(1, (u - 0.12) / 0.5), ease = 1 - Math.pow(1 - v, 2.2), px = u < 0.12 ? sx + 6 + swing * 6 : sx + 10 + (x1 - x0 - 26) * ease;
+      const py = u < 0.12 ? y - 6 - swing * 3 : y - 0.6;
+      ctx.beginPath(); ctx.ellipse(px, py, 3, 1.1, 0, 0, 6.2832); ctx.fillStyle = tone(mix(I.dach, I.ocker, 0.35)); ctx.fill();
+      line([[px, py - 0.6], [px + 0.4, py - 3.6], [px + 1.6, py - 3.6]], tone(I.tinte), 0.7);
+      person(x1 - 2, y + 0.5, 29, { coat: coat2, hat: "filz", hatC: I.tinte, arms: [0.2, u > 0.55 ? 2.4 : 0.25] });
+    }, x0 - 12, x1 + 10);
+  }
+  // Hornschlittenrennen (Garmisch-Partenkirchen, an Dreikönig): ein schwerer Holzschlitten mit hochgebogenen Hörnern, vier Mann
+  // sausen die verschneite Straße hinunter und verschwinden hinter den Fichten am Fuß; Schneestaub hinter den Kufen.
+  // H = [x0, y0, x1, y1] (oben links bis unten rechts)
+  function hornschlitten(H, live) {
+    const [x0, y0, x1, y1] = H, yAt = (x) => y0 + (y1 - y0) * Math.pow((x - x0) / (x1 - x0), 1.15);
+    const top = [], bot = [];
+    for (let i = 0; i <= 16; i++) { const x = x0 + (x1 - x0) * i / 16; top.push([x, yAt(x) - 2.4]); bot.push([x, yAt(x) + 2.4]); }
+    shade(top.concat(bot.slice().reverse()), mix(P.valley, P.valleyShade, 0.45));
+    for (let i = 0; i <= 8; i++) { const x = x0 + 10 + i * (x1 - x0 - 20) / 8, y = yAt(x); rect(x - 0.5, y - 9, 1, 7, tone(mix(P.wood, I.tinte, 0.35))); rect(x - 0.7, y - 9.6, 1.4, 0.8, I.rot); }
+    const cover = [[x1 + 2, y1 + 8, 40, 0], [x1 + 18, y1 + 10, 30, 2], [x1 - 10, y1 + 12, 26, 1]];
+    ANIM(live, 1, (t) => {
+      const u = (t % 11) / 11;
+      if (u < 0.42) {
+        const v = u / 0.42, x = x0 - 30 + (x1 - x0 + 60) * v * v, y = yAt(Math.min(x1, Math.max(x0, x))) + (x > x1 ? (x - x1) * 0.2 : 0), ang = Math.atan2(yAt(Math.min(x1, x + 3)) - yAt(Math.min(x1, x)), 3) || 0.2;
+        ctx.save(); ctx.translate(x, y); ctx.rotate(ang);
+        const wd = tone(mix(P.wood, I.ocker, 0.2)), wdD = mix(wd, I.tinte, 0.4);
+        line([[-16, 0], [10, 0]], wdD, 1.1);
+        ctx.beginPath(); ctx.moveTo(8, 0); ctx.quadraticCurveTo(16, -1, 14, -11); ctx.strokeStyle = wdD; ctx.lineWidth = 1.2; ctx.stroke();
+        rect(-15, -3, 24, 2.2, wd);
+        const cols = [I.navy, I.rot, mix(I.gruen, I.tinte, 0.3), I.dach];
+        for (let i = 0; i < 4; i++) { const px = 6 - i * 6; rect(px - 2, -9, 4, 6, tone(cols[i])); dot(px, -10.6, 1.6, skin()); rect(px - 1.8, -12.6, 3.6, 1.3, tone(I.tinte)); }
+        line([[7, -7], [13, -9.5]], tone(cols[0]), 1.2);
+        ctx.restore();
+        if (v > 0.15) { const l = []; for (let i = 0; i < 6; i++) { const q = (i + (t * 3) % 1) / 6; l.push([x - 18 - q * 22, y - 1 - q * 5 + Math.sin(i * 3 + t * 9) * 1.2, 1 + q * 2.6]); } ctx.globalAlpha *= 0.85; dots(l, P.smoke); ctx.globalAlpha /= 0.85; }
+      }
+      for (const [cx, cy, ch, cv] of cover) spruce(cx, cy, ch, cv);
+    }, x0 - 40, x1 + 50);
+  }
+  // Neujahrsfeuerwerk über dem Ort (nur am Abend): alle 1,6 s steigt eine Rakete und zerplatzt farbig, die Funken sinken und vergehen
+  function feuerwerkAnim(F) {
+    const C = ["#FFD36B", "#FF7A5C", "#9BE58A", "#FFFFFF", "#8EC5FF", "#FF9FD0"];
+    return (t) => {
+      if (!P.abend) return;
+      const per = 1.3;
+      for (let b = Math.floor(t / per) - 2; b <= Math.floor(t / per); b++) {
+        const age = t - b * per; if (age < 0 || age > 3.2) continue;
+        const h1 = Math.sin(b * 12.9898) * 43758.5453, rx = h1 - Math.floor(h1), h2 = Math.sin(b * 78.233) * 12345.678, ry = h2 - Math.floor(h2);
+        const bx = F.x0 + rx * (F.x1 - F.x0), by = F.y0 + ry * (F.y1 - F.y0), col = C[Math.floor(rx * 997) % C.length], up = 0.7;
+        if (age < up) { const v = age / up; const yy = F.base - (F.base - by) * (1 - (1 - v) * (1 - v)); dot(bx, yy, 0.9, "#FFE2A6"); dot(bx, yy + 3, 0.6, "rgba(255,226,166,0.5)"); continue; }
+        const a = (age - up) / 2.5, rr = 5 + 26 * (1 - Math.pow(1 - Math.min(1, a * 1.6), 2)), fade = Math.max(0, 1 - a);
+        ctx.globalAlpha *= fade;
+        const col2 = C[(Math.floor(rx * 997) + 2) % C.length];
+        for (let i = 0; i < 20; i++) {
+          const ang = (i / 20) * 6.2832 + rx, r1 = rr * (i % 2 ? 0.92 : 1), dy = a * a * 10;
+          const ex = bx + Math.cos(ang) * r1, ey = by + Math.sin(ang) * r1 * 0.9 + dy, sx = bx + Math.cos(ang) * r1 * 0.72, sy = by + Math.sin(ang) * r1 * 0.72 * 0.9 + dy * 0.8;
+          line([[sx, sy], [ex, ey]], i % 2 ? col2 : col, 0.9); dot(ex, ey, 0.9, "#FFF6DC");
+        }
+        ctx.globalAlpha /= fade;
+      }
+    };
+  }
   // Straßenbahn (rot-cremefarben, zwei Wagenteile, Stromabnehmer); fährt nach rechts, x = Heck
   function tramAt(x, yb) {
     const H = 11.5, cream = tone(mix(I.papier, I.ocker, 0.14)), red = tone(I.rot), win = P.abend ? P.win : mix(I.tief, I.himmel, 0.35);
@@ -4591,6 +4729,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     polka: (it, live) => polka(it[1], it[2], it[3], live),
     christbaum: (it, live) => christbaum(it[1], it[2], it[3], live),
     stall: (it, live) => stall(it[1], it[2], it[3] || 1, live),
+    platter: (it, live) => platter(it[1], it[2], it[3], it[4] || 3, live),
+    eisstock: (it, live) => eisstock(it[1], it[2], it[3], live),
     bienenhaus: (it) => bienenhaus(it[1], it[2], it[3] || 1),
     herde: (it, live) => { heuraufe(it[1] + 84 * it[3], it[2] + 1.5 * it[3], it[3] * 1.15); ANIM(live, LI, herdeAnim([it[1], it[2], it[3]]), it[1] - 10, it[1] + 120 * it[3]); },
 
@@ -4645,9 +4785,10 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     }
     if (O.fjord) fjordWater(O, live);
     const F = O.far || {};
+    if (F.feuerwerk) ANIM(live, 0, feuerwerkAnim(F.feuerwerk), F.feuerwerk.x0 - 30, F.feuerwerk.x1 + 30);
     if (F.tower) latticeTower(F.tower);
     if (F.skywalk) skywalk(F.skywalk);
-    if (F.cross) { const [x, y] = F.cross; line([[x, y + 1], [x, y - 15]], I.tinte, 1.8); line([[x - 5, y - 10], [x + 5, y - 10]], I.tinte, 1.8); }
+    if (F.cross) { const [x, y] = F.cross, c = F.gold ? (P.abend ? "#F6C661" : "#E6AE2E") : I.tinte; line([[x, y + 1], [x, y - 15]], c, 1.8); line([[x - 5, y - 10], [x + 5, y - 10]], c, 1.8); }
     for (const cb of (O.cables || [])) {
       line([[cb[0], cb[1]], [cb[2], cb[3]]], P.line, 1.1); station(cb[0], cb[1] + 1); station(cb[2], cb[3] + 1);
       ANIM(live, 0, cabinAnim(cb), Math.min(cb[0], cb[2]) - 8, Math.max(cb[0], cb[2]) + 8);
@@ -4692,6 +4833,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (M.funicular) { const f = M.funicular; line([[f[0], f[1]], [f[2], f[3]]], P.line, 1.6); station(f[0], f[1]); station(f[2], f[3]); ANIM(live, 1, funicularAnim(f), Math.min(f[0], f[2]) - 8, Math.max(f[0], f[2]) + 8); }
     if (M.schanzen) planicaMid(M, live);
     if (M.rodelhang) rodelhang(M.rodelhang, live);
+    if (M.maibaum) maibaum(M.maibaum[0], M.maibaum[1], M.maibaum[2]);
+    if (M.hornschlitten) hornschlitten(M.hornschlitten, live);
     for (const st of (M.stogi || [])) stog(st[0], st[1], st[2]);
     for (const b of (M.bacowki || [])) bacowka(b[0], b[1], b[2], live);
     if (M.kulig) { const K = Object.assign({}, M.kulig, { x0: X0 - 40, x1: X1 + 40 }); for (const d of [-1.4, 1.4]) line([[K.x0, K.y + d * 0.5 + 0.8], [K.x1, K.y + d * 0.5 + 0.8]], P.valleyShade, 0.6); ANIM(live, 1, kuligAnim(K), K.x0, K.x1); }
@@ -5758,6 +5901,27 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       far: { col: "#262B50", snow: 0.38, base: 12, jag: 0.13, peaks: [[-500, 150, 190, 1.6], [-330, 172, 150, 1.8], [-250, 168, 110, 1.4], [-70, 126, 62, 0.6], [-10, 112, 56, 0.7], [170, 158, 118, 1.0], [370, 122, 140, 1.4], [560, 108, 140, 1.6]] },
       summit: { c: -330 },
       town: { kind: "village", v0: 18, v1: 62, dens: 0.9, church: { c: -60, type: "onion", h: 44 } },
+      // Plakat (Schritt 4): Wetterstein mit der Zugspitze (goldenes Gipfelkreuz) links und der spitzen Alpspitze rechts, Kreuzeckbahn,
+      // Ort mit Lüftlmalerei und dem Zwiebelturm von St. Martin. Daten wie in telemark-orte.js, verlängert.
+      // Details: Maibaum weiß-blau mit Zunftzeichen, Hornschlittenrennen auf der Straße am Hang, drei Schuhplattler, Eisstockschießen,
+      // abends Neujahrsfeuerwerk über dem Ort
+      // (Neujahrsspringen), weiß-blaue und schwarz-rot-goldene Fahne.
+      plakat: {
+        id: "garmisch", moon: [986, 178],
+        ranges: [{ style: "alpin", rough: 0.22, rocky: 1.6, tree: 470, ctrl: [[-720, 446], [-600, 410, "S"], [-480, 436, "V"], [-360, 398, "S"], [-240, 428, "V"], [-130, 402, "S"],
+          [-40, 404], [40, 326], [110, 266], [160, 238, "S"], [222, 246], [272, 264, "V"], [332, 252, "S"], [392, 292, "V"], [452, 302], [502, 282, "S"], [542, 318, "V"], [602, 306, "S"], [682, 360, "V"],
+          [762, 322], [820, 258, "S"], [880, 318], [940, 366, "V"], [1040, 344, "S"], [1160, 392, "V"], [1330, 424], [1460, 404, "S"], [1600, 432, "V"], [1760, 412, "S"], [1990, 438]] }],
+        far: { drift: [[160, 238, 1], [820, 258, 0.8]], cross: [160, 238], gold: true, feuerwerk: { x0: 900, x1: 1260, y0: 400, y1: 470, base: 600 } },
+        cables: [[884, 570, 792, 384, 10]],
+        mid: { maibaum: [1150, 652, 96], hornschlitten: [520, 612, 790, 702] },
+        town: [{ house: "bayern", cx: 1060, w: 420, y0: 596, y1: 650, churches: [{ x: 1040, yb: 622, t: "onion", h: 80 }], skip: [[1010, 1090, 1], [1130, 1170, 2]] }],
+        flags: [[1010, 736, 66, 38, 26, "by"], [1056, 728, 60, 38, 24, "de"]],
+        near: { items: [
+          ["drift", 800, 906, 789, 6], ["platter", 824, 786, 36, 3],
+          ["drift", 1112, 1262, 790, 6], ["eisstock", 1122, 1244, 786],
+          ["drift", 1268, 1336, 776, 8], ["spruce", [[1292, 770, 96, 0], [1322, 778, 74, 2]]],
+        ] },
+      },
     },
     // Nordkette als Wand über der Stadt (von West nach Ost): links das Solstein-Massiv, die Brandjochspitzen, die Frau Hitt in ihrer Scharte,
     // Seegrube und Hafelekar mit der Nordkettenbahn, dann der lange Grat zur Rumer Spitze; darunter die Hungerburg und die Stadt am Inn
@@ -9441,7 +9605,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.45";
+  const VERSION = "0.46";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
