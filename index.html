@@ -3410,7 +3410,9 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     const M = O.mid || {};
     if (M.river) river(M.river);
     if (M.viaduct) viaduct(M.viaduct);
-    if (M.train) line([[Math.min(M.train.x0, X0 - 20), M.train.y + 0.6], [Math.max(M.train.x1, X1 + 20), M.train.y + 0.6]], P.line, 1.2);
+    // Zug: im Tal läuft die Strecke über die ganze Ebene (breiter als das Plakat), auf einem Viadukt nur über die Brücke
+    const TR = M.train && (M.viaduct ? M.train : Object.assign({}, M.train, { x0: Math.min(M.train.x0, X0 - 20), x1: Math.max(M.train.x1, X1 + 20) }));
+    if (TR) line([[TR.x0, TR.y + 0.6], [TR.x1, TR.y + 0.6]], P.line, 1.2);
     for (const k of (M.kozolci || [])) kozolec(k[0], k[1]);
     for (const g of (M.groves || [])) grove(g, true);
     if (M.hamlet) { const h = M.hamlet; for (const [dx, w] of [[-34, 10], [-20, 12], [-6, 9], [8, 12], [22, 10]]) house(h.cx + dx, h.yb + (dx % 3), w, w * 0.62, preset("chalet", rng(3))); }
@@ -3419,7 +3421,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (M.city) city(M.city);
     if (M.funicular) { const f = M.funicular; line([[f[0], f[1]], [f[2], f[3]]], P.line, 1.6); station(f[0], f[1]); station(f[2], f[3]); }
     for (const [x, y, sc, ph] of chim) ANIM(live, 1, smokeAnim(x, y, sc, ph), x - 50 * sc, x + 6);
-    if (M.train) ANIM(live, 1, trainAnim(M.train), M.train.x0, M.train.x1);
+    if (TR) ANIM(live, 1, trainAnim(TR), TR.x0, TR.x1);
     for (const f of (O.flags || [])) if (f[1] < 650) ANIM(live, 1, flagAnim(f[0], f[1], f[2], f[3], f[4], f[5] || FLAG_OF[O.id] || "at", f[0] * 0.013), f[0] - 2, f[0] + f[3] + 2);
     if (O.mist !== false) ANIM(live, 1, mistAnim(O.fjord ? 568 : 662, 12, 11, hash(O.id) ^ 9), -1e4, 1e4);
   }
@@ -4362,6 +4364,20 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       skywalk: { c0: -45, c1: 41 },
       ftower: { c: 140, h: 24 },
       town: { kind: "village", v0: 20, v1: 64, dens: 1.0, roofK: 0.45, viaduct: { c: -170, w: 120, v: 27, h: 14, n: 11 }, church: { c: 110, type: "spire", h: 44 } },
+      // Plakat (Schritt 4): bewaldete Kuppen mit Skiwiesen, Aussichtsturm auf dem Ettelsberg, Hängebrücke über den Sattel, Viadukt der
+      // Uplandbahn mit Zug, Sauerländer Fachwerkdorf. Daten wie in telemark-orte.js, die Kuppen mit flachen Ausläufern bis ±600 verlängert.
+      plakat: {
+        id: "willingen", moon: [986, 178],
+        ranges: [
+          { style: "huegel", far: true, rough: 0.05, ctrl: [[-720, 472], [-560, 462], [-400, 470], [-220, 460], [-40, 478], [140, 458, "S"], [300, 472, "V"], [470, 450, "S"], [640, 468, "V"], [800, 452, "S"], [980, 470, "V"], [1140, 446, "S"], [1320, 464], [1480, 456], [1640, 466], [1800, 454], [1990, 464]] },
+          { style: "huegel", rough: 0.045, ctrl: [[-720, 510], [-540, 496], [-340, 506], [-180, 498], [-40, 506], [180, 474, "S"], [410, 500, "V"], [650, 444, "S"], [880, 492, "V"], [1080, 470, "S"], [1320, 500], [1500, 492], [1680, 504], [1860, 494], [1990, 502]], pisten: [[600, 24], [690, 20], [1060, 22]] },
+        ],
+        far: { tower: { x: 650, y: 447, h: 40 }, skywalk: { x0: 842, x1: 952, y: 486 } },
+        mid: { viaduct: { x0: 590, x1: 900, y: 570, h: 34, n: 8 }, train: { y: 570, x0: 560, x1: 905, speed: 46 }, groves: [[[912, 578, 34, 0], [928, 582, 28, 1], [946, 576, 40, 0], [968, 580, 30, 2]]] },
+        town: [{ house: "fachwerk", cx: 1090, w: 360, y0: 598, y1: 652, churches: [{ x: 1080, yb: 624, t: "spire", h: 72 }], skip: [[1050, 1124, 1]] }],
+        flags: [[1010, 736, 66, 36, 22], [1052, 728, 60, 36, 22]],
+        near: { zaun: [968, 1300, 726], spruce: [[1240, 742, 92, 0], [1268, 736, 66, 2]] },
+      },
     },
     // Plakat 1928: links der Titlis mit Gletscher und Seilbahn, die Doppelgipfel der Spannörter, der Felsturm des Hahnen; Kloster und
     // Grandhotel im Talboden. Daten in Entwurfs-px wie in telemark-orte.js (siehe plakat.js), die Grate nach links und rechts mit
@@ -7887,7 +7903,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.33";
+  const VERSION = "0.34";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
