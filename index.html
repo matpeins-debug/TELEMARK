@@ -4446,6 +4446,105 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     fill([[x - 3.6, yb - h + 0.4], [x + w + 8.6, yb - h - 4.1], [x + w + 8.2, yb - h - 6.4], [x - 3, yb - h - 2]], P.roofSnow);
     ctx.restore();
   }
+  // Oberstdorf: Christbaum am Ortsrand (die Tournee beginnt zwischen den Jahren): große Fichte mit Schnee, roten und goldenen Kugeln
+  // und Stern; abends funkeln die Lichterketten
+  function christbaum(x, yb, h, live) {
+    shade([[x, yb + 1], [x + h * 0.7, yb], [x + h * 0.55, yb + 3], [x, yb + 3]], P.valleyShade);
+    spruce(x, yb, h, 1);
+    const rr = rng(Math.round(x) * 7 + 3), balls = [], lights = [];
+    for (let i = 0; i < 22; i++) {
+      const v = 0.2 + rr() * 0.72, y = yb - h + h * 0.06 + v * h * 0.82, half = h * 0.52 * 0.5 * (0.34 + 0.66 * v) * 0.82, xx = x + (rr() * 2 - 1) * half;
+      if (i % 2) balls.push([xx, y, h * 0.018 + rr() * h * 0.008, rr() < 0.5 ? I.rot : I.ocker]); else lights.push([xx, y, rr() * 6.28]);
+    }
+    for (const [bx, by, br, c] of balls) dot(bx, by, br, tone(c));
+    const sy = yb - h - h * 0.03, sr = h * 0.05, star = [];
+    for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + (i * Math.PI) / 5, rad = i % 2 ? sr * 0.45 : sr; star.push([x + Math.cos(a) * rad, sy + Math.sin(a) * rad]); }
+    fill(star, tone(mix(I.ocker, I.papier, 0.2)));
+    ANIM(live, LI, (t) => {
+      if (!P.abend) return;
+      for (const [lx, ly, ph] of lights) { const a = 0.45 + 0.55 * Math.max(0, Math.sin(t * 2.3 + ph * 3)); ctx.globalAlpha *= a; dot(lx, ly, h * 0.014, "#FFE2A6"); ctx.globalAlpha /= a; }
+      const g = ctx.createRadialGradient(x, sy, 0.5, x, sy, sr * 3.2); g.addColorStop(0, "rgba(255,226,166,0.6)"); g.addColorStop(1, "rgba(255,226,166,0)");
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, sy, sr * 3.2, 0, 6.2832); ctx.fill();
+    }, x - h * 0.35, x + h * 0.35);
+  }
+  // Allgäuer Stall: Holzstall mit flachem Satteldach und Schnee, geteilte Stalltür; oben schaut eine Braunvieh-Kuh heraus
+  // (graubraun, helles Maul, kurze Hörner, Glocke am Lederband). Sie kaut, zuckt mit dem Ohr, dreht ab und zu den Kopf, die Glocke schwingt.
+  function stall(x, yb, k, live) {
+    const w = 52 * k, h = 26 * k, wd = tone(mix(P.wood, I.dach, 0.25)), wdD = mix(wd, I.tinte, 0.4), wall = mix(P.wall, P.wallSide, 0.32);
+    shade([[x - 2, yb + 1], [x + w + 14 * k, yb], [x + w + 10 * k, yb + 3.5], [x, yb + 3.5]], P.valleyShade);
+    shade([[x + w, yb], [x + w + 9 * k, yb - 4 * k], [x + w + 9 * k, yb - h - 4 * k], [x + w, yb - h]], wdD);
+    rect(x, yb - h * 0.45, w, h * 0.45, wall); rect(x, yb - h, w, h * 0.55, wd); rect(x, yb - 1.6 * k, w, 1.6 * k, mix(wall, I.tinte, 0.2));
+    for (let px = x + 3 * k; px < x + w; px += 3.2 * k) line([[px, yb - h], [px, yb - h * 0.45]], wdD, 0.5);
+    const dx = x + w * 0.56, dw = 11 * k, dh = 18 * k;
+    rect(dx, yb - dh, dw, dh * 0.5, wdD); rect(dx, yb - dh * 0.5, dw, dh * 0.5, mix(wd, I.tinte, 0.15));
+    line([[dx, yb - dh * 0.5], [dx + dw, yb]], wdD, 0.7); line([[dx + dw, yb - dh * 0.5], [dx, yb]], wdD, 0.7);
+    rect(x + 6 * k, yb - h * 0.8, 8 * k, 6 * k, P.abend ? P.winHi : P.win);
+    fill([[x - 5 * k, yb - h], [x + w / 2, yb - h - 12 * k], [x + w + 5 * k, yb - h]], tone(mix(P.wood, I.tinte, 0.5)));
+    fill([[x - 4.5 * k, yb - h - 0.6], [x + w / 2, yb - h - 12 * k], [x + w * 0.4, yb - h - 8 * k], [x - 1 * k, yb - h - 1.6 * k]], P.roofSnow);
+    fill([[x + w * 0.5, yb - h - 12 * k], [x + w + 5 * k, yb - h - 0.6], [x + w + 2 * k, yb - h - 2.4 * k], [x + w * 0.56, yb - h - 10 * k]], mix(P.roofSnow, P.valleyShade, 0.4));
+    // Heuhaufen neben dem Stall
+    fill([[x - 16 * k, yb], [x - 13 * k, yb - 7 * k], [x - 7 * k, yb - 9 * k], [x - 2 * k, yb - 5 * k], [x, yb]], tone(mix(I.ocker, P.wood, 0.35)));
+    fill([[x - 13 * k, yb - 7 * k], [x - 7 * k, yb - 9 * k], [x - 4 * k, yb - 7.4 * k], [x - 9 * k, yb - 6.6 * k]], P.roofSnow);
+    ANIM(live, LI, kuhAnim(dx + dw * 0.5, yb - dh * 0.5, k), dx - 12 * k, dx + dw + 14 * k);
+  }
+  function kuhAnim(x, y, k) {
+    return (t) => {
+      const fur = tone(mix(I.dach, I.schatten, 0.3)), furD = mix(fur, I.tinte, 0.3), muzzle = tone(mix(I.papier, I.dach, 0.25)), horn = tone(mix(I.papier, I.ocker, 0.3));
+      const turn = Math.sin(t * 0.45) > 0.6 ? 0.25 : 0, chew = Math.sin(t * 7) * 0.5 * k, ear = (t % 5) < 0.25 ? -0.6 : 0;
+      ctx.save(); ctx.translate(x, y); ctx.rotate(turn * 0.4); ctx.scale(k, k);
+      fill([[-4.6, 0.6], [4.6, 0.6], [3.6, -3], [-3.6, -3]], fur);
+      ctx.beginPath(); ctx.ellipse(0, -6.6, 3.6, 4.6, 0, 0, 6.2832); ctx.fillStyle = fur; ctx.fill();
+      ctx.beginPath(); ctx.ellipse(0, -3 + chew * 0.2, 2.6, 2, 0, 0, 6.2832); ctx.fillStyle = muzzle; ctx.fill();
+      dot(-0.9, -2.9, 0.42, tone(I.tinte)); dot(0.9, -2.9, 0.42, tone(I.tinte));
+      dot(-1.6, -7.6, 0.55, tone(I.tinte)); dot(1.6, -7.6, 0.55, tone(I.tinte));
+      for (const d of [-1, 1]) {
+        ctx.save(); ctx.translate(d * 3.6, -8.4); ctx.rotate(d * (0.5 + (d < 0 ? ear : 0)));
+        ctx.beginPath(); ctx.ellipse(d * 1.8, 0, 2.2, 1, 0, 0, 6.2832); ctx.fillStyle = furD; ctx.fill(); ctx.restore();
+        line([[d * 2.2, -10.6], [d * 3.4, -12], [d * 3, -13]], horn, 0.9);
+      }
+      fill([[-1.6, -11.2], [1.6, -11.2], [0.8, -10], [-0.8, -10]], mix(fur, I.papier, 0.25));
+      const sw = Math.sin(t * 2.2) * 0.25;
+      line([[-3, 0.2], [0, 1.6], [3, 0.2]], tone(mix(I.dach, I.tinte, 0.4)), 0.8);
+      ctx.save(); ctx.translate(0, 1.6); ctx.rotate(sw);
+      fill([[-1.4, 0], [1.4, 0], [1.9, 3.4], [-1.9, 3.4]], tone(mix(I.ocker, I.dach, 0.2))); ctx.restore();
+      ctx.restore();
+    };
+  }
+  // Rodelhang am Ortsrand: kleiner verschneiter Hügel, zwei Kinder sausen auf dem Schlitten hinunter und ziehen ihn wieder hinauf
+  function rodelhang(R, live) {
+    const [x0, x1, yb, h] = R, px = x0 + (x1 - x0) * 0.32;
+    const yAt = (x) => (x <= px ? yb - h * Math.sin(((x - x0) / (px - x0)) * Math.PI / 2) : yb - h * Math.pow(Math.cos(((x - px) / (x1 - px)) * Math.PI / 2), 1.4));
+    const pts = []; for (let i = 0; i <= 24; i++) { const x = x0 + (x1 - x0) * i / 24; pts.push([x, yAt(x)]); }
+    fill(pts.concat([[x1, yb + 1], [x0, yb + 1]]), P.valley);
+    const band = pts.slice(9).map(([x, y]) => [x + 1.5, y + 3.2 + (x - px) * 0.02]);
+    shade(pts.slice(9).concat(band.reverse()), mix(P.valley, P.valleyShade, 0.55));
+    line(pts, P.valleyShade, 0.8);
+    grove([[px - 14, yAt(px - 14) + 1, 22, 0], [px - 4, yAt(px - 4) + 1, 16, 2]], false);
+    ANIM(live, 1, (t) => {
+      for (const [ph, col] of [[0, I.rot], [6.5, I.navy]]) {
+        const u = (t + ph) % 13;
+        let x, sit;
+        if (u < 2.6) { const v = u / 2.6; x = px + 3 + (x1 - px - 10) * v * v; sit = true; }
+        else if (u < 3.6) { x = x1 - 7; sit = true; }
+        else { const v = (u - 3.6) / 9.4; x = x1 - 7 - (x1 - px - 10) * v; sit = false; }
+        const y = yAt(x), yn = yAt(x + 2), ang = Math.atan2(yn - y, 2);
+        const kc = tone(col), sled = tone(mix(P.wood, I.dach, 0.3));
+        if (sit) {
+          ctx.save(); ctx.translate(x, y); ctx.rotate(ang);
+          line([[-4, -0.4], [4, -0.4], [5.4, -2]], sled, 0.8); rect(-3.4, -2.2, 6.8, 1.2, sled);
+          rect(-2, -6.2, 3.4, 4.2, kc); line([[0.6, -3], [3.6, -2.4]], kc, 1.2); dot(-0.3, -7.4, 1.3, skin()); dot(-0.3, -8.4, 1.1, tone(I.ocker));
+          ctx.restore();
+        } else {
+          const sx = x + 9, sy = yAt(sx);
+          ctx.save(); ctx.translate(sx, sy); ctx.rotate(Math.atan2(yAt(sx + 2) - sy, 2)); line([[-4, -0.4], [4, -0.4], [5.4, -2]], sled, 0.8); rect(-3.4, -2.2, 6.8, 1.2, sled); ctx.restore();
+          line([[x + 1.4, y - 6], [sx - 4, sy - 1.6]], P.line, 0.4);
+          const st = Math.sin(t * 6) * 0.9;
+          line([[x - 0.5, y - 4.6], [x - 0.5 + st, y]], tone(I.tinte), 1); line([[x + 0.5, y - 4.6], [x + 0.5 - st, y]], tone(I.tinte), 1);
+          rect(x - 1.6, y - 9, 3.2, 4.8, kc); dot(x, y - 10.3, 1.3, skin()); dot(x, y - 11.3, 1.1, tone(I.ocker));
+        }
+      }
+    }, x0, x1);
+  }
   // Straßenbahn (rot-cremefarben, zwei Wagenteile, Stromabnehmer); fährt nach rechts, x = Heck
   function tramAt(x, yb) {
     const H = 11.5, cream = tone(mix(I.papier, I.ocker, 0.14)), red = tone(I.rot), win = P.abend ? P.win : mix(I.tief, I.himmel, 0.35);
@@ -4490,6 +4589,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     riesenfahne: (it, live) => riesenfahne(it[1], it[2], it[3], it[4] || 4, live),
     oscypek: (it, live) => oscypek(it[1], it[2], it[3] || 1, live),
     polka: (it, live) => polka(it[1], it[2], it[3], live),
+    christbaum: (it, live) => christbaum(it[1], it[2], it[3], live),
+    stall: (it, live) => stall(it[1], it[2], it[3] || 1, live),
     bienenhaus: (it) => bienenhaus(it[1], it[2], it[3] || 1),
     herde: (it, live) => { heuraufe(it[1] + 84 * it[3], it[2] + 1.5 * it[3], it[3] * 1.15); ANIM(live, LI, herdeAnim([it[1], it[2], it[3]]), it[1] - 10, it[1] + 120 * it[3]); },
 
@@ -4590,6 +4691,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (M.dachl) dachl(M.dachl, live);
     if (M.funicular) { const f = M.funicular; line([[f[0], f[1]], [f[2], f[3]]], P.line, 1.6); station(f[0], f[1]); station(f[2], f[3]); ANIM(live, 1, funicularAnim(f), Math.min(f[0], f[2]) - 8, Math.max(f[0], f[2]) + 8); }
     if (M.schanzen) planicaMid(M, live);
+    if (M.rodelhang) rodelhang(M.rodelhang, live);
     for (const st of (M.stogi || [])) stog(st[0], st[1], st[2]);
     for (const b of (M.bacowki || [])) bacowka(b[0], b[1], b[2], live);
     if (M.kulig) { const K = Object.assign({}, M.kulig, { x0: X0 - 40, x1: X1 + 40 }); for (const d of [-1.4, 1.4]) line([[K.x0, K.y + d * 0.5 + 0.8], [K.x1, K.y + d * 0.5 + 0.8]], P.valleyShade, 0.6); ANIM(live, 1, kuligAnim(K), K.x0, K.x1); }
@@ -5627,6 +5729,29 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       moon: 0.66,
       far: { col: "#1C2E4D", snow: 0.42, base: 10, jag: 0.15, peaks: [[-480, 108, 140, 1.4], [-300, 138, 120, 1.2], [-195, 150, 60, 0.85], [-150, 145, 52, 0.85], [-110, 140, 50, 0.85], [20, 158, 150, 1.25], [235, 132, 110, 1.1], [420, 146, 130, 1.3], [610, 112, 140, 1.5]] },
       town: { kind: "village", v0: 18, v1: 62, dens: 0.75, church: { c: 40, type: "spire", h: 50 } },
+      // Plakat (Schritt 4): Allgäuer Hochalpen mit der spitzen Trettachspitze, rechts das Nebelhorn mit Kabinenbahn, Oberstdorf mit
+      // dem hohen Spitzturm von St. Johann Baptist. Daten wie in telemark-orte.js, verlängert.
+      // Details: Rodelhang am Ortsrand mit zwei Kindern, Christbaum mit Kugeln und Stern (abends Lichter; die Tournee beginnt zwischen
+      // den Jahren), Allgäuer Stall mit einer Braunvieh-Kuh an der Stalltür, eine deutsche Fahne.
+      plakat: {
+        id: "oberstdorf", moon: [986, 178],
+        ranges: [
+          { style: "alpin", far: true, rough: 0.26, tree: 520, ctrl: [[260, 548], [380, 360], [440, 316, "S"], [500, 340, "V"], [560, 322, "S"], [640, 364, "V"], [720, 548]] },
+          { style: "alpin", rough: 0.24, tree: 482, rocky: 1.2, ctrl: [[-720, 470], [-610, 440, "S"], [-500, 462, "V"], [-380, 430, "S"], [-260, 456, "V"], [-150, 436, "S"],
+            [-40, 444], [60, 404], [150, 350], [204, 324, "S"], [252, 350, "V"], [320, 304], [364, 258, "S"], [392, 292, "V"], [432, 272, "S"], [472, 304, "V"], [532, 290, "S"], [602, 344, "V"],
+            [680, 384], [760, 364], [846, 330, "S"], [920, 326], [1000, 356, "V"], [1100, 374, "S"], [1200, 410, "V"], [1330, 432], [1460, 418, "S"], [1600, 440, "V"], [1760, 424, "S"], [1990, 446]] },
+        ],
+        far: { drift: [[364, 258, 0.8], [846, 330, 0.6]] },
+        cables: [[934, 572, 852, 336, 10]],
+        mid: { rodelhang: [600, 780, 690, 34] },
+        town: [{ house: "chalet", cx: 1060, w: 420, y0: 596, y1: 650, churches: [{ x: 1040, yb: 622, t: "spire", h: 102 }], skip: [[1010, 1090, 1]] }],
+        flags: [[1012, 736, 66, 36, 22, "de"]],
+        near: { items: [
+          ["drift", 806, 902, 788, 6], ["christbaum", 846, 786, 74], ["leute", [[872, 788, 36, 11], [890, 789, 24, 4, "kid"]]],
+          ["drift", 1110, 1250, 787, 6], ["stall", 1136, 784, 1.15],
+          ["drift", 1262, 1336, 776, 8], ["spruce", [[1286, 770, 100, 0], [1318, 778, 78, 2]]],
+        ] },
+      },
     },
     garmisch: {
       moon: 0.63,
@@ -9316,7 +9441,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.44";
+  const VERSION = "0.45";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
