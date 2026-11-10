@@ -1072,6 +1072,94 @@ body.era28 #hud .start-title, body.era28 #hud .goal-title { font-family: var(--f
 body.era28 #hud .hint, body.era28 #hud .hint-sub { font-family: var(--font-body); }
 body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0.85) saturate(0.7); }
 
+/* =====================================================================================================
+   Preisgeld (Taler), Shop und Wachs
+   ===================================================================================================== */
+.coin { display: block; flex: none; }
+/* Titel: Shop neben dem Training, mit Kontostand */
+.btn-row-tr { display: grid; grid-template-columns: minmax(0, 1fr) max-content; gap: 10px; }
+.btn-row-tr > .btn { position: relative; }
+.shop-btn { padding: 0 14px 0 12px; justify-content: center; }
+.shop-in { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+.shop-k { font-family: var(--font-label); font-weight: 700; font-size: 10px; line-height: 11px; letter-spacing: 0.22em; color: var(--muted); }
+.shop-n { display: flex; align-items: center; gap: 6px; font-family: var(--font-display); font-weight: 800; font-size: 20px; line-height: 22px; letter-spacing: 0.02em; }
+.shop-coin { display: flex; }
+/* Preisgeld am Ergebnis, am Endstand und an der Gesamtwertung */
+.prize { display: inline-flex; align-items: center; gap: 5px; flex: none; padding: 2px 9px 2px 4px; border: 1.5px solid var(--ink-deep); border-radius: 3px; background: #F6E2A8;
+  color: var(--ink-deep); font-family: var(--font-display); font-weight: 800; font-size: 14px; line-height: 18px; letter-spacing: 0.03em; white-space: nowrap; animation: prizeIn 0.6s ease-out; }
+.prize-l { font-size: 17px; line-height: 22px; padding: 3px 11px 3px 5px; }
+@keyframes prizeIn { 0% { transform: scale(0.6); opacity: 0; } 60% { transform: scale(1.08); opacity: 1; } 100% { transform: scale(1); } }
+.rs-sess-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-width: 0; height: 18px; }   /* Pille ragt heraus, die Zeile bleibt so hoch wie der Text */
+.rs-sess-row .prize { margin: -5px 0; font-size: 13px; line-height: 16px; padding: 1px 8px 1px 3px; }
+.rs-sess-row .prize .coin { width: 16px; height: 16px; }
+.rs-sess-row .rs-sess { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.title-prize { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+/* Wachs am Start: rechts unter der Startampel */
+.start-wrap { flex-direction: column; align-items: flex-end; gap: 8px; }
+.wax-box { display: flex; flex-direction: column; gap: 4px; min-width: 196px; padding: 7px 10px 8px 12px; border-radius: 12px; pointer-events: auto; }
+.wax-btn { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 10px; border: 1px solid var(--line-2); border-radius: 8px; background: var(--row); color: var(--text);
+  cursor: pointer; font-family: var(--font-display); font-weight: 700; font-size: 16px; letter-spacing: 0.03em; }
+.wax-btn:disabled { cursor: default; }
+.wax-dot { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid rgba(10, 18, 32, 0.6); flex: none; display: block; }
+.wax-dot.svc { background: linear-gradient(135deg, #3F8F55 0 34%, #7656A8 34% 66%, #C23B2B 66%); }
+.wax-fit { margin-left: auto; padding-left: 8px; font-family: var(--font-body); font-weight: 600; font-size: 13px; letter-spacing: 0; color: var(--muted); }
+.wax-box.ok .wax-fit { color: #7FD49B; }
+.wax-box.bad .wax-fit { color: #FF9A7A; }
+/* Shop */
+.shop .set-head-btns { align-items: center; }
+.purse { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 10px 0 6px; border: 2px solid var(--line-2); border-radius: 4px; font-family: var(--font-display); }
+.purse b { font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: 0.02em; }
+.purse span { font-size: 13px; color: var(--muted); letter-spacing: 0.04em; }
+.sh-pane { flex: 1; min-height: 0; overflow: auto; touch-action: pan-y; }
+.sh-note { margin: 0 0 8px; display: flex; align-items: center; gap: 6px; font-family: var(--font-body); font-size: 12.5px; line-height: 16px; color: var(--text-2); }
+.sh-gear { display: flex; flex-direction: column; gap: 6px; }
+.sh-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 4px 8px 4px 12px; border: 2px solid var(--line); border-radius: 4px; }
+.sh-l { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.sh-name { display: flex; align-items: center; gap: 10px; }
+.sh-name b { font-family: var(--font-display); font-size: 18px; line-height: 21px; color: var(--text); letter-spacing: 0.02em; }
+.sh-l small { font-family: var(--font-body); font-size: 12.5px; line-height: 15px; color: var(--muted); }
+.sh-pips { display: inline-flex; gap: 3px; }
+.sh-pips i { width: 14px; height: 6px; border-radius: 1px; background: var(--row-2); }
+.sh-pips i.on { background: var(--hi); }
+.sh-buy { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; min-width: 156px; padding: 4px 12px; border: 2px solid var(--ink-deep); border-radius: 4px; background: var(--paper);
+  color: var(--ink); cursor: pointer; box-shadow: 0 3px 0 var(--ink-deep); flex: none; text-align: right; }
+.sh-buy b { font-family: var(--font-display); font-size: 16px; line-height: 19px; letter-spacing: 0.03em; }
+.sh-buy span { display: flex; align-items: center; gap: 4px; font-family: var(--font-display); font-weight: 700; font-size: 13.5px; line-height: 16px; color: var(--text-2); white-space: nowrap; }
+.sh-buy:disabled { opacity: 0.55; cursor: default; box-shadow: none; }
+.sh-buy.armed { background: var(--hi); color: var(--hi-ink); }
+.sh-buy.armed span { color: var(--hi-ink); }
+.sh-buy:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink-deep); }
+.sh-max, .sh-on { font-family: var(--font-label); font-weight: 700; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); flex: none; padding: 0 6px; }
+.sh-foot { margin: 8px 0 0; font-family: var(--font-body); font-style: italic; font-size: 12px; line-height: 15px; color: var(--muted); }
+.sh-wax { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 16px; }
+.sh-cond { display: flex; flex-direction: column; gap: 7px; }
+.sh-tline { display: flex; align-items: baseline; gap: 10px; }
+.sh-temp { font-family: var(--font-display); font-weight: 800; font-size: 34px; line-height: 36px; color: var(--text); white-space: nowrap; }
+.sh-tline span { font-family: var(--font-body); font-size: 15px; color: var(--text-2); }
+.sh-cond p { margin: 0; font-family: var(--font-body); font-size: 13px; line-height: 17px; color: var(--text-2); }
+.sh-thermo { position: relative; display: flex; height: 10px; margin: 4px 0 2px; border: 1.5px solid var(--ink-deep); border-radius: 2px; }
+.sh-thermo i { height: 100%; }
+.sh-thermo i.k { background: #3F8F55; } .sh-thermo i.m { background: #7656A8; } .sh-thermo i.w { background: #C23B2B; }
+.sh-thermo b { position: absolute; top: -6px; width: 4px; height: 19px; margin-left: -2px; background: var(--ink-deep); border-radius: 1px; box-shadow: 0 0 0 1.5px var(--paper); }
+.sh-list { display: flex; flex-direction: column; gap: 4px; }
+.sh-wrow { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 3px 6px 3px 10px; border: 2px solid var(--line); border-radius: 4px; }
+.sh-wrow.cur { border-color: var(--hi); }
+.sh-wt { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.sh-wt b { font-family: var(--font-display); font-size: 16px; line-height: 19px; color: var(--text); letter-spacing: 0.02em; }
+.sh-wt small { font-family: var(--font-body); font-size: 12px; line-height: 14px; color: var(--muted); }
+.sh-tag { font-style: normal; font-family: var(--font-label); font-weight: 700; font-size: 9.5px; letter-spacing: 0.1em; padding: 1px 5px; margin-left: 6px; border-radius: 2px; background: #3F8F55; color: #FBF4E4; vertical-align: 2px; white-space: nowrap; }
+.sh-sel { height: 32px; padding: 0 12px; font-size: 13px; flex: none; }
+.sh-wrow .sh-buy { min-width: 96px; padding: 3px 10px; }
+.sh-buy1 b { display: flex; align-items: center; gap: 5px; font-size: 16px; }
+.sh-buy1 span { font-size: 12px; }
+.sh-money { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; }
+.sh-how, .sh-log { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.sh-mline { display: grid; grid-template-columns: 118px minmax(0, 1fr); gap: 8px; font-size: 12.5px; line-height: 15px; }
+.sh-mline b { font-family: var(--font-display); font-size: 14px; color: var(--text); }
+.sh-mline span { font-family: var(--font-body); color: var(--text-2); }
+.sh-lline { display: flex; justify-content: space-between; gap: 8px; padding: 2px 0; border-bottom: 1px solid var(--line); font-family: var(--font-body); font-size: 12.5px; line-height: 16px; color: var(--text-2); }
+.sh-lline b { font-family: var(--font-display); color: var(--text); white-space: nowrap; }
+
 </style>
 </head>
 <body>
@@ -1107,6 +1195,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       <div class="lights" aria-hidden="true"><span id="lightR" class="light"></span><span id="lightG" class="light"></span></div>
       <div class="start-text"><span id="startTitle" class="start-title">Warte auf Grün</span><span id="startSub" class="start-sub">Wind wird gemessen</span></div>
     </div>
+    <div id="waxBox" class="panel wax-box" hidden><span id="waxKick" class="kicker">WACHS</span><button type="button" id="waxBtn" class="wax-btn" aria-label="Wachs wechseln"><i id="waxDot" class="wax-dot"></i><span id="waxName" class="wax-name">Universal</span><span id="waxFit" class="wax-fit">Standard</span></button></div>
   </div>
 
   <div id="goalBox" class="goal-wrap" hidden><div class="panel goal-box"><span id="goalKicker" class="kicker"></span><span id="goalTitle" class="goal-title"></span><span id="goalText" class="goal-text"></span><span id="goalStars" class="goal-stars"></span></div></div>
@@ -1181,7 +1270,10 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       <h1 class="logo">COLD MEDAL</h1>
     </div>
     <div class="btn-col">
-      <button type="button" id="btnPlay" class="btn btn-primary"><span class="btn-two"><span>Training</span><span id="trBadge" class="btn-badge" hidden>ANFÄNGER</span></span><span class="ico" data-icon="arrow-right"></span></button>
+      <div class="btn-row-tr">
+        <button type="button" id="btnPlay" class="btn btn-primary"><span class="btn-two"><span>Training</span><span id="trBadge" class="btn-badge" hidden>ANFÄNGER</span></span><span class="ico" data-icon="arrow-right"></span></button>
+        <button type="button" id="btnShop" class="btn btn-secondary shop-btn" aria-label="Shop: Ausrüstung und Wachs"><span class="shop-in"><span class="shop-k">SHOP</span><span class="shop-n"><span id="shopCoin" class="shop-coin"></span><span id="shopBal">0</span></span></span><span id="shopNew" class="btn-badge" hidden>NEU</span></button>
+      </div>
       <div class="btn-row btn-row-ch">
         <button type="button" id="btnComp" class="btn btn-secondary"><span>Wettkampf</span><span class="ico" data-icon="chev-right"></span></button>
         <button type="button" id="btnChamp" class="btn btn-secondary" aria-label="Meisterschaft: Tournee, Saison, Skiflug-Woche"><span class="btn-two"><span>Meisterschaft</span><span id="chBadge" class="btn-badge" hidden></span></span><span class="ico" data-icon="chev-right"></span></button>
@@ -1254,7 +1346,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       <div class="pp-row"><span id="rsFlag" class="flag"></span><span id="rsName" class="res-name">MAT</span><span id="rsNation" class="pp-nat">AUT</span></div>
       <span id="rsChip" class="chip chip-cyan">TRAINING</span>
     </div>
-    <span id="rsSession" class="rr-sub rs-sess">Training · Holmenkollen</span>
+    <div class="rs-sess-row"><span id="rsSession" class="rr-sub rs-sess">Training · Holmenkollen</span><span id="rsPrize" class="prize" hidden></span></div>
     <div class="res-big"><span id="rsDist" class="num res-dist">0,0 m</span><span id="rsPts" class="num res-pts">0,0 Pkt.</span></div>
     <div class="res-rows">
       <div class="res-row"><span class="rr-l">Weite</span><div id="rsDistTxt" class="rr-m"></div><span id="rsDistPts" class="num rr-p"></span></div>
@@ -1460,7 +1552,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 <section id="scrFinal" class="screen screen-dim2" hidden>
   <div class="fin-left panel-strong">
     <span id="fnKicker" class="kicker">ENDERGEBNIS</span>
-    <h1 id="fnTitle" class="h1"></h1>
+    <div class="title-prize"><h1 id="fnTitle" class="h1"></h1><span id="fnPrize" class="prize prize-l" hidden></span></div>
     <div id="fnPodium" class="podium"></div>
     <p id="fnText" class="res-tip"></p>
   </div>
@@ -1480,7 +1572,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 <section id="scrChamp" class="screen screen-dim2" hidden>
   <div class="cp-left panel-strong">
     <span id="cpKicker" class="kicker">MEISTERSCHAFT</span>
-    <h1 id="cpTitle" class="h1"></h1>
+    <div class="title-prize"><h1 id="cpTitle" class="h1"></h1><span id="cpPrize" class="prize prize-l" hidden></span></div>
     <p id="cpSub" class="cp-sub"></p>
     <div id="cpPodium" class="podium cp-podium" hidden></div>
     <div id="cpCal" class="cp-cal"></div>
@@ -1537,6 +1629,20 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       <button type="button" id="btnPauseSettings" class="btn btn-secondary"><span>Einstellungen</span><span class="ico" data-icon="sliders"></span></button>
       <button type="button" id="btnQuit" class="btn btn-secondary"><span>Hauptmenü</span><span class="ico" data-icon="home"></span></button>
     </div>
+  </div>
+</section>
+
+<!-- ============ Shop: Ausrüstung, Wachs, Preisgeld ============ -->
+<section id="scrShop" class="screen screen-dim2 center" hidden>
+  <div class="dialog settings shop panel-strong" role="dialog" aria-labelledby="shTitle">
+    <div class="set-head">
+      <div class="set-titles"><h2 id="shTitle" class="kicker">SHOP · SKISERVICE</h2>
+        <div id="segShopTab" class="seg set-tabs" role="tablist" aria-label="Bereich"><button type="button" data-v="gear">Ausrüstung</button><button type="button" data-v="wax">Wachs</button><button type="button" data-v="money">Preisgeld</button></div></div>
+      <div class="set-head-btns"><span id="shPurse" class="purse"></span><button type="button" id="btnShDone" class="btn btn-primary btn-s"><span>Fertig</span></button></div>
+    </div>
+    <div id="shPane-gear" class="sh-pane"></div>
+    <div id="shPane-wax" class="sh-pane" hidden></div>
+    <div id="shPane-money" class="sh-pane" hidden></div>
   </div>
 </section>
 
@@ -10268,7 +10374,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.52.1";
+  const VERSION = "0.53";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -10648,7 +10754,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   const vis = (e, on) => { if (e.hidden === on) e.hidden = !on; };
   // Zahl und Einheit (75 %, 148,5 m, 142,4 P.) und Wort und Zahl (HS 140, Luke 12, Platz 3) nie trennen: geschütztes Leerzeichen
   const NB_U = /(\d) (?=(?:%|°C|°|Taler|km\/h|m\/s|min|ms|m|s|P\.|Pkt\.?|Punkte?|PUNKTE?|Springer|SPRINGER|Schanzen|SCHANZEN|Sprünge|Versuche|Sterne)(?![A-Za-zÄÖÜäöüß]))/g;
-  const NB_W = /(^|[^A-Za-zÄÖÜäöüß])(HS|K|Luke|LUKE|Platz|PLATZ|Rang|Durchgang|DURCHGANG|Sprung|SPRUNG|Versuch|VERSUCH|Schanze|SCHANZE|Tournee|TOURNEE|Nr\.|Aufwind|Rückenwind|Wind|Standard) (?=[\d−+])/g;
+  const NB_W = /(^|[^A-Za-zÄÖÜäöüß])(HS|K|Luke|LUKE|Platz|PLATZ|Rang|Durchgang|DURCHGANG|Sprung|SPRUNG|Versuch|VERSUCH|Schanze|SCHANZE|Tournee|TOURNEE|Nr\.|Aufwind|Rückenwind|Wind|Standard|Sieg|Bronze|Silber|Gold|Böen|fehlen) (?=[\d−+])/g;
   // dazu: Ordnungszahl und Wort (1. Durchgang, 18. Februar) und Bezeichnung vor einem Messwert mit Einheit (Landung 94,9 km/h, Vorlage 96 %)
   const NB_O = /(\d\.) (?=[A-ZÄÖÜ])/g;
   const NB_L = /([A-Za-zÄÖÜäöüß]{2,}) (?=[−+]?\d[\d,.]*[ \u00a0](?:%|°|km\/h|m\/s|ms|m|s|P\.|Pkt|Punkte)(?![A-Za-zÄÖÜäöüß]))/g;
@@ -10980,7 +11086,9 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     vis($("scrPic"), name === "pic");
     vis($("scrOnline"), name === "online");
     vis($("scrAsk"), name === "ask");
+    vis($("scrShop"), name === "shop");
     if (name === "settings") fillSettings();
+    if (name === "shop") fillShop();
     if (name === "online") fillOnline();
     if (name === "info") fillInfo();
     if (name === "jumper") fillJumper();
@@ -10996,10 +11104,17 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   function fitLogo() {
     const l = document.querySelector(".logo");
     if (!l || !l.clientWidth) return;
-    l.style.fontSize = "";
-    const cw = l.clientWidth, sw = l.scrollWidth;
-    if (sw > cw) { const fs = Math.floor(parseFloat(getComputedStyle(l).fontSize) * cw / sw); l.style.fontSize = fs + "px"; l.style.lineHeight = Math.round(fs * 1.04) + "px"; }
-    else l.style.lineHeight = "";
+    l.style.fontSize = ""; l.style.lineHeight = "";
+    let cw = l.clientWidth;
+    // nicht unter die Knöpfe oben rechts (langer Name): der Schriftzug endet links davon
+    const tt = document.querySelector(".title-top");
+    if (tt && tt.offsetParent) {
+      const a = l.getBoundingClientRect(), b = tt.getBoundingClientRect();
+      if (b.bottom > a.top && b.left < a.right) cw = Math.min(cw, Math.max(140, (b.left - a.left) / uiS - 12));
+    }
+    const rg = document.createRange(); rg.selectNodeContents(l);
+    const tw = Math.max(l.scrollWidth > l.clientWidth ? l.scrollWidth : 0, rg.getBoundingClientRect().width / uiS);   // Breite der Schrift selbst
+    if (tw > cw) { const fs = Math.floor(parseFloat(getComputedStyle(l).fontSize) * cw / tw); l.style.fontSize = fs + "px"; l.style.lineHeight = Math.round(fs * 1.04) + "px"; }
   }
   function refreshTitle() {
     el.tjFlag.innerHTML = flag(S.nation); txt(el.tjName, S.name || "SPRINGER");
@@ -11012,6 +11127,9 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     vis($("ptBadge"), !!p); if (p) txt($("ptBadge"), `${p.station + 1}/${p.hills.length}`);
     vis($("muBadge"), !!p); if (p) txt($("muBadge"), "PARTY");
     vis($("trBadge"), !!S.beginner && !S.expert);
+    const sc = $("shopCoin"); if (!sc.firstChild) sc.innerHTML = coin(20);
+    txt($("shopBal"), fmtT(S.taler || 0)); vis($("shopNew"), !!S.ecoNew);
+    $("btnShop").setAttribute("aria-label", `Shop: ${fmtT(S.taler || 0)} Taler`);
   }
   function setHill(key) {
     if (!HILL_ORDER.includes(key)) return;
@@ -11092,21 +11210,22 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     // beim Anlegen einer Gruppe springen alle unter gleichen Bedingungen; eine Mission „Ohne Hilfen“ bleibt ohne.
     const fair = ctxMode === "chal" || ctxMode === "daily" || grpNew;
     const beginner = !!S.beginner && !expert && !fair && !(ctxMode === "mission" && ms.m.noAssist);
-    J = new Ph.Jump(H, { gate, refGate, wind, seed: jseed, inrunCtl: expert, upright: ctxMode === "mission" && !!ms.m.n28 && ms.res.length === 1 && !!ms.upright });
+    // Tageszeit und Schnee des Tages; Material aus dem Shop (Einheitsmaterial online, in der Tageschallenge, in der Party, 1928, im Übungssprung)
+    const tod = ctxMode === "mission" ? ms.m.tod || todFor(H) : ctxMode === "daily" ? dc.tod : ctxMode === "chal" ? chal.t : todFor(H);
+    const gear = gearFor(fair || ctxMode === "hot" || !!H.era || practice, snowCond(H, tod, todayStr()));
+    J = new Ph.Jump(H, { gate, refGate, wind, seed: jseed, inrunCtl: expert, upright: ctxMode === "mission" && !!ms.m.n28 && ms.res.length === 1 && !!ms.upright,
+      muK: gear.muK, aero: gear.aero, rollK: gear.rollK });
     jc = { seed: jseed, practice, light: "red", tLight: 0.9 + Math.random() * 1.2, rec: [], recT: -1, slow: practice ? [0.5, 0.7, 1][clamp(3 - practiceLeft, 0, 2)] : (ctxMode === "training" ? trainSpeed() : 1),
       drag: null, timing: null, toastT: 0, doneT: 0, dragged: false, finished: false, who, colors,
       countdown: ctxMode === "comp" || ctxMode === "hot" ? 10 : null, ghostRec: [], ghostT: -1, toLead: null, speedT: 0,
       noAssist: (ctxMode === "mission" && !!ms.m.noAssist) || expert, expert, beginner, grpNew, freeze: null, target: ctxMode === "mission" ? missionTarget(ms.m, H) : null,
-      prevBest: S.bests[H.key] ? S.bests[H.key].d : null };
+      prevBest: S.bests[H.key] ? S.bests[H.key].d : null, gear, tod };
     vis($("ppMode"), expert || beginner); txt($("ppMode"), expert ? "EXPERTENMODUS" : beginner ? "ANFÄNGERMODUS" : "");
     $("ppMode").classList.toggle("beg", beginner);
     jc.toLead = toLeadDist();
     jc.duel = ctxMode === "comp" && comp.ko && comp.round === 1 && comp.duelOf("me") && comp.res[comp.duelOf("me")].r1 ? comp.byId[comp.duelOf("me")].name : null;
-    if (ctxMode === "mission") renderer.setTheme(ms.m.tod || todFor(H));
-    else if (ctxMode === "daily") renderer.setTheme(dc.tod);
-    else if (ctxMode === "chal") renderer.setTheme(chal.t);
-    else renderer.setTheme(todFor(H));
-    fillGoalBox();
+    renderer.setTheme(tod);
+    fillGoalBox(); fillWaxBox();
     jc.ghost = ctxMode === "training" && !practice && S.ghosts[H.key] ? S.ghosts[H.key] : null;
     if (ctxMode === "chal" && chal.path) jc.ghost = { d: chal.d, path: chal.path };
     if (ctxMode === "chal" && chal.grp && chal.ghosts && chal.ghosts.length) { jc.ghost = null; jc.ghosts = chal.ghosts.slice(0, 6); }
@@ -11133,13 +11252,13 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   function startInrun() {
     if (!J || J.phase !== "gate" || jc.light !== "green") return;
     J.start(); vib(15);
-    jc.simBase = { wind: CP.shiftWind(J.wind, J.t), gate: J.gate, refGate: J.refGate, seed: jc.seed };
+    jc.simBase = { wind: CP.shiftWind(J.wind, J.t), gate: J.gate, refGate: J.refGate, seed: jc.seed, gear: jc.gear };
     if (jc.beginner) jc.ideal = idealFlight();
   }
   // Ideale Flugkurve für Anfänger: derselbe Sprung, aber perfekt gesprungen (wie die KI-Spitze ohne Fehler)
   function idealFlight() {
     try {
-      const j = new Ph.Jump(H, { gate: J.gate, refGate: J.refGate, wind: CP.shiftWind(J.wind, J.t), seed: jc.seed, upright: J.upright });
+      const j = new Ph.Jump(H, { gate: J.gate, refGate: J.refGate, wind: CP.shiftWind(J.wind, J.t), seed: jc.seed, upright: J.upright, muK: J.muK, aero: J.aeroK / (H.airK || 1), rollK: J.rollK });
       j.start();
       const path = [], dt = 1 / 120;
       for (let i = 0; i < 120 * 40 && !j.landing; i++) {
@@ -11162,7 +11281,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   // Derselbe Sprung unter denselben Bedingungen (Luke, Windfolge, Zufall) nachgerechnet: perfekt, mit deinem Absprung und perfektem Flug,
   // und perfekt ohne Wind. Die Unterschiede zeigen, wo die Meter geblieben sind.
   function simJump(base, o) {
-    const j = new Ph.Jump(H, { gate: base.gate, refGate: base.refGate, wind: o.calm ? Ph.makeWind("off", 1) : base.wind, seed: base.seed });
+    const g = !o.std && base.gear ? base.gear : { muK: 1, aero: 1, rollK: 1 };   // o.std: derselbe Sprung mit Standardmaterial
+    const j = new Ph.Jump(H, { gate: base.gate, refGate: base.refGate, wind: o.calm ? Ph.makeWind("off", 1) : base.wind, seed: base.seed, muK: g.muK, aero: g.aero, rollK: g.rollK });
     j.start();
     const path = [];
     for (let i = 0; i < 240 * 30 && !j.landing; i++) {
@@ -11186,6 +11306,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     if (!ideal) return null;
     const take = r.zone === "perfect" ? ideal : simJump(b, J.tauTap != null ? { tau: J.tauTap } : { tau: null, airTap: !!J.lateAirTap });
     const calm = J.wind.mode === "off" ? ideal : simJump(b, { tau: Ph.P.tauIdeal, calm: true });
+    const std = b.gear && !b.gear.std && (b.gear.muK !== 1 || b.gear.aero !== 1) ? simJump(b, { tau: Ph.P.tauIdeal, std: true }) : null;
     // Flugbahn als Höhe über dem Hang, je Punkt die Abweichung der Fluglage (Vorlage, Balance)
     const fl = r.rec.filter((s) => s.phase === "flight").map((s) => {
       const g = Hill.groundAt(H, Math.max(0, s.x));
@@ -11200,7 +11321,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       const worst = Math.max(up, fw, rl);
       return { name, worst, kind: worst === rl ? "roll" : worst === up ? "up" : "fw" };
     }).filter(Boolean).sort((p, q) => q.worst - p.worst);
-    return { ideal: ideal.d, take: take ? take.d : null, calm: calm ? calm.d : null, fl, idealPath, part: parts[0] && parts[0].worst > 0.25 ? parts[0] : null };
+    return { ideal: ideal.d, take: take ? take.d : null, calm: calm ? calm.d : null, mat: std ? ideal.d - std.d : null, matTxt: std ? gearShort(b.gear) : "", fl, idealPath, part: parts[0] && parts[0].worst > 0.25 ? parts[0] : null };
   }
   // Analyse anzeigen: was möglich war, wo die Meter geblieben sind (Absprung, Flug, Landung), was der Wind gemacht hat, dazu die Flugkurve
   function anaHtml(r) {
@@ -11228,6 +11349,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       const wg = Math.round((a.ideal - a.calm) * 2) / 2, wi = windInfo(r.wind || 0);
       rows += row("WIND", `${wi.lbl} ${fmt1(Math.abs(r.wind || 0))} m/s · ${fmtS(r.windPts)} P.`, wg, Math.abs(wg) < 0.25 ? "0 m" : `${wg > 0 ? "+" : "−"}${fmt1(Math.abs(wg))} m`, "info");
     }
+    // Material: so viel bringt (oder kostet) es gegenüber Standardmaterial, bei perfektem Sprung
+    if (a.mat != null) { const mg = Math.round(a.mat * 2) / 2; rows += row("MATERIAL", esc(a.matTxt), mg, Math.abs(mg) < 0.25 ? "0 m" : `${mg > 0 ? "+" : "−"}${fmt1(Math.abs(mg))} m`, "info"); }
     return `<p class="an-head">${esc(head)}</p><div class="an-chart"><canvas id="anCv" aria-label="Flugkurve: Höhe über dem Hang, deine und die perfekte"></canvas></div>${rows}<p class="an-tip">${esc(anaTip(r, tl, fl2, lost))}</p>`;
   }
   function anaTip(r, tl, fl2, lost) { return dsk(anaTip0(r, tl, fl2, lost)); }
@@ -11292,9 +11415,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   // Luke verstellen: Fehltipps neben die Knöpfe starten den Sprung nicht (Schutzzone um den Kasten, kurz nach dem Verstellen kein Start)
   let gateTapT = 0;
   function nearGateBox(e) {
-    if (!el.gateBox || el.gateBox.hidden) return false;
-    const r = el.gateBox.getBoundingClientRect(), m = 30;
-    return e.clientX > r.left - m && e.clientX < r.right + m && e.clientY > r.top - m && e.clientY < r.bottom + m;
+    const near = (b) => { if (!b || b.hidden || !b.offsetParent) return false; const r = b.getBoundingClientRect(), m = 30; return e.clientX > r.left - m && e.clientX < r.right + m && e.clientY > r.top - m && e.clientY < r.bottom + m; };
+    return near(el.gateBox) || near($("waxBox"));
   }
   function changeGate(d) {
     gateTapT = performance.now();
@@ -11828,6 +11950,12 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       v: J.vTakeoff * 3.6, ft: J.tf, maxH: J.stats.maxH, path: jc.ghostRec, hillKey: H.key, ctx: ctxMode,
       vIn: J.stats.vMaxIn * 3.6, vFl: J.stats.vMaxFl * 3.6, vLand: J.stats.vLand * 3.6, dtL: J.landing.dtL, expert: !!jc.expert,
       inOk: J.stats.inT > 0.5 ? Math.round(100 * J.stats.inOk / J.stats.inT) : null, vLoss: J.stats.vLoss * 3.6 }, sc);
+    // Preisgeld: neue Bestweite (nicht im Übungssprung), erster Sprung in einer Online-Gruppe oder auf einer Schanze der Online-Tournee
+    if (mine && newBest && !jc.practice) credit(100, `Neue Bestweite ${hillShort(H.key)}`, entry);
+    if (ctxMode === "chal" && chal && chal.grp) {
+      const key = chal.tour ? `t${chal.tour.t}.${chal.tour.leg}` : `g${chal.grp}`, pg = S.paid.g || (S.paid.g = []);
+      if (!pg.includes(key)) { pg.unshift(key); if (pg.length > 60) pg.length = 60; credit(50, chal.tour ? "Online-Tournee: Schanze gesprungen" : "Online-Gruppe: mitgesprungen", entry); }
+    }
     if (ctxMode === "training" && !jc.practice) { try { entry.ana = analyseJump(entry); } catch (e) { entry.ana = null; } }
     if (mine && !jc.practice && !jc.beginner) {
       const t = S.st || (S.st = {});
@@ -12084,6 +12212,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     else if (r.newBest) { chip.className = "chip chip-cyan"; chip.textContent = "NEUE BESTWEITE"; }
     else if (r.kind === "fall") { chip.className = "chip chip-warn"; chip.textContent = "STURZ"; }
     else { chip.className = "chip chip-dim"; chip.textContent = ctxMode === "hot" ? `DURCHGANG ${hot.round}` : (r.practice ? "ÜBUNGSSPRUNG" : "TRAINING"); }
+    setPrize($("rsPrize"), (r.earn || []).reduce((a, x) => a + x.n, 0), (r.earn || []).map((x) => x.why).join(" · "));
     txt($("rsDist"), fmt1(r.dist) + " m");
     txt($("rsPts"), r.note != null ? "Note " + fmtNote(r.note) : fmt1(r.total) + " Pkt.");
     txt($("rsDistTxt"), `${fmt1(r.dist)} m · K-Punkt ${H.K} m`);
@@ -12340,6 +12469,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     let better = false;
     if (done && (!prev || total > prev.pts)) { S.cup[m.key] = { pts: total, medal, at: todayStr() }; better = true; save(); }
     entry.mission = { done, stars: done ? medal : null, partial: medal, best: (S.cup[m.key] || {}).pts || 0, cup: { i, pts, total, medal, better, prevMedal: prev ? prev.medal : 0 } };
+    if (done && better && medal > (prev ? prev.medal : 0)) credit(tierSum(MEDAL_T, prev ? prev.medal : 0, medal), `Challenge ${hillShort(m.key)}: ${MEDAL_NAME[medal]}`, entry);
   }
   function cupResultHtml(r) {
     const c = r.mission.cup, done = r.mission.done;
@@ -12410,6 +12540,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     let better = false;
     if (done && (!prev || fin > prev.best)) { S.n28 = { best: fin, medal: Math.max(medal, prev ? prev.medal : 0), at: todayStr() }; better = true; save(); }
     entry.mission = { done, stars: done ? medal : null, partial: 0, best: (S.n28 || {}).best || 0, n28: { fin, rank, medal, better } };
+    const m0 = prev ? prev.medal || 0 : 0, m1 = S.n28 ? S.n28.medal || 0 : 0;
+    if (done && m1 > m0) credit(tierSum(MEDAL_28, m0, m1), `Winterspiele 1928: ${MEDAL_NAME[m1]}`, entry);
   }
   function n28Rows(done, me, fin) {
     const F = n28Field().map((x) => ({ c: x.c, d: done ? [x.d1, x.d2] : [x.d1], f: done ? [x.f1, x.f2] : [x.f1], n: done ? x.n : x.r1, me: false }));
@@ -12613,6 +12745,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     if (done && st > (S.missions[m.id] || 0)) { S.missions[m.id] = st; save(); }
     refreshHillOrder();
     entry.mission = { done, stars: done ? st : null, partial: st, best: S.missions[m.id] || 0, unlockFly: !flyBefore && flyUnlocked(), gained: starTotal() - before };
+    if (entry.mission.gained > 0) credit(entry.mission.gained * 100, `Mission ${m.title}: ${entry.mission.gained === 1 ? "neuer Stern" : `${entry.mission.gained} neue Sterne`}`, entry);
   }
   function missionResultHtml(r) {
     if (ms.m.cup) return cupResultHtml(r);
@@ -12690,6 +12823,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     dc.tries.push(t);
     S.daily.tries = dc.tries; save();
     entry.dailyBest = !prev || t.total > prev.total;
+    if (S.paid.day !== dc.date) { S.paid.day = dc.date; credit(100, "Tagesprämie: Tageschallenge gesprungen", entry); }
   }
   const KIND_SHORT = { telemark: "Telemark", twofoot: "ohne Telemark", fall: "Sturz" };
   function dailyTriesHtml(inResult) {
@@ -13934,6 +14068,13 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       const me = s.find((x) => x.id === "me");
       let chGot = null;
       if (champ && !comp.champDone) { comp.champDone = true; chGot = CP.champFinish(champ, comp); champRecordEnd(); saveChamp(); }
+      // Preisgeld: Platz im Wettkampf (auch jede Station der Meisterschaft), am Ende der Meisterschaft die Gesamtprämie
+      if (me && me.rank && !comp.paid) { comp.paid = true; comp.prize = credit(compPrize(me.rank, comp.level, comp.beg), `${champ ? CP.FORMATS[champ.format].label : "Wettkampf"} ${hillShort(H2.key)}: Platz ${me.rank}`); }
+      if (champ && champ.done && !champ.paidEnd) {
+        const cm = CP.champStandings(champ).find((x) => x.id === "me");
+        champ.paidEnd = true; champ.bonus = cm ? credit(champBonus(cm.rank, champ.hills.length, champ.level, champ.beg), `${CP.FORMATS[champ.format].label}: Platz ${cm.rank} gesamt`) : 0; saveChamp();
+      }
+      setPrize($("fnPrize"), comp.prize || 0, comp.beg ? "Preisgeld, halb wegen Anfängerhilfen" : "Preisgeld");
       txt($("fnKicker"), champ ? `${CP.FORMATS[champ.format].label.toUpperCase()} · STATION ${champ.results.length}/${champ.hills.length} · ${hillShort(H.key).toUpperCase()}`
         : `ENDERGEBNIS · GEGNER: ${CP.LEVELS[comp.level].label.toUpperCase()}`);
       txt($("fnTitle"), me && me.rank ? placeText(me.rank) : "Disqualifiziert");
@@ -13974,6 +14115,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       Snd.results(me && me.rank === 1 ? "win" : me && me.rank && me.rank <= 3 ? "good" : null, true);
     } else {
       const s = hot.standings();
+      setPrize($("fnPrize"), 0);
       if (party && !hot.partyDone) { hot.partyDone = true; CP.partyFinish(party, hot); saveChamp(); }
       txt($("fnKicker"), party ? `PARTY-TOURNEE · STATION ${party.results.length}/${party.hills.length} · ${hillShort(H2.key).toUpperCase()}` : `PARTY · ${H2.name.toUpperCase()} HS${H2.HS}`);
       const lead = s.filter((x) => x.rank === 1);
@@ -14181,7 +14323,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   const WIND_HINT = { var: ["Wechselnd", "leichter Wind, der sich langsam ändert."], strong: ["Böig", "stärkerer Wind mit plötzlichen Böen und Seitenwind."] };
   function setupHint(id, level, wind) {
     const w = WIND_HINT[wind] || WIND_HINT.var, L = CP.LEVELS[level] || CP.LEVELS.mid;
-    $(id).innerHTML = `<b>${L.label}:</b> ${LEVEL_HINT[level] || LEVEL_HINT.mid} Es ändern sich nur die Gegner. <b>${w[0]}:</b> ${w[1]} Windpunkte gleichen ihn aus.`;
+    $(id).innerHTML = `<b>${L.label}:</b> ${LEVEL_HINT[level] || LEVEL_HINT.mid} Es ändern sich nur die Gegner. <b>${w[0]}:</b> ${w[1]} Windpunkte gleichen ihn aus. <b>Preisgeld:</b> Sieg ${fmtT(compPrize(1, level))} Taler${id === "suChHint" ? " je Station, dazu eine Gesamtprämie" : ""}.`;
   }
   const CH_TXT = {
     tour: "Alle Punkte zählen. Im 1. Durchgang springst du im K.-o.-Duell: Wer gewinnt, ist im Finale, dazu die fünf besten Verlierer.",
@@ -14268,6 +14410,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     txt($("cpKicker"), isParty ? `PARTY · TOURNEE · ${ch.players.length} SPIELER` : `${started || ch.done ? F.label.toUpperCase() : "MEISTERSCHAFT"} · GEGNER ${CP.LEVELS[ch.level].label.toUpperCase()}`);
     // Kopf: nächste Station oder Endstand mit Podest
     vis($("cpPodium"), ch.done); vis($("cpCal"), !ch.done);
+    setPrize($("cpPrize"), ch.done && !isParty ? ch.bonus || 0 : 0, "Gesamtprämie");
     if (ch.done) {
       txt($("cpTitle"), isParty ? `${st[0].name} gewinnt!` : me.rank === 1 ? "Gesamtsieg!" : `Platz ${me.rank} gesamt`);
       const wins = ch.results.filter((r) => r.top[0] && r.top[0].id === (isParty ? st[0].id : "me")).length;
@@ -14457,6 +14600,112 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const parts = [["Willkommensgeld", 500], ["Sterne aus den Missionen", starTotal() * 100], ["Medaillen der Challenge", cup], ["Winterspiele 1928", n28],
       ["Siege und Podestplätze", Math.min(6000, wins * 300 + pods * 150)], ["Meistertitel", Math.min(5000, (st.titles || 0) * 1000)]].filter((x) => x[1] > 0);
     return { parts, total: parts.reduce((a, x) => a + x[1], 0) };
+  }
+
+  // Preisgeld-Anzeige: Münze und Betrag (Ergebnis, Endstand, Gesamtwertung)
+  function setPrize(e, n, note) {
+    vis(e, n > 0);
+    if (n > 0) { e.innerHTML = `${coin(18)}<span>+${fmtT(n)} Taler</span>`; e.title = note || ""; }
+  }
+
+  // ------------------------------------------------------------------ Shop
+  let shopTab = "gear", buyArm = null, buyT = 0;
+  function openShop(tab) { if (tab) shopTab = tab; buyArm = null; setOverlay("shop"); }
+  function closeShop() { buyArm = null; if (S.ecoNew) { delete S.ecoNew; save(); } setOverlay(null); if (mode === "title") refreshTitle(); }
+  const GEAR_M = { ski: ["", "≈ +1 m", "≈ +2 m"], suit: ["", "≈ +1 m", "≈ +2 m"], bind: ["", "Böen −15 %", "Böen −30 %"] };   // auf der Großschanze, bei perfektem Sprung
+  // Kaufknopf: mit Namen zweizeilig (Ausrüstung), ohne Namen nur der Preis (Wachs, Servicemann); „Kaufen?“ = noch einmal tippen
+  function buyBtn(key, name, price, sub) {
+    const can = (S.taler || 0) >= price, armed = buyArm === key, miss = !can ? `fehlen ${fmtT(price - (S.taler || 0))}` : "";
+    if (!name) return `<button type="button" class="sh-buy sh-buy1${armed ? " armed" : ""}" data-buy="${key}"${can ? "" : " disabled"}>` +
+      `<b>${armed ? "Kaufen?" : `${coin(15)}${fmtT(price)}`}</b>${miss ? `<span>${miss}</span>` : ""}</button>`;
+    return `<button type="button" class="sh-buy${armed ? " armed" : ""}" data-buy="${key}"${can ? "" : " disabled"}>` +
+      `<b>${armed ? "Kaufen?" : esc(name)}</b><span>${coin(15)}${fmtT(price)}${miss ? ` · ${miss}` : sub ? ` · ${esc(sub)}` : ""}</span></button>`;
+  }
+  function gearPaneHtml() {
+    let h = "";
+    if (S.ecoNew && S.ecoStart && S.ecoStart.length) h += `<p class="sh-note">${coin(16)} Startguthaben für deine bisherigen Erfolge: ${S.ecoStart.map((x) => `${esc(x[0])}\u00a0${fmtT(x[1])}`).join(" · ")}</p>`;
+    h += `<div class="sh-gear">`;
+    for (const k of ["ski", "suit", "bind"]) {
+      const G = GEAR[k], lv = S.gear[k], cur = G.lv[lv], nx = G.lv[lv + 1];
+      h += `<div class="sh-row"><div class="sh-l"><span class="kicker">${G.lbl.toUpperCase()}</span><div class="sh-name"><b>${esc(cur.n)}</b><span class="sh-pips">${G.lv.map((_, i) => `<i class="${i <= lv ? "on" : ""}"></i>`).join("")}</span></div>` +
+        `<small>${esc(cur.d)}${GEAR_M[k][lv] ? ` · ${GEAR_M[k][lv]}` : ""}</small></div>` +
+        (nx ? buyBtn(`gear:${k}`, nx.n, nx.p, GEAR_M[k][lv + 1]) : `<span class="sh-max">Beste Stufe</span>`) + `</div>`;
+    }
+    return h + `</div><p class="sh-foot">Material wirkt im Training, im Wettkampf, in der Meisterschaft und in Arcade. Online, in der Tageschallenge, in der Party und 1928 springen alle mit Einheitsmaterial.</p>`;
+  }
+  function thermo(t) {
+    const x = (v) => clamp((v + 20) / 28, 0, 1) * 100;   // −20 … +8 °C
+    return `<div class="sh-thermo" aria-hidden="true"><i class="k" style="width:${x(-8)}%"></i><i class="m" style="width:${x(-2) - x(-8)}%"></i><i class="w" style="width:${100 - x(-2)}%"></i><b style="left:${x(t).toFixed(1)}%"></b></div>`;
+  }
+  function waxPaneHtml() {
+    const c = snowCond(H, todFor(H), todayStr());
+    let h = `<div class="sh-wax"><div class="sh-cond"><span class="kicker">HEUTE · ${esc(hillShort(H.key).toUpperCase())} · ${(TOD_NAME[c.tod] || "").toUpperCase()}</span>` +
+      `<div class="sh-tline"><b class="sh-temp">${tempTxt(c.t)}</b><span>${c.snow}</span></div>${thermo(c.t)}` +
+      `<p>Passend: <b>${WAX[c.band].n}</b>. Passt das Wachs, gleitet der Ski schneller, sonst bremst er.${S.svc ? " Dein Servicemann wachst vor jedem Sprung selbst." : " Am Start kannst du es mit einem Tipp wechseln."}</p></div><div class="sh-list">`;
+    for (const w of WAX_KEYS) {
+      const W = WAX[w], own = ownWax(w), cur = !S.svc && own && (S.wax === w || (!ownWax(S.wax) && w === "u"));
+      h += `<div class="sh-wrow${cur ? " cur" : ""}"><i class="wax-dot" style="background:${W.col}"></i><span class="sh-wt"><b>${W.n}${w === c.band ? ' <em class="sh-tag">passt heute</em>' : ""}</b><small>${esc(W.d)}</small></span>` +
+        (!own ? buyBtn(`wax:${w}`, "", W.p) : S.svc ? `<span class="sh-on">im Koffer</span>` : cur ? `<span class="sh-on">gewählt</span>` : `<button type="button" class="btn-plain sh-sel" data-wax="${w}">Wählen</button>`) + `</div>`;
+    }
+    h += `<div class="sh-wrow svc"><i class="wax-dot svc"></i><span class="sh-wt"><b>Servicemann</b><small>wachst vor jedem Sprung das passende deiner Wachse</small></span>` +
+      (S.svc ? `<span class="sh-on">im Team</span>` : buyBtn("svc:1", "", SVC_PRICE)) + `</div>`;
+    return h + `</div></div>`;
+  }
+  function moneyPaneHtml() {
+    const L = [["Wettkampf", "Sieg 1.000 · 2. Platz 800 · 3. Platz 600 … 30. Platz 10, Einsteiger ×0,5, Profi ×1,6"],
+      ["Meisterschaft", "jede Station wie ein Wettkampf, am Ende eine Gesamtprämie (Sieg 400 je Station)"],
+      ["Missionen", "100 je neuem Stern"], ["Challenge", "Bronze 200 · Silber 300 · Gold 500 je Schanze"], ["1928", "Bronze 500 · Silber 1.000 · Gold 2.000"],
+      ["Bestweite", "100 für jede neue Bestweite"], ["Tageschallenge", "100 am Tag"], ["Online", "50 je Gruppe und Tournee-Schanze"]];
+    let h = `<div class="sh-money"><div class="sh-how"><span class="kicker">SO GIBT ES TALER</span>${L.map(([k, v]) => `<div class="sh-mline"><b>${k}</b><span>${v}</span></div>`).join("")}` +
+      `<p class="sh-foot">Mit Anfängerhilfen gibt es im Wettkampf das halbe Preisgeld.</p></div><div class="sh-log"><span class="kicker">ZULETZT</span>`;
+    h += S.tlog.length ? S.tlog.map((x) => `<div class="sh-lline"><span>${esc(x.w)}</span><b>+${fmtT(x.n)}</b></div>`).join("") : `<p class="sh-foot">Noch nichts verdient: Spring einen Wettkampf!</p>`;
+    return h + `</div></div>`;
+  }
+  function fillShop() {
+    segSet("segShopTab", shopTab);
+    $("segShopTab").querySelectorAll("button").forEach((b) => { b.setAttribute("role", "tab"); b.setAttribute("aria-selected", String(b.dataset.v === shopTab)); });
+    for (const k of ["gear", "wax", "money"]) vis($("shPane-" + k), k === shopTab);
+    $("shPurse").innerHTML = `${coin(22)}<b>${fmtT(S.taler || 0)}</b><span>Taler</span>`;
+    $("shPane-" + shopTab).innerHTML = shopTab === "gear" ? gearPaneHtml() : shopTab === "wax" ? waxPaneHtml() : moneyPaneHtml();
+  }
+  function buy(key) {
+    const [kind, id] = key.split(":");
+    let price = 0, apply = null, what = "";
+    if (kind === "gear" && GEAR[id]) { const nx = GEAR[id].lv[S.gear[id] + 1]; if (!nx) return; price = nx.p; what = nx.n; apply = () => { S.gear[id]++; }; }
+    else if (kind === "wax" && WAX[id] && WAX[id].p && !S.waxes.includes(id)) { price = WAX[id].p; what = `Wachs ${WAX[id].n}`; apply = () => { S.waxes.push(id); S.wax = id; }; }
+    else if (kind === "svc" && !S.svc) { price = SVC_PRICE; what = "Servicemann"; apply = () => { S.svc = true; }; }
+    if (!apply || (S.taler || 0) < price) return;
+    // erst fragen (Knopf zeigt „Kaufen?“), dann kaufen: kein Fehlkauf durch einen versehentlichen Tipp
+    if (buyArm !== key) { buyArm = key; clearTimeout(buyT); buyT = setTimeout(() => { buyArm = null; if (overlay === "shop") fillShop(); }, 4000); fillShop(); return; }
+    buyArm = null; clearTimeout(buyT);
+    S.taler = Math.round(S.taler - price); apply(); save();
+    Snd.beep(1320, 0.07, 0.07); vib(20);
+    fillShop(); showToastSafeText("GEKAUFT", what);
+  }
+
+  // Wachs am Start: Temperatur, gewähltes Wachs, passt es? Ein Tipp wechselt zum nächsten eigenen Wachs (der Servicemann wählt selbst).
+  function fillWaxBox() {
+    const g = jc && jc.gear, box = $("waxBox");
+    const show = !!g && !H.era && ctxMode !== "hot" && (g.std ? ownsGear() : S.waxes.length > 0 || !!S.svc);
+    vis(box, show);
+    if (!show) return;
+    if (g.std) {
+      txt($("waxKick"), "MATERIAL"); txt($("waxName"), "Einheitsmaterial"); txt($("waxFit"), "gleich für alle");
+      $("waxDot").style.background = WAX.u.col; $("waxBtn").disabled = true; box.className = "panel wax-box std"; return;
+    }
+    txt($("waxKick"), `${S.svc ? "SERVICEMANN" : "WACHS"} · ${tempTxt(g.cond.t)}`);
+    txt($("waxName"), WAX[g.wax].n); txt($("waxFit"), g.fit.txt);
+    $("waxDot").style.background = WAX[g.wax].col;
+    $("waxBtn").disabled = !!S.svc;
+    box.className = "panel wax-box " + g.fit.k;
+  }
+  function cycleWax() {
+    gateTapT = performance.now();
+    if (!J || J.phase !== "gate" || !jc || !jc.gear || jc.gear.std || S.svc) return;
+    const own = WAX_KEYS.filter(ownWax), i = own.indexOf(jc.gear.wax);
+    S.wax = own[(i + 1) % own.length]; save();
+    jc.gear = gearFor(false, jc.gear.cond); J.muK = jc.gear.muK;
+    fillWaxBox(); vib(10);
   }
 
   // ------------------------------------------------------------------ Rekorde
@@ -14745,6 +14994,17 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   on("hotMinus", () => { readHotNames(); S.hot.n = clamp(S.hot.n - 1, 2, 8); save(); fillHotNames(); });
   on("hotPlus", () => { readHotNames(); S.hot.n = clamp(S.hot.n + 1, 2, 8); save(); fillHotNames(); });
   const seg = (id, f) => $(id).addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; f(b.dataset.v); });
+  // Shop und Wachs am Start
+  on("btnShop", () => openShop());
+  on("btnShDone", closeShop);
+  on("waxBtn", cycleWax);
+  seg("segShopTab", (v) => { shopTab = v; buyArm = null; fillShop(); });
+  for (const k of ["gear", "wax", "money"]) $("shPane-" + k).addEventListener("click", (e) => {
+    const b = e.target.closest("[data-buy]");
+    if (b && !b.disabled) { buy(b.dataset.buy); return; }
+    const w = e.target.closest("[data-wax]");
+    if (w) { S.wax = w.dataset.wax; save(); fillShop(); }
+  });
   seg("segMuKind", (v) => { muKind = v === "tour" ? "tour" : "one"; segSet("segMuKind", muKind); fillMultiHill(); });
   seg("segLevel", (v) => { S.level = v; save(); segSet("segLevel", v); setupHint("suCompHint", S.level, S.compWind); });
   seg("segCompWind", (v) => { S.compWind = v; save(); segSet("segCompWind", v); setupHint("suCompHint", S.level, S.compWind); });
@@ -15002,7 +15262,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       return;
     }
     if (e.key === "Escape" || e.key === "p" || e.key === "P") {
-      if (overlay === "settings") closeSettings(); else if (overlay === "jumper") closeJumper(); else if (overlay === "pause" || overlay === "records" || overlay === "hill") setOverlay(null); else if (overlay === "info") closeInfo(); else if (overlay === "pic") setOverlay(null); else if (mode === "arcade" || mode === "chal" || mode === "multi" || mode === "tour") goTitle(); else pause();
+      if (overlay === "settings") closeSettings(); else if (overlay === "shop") closeShop(); else if (overlay === "jumper") closeJumper(); else if (overlay === "pause" || overlay === "records" || overlay === "hill") setOverlay(null); else if (overlay === "info") closeInfo(); else if (overlay === "pic") setOverlay(null); else if (mode === "arcade" || mode === "chal" || mode === "multi" || mode === "tour") goTitle(); else pause();
       return;
     }
     if (overlay) return;
@@ -15335,6 +15595,12 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     if (Date.now() - resetArm > 4000) { resetArm = Date.now(); txt(b.querySelector("span"), "Wirklich? Nochmal tippen"); b.classList.add("warn"); setTimeout(() => { if (Date.now() - resetArm >= 3900) { txt(b.querySelector("span"), "Zurücksetzen"); b.classList.remove("warn"); } }, 4000); return; }
     resetSave(); location.reload();
   });
+  if (!S.eco) {
+    const g = startCredit();
+    S.eco = 1; S.ecoNew = 1; S.ecoStart = g.parts;
+    if (g.total) { S.taler = (S.taler || 0) + g.total; S.tlog.unshift({ n: g.total, w: "Startguthaben", d: todayStr() }); }
+    saveLocal();
+  }
   goTitle();
   txt($("verTxt"), "Version " + VERSION);
   if (S.repaired) { softNotice("Der Spielstand war teilweise beschädigt und wurde repariert."); delete S.repaired; save(); }
