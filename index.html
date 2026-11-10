@@ -3071,12 +3071,64 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     shade(top.concat(bot.reverse()), P.valleyShade);
   }
   function valley(O) {
+    if (O.fjord) {
+      // Ufer des Fjords (das Wasser liegt in der fernen Ebene): welliger Uferstreifen, darunter Schnee
+      const F = O.fjord, shore = [];
+      for (let x = X0 - 20; x <= X1 + 60; x += 40) shore.push([x, F.y1 + Math.sin(x * 0.02) * 3]);
+      fill(shore.concat([[X1 + 60, 900], [X0 - 20, 900]]), P.valley);
+      line(shore, P.valleyShade, 2.4);
+      return;
+    }
     const y = O.valleyY || HOR, pts = [];
     for (let x = X0 - 20, i = 0; x <= X1 + 270; x += 260, i++) pts.push([x, y + (i % 2 ? -4 : 1)]);
     fill(pts.concat([[X1 + 270, 900], [X0 - 20, 900]]), P.valley);
     forestBand(y);
   }
+  // Fjord (Holmenkollen): Wasser statt Talboden, oben ein heller Streifen, Wellenstriche, bewaldete Inseln. Liegt in der fernen
+  // Ebene unter den Waldrücken; das Ufer mit der Stadt gehört zur mittleren. Die Fähre fährt über die ganze Breite (O.ferry).
+  function fjordWater(O, live) {
+    const F = O.fjord, a = X0 - 20, b = X1 + 20, y0 = F.y0, y1 = F.y1, yh = y0 + (y1 - y0) * 0.36, k = (b - a) / 1300;
+    rect(a, y0, b - a, 150, P.water[1]);
+    rect(a, y0, b - a, yh - y0, P.water[0]);
+    spray(() => yh, P.water[0], P.water[1], a, b, Math.round(1400 * k), 16);
+    for (let i = 0; i < 80 * k; i++) { const x = a + r() * (b - a), y = y0 + 5 + r() * (y1 - y0 - 8), l = 6 + r() * 24; line([[x, y], [x + l, y]], P.waterLine, 1.1); }
+    for (const [x, yb, w, h] of F.islands) {
+      const pts = []; for (let i = 0; i <= 16; i++) { const u = i / 16; pts.push([x - w / 2 + u * w, yb - h * Math.pow(Math.sin(u * Math.PI), 0.6) - (i % 2 ? 0 : 1.5)]); }
+      pts.push([x + w / 2, yb + 1], [x - w / 2, yb + 1]);
+      fill(pts, P.hugFar.fill);
+      fill(pts.slice(0, 9).concat([[x, yb + 1], [x - w / 2, yb + 1]]), P.hugFar.lit);
+      line([[x - w / 2 - 4, yb + 1.5], [x + w / 2 + 4, yb + 1.5]], P.waterLine, 1.2);
+    }
+    if (O.ferry) { const Fe = Object.assign({}, O.ferry, { x0: a, x1: b }); ANIM(live, 0, ferryAnim(Fe), a, b); }
+  }
+  // Fähre: dunkler Rumpf, zwei weiße Decks mit Fensterreihen, roter Schornstein. Der Rauch bleibt, wo er ausgestoßen wurde,
+  // steigt auf und vergeht (wie beim Zug), dahinter eine helle Bugwelle und das Kielwasser
+  function ferryBody(x, y) {
+    const hull = mix(I.navy, I.tinte, 0.35), dk = P.wall, win = P.abend ? P.winHi : mix(I.tief, I.tinte, 0.2);
+    line([[x - 46, y + 1.3], [x + 2, y + 1.3]], P.waterLine, 1.2); line([[x - 22, y + 3], [x - 2, y + 2.4]], P.waterLine, 0.8);
+    fill([[x, y - 6.5], [x + 62, y - 7.2], [x + 56, y], [x + 4, y]], hull);
+    rect(x + 6, y - 13, 46, 6.5, dk); rect(x + 13, y - 17.6, 30, 4.8, dk); rect(x + 44, y - 16, 6, 3.2, dk);
+    for (let k = 0; k < 10; k++) rect(x + 8.4 + k * 4.3, y - 11.4, 2.4, 2, win);
+    for (let k = 0; k < 6; k++) rect(x + 15 + k * 4.6, y - 16.4, 2.4, 1.8, win);
+    rect(x + 28, y - 24, 6, 6.6, I.rot); rect(x + 28, y - 25, 6, 1.6, I.tinte);
+    line([[x + 56, y - 7], [x + 61, y - 13]], P.line, 0.5);
+  }
+  function ferryAnim(F) {
+    const L = F.x1 - F.x0 + 200, xAt = (t) => F.x0 - 100 + ((t * F.speed) % L), life = 4, N = 9;
+    return (t) => {
+      const x = xAt(t), d = [], l = [];
+      for (let i = 0; i < N; i++) {
+        const a = ((t / life) + i / N) % 1, xc = xAt(t - a * life) + 31;
+        if (xc > x + 32) continue;
+        const px = xc - a * 10, py = F.y - 26 - a * 22, rr = (1.8 + a * 6) * (a > 0.7 ? 0.3 + 0.7 * (1 - a) / 0.3 : 1);
+        d.push([px + 0.7, py + rr * 0.3, rr]); l.push([px, py - rr * 0.08, rr * 0.92]);
+      }
+      d.sort((p, q) => q[2] - p[2]); l.sort((p, q) => q[2] - p[2]);
+      ferryBody(x, F.y); dots(d, P.smokeD); dots(l, P.smoke);
+    };
+  }
   function valleyDetail(O) {
+    if (O.fjord) return;
     const rr = rng(hash(O.id) ^ 41);
     for (const [x, y, L, t] of [[700, 590, 160, 7], [860, 680, 220, 9], [1120, 676, 180, 8], [640, 720, 200, 10]]) {
       ctx.save(); ctx.translate(x + OFF[0] + (rr() - 0.5) * 30, y + OFF[1]); ctx.beginPath(); ctx.ellipse(0, 0, L / 2, t / 2, -0.04, 0, 6.2832); ctx.fillStyle = P.valleyShade; ctx.fill(); ctx.restore();
@@ -3176,8 +3228,13 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       line([[x, tt - 13], [x, tt - 19]], P.line, 1.2);
     }
   }
-  function church(x, yb, t, h) {
+  function church(x, yb, t, h, live) {
     if (t === "stave") { stave(x, yb, h); return; }
+    if (t === "dachl") { dachl([x, yb, h], live); return; }
+    if (t === "triumph") { triumph(x, yb, h); return; }
+    if (t === "raadhus") { raadhus(x, yb, h); return; }
+    if (t === "opera") { opera(x, yb, h); return; }
+    if (t === "munch") { munch(x, yb, h); return; }
     const woody = t === "wood", wall = woody ? P.wood : P.wall, side = woody ? mix(P.wood, I.tinte, 0.35) : P.wallSide;
     if (t === "twin") {
       house(x - 22, yb, 44, h * 0.34, { wall, side, roof: P.roof, k: 0.4 });
@@ -3187,6 +3244,48 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (t === "campanile") { house(x - 44, yb, 36, h * 0.28, { wall: mix(P.wall, I.ocker, 0.2), side, roof: P.roof, k: 0.2 }); tower(x, yb, h, t, mix(P.wall, I.ocker, 0.2), side); return; }
     house(x + 4, yb, 34, h * 0.3, { wall, side, roof: woody ? P.wood : P.roof, k: woody ? 0.75 : 0.42, logs: woody ? mix(P.wood, I.tinte, 0.3) : null });
     tower(x, yb, h, t, wall, side);
+  }
+  // Osloer Rathaus: zwei kantige Backsteintürme über einem niedrigen Mittelbau, Flachdächer mit Schnee, Uhr am Ostturm
+  function raadhus(x, yb, h) {
+    const br = P.abend ? mix(mix(I.rot, I.dach, 0.5), I.violett, 0.45) : mix(I.rot, I.dach, 0.5), side = mix(br, I.tinte, 0.4), mh = h * 0.34;
+    shade([[x + 36, yb], [x + 41, yb - 2], [x + 41, yb - mh - 2], [x + 36, yb - mh]], side);
+    rect(x - 36, yb - mh, 72, mh, br); rect(x - 37, yb - mh - 1.6, 74, 1.8, P.roofSnow);
+    for (let fx = x - 33; fx < x + 33; fx += 4.2) rect(fx, yb - mh + 3, 1.8, mh - 6, P.win);
+    for (const [tx, th, tw] of [[x - 21, h * 0.93, 15], [x + 5, h, 16]]) {
+      shade([[tx + tw, yb - mh], [tx + tw + 4.5, yb - mh - 1.6], [tx + tw + 4.5, yb - th - 1.6], [tx + tw, yb - th]], side);
+      rect(tx, yb - th, tw, th, br); rect(tx - 0.6, yb - th - 1.6, tw + 1.2, 1.8, P.roofSnow);
+      for (let fx = tx + 2.2; fx < tx + tw - 2; fx += 3.3) rect(fx, yb - th + 9, 1.3, th - mh - 12, mix(br, I.tinte, 0.22));
+    }
+    const cx = x + 13, cy = yb - h + 5;
+    dot(cx, cy, 2.8, mix(I.papier, I.ocker, 0.2)); line([[cx, cy], [cx, cy - 1.9]], I.tinte, 0.5); line([[cx, cy], [cx + 1.4, cy + 0.4]], I.tinte, 0.5);
+  }
+  // Oper in Bjørvika: weißes Dach, das schräg aus dem Hafenbecken ansteigt, Glasfront unter der Dachkante, Bühnenturm mit Paneelen
+  function opera(x, yb, h) {
+    const wh = P.abend ? mix(I.papier, I.violett, 0.32) : mix(I.papier, P.wall, 0.35), whD = mix(wh, I.schatten, 0.5);
+    const glass = P.abend ? P.winHi : mix(I.tief, I.himmel, 0.3), top = yb - h;
+    const by = yb + 6, quay = [[x - 22, 554], [x - 10, by], [x + 82, by], [x + 92, 554]];
+    fill(quay, P.water[1]);
+    for (const [wx, wy, wl] of [[x - 6, yb + 1.5, 12], [x + 56, yb + 3.5, 16], [x + 24, yb + 4.2, 10], [x + 70, 560, 10]]) line([[wx, wy], [wx + wl, wy]], P.waterLine, 0.9);
+    line([[x - 22, 556], [x - 10, by], [x + 82, by], [x + 92, 556]], P.valleyShade, 1.6);
+    rect(x + 46, top - h * 0.95, 17, h * 0.95, mix(wh, I.dunst, 0.45));
+    for (let k = 1; k < 5; k++) line([[x + 46 + k * 3.4, top - h * 0.95 + 1], [x + 46 + k * 3.4, top]], whD, 0.5);
+    rect(x + 46, top - h * 0.95 - 1, 17, 1.4, P.roofSnow);
+    fill([[x, yb], [x + 40, top], [x + 72, top], [x + 72, yb]], whD);
+    fill([[x + 42, top + 2.6], [x + 70, top + 2.6], [x + 70, yb - 0.5], [x + 30, yb - 0.5]], glass);
+    for (let k = 0; k < 6; k++) line([[x + 44 + k * 4.4, top + 2.6], [x + 44 + k * 4.4, yb - 0.5]], mix(glass, I.tinte, 0.3), 0.4);
+    fill([[x - 1, yb + 0.6], [x + 40, top], [x + 72, top], [x + 72, top + 2.4], [x + 41, top + 2.4], [x + 3.5, yb + 0.6]], wh);
+  }
+  // MUNCH (Museum in Bjørvika), nur angedeutet: schmaler Turm aus hellen Lochblech-Paneelen, die oberen Geschoße neigen sich zum Fjord
+  function munch(x, yb, h) {
+    const c = P.abend ? mix(I.dunst, I.violett, 0.3) : mix(I.dunst, P.wall, 0.45), cD = mix(c, I.schatten, 0.5), w = h * 0.34, kh = h * 0.72, t = h * 0.28, d = w * 0.5;
+    shade([[x + w, yb], [x + w + 3.4, yb - 1.3], [x + w + 3.4, yb - kh - 1.3], [x + w, yb - kh]], cD);
+    rect(x, yb - kh, w, kh, c);
+    fill([[x, yb - kh + 0.2], [x + w, yb - kh + 0.2], [x + w - d, yb - kh - t], [x - d, yb - kh - t]], c);
+    shade([[x + w, yb - kh + 0.2], [x + w + 3.4, yb - kh - 1.1], [x + w - d + 3.4, yb - kh - t - 1.3], [x + w - d, yb - kh - t]], cD);
+    for (let yy = yb - kh + 3; yy < yb - 2; yy += 3.1) line([[x + 0.7, yy], [x + w - 0.7, yy]], mix(c, I.tief, 0.16), 0.4);
+    for (let k = 1; k < 4; k++) { const f = k / 4; line([[x + w * f, yb - kh], [x + w * f - d, yb - kh - t]], mix(c, I.tief, 0.14), 0.4); }
+    rect(x + 1, yb - 3.4, w - 2, 2.4, P.abend ? P.winHi : P.win);
+    line([[x - d - 0.4, yb - kh - t], [x + w - d + 0.4, yb - kh - t]], P.roofSnow, 1.2);
   }
   function stave(x, yb, h) {
     const wd = P.wood, dk = mix(P.wood, I.tinte, 0.42);
@@ -3237,7 +3336,13 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   }
   const BUNT = [I.ocker, mix(I.rot, I.papier, 0.45), mix(I.himmel, I.papier, 0.25), mix(I.gruen, I.papier, 0.45), mix(I.ocker, I.rot, 0.35), mix(I.papier, I.ocker, 0.25)];
   function block(x, yb, w, h, rr, bunt) {
-    const tone = bunt ? (P.abend ? mix(BUNT[Math.floor(rr() * BUNT.length)], I.violett, 0.55) : mix(BUNT[Math.floor(rr() * BUNT.length)], P.wall, 0.15)) : rr() < 0.5 ? P.wall : mix(P.wall, P.wallSide, 0.35);
+    if (bunt === "nord") bunt = rr() < 0.55 ? null : "nord";
+    if (bunt === "pastell") { const c = mix(BUNT[Math.floor(rr() * BUNT.length)], P.wall, 0.5); bunt = null; return blockPaint(x, yb, w, h, rr, P.abend ? mix(c, I.violett, 0.5) : c); }
+    const NORD = [mix(I.ocker, I.papier, 0.42), mix(I.rot, I.dach, 0.45), mix(I.papier, I.ocker, 0.3), mix(I.dach, I.ocker, 0.3)];
+    const tone = bunt === "nord" ? (P.abend ? mix(NORD[Math.floor(rr() * NORD.length)], I.violett, 0.5) : NORD[Math.floor(rr() * NORD.length)]) : bunt ? (P.abend ? mix(BUNT[Math.floor(rr() * BUNT.length)], I.violett, 0.55) : mix(BUNT[Math.floor(rr() * BUNT.length)], P.wall, 0.15)) : rr() < 0.5 ? P.wall : mix(P.wall, P.wallSide, 0.35);
+    return blockPaint(x, yb, w, h, rr, tone);
+  }
+  function blockPaint(x, yb, w, h, rr, tone) {
     shade([[x + w, yb], [x + w + 5, yb - 2], [x + w + 5, yb - h - 2], [x + w, yb - h]], P.wallSide);
     rect(x, yb - h, w, h, tone);
     if (rr() < 0.5) { rect(x - 1, yb - h - 2, w + 2, 2.4, P.roofSnow); }
@@ -3270,13 +3375,61 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     const hs = items.filter((it) => it.h && it.h.k > 0);
     if (chimneys) for (let i = 0; i < Math.min(T.smoke == null ? 5 : T.smoke, hs.length); i++) { const h = hs[Math.floor(rr() * hs.length)].h; chimneys.push([h.x + h.w * 0.72, h.yb - h.h - h.w * 0.22, 0.7 + h.k * 0.2, rr() * 10]); }
   }
-  function city(Cn) {
+  function city(Cn, live) {
     const rr = rng(Cn.seed || 9);
-    for (const row of Cn.rows) {
-      let x = row.x0;
-      while (x < row.x1) { const w = 10 + rr() * 16, h = row.hmin + rr() * (row.hmax - row.hmin); block(x, row.y, w, h, rr, row.bunt); x += w + rr() * 2; }
-      for (const c of (Cn.churches || [])) if (c.row === Cn.rows.indexOf(row)) church(c.x, c.yb, c.t, c.h);
+    Cn.rows.forEach((row, ri) => {
+      let x = row.x0, prev = -1;
+      const built = [];
+      while (x < row.x1) {
+        const w = row.maria ? 9 + rr() * 7 : 10 + rr() * 16, h = row.hmin + rr() * (row.hmax - row.hmin), g = (row.gaps || []).find((q) => x < q[1] && x + w + 5 > q[0]);
+        if (g) { x = g[1]; continue; }
+        if (row.maria) { const m = buntHaus(x, row.y, w, h, rr, prev); prev = m.i; built.push({ x, w, h, c: m.c }); x += w + 0.4 + rr() * 0.8; }
+        else { block(x, row.y, w, h, rr, row.bunt); x += w + rr() * 2; }
+      }
+      for (const c of (Cn.churches || [])) if (c.row === ri) church(c.x, c.yb, c.t, c.h, live);
+      if (Cn.inn && Cn.inn.after === ri) inn(row.y, Cn.inn.h, built);
+    });
+  }
+  // Bunte Häuserzeile am Inn (Mariahilf, St. Nikolaus): schmale hohe Häuser in kräftigen Farben, steile Dächer mit Schnee,
+  // Fenster mit hellen Rahmen. Nie zwei gleiche Farben nebeneinander. Gibt Farbe und Index zurück (für das Spiegelbild im Inn).
+  const MARIA = [mix(I.ocker, I.papier, 0.08), mix(I.gluehen, I.rot, 0.28), mix(I.rot, I.papier, 0.1), mix(I.gruen, I.papier, 0.3), mix(I.himmel, I.papier, 0.2),
+    mix(I.ocker, I.rot, 0.42), mix(I.papier, I.ocker, 0.32), mix(mix(I.gruen, I.himmel, 0.5), I.papier, 0.28)];
+  function buntHaus(x, yb, w, h, rr, prev) {
+    let i = Math.floor(rr() * MARIA.length);
+    if (i === prev) i = (i + 1 + Math.floor(rr() * (MARIA.length - 1))) % MARIA.length;
+    const c = P.abend ? mix(MARIA[i], I.violett, 0.4) : MARIA[i], side = mix(c, I.tinte, 0.3), frame = mix(c, I.papier, 0.5), roof = rr();
+    shade([[x + w, yb], [x + w + 3.6, yb - 1.4], [x + w + 3.6, yb - h - 1.4], [x + w, yb - h]], side);
+    rect(x, yb - h, w, h, c);
+    if (roof < 0.45) {
+      fill([[x - 0.8, yb - h], [x + w / 2, yb - h - w * 0.62], [x + w + 0.8, yb - h]], P.roof);
+      fill([[x - 0.8, yb - h], [x + w / 2, yb - h - w * 0.62], [x + w * 0.32, yb - h - w * 0.34], [x + 1.4, yb - h - 0.4]], P.roofSnow);
+    } else if (roof < 0.8) {
+      fill([[x - 1, yb - h], [x + 2.2, yb - h - 6], [x + w - 2.2, yb - h - 6], [x + w + 1, yb - h]], P.roof);
+      rect(x + 2.2, yb - h - 7.2, w - 4.4, 1.7, P.roofSnow);
+    } else rect(x - 1, yb - h - 2, w + 2, 2.4, P.roofSnow);
+    rect(x, yb - h + 1.2, w, 0.9, mix(c, I.papier, 0.35));
+    for (let yy = yb - h + 4.4; yy < yb - 5; yy += 6.2) for (let xx = x + 1.7; xx < x + w - 2.8; xx += 3.9) {
+      rect(xx - 0.45, yy - 0.45, 2.7, 3.9, frame);
+      rect(xx, yy, 1.8, 3, P.abend ? (rr() < 0.55 ? P.winHi : P.win) : mix(I.tief, I.tinte, 0.18));
     }
+    return { i, c };
+  }
+  // Der Inn vor der bunten Zeile: Kaimauer, Wasser über die ganze Breite, die Häuser spiegeln sich als gebrochene Farbstreifen,
+  // abends mit warmen Fensterlichtern; Wellenstriche darüber
+  function inn(y, h, built) {
+    const a = X0 - 20, b = X1 + 20;
+    rect(a, y, b - a, h, P.water[1]);
+    rect(a, y + h * 0.55, b - a, h * 0.45, mix(P.water[1], I.tinte, 0.12));
+    ctx.save(); ctx.globalAlpha = P.abend ? 0.5 : 0.42;
+    for (const B of built) {
+      const rh = Math.min(B.h * 0.5, h - 2);
+      for (let yy = y + 1.2; yy < y + rh; yy += 2.3) { const sh = Math.sin(yy * 1.7 + B.x * 0.3) * 0.8; rect(B.x + sh, yy, B.w, 1.6, B.c); }
+    }
+    if (P.abend) for (const B of built) for (let xx = B.x + 2; xx < B.x + B.w - 2; xx += 3.9) if (Math.sin(xx * 12.9898 + B.x) > 0.1) rect(xx, y + 2.5, 1.4, Math.min(B.h * 0.35, h - 4), P.winHi);
+    ctx.restore();
+    rect(a, y - 0.4, b - a, 1.6, mix(P.wallSide, I.tinte, 0.15));
+    for (let k = 0; k < 70 * (b - a) / 1300; k++) { const x = a + r() * (b - a), yy = y + 3 + r() * (h - 5), l = 4 + r() * 16; line([[x, yy], [x + l, yy]], P.waterLine, 0.9); }
+    rect(a, y + h - 0.6, b - a, 1.4, P.valleyShade);
   }
   function viaduct(V) {
     const { x0, x1, y, h, n } = V, span = (x1 - x0) / n, pw = span * 0.2, st = mix(P.wall, P.wallSide, 0.3), sd = P.wallSide;
@@ -3442,9 +3595,27 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     const legs = tone(o.legs || mix(I.tinte, I.tief, 0.35)), boot = tone(I.tinte), mitt = tone(o.mitt || o.hatC || I.tinte);
     const lw = h * 0.1, gp = h * 0.025, lh = yb - yj - h * 0.05;
     rect(x - gp / 2 - lw, yj - 1, lw, lh + 1, legs); rect(x + gp / 2, yj - 1, lw, lh + 1, mix(legs, I.tinte, 0.25));
+    if (o.stockings) { const sc = tone(o.stockings), sy = yb - lh * 0.48; rect(x - gp / 2 - lw, sy, lw, yb - sy, sc); rect(x + gp / 2, sy, lw, yb - sy, mix(sc, I.tinte, 0.12)); }
     rect(x - gp / 2 - lw - 0.5, yb - h * 0.065, lw + 1, h * 0.065, boot); rect(x + gp / 2 - 0.5, yb - h * 0.065, lw + 1, h * 0.065, boot);
+    if (o.skirt) {
+      const sk = tone(o.skirt), sy = yj - h * 0.03, sb = yb - h * 0.13;
+      fill([[x - hw * 1.05, sy], [x + hw * 1.05, sy], [x + hw * 1.75, sb], [x - hw * 1.75, sb]], sk);
+      fill([[x + hw * 0.2, sy], [x + hw * 1.05, sy], [x + hw * 1.75, sb], [x + hw * 0.5, sb]], mix(sk, I.tinte, 0.25));
+      if (o.apron) fill([[x - hw * 0.6, sy + 0.4], [x + hw * 0.5, sy + 0.4], [x + hw * 0.8, sb - 1], [x - hw * 0.9, sb - 1]], tone(o.apron));
+    }
     fill([[x - sw * 0.8, ys - h * 0.025], [x + sw * 0.8, ys - h * 0.025], [x + sw, ys + h * 0.035], [x + hw, yj], [x - hw, yj], [x - sw, ys + h * 0.035]], coat);
     fill([[x + sw * 0.2, ys - h * 0.025], [x + sw * 0.8, ys - h * 0.025], [x + sw, ys + h * 0.035], [x + hw, yj], [x + hw * 0.25, yj]], coatD);
+    if (o.vest) {
+      fill([[x - sw * 0.34, ys - h * 0.01], [x + sw * 0.34, ys - h * 0.01], [x + sw * 0.3, yj - h * 0.02], [x - sw * 0.3, yj - h * 0.02]], tone(o.vest));
+      fill([[x - sw * 0.2, ys - h * 0.02], [x + sw * 0.2, ys - h * 0.02], [x, ys + h * 0.05]], tone(I.papier));
+      for (let i = 0; i < 3; i++) dot(x, ys + h * (0.07 + i * 0.05), h * 0.012, tone(I.ocker));
+    }
+    if (o.knit) {
+      // Passe eines Norwegerpullis: helles Band über der Brust mit Punkten
+      const by = ys + h * 0.012, bh = h * 0.07, kc = tone(I.papier), dc = tone(o.knit === true ? I.rot : o.knit);
+      fill([[x - sw * 0.86, by], [x + sw * 0.86, by], [x + sw * 0.94, by + bh], [x - sw * 0.94, by + bh]], kc);
+      for (let i = -3; i <= 3; i++) dot(x + i * sw * 0.26, by + bh * 0.5, h * 0.011, dc);
+    }
     if (o.cross) { const cx = x - sw * 0.35, cy = ys + h * 0.13, c = h * 0.035; rect(cx - c * 2.4, cy - c * 0.8, c * 4.8, c * 1.6, tone(I.papier)); rect(cx - c * 0.8, cy - c * 2.4, c * 1.6, c * 4.8, tone(I.papier)); }
     const sh = [[x - sw * 0.88, ys + h * 0.04], [x + sw * 0.88, ys + h * 0.04]], L = h * (kid ? 0.29 : 0.31), aw = h * 0.085, hands = [];
     for (const side of [0, 1]) {
@@ -3464,7 +3635,15 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     }
     dot(x, hy, hr, skin());
     const hc = tone(o.hatC || I.rot);
-    if (o.hat === "filz") {
+    if (o.hat === "schuetzen") {
+      // schwarzer Hut mit breiter Krempe, darauf der Federbusch (Spielhahnstoß) leierförmig nach beiden Seiten
+      fill([[x - hr * 0.78, hy - hr * 0.6], [x + hr * 0.78, hy - hr * 0.6], [x + hr * 0.64, hy - hr * 1.55], [x - hr * 0.64, hy - hr * 1.55]], hc);
+      rect(x - hr * 1.75, hy - hr * 0.82, hr * 3.5, hr * 0.36, hc);
+      rect(x - hr * 0.8, hy - hr * 0.86, hr * 1.6, hr * 0.22, tone(I.gruen));
+      ctx.lineCap = "round"; ctx.strokeStyle = tone(I.tinte); ctx.lineWidth = hr * 0.38;
+      ctx.beginPath(); ctx.moveTo(x + hr * 0.3, hy - hr * 1.5); ctx.quadraticCurveTo(x + hr * 0.45, hy - hr * 2.9, x + hr * 1.85, hy - hr * 2.85);
+      ctx.moveTo(x + hr * 0.1, hy - hr * 1.5); ctx.quadraticCurveTo(x - hr * 0.25, hy - hr * 2.75, x - hr * 1.45, hy - hr * 2.45); ctx.stroke(); ctx.lineCap = "butt";
+    } else if (o.hat === "filz") {
       fill([[x - hr * 0.8, hy - hr * 0.6], [x + hr * 0.8, hy - hr * 0.6], [x + hr * 0.66, hy - hr * 1.6], [x - hr * 0.66, hy - hr * 1.6]], hc);
       rect(x - hr * 1.6, hy - hr * 0.8, hr * 3.2, hr * 0.34, hc);
     } else if (o.hat === "kappe") {
@@ -3655,27 +3834,351 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     dot(x, y, r * 0.22, c);
   }
   function dachl(D, live) {
-    const [x, yb, h] = D, w = 26, wall = mix(P.wall, I.ocker, 0.14), side = P.wallSide, xl = x - w / 2, xr = x + w / 2;
+    const k = D[2] / 44;
+    ctx.save(); ctx.translate(D[0], D[1]); ctx.scale(k, k); ctx.translate(-D[0], -D[1]);
+    dachlBody(D[0], D[1], 44);
+    ctx.restore();
+    const x = D[0], yb = D[1], et = yb - 44 * 0.84 * k;
+    if (P.abend) ANIM(live, 1, () => {
+      const g = ctx.createRadialGradient(x, et - 4 * k, 0.5, x, et - 4 * k, 16 * k);
+      g.addColorStop(0, "rgba(255,214,120,0.45)"); g.addColorStop(1, "rgba(255,214,120,0)");
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, et - 4 * k, 16 * k, 0, 6.2832); ctx.fill();
+    }, x - 18 * k, x + 18 * k);
+    else ANIM(live, 1, (t) => {
+      const u = (t + x * 0.013) % 4.2; if (u > 0.8) return;
+      const a = Math.sin((u / 0.8) * Math.PI); ctx.globalAlpha *= a; glint(x - 1.6 * k, et - 5.4 * k, (6 * a + 1.2) * k); ctx.globalAlpha /= a;
+    }, x - 10 * k, x + 10 * k);
+  }
+  function dachlBody(x, yb, h) {
+    const w = 26, wall = mix(P.wall, I.ocker, 0.14), side = P.wallSide, xl = x - w / 2, xr = x + w / 2;
     shade([[xr, yb], [xr + 5, yb - 2], [xr + 5, yb - h - 2], [xr, yb - h]], side);
     rect(xl, yb - h, w, h, wall);
     fill([[xl - 1, yb - h], [x, yb - h - 14], [xr + 1, yb - h]], P.slate);
     fill([[xl - 1, yb - h], [x, yb - h - 14], [x - 3, yb - h - 9.5], [xl + 4, yb - h - 1.2]], P.roofSnow);
     for (const fy of [yb - h + 4.5, yb - h + 11]) for (const fx of [xl + 2, xl + 5.2, xr - 7, xr - 3.8]) rect(fx, fy, 1.8, 3, P.win);
     rect(x - 2, yb - 7.5, 4, 7.5, P.door || mix(P.wall, I.tinte, 0.5));
-    const ew = 11, ex = x - ew / 2, et = yb - h * 0.84, eb = yb - h * 0.24;
+    const ew = 12, ex = x - ew / 2, et = yb - h * 0.84, eb = yb - h * 0.24, stn = mix(wall, I.papier, 0.3), dark = P.abend ? mix(P.winHi, I.dach, 0.35) : mix(I.tief, I.tinte, 0.45);
     shade([[ex + ew, eb], [ex + ew + 2.2, eb - 1], [ex + ew + 2.2, et - 1], [ex + ew, et]], side);
-    rect(ex, et, ew, eb - et, mix(wall, I.papier, 0.3));
-    rect(ex + 1.5, et + 2.6, ew - 3, 5, P.abend ? P.winHi : P.win); rect(ex + 1.5, et + 10, ew - 3, 5, P.win);
-    line([[ex, et + 8.8], [ex + ew, et + 8.8]], mix(wall, I.tinte, 0.35), 0.6); line([[ex + 1, eb], [ex + 3, eb + 2.6], [ex + ew - 3, eb + 2.6], [ex + ew - 1, eb]], mix(wall, I.tinte, 0.3), 0.7);
-    const gold = P.abend ? mix(I.ocker, "#FFD98A", 0.45) : mix(I.ocker, "#F4C04A", 0.4), goldD = mix(gold, I.dach, 0.35), goldL = mix(gold, "#FFF6DC", 0.55);
-    fill([[ex - 1.4, et], [x, et - 10.5], [ex + ew + 1.4, et]], gold);
-    fill([[x, et - 10.5], [ex + ew + 1.4, et], [x + 1.6, et]], goldD);
-    line([[x - 4.6, et - 2.6], [x + 4.6, et - 2.6]], goldD, 0.45); line([[x - 2.8, et - 5.4], [x + 2.8, et - 5.4]], goldD, 0.45);
-    line([[x - 3.6, et - 0.9], [x - 0.6, et - 8.8]], goldL, 0.9);
-    if (!P.abend) ANIM(live, 1, (t) => {
-      const u = (t + x * 0.013) % 6.5; if (u > 0.7) return;
-      const a = Math.sin((u / 0.7) * Math.PI); ctx.globalAlpha *= a; glint(x - 1.6, et - 5.4, 5.5 * a + 1); ctx.globalAlpha /= a;
-    }, x - 8, x + 8);
+    rect(ex, et, ew, eb - et, stn);
+    // Loggia: zwei Bögen unter dem Golddach, darunter die Brüstung mit Wappenreliefs, unten ein Fenster des Erkers
+    for (const ax of [ex + 1.4, ex + ew / 2 + 0.4]) { ctx.beginPath(); ctx.moveTo(ax, et + 7.4); ctx.lineTo(ax, et + 3); ctx.arc(ax + 2.1, et + 3, 2.1, Math.PI, 0); ctx.lineTo(ax + 4.2, et + 7.4); ctx.closePath(); ctx.fillStyle = dark; ctx.fill(); }
+    rect(ex - 0.6, et + 7.6, ew + 1.2, 4.4, mix(stn, I.ocker, 0.25));
+    for (let i = 0; i < 4; i++) rect(ex + 0.9 + i * 2.75, et + 8.4, 1.9, 2.8, [I.rot, I.ocker, I.navy, I.rot][i]);
+    rect(ex + 2, et + 14.4, ew - 4, 5, P.win);
+    line([[ex + 1, eb], [ex + 3, eb + 2.6], [ex + ew - 3, eb + 2.6], [ex + ew - 1, eb]], mix(wall, I.tinte, 0.3), 0.7);
+    const gold = P.abend ? "#F6C661" : "#F2B630", goldD = mix(gold, I.dach, 0.4), goldL = mix(gold, "#FFF6DC", 0.6);
+    const bell = [[ex - 2.4, et + 0.4], [ex - 1.2, et - 3], [x - 3.2, et - 9.6], [x - 1.6, et - 12], [x + 1.6, et - 12], [x + 3.2, et - 9.6], [ex + ew + 1.2, et - 3], [ex + ew + 2.4, et + 0.4]];
+    fill(bell, gold);
+    fill([[x + 0.6, et - 12], [x + 1.6, et - 12], [x + 3.2, et - 9.6], [ex + ew + 1.2, et - 3], [ex + ew + 2.4, et + 0.4], [x + 2, et + 0.4]], goldD);
+    for (const [yy, hw] of [[et - 2.4, 5.6], [et - 5.2, 4.4], [et - 8, 3.3]]) line([[x - hw, yy], [x + hw * 0.4, yy]], goldD, 0.5);
+    line([[x - 4.6, et - 0.9], [x - 1.8, et - 10.6]], goldL, 1.1);
+    rect(ex - 2, et + 0.4, ew + 4, 1.2, goldD);
+  }
+  // Triumphpforte am Ende der Maria-Theresien-Straße: heller Steinbogen mit großem Durchgang, Säulen, Gesims und Attika mit Schnee
+  function triumph(x, yb, h) {
+    const st = mix(P.wall, I.ocker, 0.14), sd = P.wallSide, w = h * 1.5, xl = x - w / 2, dk = mix(sd, I.tinte, 0.35);
+    shade([[xl + w, yb], [xl + w + 4, yb - 1.6], [xl + w + 4, yb - h - 1.6], [xl + w, yb - h]], sd);
+    rect(xl, yb - h, w, h, st);
+    const arch = (cx, aw, ah) => { ctx.beginPath(); ctx.moveTo(cx - aw / 2, yb); ctx.lineTo(cx - aw / 2, yb - ah + aw / 2); ctx.arc(cx, yb - ah + aw / 2, aw / 2, Math.PI, 0); ctx.lineTo(cx + aw / 2, yb); ctx.closePath(); ctx.fillStyle = dk; ctx.fill(); };
+    arch(x, w * 0.34, h * 0.66);
+    for (const d of [-1, 1]) arch(x + d * w * 0.33, w * 0.12, h * 0.36);
+    for (const f of [0.08, 0.22, 0.78, 0.92]) rect(xl + w * f - 0.9, yb - h * 0.8, 1.8, h * 0.8, mix(st, I.papier, 0.35));
+    rect(xl - 1, yb - h * 0.8 - 1.4, w + 2, 1.6, mix(st, I.tinte, 0.18));
+    rect(xl + w * 0.3, yb - h - 4, w * 0.4, 4, st); rect(xl + w * 0.3 - 0.6, yb - h - 5.4, w * 0.4 + 1.2, 1.6, P.roofSnow);
+    rect(xl - 1.2, yb - h - 1.6, w + 2.4, 1.8, P.roofSnow);
+  }
+  // Lagerfeuer am Holmenkollsonntag: zwei gekreuzte Scheite im Steinkreis, Flammen und Funken, abends ein warmer Schein.
+  // Drumherum Fans im Norwegerpulli: links einer mit Würstchen am Stock, rechts einer mit großer Fahne, dazwischen ein Kind,
+  // das sich die Hände wärmt.
+  function fireAnim(x, yb) {
+    const outer = mix(I.rot, I.ocker, 0.42), inner = mix(I.ocker, I.papier, 0.55), spark = mix(I.ocker, I.papier, 0.35);
+    return (t) => {
+      if (P.abend) {
+        const g = ctx.createRadialGradient(x, yb - 6, 1, x, yb - 6, 34);
+        g.addColorStop(0, "rgba(255,196,110,0.42)"); g.addColorStop(1, "rgba(255,196,110,0)");
+        ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(x, yb - 6, 34, 26, 0, 0, 6.2832); ctx.fill();
+      }
+      for (const [dx, hh, w, k] of [[-3.4, 9, 3.4, 0], [3.6, 8, 3, 2], [0.3, 13.5, 4.2, 1]]) {
+        const f = 0.78 + 0.22 * Math.sin(t * (8.3 + k * 2.1) + k * 1.9) * Math.sin(t * 4.7 + k), h = hh * f, sw = Math.sin(t * 6.1 + k * 2) * 1.3, b = yb - 2.4;
+        fill([[x + dx - w, b], [x + dx - w * 0.45 + sw * 0.4, b - h * 0.55], [x + dx + sw, b - h], [x + dx + w * 0.5 + sw * 0.5, b - h * 0.48], [x + dx + w, b]], outer);
+        fill([[x + dx - w * 0.5, b], [x + dx - w * 0.2 + sw * 0.3, b - h * 0.4], [x + dx + sw * 0.6, b - h * 0.68], [x + dx + w * 0.3 + sw * 0.3, b - h * 0.32], [x + dx + w * 0.5, b]], inner);
+      }
+      for (let i = 0; i < 6; i++) {
+        const u = (t * 0.55 + i / 6 + (i % 2) * 0.07) % 1, px = x + Math.sin(i * 2.7 + t * 1.3) * 2.5 * u + (i - 2.5) * 0.8, py = yb - 10 - u * 30;
+        ctx.globalAlpha *= 1 - u; dot(px, py, 0.75, spark); ctx.globalAlpha /= 1 - u;
+      }
+    };
+  }
+  function baal(x, yb, h, live) {
+    const wd = tone(mix(P.wood, I.tinte, 0.35)), st = tone(mix(I.schatten, I.tinte, 0.25));
+    shade([[x - 15, yb + 1], [x + 15, yb + 1], [x + 12, yb + 3.5], [x - 12, yb + 3.5]], P.valleyShade);
+    dots([[x - 11, yb, 1.7], [x - 6.5, yb + 1.2, 1.6], [x, yb + 1.6, 1.7], [x + 6.5, yb + 1.2, 1.6], [x + 11, yb, 1.7]], st);
+    line([[x - 9, yb - 0.6], [x + 9, yb - 3.6]], wd, 2.4); line([[x - 9, yb - 3.6], [x + 9, yb - 0.6]], mix(wd, I.tinte, 0.25), 2.4);
+    // links: Fan mit Würstchen am Stock über dem Feuer
+    const xl = x - h * 0.78, hl = [x - h * 0.5, yb - h * 0.5];
+    person(xl, yb, h, { coat: I.navy, knit: true, hat: "bommel", hatC: I.rot, bob: I.papier, hands: [[xl - h * 0.06, yb - h * 0.44], hl] });
+    line([hl, [x - 1.5, yb - h * 0.52]], tone(mix(P.wood, I.ocker, 0.25)), 0.9);
+    ctx.beginPath(); ctx.ellipse(x - 0.5, yb - h * 0.52, 2.6, 1.15, -0.1, 0, 6.2832); ctx.fillStyle = tone(mix(I.dach, I.rot, 0.4)); ctx.fill();
+    // Mitte: Kind wärmt sich die Hände
+    const xk = x + h * 0.42;
+    person(xk, yb, h * 0.66, { coat: I.rot, knit: I.navy, kid: true, hat: "bommel", hatC: I.navy, bob: I.papier, hands: [[x + h * 0.2, yb - h * 0.3], [x + h * 0.24, yb - h * 0.34]] });
+    // rechts: Fan mit großer Norwegenfahne
+    const xr = x + h * 0.98, px = xr + h * 0.22;
+    person(xr, yb, h, { coat: I.rot, knit: I.navy, hat: "bommel", hatC: I.navy, bob: I.papier, hands: [[px - 0.6, yb - h * 0.62], [px - 0.6, yb - h * 0.44]] });
+    ANIM(live, LI, fireAnim(x, yb), x - 36, x + 36);
+    ANIM(live, LI, smokeAnim(x + 1, yb - 15, 0.9, 0.4), x - 50, x + 8);
+    ANIM(live, LI, flagAnim(px, yb - h * 0.2, h * 1.25, h * 0.62, h * 0.44, "no", xr * 0.02), px - 2, px + h * 0.7);
+  }
+  // Elch (Bulle mit Schaufeln) zwischen Birken, nach links gewandt. Ab und zu hebt er den Kopf und knabbert an den Zweigen der
+  // Birke vor ihm, dazwischen zuckt ein Ohr. Ganz in der Bewegung gezeichnet, weil sich Hals und Kopf drehen.
+  function elchAnim(x, yb, h, ph) {
+    const k = h / 40, P_ = (pts, dx, dy) => pts.map(([a, b]) => [dx + a * k, dy + b * k]);
+    const body = [[-20, -30], [-19, -40], [-14, -47.5], [-6, -45.5], [8, -41.5], [16, -40.5], [21, -36], [21.5, -28.5], [17, -23.5], [4, -22.5], [-10, -23], [-17, -25.5]];
+    const neck = [[3, -3], [-5, 1], [-9, 7.5], [-4, 12.5], [2, 9]];
+    const head = [[-6.5, -2.6], [-12.5, -2.2], [-21, 2.6], [-24.6, 6.4], [-24.8, 9.6], [-22.2, 11.8], [-18.4, 10.6], [-13, 8.6], [-7, 7.6]];
+    const bell = [[-10, 7.8], [-9.2, 14.2], [-7.2, 14.6], [-6.8, 8]];
+    const ant = [[-8.4, -2.4], [-11.6, -6.6], [-16.4, -9.4], [-14.8, -12.4], [-11.4, -10.4], [-10.8, -14.8], [-8, -12], [-5.8, -15.8], [-3.8, -11.8], [-1, -14], [-1.4, -9], [-4.6, -3.8]];
+    const ear = [[-5.6, -2.6], [-2.4, -7.4], [-2, -1.8]];
+    return (t) => {
+      const fur = tone(mix(I.dach, I.tinte, 0.55)), furD = mix(fur, I.tinte, 0.35), legL = tone(mix(I.dunst, P.wall, 0.35)), antC = tone(mix(mix(I.ocker, P.wood, 0.5), I.papier, 0.3));
+      // Kopfhaltung: Ruhe, Kopf heben, knabbern, senken (Periode 11 s)
+      const u = (t + ph) % 11, ease = (v) => v * v * (3 - 2 * v);
+      let a = 0.03 * Math.sin(t * 0.9);
+      if (u > 6 && u <= 7) a = 0.62 * ease(u - 6); else if (u > 7 && u <= 9.6) a = 0.62 + 0.05 * Math.sin((u - 7) * 17); else if (u > 9.6 && u <= 10.6) a = 0.62 * (1 - ease(u - 9.6));
+      const earA = (u > 2.6 && u < 3) ? -0.5 : 0;
+      shade(P_([[-22, 1], [24, 0], [28, 3.6], [-18, 3.6]], x, yb), P.valleyShade);
+      // Beine: hinten das ferne Paar dunkler
+      const leg = (x0, y0, x1, y1, x2, c, cl) => { line([[x0, y0], [x1, y1]], c, 3.2 * k); line([[x1, y1], [x2, yb]], cl, 2.1 * k); rect(x2 - 1.4 * k, yb - 1.4 * k, 2.8 * k, 1.4 * k, furD); };
+      leg(x - 14 * k, yb - 25 * k, x - 14.5 * k, yb - 11 * k, x - 13.5 * k, furD, mix(legL, I.tinte, 0.2));
+      leg(x + 13 * k, yb - 26 * k, x + 16.5 * k, yb - 11.5 * k, x + 14.5 * k, furD, mix(legL, I.tinte, 0.2));
+      fill(P_(body, x, yb), fur);
+      fill(P_([[-14, -47.5], [-6, -45.5], [8, -41.5], [16, -40.5], [21, -36], [12, -38], [-4, -41.5]], x, yb), mix(fur, I.papier, 0.08));
+      leg(x - 9.5 * k, yb - 25 * k, x - 9 * k, yb - 11 * k, x - 10 * k, fur, legL);
+      leg(x + 17 * k, yb - 26 * k, x + 20.5 * k, yb - 11.5 * k, x + 18.5 * k, fur, legL);
+      // Hals und Kopf drehen sich um die Schulter
+      const sx = x - 17 * k, sy = yb - 42 * k, ca = Math.cos(a), sa = Math.sin(a);
+      const R = (pts) => pts.map(([px, py]) => [sx + (px * ca + py * sa) * k, sy + (-px * sa + py * ca) * k]);
+      fill(R(neck), fur);
+      fill(R(ant), antC);
+      fill(R(head), fur); fill(R(bell), furD);
+      const ea = a + earA, ce = Math.cos(ea), se = Math.sin(ea);
+      fill(ear.map(([px, py]) => [sx + (px * ce + py * se) * k, sy + (-px * se + py * ce) * k]), furD);
+      const [ex, ey] = R([[-12, 0.8]])[0]; dot(ex, ey, 0.8 * k, I.tinte);
+      const [nx, ny] = R([[-23.6, 8.2]])[0]; dot(nx, ny, 0.75 * k, I.tinte);
+    };
+  }
+  // Loipe mit Langläufern: zwei Spurpaare quer durchs Tal, auf jedem eine kleine Gruppe im Diagonalschritt. Sie laufen über die
+  // ganze Breite, kommen also hinter dem Hang hervor und verschwinden hinter Tribüne oder Bildrand. Lp = { y, speed }
+  function skier(x, yb, h, ph, col, dir) {
+    const s = Math.sin(ph), suit = tone(col), suitD = mix(suit, I.tinte, 0.32), skiC = tone(mix(I.tinte, I.tief, 0.25)), poleC = P.line;
+    ctx.save(); if (dir < 0) { ctx.translate(2 * x, 0); ctx.scale(-1, 1); }
+    ctx.lineCap = "round";
+    const hipX = x, hipY = yb - h * 0.46, shX = x + h * 0.19, shY = yb - h * 0.75;
+    // Arm: v = 1 vorn (Hand vor der Brust, Stock fast senkrecht eingesetzt), v = -1 hinten (Hand hinter der Hüfte, Stock schleift nach)
+    const arm = (v, c) => {
+      const u = (v + 1) / 2, hx = shX + h * (-0.24 + 0.52 * u), hy = shY + h * (0.33 - 0.2 * u);
+      line([[hx, hy - h * 0.03], [hx - h * (0.12 + 0.3 * (1 - u)), yb - h * 0.08 * (1 - u)]], poleC, Math.max(0.5, h * 0.026));
+      line([[shX, shY], [(shX + hx) / 2 + h * 0.03 * (u - 0.5), (shY + hy) / 2 + h * 0.05], [hx, hy]], c, h * 0.068);
+    };
+    // Bein: v = 1 vorn, v = -1 hinten; nach dem Abstoß hebt der hintere Ski hinten ab
+    const leg = (v, c) => {
+      const fx = x + h * 0.36 * v, lift = Math.max(0, -v) * h * 0.08, fy = yb - lift;
+      line([[hipX, hipY], [(hipX + fx) / 2 + h * 0.1, (hipY + fy) / 2 + h * 0.02], [fx, fy - h * 0.035]], c, h * 0.085);
+      ctx.lineCap = "butt";
+      line([[fx - h * 0.44, fy - lift * 0.5], [fx + h * 0.48, fy + lift * 0.8]], skiC, Math.max(0.6, h * 0.032));
+      line([[fx + h * 0.48, fy + lift * 0.8], [fx + h * 0.54, fy + lift * 0.8 - h * 0.04]], skiC, Math.max(0.6, h * 0.032));
+      ctx.lineCap = "round";
+    };
+    arm(s, suitD); leg(-s, suitD);
+    leg(s, suit);
+    line([[hipX, hipY], [shX, shY]], suit, h * 0.17);
+    ctx.lineCap = "butt";
+    fill([[x + h * 0.06, yb - h * 0.55], [x + h * 0.15, yb - h * 0.69], [x + h * 0.21, yb - h * 0.65], [x + h * 0.12, yb - h * 0.51]], tone(I.papier));
+    ctx.lineCap = "round"; arm(-s, suit); ctx.lineCap = "butt";
+    const hx = x + h * 0.26, hy = yb - h * 0.86, hr = h * 0.075;
+    dot(hx, hy, hr, skin());
+    ctx.beginPath(); ctx.ellipse(hx - hr * 0.15, hy - hr * 0.3, hr * 1.05, hr * 0.95, -0.3, Math.PI, 0); ctx.closePath(); ctx.fillStyle = suitD; ctx.fill();
+    ctx.restore();
+  }
+  function loipe(Lp, live) {
+    const a = X0 - 40, b = X1 + 40;
+    for (const dy of [0, 6]) line([[a, Lp.y + dy + 0.5], [b, Lp.y + dy + 0.5]], mix(P.valleyShade, P.valley, 0.3), 0.9);
+    const G = [
+      { dy: 0, dir: 1, off: 0, f: 0.72, list: [[0, 22, I.rot, 0], [-34, 22, I.navy, 1.9]] },
+      { dy: 6, dir: -1, off: 0.5, f: 0.8, list: [[0, 23, I.gruen, 0.6], [24, 15, I.ocker, 2.4]] },
+    ];
+    const L = b - a + 120;
+    ANIM(live, 1, (t) => {
+      for (const g of G) {
+        const p = ((t * Lp.speed) / L + g.off) % 1, xh = g.dir > 0 ? a - 60 + p * L : b + 60 - p * L;
+        for (const [dx, h, col, ph] of g.list) skier(xh - g.dir * Math.abs(dx), Lp.y + g.dy, h, t * g.f * 6.2832 * (h < 18 ? 1.25 : 1) + ph, col, g.dir);
+      }
+    }, a, b);
+  }
+  // Tiroler Schützen: Joppe, rote Weste, Kniebundhose, weiße Strümpfe, schwarzer Hut mit Federbusch, Gewehr bei Fuß; am Ende der
+  // Reihe die Marketenderin mit Schnapsfässchen. Alle 16 s eine Ehrensalve: Gewehre schräg nach oben, Mündungsfeuer, Pulverrauch.
+  function schuetzen(x, yb, h, n, live) {
+    const joppe = mix(I.dach, I.tinte, 0.55), hose = mix(I.tinte, I.dach, 0.25), dx = h * 0.6, list = [];
+    for (let i = 0; i < n; i++) {
+      const xi = x + i * dx;
+      const pr = person(xi, yb, h, { coat: joppe, vest: I.rot, legs: hose, stockings: I.papier, hat: "schuetzen", hatC: I.tinte, arms: [null, null] });
+      list.push({ x: xi, sw: h * 0.15, sh: pr.sh });
+    }
+    const xm = x + n * dx + h * 0.06, hm = h * 0.9;
+    const pm = person(xm, yb, hm, { coat: mix(I.tinte, I.navy, 0.3), legs: I.tinte, skirt: mix(I.navy, I.tinte, 0.25), apron: mix(I.gruen, I.papier, 0.2), hat: "filz", hatC: I.tinte, scarf: I.rot, arms: [0.12, 0.2] });
+    const bx = xm + hm * 0.2, by = yb - hm * 0.4, bw = hm * 0.15, bh = hm * 0.12, wd = tone(mix(P.wood, I.ocker, 0.25));
+    line([[pm.sh[0][0], pm.sh[0][1]], [bx, by - bh * 0.5]], tone(I.tinte), 0.6);
+    ctx.beginPath(); ctx.ellipse(bx, by, bw / 2, bh / 2, 0, 0, 6.2832); ctx.fillStyle = wd; ctx.fill();
+    for (const f of [-0.25, 0.25]) line([[bx + f * bw, by - bh * 0.48], [bx + f * bw, by + bh * 0.48]], mix(wd, I.tinte, 0.45), 0.6);
+    ANIM(live, LI, salveAnim(list, yb, h), x - h * 0.5, x + n * dx + h * 0.8);
+  }
+  function salveAnim(list, yb, h) {
+    const ease = (v) => v * v * (3 - 2 * v), L = h * 0.84, ang = 0.62;
+    return (t) => {
+      const joppe = tone(mix(I.dach, I.tinte, 0.55)), mitt = tone(I.tinte), wood = tone(mix(P.wood, I.dach, 0.35)), steel = tone(mix(I.tinte, I.tief, 0.3));
+      const u = t % 16;
+      const p = u > 11 && u <= 12 ? ease(u - 11) : u > 12 && u <= 13.6 ? 1 : u > 13.6 && u <= 14.6 ? 1 - ease(u - 13.6) : 0;
+      const puffs = [];
+      for (const S of list) {
+        const x = S.x, sw = S.sw, [lsh, rsh] = S.sh;
+        // bei Fuß: Kolben am rechten Fuß, Lauf senkrecht; Salve: Kolben an der Hüfte, Lauf schräg nach oben
+        const b0 = [x + sw * 1.3, yb - h * 0.02], m0 = [x + sw * 1.3 + h * 0.03, yb - h * 0.84];
+        const b1 = [x + sw * 0.7, yb - h * 0.5], m1 = [b1[0] + Math.sin(ang) * L, b1[1] - Math.cos(ang) * L];
+        const lp = (A, B) => [A[0] + (B[0] - A[0]) * p, A[1] + (B[1] - A[1]) * p];
+        const bt = lp(b0, b1), mz = lp(m0, m1), at = (f) => [bt[0] + (mz[0] - bt[0]) * f, bt[1] + (mz[1] - bt[1]) * f];
+        const hR = lp([x + sw * 1.3, yb - h * 0.5], at(0.16)), hL = lp([lsh[0] - h * 0.02, lsh[1] + h * 0.3], at(0.46));
+        limb(lsh[0], lsh[1], hL[0], hL[1], h * 0.085, joppe, mitt);
+        line([bt, at(0.36)], wood, h * 0.055); line([at(0.36), mz], steel, h * 0.026);
+        limb(rsh[0], rsh[1], hR[0], hR[1], h * 0.085, mix(joppe, I.tinte, 0.3), mitt);
+        if (u > 12.05 && u < 12.25) glint(mz[0] + 1, mz[1] - 1, h * 0.14);
+        if (u > 12.05 && u < 15.5) puffs.push(mz);
+      }
+      const a = (u - 12.05) / 3.45;
+      if (a > 0 && a < 1) {
+        ctx.globalAlpha *= 1 - a;
+        const pf = (dx, dy) => puffs.map(([mx, my]) => [mx + dx[0] + a * dx[1], my - dy[0] - a * h * dy[1], h * (dy[2] + a * dy[3])]);
+        const L1 = pf([2, 6], [2, 0.45, 0.05, 0.16]).concat(pf([-1, 3], [1, 0.25, 0.04, 0.12]), pf([4, 10], [4, 0.7, 0.03, 0.14]));
+        dots(L1.map(([px, py, rr]) => [px + 0.8, py + 0.8, rr]), mix(I.schatten, I.tief, 0.25));
+        dots(L1, mix(I.dunst, I.papier, 0.35));
+        ctx.globalAlpha /= 1 - a;
+      }
+    };
+  }
+  // Walliser Schwarznasenschafe an der Heuraufe: weiße Wolle, schwarzes Gesicht, schwarze Knie und Füße, eingerollte Hörner.
+  // Sie fressen (Kopf unten), schauen auf und kauen; eines trottet zwischen Raufe und Herde hin und her, ein Lamm macht Bocksprünge.
+  function heuraufe(x, yb, k) {
+    const wd = tone(mix(P.wood, I.dach, 0.25)), wdD = mix(wd, I.tinte, 0.35), hay = tone(mix(I.ocker, P.wood, 0.25));
+    shade([[x - 9 * k, yb + 0.6], [x + 13 * k, yb + 0.2], [x + 11 * k, yb + 2.4], [x - 8 * k, yb + 2.4]], P.valleyShade);
+    for (const lx of [-7.5, 7.5]) rect(x + lx * k - 0.5, yb - 9 * k, 1.1, 9 * k, wdD);
+    fill([[x - 7 * k, yb - 8.6 * k], [x + 7 * k, yb - 8.6 * k], [x + 6 * k, yb - 3.2 * k], [x - 6 * k, yb - 3.2 * k]], hay);
+    for (let i = -6; i <= 6; i += 2) line([[x + i * k, yb - 8.6 * k], [x + i * 0.86 * k, yb - 3.2 * k]], wdD, 0.5);
+    rect(x - 7.6 * k, yb - 3.6 * k, 15.2 * k, 1.1, wd);
+    fill([[x - 9 * k, yb - 9 * k], [x, yb - 13.5 * k], [x + 9 * k, yb - 9 * k]], wdD);
+    fill([[x - 9.4 * k, yb - 9.2 * k], [x, yb - 13.9 * k], [x + 1 * k, yb - 13.2 * k], [x - 7.6 * k, yb - 9.4 * k]], P.roofSnow);
+  }
+  function sheep(x, yb, k, dir, headDown, step, hop) {
+    const wool = tone(mix(I.papier, I.ocker, 0.2)), woolD = mix(wool, I.schatten, 0.45), blk = tone(mix(I.tinte, I.dach, 0.15)), horn = tone(mix(I.ocker, I.papier, 0.4));
+    ctx.save(); ctx.translate(x, yb - (hop || 0)); ctx.scale(dir * k, k);
+    if (!hop) { ctx.beginPath(); ctx.ellipse(0.6, 0.4, 5.6, 0.9, 0, 0, 6.2832); ctx.fillStyle = P.valleyShade; ctx.fill(); }
+    const sw = step || 0;
+    for (const [lx, f] of [[-3.4, 1], [-1.8, -1], [2, -1], [3.6, 1]]) { const dx = sw * f; line([[lx, -2.6], [lx + dx, -0.3]], blk, 0.9); rect(lx + dx - 0.55, -0.9, 1.1, 0.9, blk); }
+    dots([[-3, -4.1, 2.1], [-0.6, -4.6, 2.4], [1.9, -4.3, 2.2], [-1.6, -3.2, 1.9], [1, -3.2, 1.9]], woolD);
+    dots([[-3, -4.5, 2], [-0.6, -5, 2.3], [1.9, -4.7, 2.1], [-1.8, -5.6, 1.4], [0.8, -5.8, 1.5]], wool);
+    dot(-5, -4.6, 0.9, wool);
+    const hx = headDown ? 5.2 : 5.1, hy = headDown ? -2.1 : -6.4, a = headDown ? 0.9 : -0.25;
+    line([[3.2, -4.6], [hx - 0.8, hy + 0.4]], wool, 2.4);
+    ctx.save(); ctx.translate(hx, hy); ctx.rotate(a);
+    ctx.beginPath(); ctx.ellipse(0.4, 0.3, 1.9, 1.2, 0, 0, 6.2832); ctx.fillStyle = blk; ctx.fill();
+    dot(-0.6, -0.9, 0.9, wool);
+    ctx.beginPath(); ctx.arc(-0.6, -0.1, 0.9, 0.6, 5.4); ctx.strokeStyle = horn; ctx.lineWidth = 0.55; ctx.stroke();
+    fill([[-0.3, -0.5], [-1.6, 0.6], [-0.5, 0.4]], blk);
+    ctx.restore();
+    ctx.restore();
+  }
+  function herdeAnim(H) {
+    const [x0, yb, k] = H;
+    const flock = [[x0 + 8, 0, 1, 0.3], [x0 + 20, 1.2, -1, 2.1], [x0 + 31, -0.6, 1, 4.4], [x0 + 46, 1.6, -1, 1.2], [x0 + 58, 0.4, 1, 3.3]];
+    return (t) => {
+      const list = [];
+      for (const [x, dy, dir, ph] of flock) {
+        const u = (t * 0.32 + ph) % 4;
+        list.push({ x, y: yb + dy * k, dir, down: u < 2.6, step: 0, hop: 0, k });
+      }
+      // Wanderer: trottet zwischen Raufe und Herde, wendet am Ende
+      const per = 26, u = (t + 3) % per, half = per / 2, walk = (v) => (v < 2 ? 0 : v > half - 1 ? 1 : (v - 2) / (half - 3));
+      const f = u < half ? walk(u) : 1 - walk(u - half), dirW = u < half ? 1 : -1, moving = (u % half) > 2 && (u % half) < half - 1;
+      list.push({ x: x0 + 66 + f * 34 * k, y: yb + 2.4 * k, dir: dirW, down: !moving && Math.sin(t * 0.9) > 0, step: moving ? Math.sin(t * 7) * 0.9 : 0, hop: 0, k });
+      // Lamm: kleine Bocksprünge, dazwischen bei der Mutter
+      const lu = (t + 1.3) % 9, hp = lu < 1.2 ? Math.abs(Math.sin(lu * Math.PI * 2.5)) * 3.2 * k : 0;
+      list.push({ x: x0 + 40 + (lu < 1.2 ? lu * 6 : 7.2) * k, y: yb + 3 * k, dir: 1, down: lu > 4 && lu < 7, step: hp ? 0.6 : 0, hop: hp, k: k * 0.66 });
+      list.sort((a, b) => a.y - b.y);
+      for (const S of list) sheep(S.x, S.y, S.k, S.dir, S.down, S.step, S.hop);
+    };
+  }
+
+  // Zugefrorener Teich (Willingen): Eisfläche mit Kratzspuren und Schneerand, Schilf, Steg und ein umgedrehtes Ruderboot im Schnee.
+  // Auf dem Eis drehen Schlittschuhläufer ihre Runden, ein Kind an der Hand, einer fährt rückwärts.
+  function eisteich(T, live) {
+    const { cx, cy, rx, ry } = T, ice = P.abend ? mix(I.schatten, I.violett, 0.35) : mix(I.dunst, I.himmel, 0.18), iceL = mix(ice, I.papier, 0.45);
+    ctx.beginPath(); ctx.ellipse(cx + 1.5, cy + 1, rx + 3, ry + 2, 0, 0, 6.2832); ctx.fillStyle = P.valleyShade; ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, 6.2832); ctx.fillStyle = ice; ctx.fill();
+    ctx.save(); ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, 6.2832); ctx.clip();
+    ctx.beginPath(); ctx.ellipse(cx - rx * 0.2, cy - ry * 0.35, rx * 0.7, ry * 0.32, 0, 0, 6.2832); ctx.fillStyle = iceL; ctx.fill();
+    const rr = rng(77);
+    for (let i = 0; i < 26; i++) { const a = rr() * 6.2832, q = 0.25 + rr() * 0.6, x = cx + Math.cos(a) * rx * q, y = cy + Math.sin(a) * ry * q, l = 8 + rr() * 18; line([[x - l / 2, y], [x + l / 2, y + (rr() - 0.5) * 2]], mix(iceL, I.papier, 0.4), 0.5); }
+    ctx.restore();
+    // Schneerand oben (das Ufer hinter dem Eis)
+    const top = []; for (let i = 0; i <= 20; i++) { const a = Math.PI + (i / 20) * Math.PI; top.push([cx + Math.cos(a) * (rx + 2), cy + Math.sin(a) * (ry + 1.5)]); }
+    line(top, P.valley, 2.2);
+    // Schilf am linken Ufer
+    const reed = tone(mix(I.ocker, P.wood, 0.45));
+    for (let i = 0; i < 9; i++) { const x = cx - rx * 0.92 + i * 3.1, y = cy + ry * 0.2 - i * 0.9, h = 8 + (i % 3) * 3; line([[x, y], [x + (i % 2 ? 1.2 : -0.8), y - h]], reed, 0.7); if (i % 3 === 0) { ctx.beginPath(); ctx.ellipse(x + (i % 2 ? 1.2 : -0.8), y - h - 1, 0.8, 1.8, 0, 0, 6.2832); ctx.fillStyle = mix(reed, I.dach, 0.4); ctx.fill(); } }
+    // Steg vom rechten Ufer ins Eis, mit Schnee
+    const sx = cx + rx * 0.52, sy = cy - ry * 0.3, wd = tone(mix(P.wood, I.dach, 0.3));
+    for (const px of [sx + 4, sx + 18, sx + 32]) rect(px, sy, 1.4, 5, mix(wd, I.tinte, 0.35));
+    rect(sx, sy - 1.6, 40, 2.2, wd); rect(sx - 0.4, sy - 2.8, 40.8, 1.4, P.roofSnow);
+    // umgedrehtes Ruderboot am Ufer, eingeschneit: Bordwand unten auf dem Schnee, Kiel oben, spitzer Bug rechts
+    const bx = cx + rx * 0.84, by = cy + ry * 1.05, hull = tone(mix(I.rot, I.dach, 0.3)), hullD = mix(hull, I.tinte, 0.3);
+    shade([[bx - 15, by + 0.6], [bx + 18, by + 0.6], [bx + 15, by + 2.8], [bx - 13, by + 2.8]], P.valleyShade);
+    const keel = []; for (let i = 0; i <= 10; i++) { const u = i / 10; keel.push([bx - 14 + u * 31, by - 3.2 - Math.sin(u * Math.PI) * 3.6 - u * u * 2.2]); }
+    fill([[bx - 15, by], [bx - 14.4, by - 3.2]].concat(keel, [[bx + 18, by - 1.4], [bx + 16.4, by]]), hull);
+    line([[bx - 14.6, by - 1.2], [bx + 16.8, by - 1.3]], hullD, 0.9);
+    line([[bx - 14, by - 0.2], [bx + 16.4, by - 0.2]], mix(hull, I.papier, 0.35), 0.6);
+    fill(keel.slice(1, 10).concat([[keel[9][0] - 2, keel[9][1] + 1.6], [keel[1][0] + 1, keel[1][1] + 1.4]]), P.roofSnow);
+    ANIM(live, 1, eisAnim(T), cx - rx - 10, cx + rx + 10);
+  }
+  // Schlittschuhläufer von der Seite: Oberkörper vorgebeugt, Gleitbein senkrecht, das andere stößt seitlich nach hinten ab, Arme schwingen
+  function skater(x, yb, h, ph, col, dir, back) {
+    const s = Math.sin(ph), c = tone(col), cD = mix(c, I.tinte, 0.3), legC = tone(mix(I.tinte, I.tief, 0.3)), blade = tone(mix(I.dunst, I.papier, 0.3));
+    ctx.save(); if (dir < 0) { ctx.translate(2 * x, 0); ctx.scale(-1, 1); }
+    ctx.lineCap = "round";
+    const hipX = x, hipY = yb - h * 0.48, shX = x + h * (back ? -0.04 : 0.12), shY = yb - h * 0.8;
+    const leg = (v, col2) => {
+      const push = Math.max(0, v), fx = x - h * 0.36 * push, fy = yb - h * 0.06 * push;
+      line([[hipX, hipY], [(hipX + fx) / 2 + h * 0.05, (hipY + fy) / 2], [fx, fy - h * 0.03]], col2, h * 0.085);
+      ctx.lineCap = "butt"; line([[fx - h * 0.1, fy], [fx + h * 0.12, fy]], blade, Math.max(0.5, h * 0.025)); ctx.lineCap = "round";
+    };
+    leg(s, mix(legC, I.tinte, 0.25)); leg(-s, legC);
+    line([[hipX, hipY], [shX, shY]], c, h * 0.17);
+    for (const [v, cc] of [[s, cD], [-s, c]]) line([[shX, shY], [shX + h * 0.22 * v, shY + h * 0.24], [shX + h * 0.3 * v, shY + h * 0.38]], cc, h * 0.065);
+    const hx = shX + h * 0.06, hy = yb - h * 0.9, hr = h * 0.075;
+    dot(hx, hy, hr, skin());
+    ctx.beginPath(); ctx.ellipse(hx, hy - hr * 0.3, hr * 1.05, hr * 0.95, 0, Math.PI, 0); ctx.closePath(); ctx.fillStyle = cD; ctx.fill();
+    dot(hx - hr * 0.2, hy - hr * 1.3, hr * 0.45, tone(I.papier));
+    ctx.lineCap = "butt"; ctx.restore();
+  }
+  function eisAnim(T) {
+    const { cx, cy, rx, ry } = T;
+    const S = [[0, 22, I.rot, 0.17, 0], [2.4, 21, I.navy, 0.17, 0], [3.6, 15, I.ocker, 0.17, 0], [1.2, 23, I.gruen, -0.12, 1]];
+    return (t) => {
+      const list = S.map(([ph, h, col, w, back], i) => {
+        const a = t * w + ph + (i === 2 ? 0.16 : 0), x = cx - rx * 0.06 + Math.cos(a) * rx * 0.5, y = cy + Math.sin(a) * ry * 0.55 + (i === 2 ? 2 : 0);
+        const vx = -Math.sin(a) * w;
+        return { x: i === 2 ? x - 3 : x, y, h, col, dir: (vx > 0 ? 1 : -1) * (back ? -1 : 1), ph: t * 2.6 + i, back };
+      });
+      list.sort((p, q) => p.y - q.y);
+      for (const L of list) skater(L.x, L.y, L.h, L.ph, L.col, L.dir, L.back);
+    };
   }
   // Straßenbahn (rot-cremefarben, zwei Wagenteile, Stromabnehmer); fährt nach rechts, x = Heck
   function tramAt(x, yb) {
@@ -3712,7 +4215,13 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     alphorn: (it, live) => { const b = alphorn(it[1], it[2], it[3], it[4]); ANIM(live, LI, notesAnim(b[0], b[1], it[1] * 0.017), b[0] - 4, b[0] + 30); },
     fan: (it, live) => fan(it[1], it[2], it[3], it[4] || I.rot, live, it[1] * 0.031),
     hofer: (it) => hofer(it[1], it[2], it[3]),
+    birch: (it, live) => { for (const [x, yb, h] of it[1]) { shade([[x, yb + 1], [x + h * 0.6, yb], [x + h * 0.5, yb + 3], [x, yb + 3]], P.valleyShade); ANIM(live, LI, () => birch(x, yb, h), x - h * 0.4, x + h * 0.4); } },
+    baal: (it, live) => baal(it[1], it[2], it[3], live),
+    elch: (it, live) => ANIM(live, LI, elchAnim(it[1], it[2], it[3], it[4] || 0), it[1] - it[3], it[1] + it[3]),
     kapelle: (it, live) => kapelle(it[1], it[2], it[3], live),
+    schuetzen: (it, live) => schuetzen(it[1], it[2], it[3], it[4] || 4, live),
+    herde: (it, live) => { heuraufe(it[1] + 84 * it[3], it[2] + 1.5 * it[3], it[3] * 1.15); ANIM(live, LI, herdeAnim([it[1], it[2], it[3]]), it[1] - 10, it[1] + 120 * it[3]); },
+
   };
   // Nahebene: wird für die Plakat-Orte nicht mehr gebaut (nichts soll beim Flug durchs Bild ziehen); bleibt für Bäume und Stadel
   function nearSide(O, live) {
@@ -3762,6 +4271,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       for (const G of geo.ranges) paintRange(G, "erd");
       ctx.restore();
     }
+    if (O.fjord) fjordWater(O, live);
     const F = O.far || {};
     if (F.tower) latticeTower(F.tower);
     if (F.skywalk) skywalk(F.skywalk);
@@ -3783,6 +4293,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   function midLayer(O, live) {
     r = rng(hash(O.id) ^ 23);
     valley(O);
+    // Eisteich vor den Bäumen des Talgrunds (die Gruppe am Ufer steht davor)
+    if ((O.mid || {}).eisteich) { const E = O.mid.eisteich; eisteich({ cx: E[0], cy: E[1], rx: E[2], ry: E[3] }, live); }
     valleyDetail(O);
     wege();
     const M = O.mid || {};
@@ -3803,9 +4315,10 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (M.hamlet) { const h = M.hamlet; for (const [dx, w] of [[-34, 10], [-20, 12], [-6, 9], [8, 12], [22, 10]]) house(h.cx + dx, h.yb + (dx % 3), w, w * 0.62, preset("chalet", rng(3))); }
     const chim = [];
     for (const T of (O.town || [])) town(T, chim);
-    if (M.city) city(M.city);
+    if (M.city) city(M.city, live);
     if (M.dachl) dachl(M.dachl, live);
     if (M.funicular) { const f = M.funicular; line([[f[0], f[1]], [f[2], f[3]]], P.line, 1.6); station(f[0], f[1]); station(f[2], f[3]); }
+    if (M.loipe) loipe(M.loipe, live);
     // Details des Ortes vorn im Talgrund (früher Nahebene): von hinten nach vorn in der Reihenfolge der Daten
     const N = O.near || {};
     LI = 1;
@@ -3905,12 +4418,26 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     pl: (q) => { q(0, 1, 0, 0.5, I.papier); q(0, 1, 0.5, 1, I.rot); },
     si: (q) => { q(0, 1, 0, 1 / 3, I.papier); q(0, 1, 1 / 3, 2 / 3, I.kobalt); q(0, 1, 2 / 3, 1, I.rot); },
     by: (q) => { for (let i = 0; i < 5; i++) for (let j = 0; j < 3; j++) q(i / 5, (i + 1) / 5, j / 3, (j + 1) / 3, (i + j) % 2 ? I.papier : I.himmel); },
+    // Tirol: weiß-rot, in der Mitte der Wappenschild mit dem roten Tiroler Adler und goldener Krone (ohne ihn wäre es die polnische Fahne)
+    tirol: (q, pt) => {
+      const wt = mix(I.papier, I.schatten, 0.22);
+      q(0, 1, 0, 0.5, wt); q(0, 1, 0.5, 1, I.rot);
+      const edge = []; for (let i = 0; i <= 8; i++) edge.push(pt(i / 8, 0)); edge.push(pt(1, 0.5));
+      line(edge, mix(I.schatten, I.tinte, 0.35), 0.5);
+      const S = (pts) => pts.map(([a, b]) => pt(0.5 + a * 0.17, 0.52 + b * 0.31));
+      const shield = S([[-1, -1], [1, -1], [1, 0.3], [0.62, 0.82], [0, 1.06], [-0.62, 0.82], [-1, 0.3]]);
+      fill(shield, I.papier); line(shield.concat([shield[0]]), mix(I.tinte, I.rot, 0.3), 0.5);
+      fill(S([[0, -0.4], [-0.1, -0.62], [-0.26, -0.66], [-0.36, -0.54], [-0.22, -0.5], [-0.14, -0.38], [-0.34, -0.48], [-0.56, -0.56], [-0.78, -0.44], [-0.84, -0.22],
+        [-0.66, -0.22], [-0.78, -0.04], [-0.56, -0.06], [-0.64, 0.12], [-0.38, 0.08], [-0.16, 0.18], [-0.26, 0.44], [-0.08, 0.36], [0, 0.6], [0.08, 0.36], [0.26, 0.44],
+        [0.16, 0.18], [0.38, 0.08], [0.64, 0.12], [0.56, -0.06], [0.78, -0.04], [0.66, -0.22], [0.84, -0.22], [0.78, -0.44], [0.56, -0.56], [0.34, -0.48], [0.14, -0.38]]), I.rot);
+      fill(S([[-0.3, -0.7], [-0.08, -0.7], [-0.1, -0.84], [-0.19, -0.77], [-0.28, -0.84]]), I.ocker);
+    },
   };
   const FLAG_OF = { willingen: "de", engelberg: "ch", predazzo: "it", holmenkollen: "no", oberstdorf: "de", garmisch: "de", innsbruck: "at", bischofshofen: "at", zakopane: "pl", planica: "si" };
   function flagShape(x, y0, w, h, kind, wv) {
     const pt = (u, v) => [x + u * w, y0 + v * h + wv(u)];
     const q = (u0, u1, v0, v1, col) => { const pts = []; for (let i = 0; i <= 6; i++) pts.push(pt(u0 + (u1 - u0) * i / 6, v0)); for (let i = 6; i >= 0; i--) pts.push(pt(u0 + (u1 - u0) * i / 6, v1)); fill(pts, col); };
-    (FLAGS[kind] || FLAGS.at)(q);
+    (FLAGS[kind] || FLAGS.at)(q, pt);
   }
   // ------------------------------------------------------------------ Bewegte Details (Entwurf: telemark-orte.js, „Bewegte Details")
   // Kreise einer Farbe in einem Pfad: wenige Füllungen je Bild
@@ -4784,6 +5311,30 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       town: { kind: "city", v0: 27, v1: 66, dens: 1.3, tall: [[40, 9, 30], [64, 7, 38], [88, 8, 25], [290, 10, 22], [-170, 8, 20], [-120, 6, 26]] },
       tower: { c: -300, v: 52, h: 112 },
       ferry: { v: 15 },
+      // Plakat (Schritt 4): Blick über Oslo und den Fjord mit Inseln, weiche Waldrücken am Horizont; Daten wie in telemark-orte.js,
+      // nach beiden Seiten verlängert. Das Wasser liegt in der fernen Ebene, das Ufer mit der Stadt in der mittleren.
+      // Details: Fähre mit Rauch, Rathaus, Oper und MUNCH am Hafen, Holzhäuser und Kapelle im Stabkirchenstil, Loipe mit Langläufern,
+      // Lagerfeuer mit Fans im Norwegerpulli (Holmenkollsonntag), Elch zwischen Birken, Fahnen.
+      plakat: {
+        id: "holmenkollen", moon: [986, 178],
+        ranges: [{ style: "huegel", far: true, rough: 0.05, ctrl: [[-720, 478], [-560, 466, "S"], [-400, 476, "V"], [-220, 462, "S"], [-40, 482], [180, 464, "S"], [360, 476, "V"],
+          [560, 458, "S"], [800, 472, "V"], [1000, 460, "S"], [1320, 476], [1480, 462, "S"], [1640, 474, "V"], [1800, 458, "S"], [1990, 470]] }],
+        fjord: { y0: 482, y1: 560, islands: [[-300, 520, 80, 10], [-80, 530, 110, 13], [140, 512, 60, 8], [380, 526, 90, 11], [640, 524, 90, 12], [790, 508, 60, 8],
+          [940, 534, 120, 14], [1150, 514, 70, 9], [1340, 528, 100, 12], [1540, 510, 60, 8], [1720, 524, 90, 11], [1900, 516, 70, 9]] },
+        ferry: { y: 550, speed: 13 },
+        far: {},
+        mid: {
+          city: { rows: [{ y: 586, x0: 560, x1: 1720, hmin: 16, hmax: 34, bunt: "nord", gaps: [[1156, 1276]] }, { y: 606, x0: 600, x1: 1720, hmin: 12, hmax: 26 }],
+            churches: [{ x: 1010, yb: 587, t: "raadhus", h: 46, row: 0 }, { x: 1166, yb: 566, t: "opera", h: 13, row: 0 }, { x: 1258, yb: 568, t: "munch", h: 40, row: 0 }] },
+          loipe: { y: 704, speed: 22 },
+        },
+        town: [{ house: "nordisch", cx: 920, w: 480, y0: 634, y1: 678, dens: 0.82, churches: [{ x: 780, yb: 656, t: "stave", h: 60 }], skip: [[748, 812, 2]] }],
+        flags: [[1010, 736, 66, 40, 28, "no"], [1056, 728, 60, 40, 28, "no"]],
+        near: { items: [
+          ["drift", 800, 912, 790, 6], ["baal", 842, 786, 36],
+          ["drift", 1140, 1320, 794, 7], ["birch", [[1250, 772, 118], [1290, 780, 140], [1168, 790, 86]]], ["elch", 1214, 792, 40, 0],
+        ] },
+      },
     },
     oberstdorf: {
       moon: 0.66,
@@ -4813,8 +5364,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       town: { kind: "city", v0: 14, v1: 64, dens: 1.15, river: [31, 36], tall: [[-40, 8, 22], [130, 10, 18], [-250, 9, 16]], church: { c: 70, type: "onion2", h: 40 } },
       // Plakat (Schritt 4): Nordkette mit Hungerburg, Seegrube und Hafelekar, Nordkettenbahn in zwei Sektionen und Hungerburgbahn, die Stadt am Inn
       // mit Dom und Zwiebelturm. Daten wie in telemark-orte.js, die Kette nach beiden Seiten verlängert.
-      // Details: bunte Häuser am Inn (Mariahilf), Goldenes Dachl (blitzt in der Sonne), Straßenbahn mit Oberleitung, Andreas-Hofer-Denkmal,
-      // Tiroler Musikkapelle, Fahnen.
+      // Details: bunte Häuser am Inn (Mariahilf), Goldenes Dachl (blitzt in der Sonne), Triumphpforte, Straßenbahn mit Oberleitung,
+      // Andreas-Hofer-Denkmal, Tiroler Musikkapelle, Schützen mit Marketenderin (Ehrensalve), Österreich- und Tirol-Fahne.
       plakat: {
         id: "innsbruck", moon: [986, 178],
         ranges: [{ style: "alpin", rough: 0.15, rocky: 1.4, detail: 0.55, tree: 448, ctrl: [
@@ -4824,15 +5375,20 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
           [1440, 282, "S"], [1550, 306, "V"], [1660, 288, "S"], [1780, 312, "V"], [1880, 296, "S"], [1990, 308]] }],
         far: { drift: [[422, 214, 0.7]] },
         cables: [[480, 474, 448, 344, 9], [448, 344, 426, 218, 9]],
-        mid: { funicular: [604, 566, 482, 478, 12], hamlet: { cx: 470, yb: 484 }, river: { y: 612, h: 9, x0: 520 },
-          city: { rows: [{ y: 602, x0: 560, x1: 1720, hmin: 14, hmax: 30, bunt: true }, { y: 644, x0: 626, x1: 1720, hmin: 18, hmax: 40 }],
-            churches: [{ x: 900, yb: 646, t: "twin", h: 74, row: 1 }, { x: 1090, yb: 646, t: "onion", h: 62, row: 1 }] },
-          dachl: [992, 647, 44],
-          tram: { y: 653, x0: 606, x1: 1720, speed: 17, cover: [[596, 657, 22, 34, 31]] } },
-        flags: [[1010, 736, 66, 38, 26, "at"], [1056, 728, 60, 38, 26, "at"]],
+        // Stadt in drei Reihen: hinten die bunte Mariahilf-Zeile direkt am Inn (sie spiegelt sich im Wasser), davor die Altstadt mit Dom,
+        // Goldenem Dachl und Spitalskirche, vorn Wilten mit der Triumphpforte; die Straßenbahn fährt vor der Altstadt
+        mid: { funicular: [604, 566, 482, 478, 12], hamlet: { cx: 470, yb: 484 },
+          city: { inn: { after: 0, h: 18 },
+            rows: [{ y: 598, x0: 520, x1: 1720, hmin: 24, hmax: 42, maria: true },
+              { y: 662, x0: 590, x1: 1720, hmin: 18, hmax: 40, gaps: [[966, 1020]], bunt: "pastell" },
+              { y: 714, x0: 640, x1: 1720, hmin: 12, hmax: 26, gaps: [[1176, 1250]] }],
+            churches: [{ x: 900, yb: 664, t: "twin", h: 78, row: 1 }, { x: 1090, yb: 664, t: "onion", h: 64, row: 1 }, { x: 993, yb: 665, t: "dachl", h: 64, row: 1 },
+              { x: 1213, yb: 716, t: "triumph", h: 28, row: 2 }] },
+          tram: { y: 671, x0: 596, x1: 1720, speed: 17, cover: [[586, 675, 22, 34, 31]] } },
+        flags: [[1010, 736, 66, 38, 26, "at"], [1056, 728, 60, 40, 28, "tirol"]],
         near: { items: [
           ["drift", 842, 930, 786, 6], ["hofer", 884, 782, 1.15],
-          ["drift", 1084, 1218, 786, 6], ["kapelle", 1112, 782, 36],
+          ["drift", 1084, 1338, 786, 6], ["kapelle", 1112, 782, 36], ["schuetzen", 1198, 783, 36, 4],
         ] },
       },
     },
@@ -4870,10 +5426,11 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
           { style: "huegel", rough: 0.045, ctrl: [[-720, 510], [-540, 496], [-340, 506], [-180, 498], [-40, 506], [180, 474, "S"], [410, 500, "V"], [650, 444, "S"], [880, 492, "V"], [1080, 470, "S"], [1320, 500], [1500, 492], [1680, 504], [1860, 494], [1990, 502]], pisten: [[600, 24], [690, 20], [1060, 22]] },
         ],
         // Details (statt Hang und Tafel): Gondelbahn auf den Ettelsberg, Pferdeschlitten vor dem Dorf, Würstchenbude mit Schlange,
-        // Schneemann mit Schal in Schwarz-Rot-Gold und Kind mit Rodel, Zaun mit Fahnen
+        // Schneemann mit Schal in Schwarz-Rot-Gold und Kind mit Rodel, Zaun mit Fahnen; links vom Dorf ein zugefrorener Teich mit
+        // Schlittschuhläufern, Schilf, Steg und eingeschneitem Ruderboot
         far: { tower: { x: 650, y: 447, h: 40 }, skywalk: { x0: 842, x1: 952, y: 486 }, gondola: [790, 512, 670, 452, 6] },
         mid: { viaduct: { x0: 590, x1: 900, y: 570, h: 34, n: 8 }, train: { y: 570, x0: 560, x1: 905, speed: 46 }, groves: [[[938, 582, 34, 0], [954, 586, 28, 1], [972, 580, 40, 0], [994, 584, 30, 2]]],
-          sleigh: { x0: 820, x1: 1290, y: 662, speed: 7 }, tunnels: [[586, -1], [904, 1]] },
+          sleigh: { x0: 820, x1: 1290, y: 662, speed: 7 }, tunnels: [[586, -1], [904, 1]], eisteich: [716, 650, 90, 14] },
         town: [{ house: "fachwerk", cx: 1090, w: 360, y0: 598, y1: 652, churches: [{ x: 1080, yb: 624, t: "spire", h: 72 }], skip: [[1050, 1124, 1]] }],
         flags: [[1012, 737, 64, 36, 22], [1054, 735, 58, 36, 22]],
         near: { items: [
@@ -4899,12 +5456,14 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         cables: [[586, 548, 318, 300, 9]],
         mid: { train: { y: 668, x0: 560, x1: 1300, speed: 38 }, glider: { cx: 1010, cy: 408, rx: 70, ry: 22, per: 46 } },
         town: [{ house: "chalet", cx: 1040, w: 440, y0: 592, y1: 648, extra: [{ t: "abbey", x0: 934, x1: 1118, yb: 606, h: 31 }, { t: "hotel", x: 786, yb: 598, w: 76, h: 50 }], skip: [[780, 870, 1], [890, 1146, 1]] }],
-        // Details: Gleitschirm über dem Tal, zwei Alphornbläser, ein Fan mit Kuhglocke zwischen zwei Schweizer Fahnen, Fichten
+        // Details: Gleitschirm über dem Tal, zwei Alphornbläser, ein Fan mit Kuhglocke zwischen zwei Schweizer Fahnen, Fichten,
+        // Walliser Schwarznasenschafe an der Heuraufe (fressen, schauen auf, eines trottet hin und her, ein Lamm springt)
         flags: [[1106, 746, 60, 26, 26, "ch"], [1168, 744, 56, 26, 26, "ch"], [824, 530, 26, 14, 14, "ch"]],
         near: { items: [
           ["drift", 1180, 1334, 768, 9], ["spruce", [[1222, 760, 116, 0], [1260, 764, 146, 1], [1294, 761, 100, 0]]],
           ["drift", 846, 1094, 788, 7], ["alphorn", 862, 783, 38, "#C23B2A"], ["alphorn", 992, 781, 38, "#1E2734"],
           ["drift", 1100, 1190, 781, 6], ["fan", 1138, 776, 37],
+          ["herde", 736, 722, 1.45],
         ] },
       },
     },
@@ -6106,16 +6665,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         const p = Hill.landAtS(H, s);
         back.push({ x: p.x, y: p.y + 2.2 + r() * 0.8, h: 2.2 + r() * 2.6 });
       }
-      // Flutlichtmasten
       const masts = [];
-      for (const f of [0.18, 0.53, 0.87, 1.22]) {
-        const d = Math.round(f * H.K);
-        const p = Hill.landAtD(H, d);
-        masts.push({ x: p.x + 3, y: p.y + 2.6, h: 13, tx: Hill.landAtD(H, d + 16) });
-      }
-      for (const dx of [16, 62]) masts.push({ x: H.U.x + dx, y: H.U.y + 6, h: 15, tx: { x: H.U.x + dx - 4, y: H.U.y } });
-      masts.push({ x: top.x + 6, y: terrainY(top.x + 6), h: Math.max(14, top.y - terrainY(top.x + 6) + 6), tx: { x: top.x + 28, y: top.y - 12 } });
-      masts.push({ x: -34, y: terrainY(-34), h: Math.max(12, Hill.inrunAt(H, 34).y - terrainY(-34) + 8), tx: { x: -10, y: 2 } });
       // Zuschauer, Banden und Objekte an der Schanze
       const world = Scene.buildWorld(H);
       // Sterne
@@ -6135,6 +6685,17 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       for (const p of left) { ex.push(p[0]); ey.push(p[1]); }
       for (const p of land) if (p.x > ex[ex.length - 1] + 1e-6) { ex.push(p.x); ey.push(p.y); }
       for (const p of right) if (p[0] > ex[ex.length - 1] + 1e-6) { ex.push(p[0]); ey.push(p[1]); }
+      // Flutlichtmasten. Der Fuß steht auf der Oberkante des Hangs (knapp darunter, die Schneefläche deckt ihn), die Lampen bleiben
+      // in ihrer Höhe. Früher stand der Fuß 2,6 m über dem Profil: im Flugbild endete der Mast dann frei in der Luft.
+      const edgeY = (x) => edgeAt({ edgeX: ex, edgeY: ey }, x) - 1.2;
+      const mast = (x, top, tx) => { const y = edgeY(x); masts.push({ x, y, h: Math.max(6, top - y), tx }); };
+      for (const f of [0.18, 0.53, 0.87, 1.22]) {
+        const d = Math.round(f * H.K), p = Hill.landAtD(H, d);
+        mast(p.x + 3, p.y + 15.6, Hill.landAtD(H, d + 16));
+      }
+      for (const dx of [16, 62]) mast(H.U.x + dx, H.U.y + 21, { x: H.U.x + dx - 4, y: H.U.y });
+      masts.push({ x: top.x + 6, y: terrainY(top.x + 6), h: Math.max(14, top.y - terrainY(top.x + 6) + 6), tx: { x: top.x + 28, y: top.y - 12 } });
+      masts.push({ x: -34, y: terrainY(-34), h: Math.max(12, Hill.inrunAt(H, 34).y - terrainY(-34) + 8), tx: { x: -10, y: 2 } });
       const place = H.key.split("-")[0], at = (d) => Hill.landAtD(H, d).x;
       const hang = PK.hangPlan(place, top.x, end.x, at(H.K), at(H.K * 0.3), at(H.K * 0.9), H.key);
       // Ankerpunkte (Welt-x) der festen Plakat-Ebenen: die Nahebene steht im Bild, wenn die Kamera bei 0,8 K ist (spätes Flugbild),
@@ -8421,7 +8982,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.41";
+  const VERSION = "0.42";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
