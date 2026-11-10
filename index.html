@@ -343,7 +343,23 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .set-row .lbl { white-space: normal; min-width: 0; }
 .set-row .seg { flex-shrink: 0; }
 .set-row .seg button { padding: 0 10px; }
-.set-reset-txt { font-size: 13px !important; line-height: 16px; font-weight: 500 !important; max-width: 190px; }
+/* Einstellungen in Reitern: Spiel, Hilfen, Ton & Gerät, Spielstand (jeder Reiter ohne Scrollen) */
+.settings .set-head { align-items: flex-end; }
+.settings { height: min(372px, calc(100% - 20px)); }   /* gleiche Höhe in allen Reitern: nichts springt beim Wechseln */
+.set-pane { align-content: start; }
+.set-titles { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+.set-titles .kicker { margin: 0; }
+.set-tabs { align-self: flex-start; }
+.set-tabs button { height: 36px; padding: 0 14px; font-size: 15px; }
+.set-txt { font-size: 13px !important; line-height: 16px; font-weight: 500 !important; white-space: normal !important; max-width: 230px; }
+.help-list { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.help-opt { display: grid; grid-template-columns: 18px minmax(0, 1fr); column-gap: 10px; row-gap: 1px; align-items: start; width: 100%; padding: 6px 10px 7px; text-align: left;
+  background: transparent; border: 2px solid var(--line); border-radius: 4px; cursor: pointer; color: var(--text-2); }
+.help-opt i { grid-row: 1 / span 2; width: 16px; height: 16px; margin-top: 2px; border-radius: 50%; border: 2px solid var(--line-2); box-sizing: border-box; }
+.help-opt b { font-family: var(--font-display); font-weight: 700; font-size: 16px; line-height: 19px; letter-spacing: 0.03em; color: var(--text); }
+.help-opt span { font-family: var(--font-body); font-size: 12.5px; line-height: 15px; color: var(--muted); }
+.help-opt[aria-checked="true"] { border-color: var(--hi); background: rgba(178, 53, 36, 0.07); }
+.help-opt[aria-checked="true"] i { border-color: var(--hi); background: radial-gradient(circle, var(--hi) 0 3.5px, transparent 4px); }
 
 /* Springer: Name, Nation, Aussehen mit Vorschau */
 .jumper { width: 760px; max-width: calc(100% - 32px); max-height: calc(100% - 20px); overflow: auto; gap: 10px; padding: 14px 20px 16px; touch-action: pan-y; }
@@ -980,16 +996,11 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
    ===================================================================================================== */
 #filmFx { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
 #filmFx > div { position: absolute; inset: 0; }
-/* Sepia: Farbton aus der Ebene, Helligkeit aus dem Bild darunter */
-/* Sepia: Kulisse grau, darüber eine warme Tönung (soft-light). Safari kann die Mischmodi color/hue/saturation/luminosity nicht
-   (eine solche Ebene läge dort als braune Fläche über allem), deshalb nur diese Mischung und nur, wenn der Browser sie kennt;
-   sonst färbt allein der Filter. */
-body.era28 #bgLayers, body.era28 #scene, body.era28 #printLayer { -webkit-filter: grayscale(1) brightness(0.74) sepia(1) saturate(1.5) hue-rotate(-8deg); filter: grayscale(1) brightness(0.74) sepia(1) saturate(1.5) hue-rotate(-8deg); }
-#filmFx .fx-tint { display: none; }
-@supports (mix-blend-mode: soft-light) {
-  body.era28 #bgLayers, body.era28 #scene, body.era28 #printLayer { -webkit-filter: grayscale(1) sepia(0.3) brightness(0.92); filter: grayscale(1) sepia(0.3) brightness(0.92); }
-  #filmFx .fx-tint { display: block; background: #C27F3F; mix-blend-mode: soft-light; }
-}
+/* Sepia allein über Filter auf der Kulisse (Ebenen, Leinwand, Druckraster). Keine Mischmodi: Safari kann color/hue/saturation/luminosity
+   gar nicht und mischt auch sonst nicht zuverlässig mit einer Leinwand darunter (die Ebene läge dort als braune Fläche über allem). */
+body.era28 #bgLayers, body.era28 #scene, body.era28 #printLayer {
+  -webkit-filter: grayscale(1) brightness(0.78) sepia(1) saturate(1.45) hue-rotate(-10deg) contrast(1.04);
+  filter: grayscale(1) brightness(0.78) sepia(1) saturate(1.45) hue-rotate(-10deg) contrast(1.04); }
 .fx-tone { background: rgba(70, 44, 16, 0.12); }   /* warm und etwas dunkler, ohne zweite Mischebene (spart Rechenzeit) */
 .fx-grain { inset: -64px !important; background-repeat: repeat; opacity: 0.2; animation: fxGrain 0.42s steps(6) infinite; }
 @keyframes fxGrain { 0% { transform: translate(0, 0); } 17% { transform: translate(-23px, 11px); } 33% { transform: translate(17px, -29px); }
@@ -1063,8 +1074,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 <div id="app">
 <div id="stage">
 <canvas id="scene" aria-hidden="true"></canvas>
-<!-- Winterspiele 1928: Wochenschau über Kulisse und Leinwand (Tönung, Korn, Kratzer, Flackern), unter dem HUD; dazu ein Graufilter auf der Kulisse (style.css) -->
-<div id="filmFx" aria-hidden="true" hidden><div class="fx-tint"></div><div class="fx-tone"></div><div class="fx-grain"></div><div class="fx-scratch"></div><div class="fx-vig"></div></div>
+<!-- Winterspiele 1928: Wochenschau über Kulisse und Leinwand (Korn, Kratzer, Flackern), unter dem HUD; die Sepia-Tönung ist ein Filter auf der Kulisse (style.css) -->
+<div id="filmFx" aria-hidden="true" hidden><div class="fx-tone"></div><div class="fx-grain"></div><div class="fx-scratch"></div><div class="fx-vig"></div></div>
 <div id="ui">
 
 <!-- ============ HUD während des Sprungs ============ -->
@@ -1209,19 +1220,19 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       <div class="tcard">
         <div class="tcard-top"><span class="tnum">1</span><span class="ico ico-cyan" data-icon="tap" data-size="28"></span></div>
         <h2>Absprung</h2>
-        <p>Tippe kurz vor der Kante. Nur im hellen Feld gibt es den vollen Abdruck, der Balken zeigt dir, ob du zu früh oder zu spät warst.</p>
+        <p id="tutP1">Tippe kurz vor der Kante. Nur im hellen Feld gibt es den vollen Abdruck, der Balken zeigt dir, ob du zu früh oder zu spät warst.</p>
         <div class="tcard-x"><div class="zones zones-8"><i style="flex:47"></i><i class="z-good" style="flex:8"></i><i class="z-best" style="flex:8"></i><i class="z-good" style="flex:8"></i><i style="flex:29"></i></div><div class="zone-lbls"><span style="flex:47">zu früh</span><span style="flex:24;text-align:center">perfekt</span><span style="flex:29;text-align:right">zu spät</span></div></div>
       </div>
       <div class="tcard">
         <div class="tcard-top"><span class="tnum">2</span><span class="ico ico-cyan" data-icon="pad" data-size="28"></span></div>
         <h2>Flug</h2>
-        <p>Nach dem Absprung Daumen auflegen und nach oben schieben, bis der Springer flach liegt. Seitlich hältst du die Balance. Goldene Linien = perfekte Fluglage.</p>
+        <p id="tutP2">Nach dem Absprung Daumen auflegen und nach oben schieben, bis der Springer flach liegt. Seitlich hältst du die Balance. Goldene Linien = perfekte Fluglage.</p>
         <div class="tcard-x chips"><span class="chip-s"><span class="ico" data-icon="drag" data-size="14"></span>Vorlage</span><span class="chip-s"><span class="ico" data-icon="lr" data-size="14"></span>Balance</span></div>
       </div>
       <div class="tcard">
         <div class="tcard-top"><span class="tnum">3</span><span class="ico ico-cyan" data-icon="tap" data-size="28"></span></div>
         <h2>Landung</h2>
-        <p>Vor dem Aufsetzen zieht sich ein Ring um den Springer zusammen. Tippe, wenn er das goldene Band erreicht: Telemark. Zu spät: Landung ohne Telemark.</p>
+        <p id="tutP3">Vor dem Aufsetzen zieht sich ein Ring um den Springer zusammen. Tippe, wenn er das goldene Band erreicht: Telemark. Zu spät: Landung ohne Telemark.</p>
         <div class="tcard-x tring"><svg width="132" height="40" viewBox="0 0 132 40" aria-hidden="true"><circle cx="66" cy="20" r="11" fill="none" stroke="#E2B04A" stroke-width="6" opacity="0.6"/><circle cx="66" cy="20" r="18" fill="none" stroke="#2B3442" stroke-width="1.3" stroke-dasharray="3 4" opacity="0.6"/><circle cx="66" cy="20" r="15" fill="none" stroke="#2B3442" stroke-width="2.2"/><path d="M58 22 l14 -5" stroke="#C8402F" stroke-width="3.2" stroke-linecap="round"/><path d="M54 25 l22 -5" stroke="#2B3442" stroke-width="1.6" stroke-linecap="round"/></svg></div>
       </div>
     </div>
@@ -1551,30 +1562,61 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 <!-- ============ Einstellungen ============ -->
 <section id="scrSettings" class="screen screen-dim2 center" hidden>
   <div class="dialog settings panel-strong" role="dialog" aria-labelledby="setTitle">
-    <div class="set-head"><h2 id="setTitle" class="h1">Einstellungen</h2><div class="set-head-btns"><button type="button" id="btnSetInfo" class="btn-plain">Info</button><button type="button" id="btnSetTutorial" class="btn btn-secondary btn-s"><span>Einführung</span></button><button type="button" id="btnSetDone" class="btn btn-primary btn-s"><span>Fertig</span></button></div></div>
-    <div class="set-grid">
+    <div class="set-head">
+      <div class="set-titles"><h2 id="setTitle" class="kicker">EINSTELLUNGEN</h2>
+        <div id="segSetTab" class="seg set-tabs" role="tablist" aria-label="Bereich"><button type="button" data-v="play">Spiel</button><button type="button" data-v="help">Hilfen</button><button type="button" data-v="dev">Ton &amp; Gerät</button><button type="button" data-v="data">Spielstand</button></div></div>
+      <button type="button" id="btnSetDone" class="btn btn-primary btn-s"><span>Fertig</span></button>
+    </div>
+    <!-- Spiel: Springer, Tageszeit; Training: Wind, Startluke, Tempo -->
+    <div id="setPane-play" class="set-grid set-pane">
       <div class="set-col">
-        <span class="kicker">SPRINGER</span>
+        <span class="kicker">SPRINGER &amp; SCHANZE</span>
         <div class="set-row"><span id="setJumperTxt" class="lbl set-jp-txt">MAT · AUT</span><button type="button" id="btnSetJumper" class="btn btn-secondary btn-s"><span>Anpassen</span><span class="ico" data-icon="arrow-right"></span></button></div>
-        <span class="kicker kicker-gap">TRAINING</span>
-        <div class="set-row"><span class="lbl">Startluke</span><div class="stepper"><button type="button" id="setGateMinus" class="mini-btn" aria-label="Luke tiefer">−</button><span id="setGateVal" class="num stepper-val">12</span><button type="button" id="setGatePlus" class="mini-btn" aria-label="Luke höher">+</button><span id="setGateNote" class="note">Standard 12</span></div></div>
-        <div class="set-row"><span class="lbl">Wind</span><div id="segWind" class="seg" role="radiogroup" aria-label="Wind"><button type="button" data-v="off">Aus</button><button type="button" data-v="var">Wechselnd</button><button type="button" data-v="strong">Böig</button></div></div>
-        <span class="kicker kicker-gap">SPIELSTAND</span>
-        <div class="set-row"><span id="setResetTxt" class="lbl set-reset-txt">Bestweiten, Sterne und Meisterschaft löschen</span><button type="button" id="btnReset" class="btn btn-secondary btn-s"><span>Zurücksetzen</span></button></div>
+        <div class="set-row"><span class="lbl">Tageszeit</span><div id="segTod" class="seg" role="radiogroup" aria-label="Tageszeit"><button type="button" data-v="auto">Auto</button><button type="button" data-v="morning">Früh</button><button type="button" data-v="afternoon">Tag</button><button type="button" data-v="evening">Abend</button></div></div>
+        <p class="set-note">Auto: jede Schanze zu ihrer typischen Zeit, Abend mit Flutlicht.</p>
       </div>
       <div class="set-col">
-        <span class="kicker">SPIEL</span>
-        <div class="set-row"><span class="lbl">Tageszeit</span><div id="segTod" class="seg" role="radiogroup" aria-label="Tageszeit"><button type="button" data-v="auto">Auto</button><button type="button" data-v="morning">Früh</button><button type="button" data-v="afternoon">Tag</button><button type="button" data-v="evening">Abend</button></div></div>
-        <div class="set-row"><span class="lbl">Tempo (Training)</span><div id="segSpeed" class="seg" role="radiogroup" aria-label="Tempo im Training"><button type="button" data-v="1">Normal</button><button type="button" data-v="0.75">75 %</button><button type="button" data-v="0.5">50 %</button></div></div>
-        <div class="set-row"><span class="lbl">Hilfen anzeigen</span><button type="button" id="tgAssist" class="toggle" role="switch" aria-checked="true"><i></i></button></div>
-        <div class="set-row"><span class="lbl">Anfängermodus</span><button type="button" id="tgBeginner" class="toggle" role="switch" aria-checked="false" aria-describedby="beginnerNote"><i></i></button></div>
-        <p id="beginnerNote" class="set-note">Im Training hält das Spiel vor dem Absprung an: drücken und halten. Gleich nach dem Abheben hält es noch einmal: den Punkt mit dem Finger in den gelben Kreis schieben und dort bleiben. Vor der Landung hält es wieder an: loslassen. Zählt nicht für Bestweiten und Duelle.</p>
-        <div class="set-row"><span class="lbl">Expertenmodus</span><button type="button" id="tgExpert" class="toggle" role="switch" aria-checked="false" aria-describedby="expertNote"><i></i></button></div>
-        <p id="expertNote" class="set-note">Anfahrtshocke selbst halten, an der Kante loslassen. Keine Hilfen im Sprung.</p>
+        <span class="kicker">TRAINING</span>
+        <div class="set-row"><span class="lbl">Wind</span><div id="segWind" class="seg" role="radiogroup" aria-label="Wind im Training"><button type="button" data-v="off">Aus</button><button type="button" data-v="var">Wechselnd</button><button type="button" data-v="strong">Böig</button></div></div>
+        <div class="set-row"><span class="lbl">Startluke</span><div class="stepper"><button type="button" id="setGateMinus" class="mini-btn" aria-label="Luke tiefer">−</button><span id="setGateVal" class="num stepper-val">12</span><button type="button" id="setGatePlus" class="mini-btn" aria-label="Luke höher">+</button><span id="setGateNote" class="note">Standard 12</span></div></div>
+        <div class="set-row"><span class="lbl">Tempo</span><div id="segSpeed" class="seg" role="radiogroup" aria-label="Tempo im Training"><button type="button" data-v="1">Normal</button><button type="button" data-v="0.75">75 %</button><button type="button" data-v="0.5">50 %</button></div></div>
+      </div>
+    </div>
+    <!-- Hilfen: eine Stufe für alles, dazu Fluglage-Kasten, Empfindlichkeit, Einführung -->
+    <div id="setPane-help" class="set-grid set-pane" hidden>
+      <div id="segHelp" class="help-list" role="radiogroup" aria-label="Hilfen im Sprung">
+        <button type="button" class="help-opt" data-v="beginner" role="radio"><i aria-hidden="true"></i><b>Anfänger</b><span id="helpBegTxt">Das Spiel hält an, wenn du etwas tun musst. Gelber Kreis und Ideallinie. Nicht online, zählt nicht für Bestweiten.</span></button>
+        <button type="button" class="help-opt" data-v="standard" role="radio"><i aria-hidden="true"></i><b>Standard</b><span>Zeitleiste beim Absprung, Ring bei der Landung, Hinweise.</span></button>
+        <button type="button" class="help-opt" data-v="none" role="radio"><i aria-hidden="true"></i><b>Ohne Hilfen</b><span>Keine Zeitleiste, kein Ring, keine Hinweise.</span></button>
+        <button type="button" class="help-opt" data-v="expert" role="radio"><i aria-hidden="true"></i><b>Experte</b><span id="helpExpTxt">Anfahrtshocke selbst halten, an der Kante loslassen. Keine Hilfen.</span></button>
+      </div>
+      <div class="set-col">
         <div class="set-row"><span class="lbl">Fluglage-Kasten</span><div id="segGauge" class="seg" role="radiogroup" aria-label="Fluglage-Kasten zusätzlich zum Springer"><button type="button" data-v="off">Aus</button><button type="button" data-v="left">Links</button><button type="button" data-v="right">Rechts</button></div></div>
-        <div class="set-row"><span class="lbl">Empfindlichkeit</span><div id="segSens" class="seg" role="radiogroup" aria-label="Empfindlichkeit des Daumenfelds"><button type="button" data-v="0.75">Ruhig</button><button type="button" data-v="1">Mittel</button><button type="button" data-v="1.35">Direkt</button></div></div>
-        <div class="set-row set-pair"><div class="pair"><span class="lbl">Ton</span><button type="button" id="tgSound" class="toggle" role="switch" aria-checked="true"><i></i></button></div><div class="pair"><span class="lbl">Musik</span><button type="button" id="tgMusic" class="toggle" role="switch" aria-checked="true"><i></i></button></div><div id="rowVibe" class="pair"><span class="lbl">Vibration</span><button type="button" id="tgVibe" class="toggle" role="switch" aria-checked="true"><i></i></button></div></div>
-        <div class="set-row"><span class="lbl">Bildrate anzeigen</span><button type="button" id="tgFps" class="toggle" role="switch" aria-checked="false"><i></i></button></div>
+        <div class="set-row"><span class="lbl">Empfindlichkeit</span><div id="segSens" class="seg" role="radiogroup" aria-label="Empfindlichkeit der Steuerung im Flug"><button type="button" data-v="0.75">Ruhig</button><button type="button" data-v="1">Mittel</button><button type="button" data-v="1.35">Direkt</button></div></div>
+        <div class="set-row"><span class="lbl">Einführung</span><button type="button" id="btnSetTutorial" class="btn btn-secondary btn-s"><span>Ansehen</span><span class="ico" data-icon="arrow-right"></span></button></div>
+        <p id="setCtlNote" class="set-note">Im Flug: Daumen auflegen und schieben. Hoch = Vorlage, runter = aufrecht, seitlich = Balance.</p>
+      </div>
+    </div>
+    <!-- Ton & Gerät -->
+    <div id="setPane-dev" class="set-grid set-pane" hidden>
+      <div class="set-col">
+        <div class="set-row"><span class="lbl">Ton</span><button type="button" id="tgSound" class="toggle" role="switch" aria-checked="true" aria-label="Ton"><i></i></button></div>
+        <div class="set-row"><span class="lbl">Musik</span><button type="button" id="tgMusic" class="toggle" role="switch" aria-checked="true" aria-label="Musik"><i></i></button></div>
+        <div id="rowVibe" class="set-row"><span class="lbl">Vibration</span><button type="button" id="tgVibe" class="toggle" role="switch" aria-checked="true" aria-label="Vibration"><i></i></button></div>
+      </div>
+      <div class="set-col">
+        <div class="set-row"><span class="lbl">Bildrate anzeigen</span><button type="button" id="tgFps" class="toggle" role="switch" aria-checked="false" aria-label="Bildrate anzeigen"><i></i></button></div>
+        <p class="set-note">Zeigt Bilder je Sekunde und Bildschärfe. Die Schärfe passt sich von selbst an, damit es flüssig bleibt.</p>
+      </div>
+    </div>
+    <!-- Spielstand: online, Info, zurücksetzen -->
+    <div id="setPane-data" class="set-grid set-pane" hidden>
+      <div class="set-col">
+        <div id="rowSetOnline" class="set-row"><span class="lbl set-txt">Spielstand online sichern und auf einem anderen Gerät weiterspielen</span><button type="button" id="btnSetOnline" class="btn btn-secondary btn-s"><span>Online</span><span class="ico" data-icon="arrow-right"></span></button></div>
+        <div class="set-row"><span class="lbl set-txt">Version, Datenschutz und Hinweise zum Spiel</span><button type="button" id="btnSetInfo" class="btn btn-secondary btn-s"><span>Info</span><span class="ico" data-icon="arrow-right"></span></button></div>
+      </div>
+      <div class="set-col">
+        <div class="set-row"><span id="setResetTxt" class="lbl set-txt">Bestweiten, Sterne und Meisterschaft löschen</span><button type="button" id="btnReset" class="btn btn-secondary btn-s"><span>Zurücksetzen</span></button></div>
       </div>
     </div>
   </div>
@@ -10219,7 +10261,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.51";
+  const VERSION = "0.52";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -10541,6 +10583,27 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     document.documentElement.style.setProperty("--accent", uiAccent(L.suit));
     renderer.setLook(L);
   }
+
+  // Eingabegerät: Touch (Daumen) oder Maus/Touchpad. Wechselt mit dem zuletzt benutzten Zeiger; bestimmt die Wortwahl
+  // (tippen/klicken, Daumen/Maus) und ob im Flug schon die Mausbewegung lenkt, ohne gedrückte Taste.
+  let ptrType = (navigator.maxTouchPoints || 0) > 0 || (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) ? "touch" : "mouse";
+  // nur mit echtem Zeigegerät (Maus, Touchpad; auch am iPad mit Trackpad): Handys und Tablets ohne bleiben bei Daumen und Tippen
+  const canHover = () => !!(window.matchMedia && window.matchMedia("(any-hover: hover)").matches);
+  const desk = () => ptrType === "mouse" && canHover();
+  const DESK_TXT = [
+    [/Lass den Daumen auf dem Schirm/g, "Halte die Maustaste gedrückt"], [/Lass den Daumen (.*?) los/g, "Lass die Maustaste $1 los"],
+    [/Daumen auflegen und halten/g, "Maustaste halten"], [/Daumen auflegen/g, "Maustaste halten"],
+    [/Jetzt drücken und halten: Absprung!/g, "Jetzt klicken: Absprung!"], [/DRÜCKEN & HALTEN/g, "JETZT KLICKEN"],
+    [/Finger danach liegen lassen, damit lenkst du den Flug/g, "Danach die Maus bewegen, ohne zu klicken: damit lenkst du"],
+    [/Finger auflegen und halten/g, "Maus bewegen"], [/FINGER AUFLEGEN/g, "MAUS BEWEGEN"], [/darunter erscheint der gelbe Kreis/g, "dann erscheint der gelbe Kreis"],
+    [/Der Kreis erscheint unter deinem Finger, damit lenkst du/g, "Der Kreis erscheint am Mauszeiger, damit lenkst du"],
+    [/der (Finger|Daumen) geht mit/g, "die Maus geht mit"], [/Daumen halten & nach oben schieben/g, "Maus nach oben bewegen"],
+    [/hoch = Vorlage · runter = aufrecht · seitlich = Balance/g, "ohne Klicken · hoch = Vorlage · seitlich = Balance · auch Pfeiltasten"],
+    [/[Ss]chieb den Daumen/g, (m) => (m[0] === "S" ? "Beweg die Maus" : "beweg die Maus")], [/[Nn]imm den Daumen/g, (m) => (m[0] === "N" ? "Nimm die Maus" : "nimm die Maus")],
+    [/Halte mit dem Daumen/g, "Halte mit der Maus"], [/Halte den Daumen/g, "Halte die Maus"], [/Daumen /g, "Maus "],
+    [/Tippen zum Start/g, "Klicken oder Leertaste"], [/TIPPEN/g, "KLICKEN"], [/Tippe/g, "Klicke"], [/getippt/g, "geklickt"], [/tippen/g, "klicken"],
+  ];
+  const dsk = (t) => (typeof t === "string" && desk() ? DESK_TXT.reduce((a, [re, r]) => a.replace(re, r), t) : t);
 
   // ------------------------------------------------------------------ DOM
   const stage = $("stage"), ui = $("ui"), canvas = $("scene");
@@ -10875,7 +10938,18 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   function showScreen(name) {
     for (const k in SCREENS) vis($(SCREENS[k]), k === name);
     vis($("snack"), false);
+    if (name === "tutorial") tutTexts();
   }
+  // Einführung: mit Maus oder Touchpad andere Worte (klicken, Maus bewegen ohne Taste, Pfeiltasten)
+  const TUT_TXT = {
+    touch: ["Tippe kurz vor der Kante. Nur im hellen Feld gibt es den vollen Abdruck, der Balken zeigt dir, ob du zu früh oder zu spät warst.",
+      "Nach dem Absprung Daumen auflegen und nach oben schieben, bis der Springer flach liegt. Seitlich hältst du die Balance. Goldene Linien = perfekte Fluglage.",
+      "Vor dem Aufsetzen zieht sich ein Ring um den Springer zusammen. Tippe, wenn er das goldene Band erreicht: Telemark. Zu spät: Landung ohne Telemark."],
+    desk: ["Klicke kurz vor der Kante (oder Leertaste). Nur im hellen Feld gibt es den vollen Abdruck, der Balken zeigt dir, ob du zu früh oder zu spät warst.",
+      "Nach dem Absprung die Maus nach oben bewegen, ohne zu klicken, bis der Springer flach liegt. Seitlich hältst du die Balance. Oder mit den Pfeiltasten.",
+      "Vor dem Aufsetzen zieht sich ein Ring um den Springer zusammen. Klicke, wenn er das goldene Band erreicht: Telemark. Zu spät: Landung ohne Telemark."],
+  };
+  function tutTexts() { const t = TUT_TXT[desk() ? "desk" : "touch"]; t.forEach((x, i) => txt($("tutP" + (i + 1)), x)); }
   function setOverlay(name) {
     overlay = name;
     vis($("scrPause"), name === "pause");
@@ -10995,7 +11069,10 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       if (practice && practiceLeft === 1) wind = Object.assign(wind, { mode: "side", side: (seed & 1 ? 1 : -1) * 0.42, gustR: 0.06 });
     }
     const expert = !!S.expert && ctxMode !== "hot" && !practice;
-    const beginner = !!S.beginner && !expert && ctxMode === "training" && !grpNew;
+    // Anfängerhilfen in allen Modi für einen allein (auch Wettkampf, Meisterschaft, Arcade, Party). Online, in der Tageschallenge und
+    // beim Anlegen einer Gruppe springen alle unter gleichen Bedingungen; eine Mission „Ohne Hilfen“ bleibt ohne.
+    const fair = ctxMode === "chal" || ctxMode === "daily" || grpNew;
+    const beginner = !!S.beginner && !expert && !fair && !(ctxMode === "mission" && ms.m.noAssist);
     J = new Ph.Jump(H, { gate, refGate, wind, seed: jseed, inrunCtl: expert, upright: ctxMode === "mission" && !!ms.m.n28 && ms.res.length === 1 && !!ms.upright });
     jc = { seed: jseed, practice, light: "red", tLight: 0.9 + Math.random() * 1.2, rec: [], recT: -1, slow: practice ? [0.5, 0.7, 1][clamp(3 - practiceLeft, 0, 2)] : (ctxMode === "training" ? trainSpeed() : 1),
       drag: null, timing: null, toastT: 0, doneT: 0, dragged: false, finished: false, who, colors,
@@ -11031,6 +11108,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     vis(el.toast, false); vis(el.distBox, false); vis(el.distChip, false); el.timingLbl.textContent = "";
     el.gauge.classList.toggle("left", gaugeOnLeft());
     Snd.reset(); Snd.stadiumOff(); Snd.ambience(1);
+    if (S.beginner && !beginner && fair) showToast("OHNE ANFÄNGERHILFEN", "Hier springen alle unter gleichen Bedingungen", "", 2.6, false);
   }
 
   function startInrun() {
@@ -11042,7 +11120,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   // Ideale Flugkurve für Anfänger: derselbe Sprung, aber perfekt gesprungen (wie die KI-Spitze ohne Fehler)
   function idealFlight() {
     try {
-      const j = new Ph.Jump(H, { gate: J.gate, refGate: J.refGate, wind: CP.shiftWind(J.wind, J.t), seed: jc.seed });
+      const j = new Ph.Jump(H, { gate: J.gate, refGate: J.refGate, wind: CP.shiftWind(J.wind, J.t), seed: jc.seed, upright: J.upright });
       j.start();
       const path = [], dt = 1 / 120;
       for (let i = 0; i < 120 * 40 && !j.landing; i++) {
@@ -11133,7 +11211,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     }
     return `<p class="an-head">${esc(head)}</p><div class="an-chart"><canvas id="anCv" aria-label="Flugkurve: Höhe über dem Hang, deine und die perfekte"></canvas></div>${rows}<p class="an-tip">${esc(anaTip(r, tl, fl2, lost))}</p>`;
   }
-  function anaTip(r, tl, fl2, lost) {
+  function anaTip(r, tl, fl2, lost) { return dsk(anaTip0(r, tl, fl2, lost)); }
+  function anaTip0(r, tl, fl2, lost) {
     const a = r.ana, te = r.takeErr;
     if (r.kind === "fall") return r.tip;
     const big = Math.max(tl, fl2, lost / H.meterValue);
@@ -11313,7 +11392,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   }
 
   function showToast(title, sub, cls, dur, side) {
-    txt(el.toastTitle, title); txt(el.toastSub, sub || "");
+    txt(el.toastTitle, title); txt(el.toastSub, dsk(sub || ""));
     el.toastTitle.className = "toast-title" + (cls ? " " + cls : "");
     el.toast.classList.toggle("side", !!side);
     vis(el.toast, true); jc.toastT = dur || 1.6;
@@ -11364,6 +11443,9 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     }
     if (J.phase === "flight" && (keys.up || keys.down)) J.u = clamp(J.u + (keys.up ? 1 : -1) * 1.5 * S.sens * dt, -1.6, 1.6);
     if (J.phase === "flight" && (keys.left || keys.right)) J.ur = clamp(J.ur + (keys.right ? 1 : -1) * 1.2 * S.sens * dt, -1.6, 1.6);
+    // Maus/Touchpad: im Flug lenkt die Bewegung ohne gedrückte Taste; die Mitte liegt dort, wo die Maus beim Abheben stand
+    if (J.phase === "flight" && !drag && desk() && hoverPos && !J.noseDive) drag = { id: "hover", hover: true, x: hoverPos.x, y: hoverPos.y, y0: hoverPos.y, flight: false };
+    if (drag && drag.hover && J.phase !== "flight") drag = null;
     if (J.phase === "flight" && drag && !drag.flight) padAnchor(drag.x, drag.y);
     // Halt im Flug: weiter, sobald der Punkt gut eine halbe Sekunde im gelben Kreis liegt (Finger auf dem Schirm oder Pfeiltasten)
     if (jc.freeze === "fly") {
@@ -11514,7 +11596,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       let sub = jc.light === "green" ? (jc.expert ? "Daumen auflegen und halten, an der Kante loslassen" : "Tippen zum Start") : H.era ? "Mütze zurechtrücken" : (J.wind.mode === "off" ? "Wind aus" : "Wind wird gemessen");
       if (jc.light === "green" && jc.countdown != null) sub = `${jc.expert ? "Daumen auflegen" : "Tippen zum Start"} · noch ${Math.max(0, Math.ceil(jc.countdown))} s`;
       el.startBox.classList.toggle("urgent", jc.light === "green" && jc.countdown != null && jc.countdown <= 5);
-      txt(el.startSub, sub);
+      txt(el.startSub, dsk(sub));
       txt(el.gateVal, String(J.gate));
       el.gateMinus.disabled = J.gate <= 1; el.gatePlus.disabled = J.gate >= H.gates;
     }
@@ -11543,9 +11625,10 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       if (ph === "inrun" && J.tapTime == null && tauEdge < 0.3 && tauEdge > 0.11) pill = "JETZT TIPPEN";
       if (ph === "flight" && J.prepTime == null && J.tau != null && J.tau < 0.55 && J.tau > 0.18) pill = "JETZT TIPPEN";
     }
-    if (jc && live && jc.freeze) pill = jc.freeze === "takeoff" ? "DRÜCKEN & HALTEN" : jc.freeze === "fly" ? (drag || jc.kb ? null : "FINGER AUFLEGEN") : drag ? "LOSLASSEN" : "JETZT TIPPEN";
+    if (jc && live && jc.freeze) pill = jc.freeze === "takeoff" ? "DRÜCKEN & HALTEN" : jc.freeze === "fly" ? (drag || jc.kb ? null : "FINGER AUFLEGEN") : drag && !drag.hover ? "LOSLASSEN" : "JETZT TIPPEN";
     if (jc && live && jc.beginner && !jc.freeze && ph === "flight" && !drag && J.prepTime == null && !J.noseDive) pill = "FINGER AUFLEGEN";
     vis(el.tapPill, !!pill);
+    if (pill) pill = dsk(pill);
     if (pill && el.tapPillText.textContent !== pill) el.tapPillText.textContent = pill;
     const inFlight = ph === "flight";
     const showFl = live && inFlight && !J.noseDive && gaugeShown() && !jc.expert;
@@ -11605,7 +11688,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
         // neben den Finger, nicht darunter: die Tafel steht auf der anderen Bildseite
         : flyOff() < FLY_IN ? ["pad", "Genau so: im gelben Kreis bleiben", "der Kreis wandert, der Finger geht mit", drag && drag.x < W / 2 ? "right" : "left"]
         : ["drag", "Punkt in den gelben Kreis schieben", "dort fliegt der Springer am weitesten", drag && drag.x < W / 2 ? "right" : "left"])
-      : drag ? ["tap", "Jetzt loslassen: Telemark!", "Kurz vor dem Boden die Landung vorbereiten", "center"]
+      : drag && !drag.hover ? ["tap", "Jetzt loslassen: Telemark!", "Kurz vor dem Boden die Landung vorbereiten", "center"]
       : ["tap", "Jetzt tippen: Telemark!", "Kurz vor dem Boden die Landung vorbereiten", "center"];
     // Anfänger ohne Finger im Flug: in Zeitlupe weiter, bis er liegt (der Kreis erscheint genau darunter)
     if (live && !hint && jc.beginner && inFlight && !drag && J.prepTime == null && !J.noseDive && !lz)
@@ -11626,7 +11709,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       else if (inFlight && !lz && jc.practice && J.wind.mode === "side" && st.tf > 0.5 && st.tf < 2.6) hint = ["lr", "Seitenwind!", `Daumen nach ${J.wind.side > 0 ? "links" : "rechts"} dagegen halten, bis die Ski parallel sind`, "center"];
     }
     // Trainer im Training: liegt die Fluglage länger daneben, sagt ein Satz, wohin der Daumen muss (der Springer zeigt das Warum)
-    if (live && assist && !hint && inFlight && !lz && jc.dragged && (ctxMode === "training" || jc.practice) && st.tf > (jc.beginner ? 0.4 : 0.9) && !J.noseDive && J.prepTime == null) {
+    if (live && assist && !hint && inFlight && !lz && jc.dragged && (ctxMode === "training" || jc.practice || jc.beginner) && st.tf > (jc.beginner ? 0.4 : 0.9) && !J.noseDive && J.prepTime == null) {
       const e = st.p - st.pOpt, r = st.r || 0;
       const k = e < -0.3 ? "up" : e > 0.42 ? "down" : Math.abs(r) > 0.35 ? (r > 0 ? "left" : "right") : null;
       if (k !== jc.coachK) { jc.coachK = k; jc.coachT0 = J.t; }
@@ -11648,7 +11731,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     el.hint.classList.toggle("raised", !!(live && (showSpeed || showTiming)));   // nicht über Tempo und Absprung-Leiste legen
     if (hint) {
       if (el.hintIcon.dataset.icon !== hint[0]) { el.hintIcon.dataset.icon = hint[0]; el.hintIcon.innerHTML = icon(hint[0], 22); }
-      txt(el.hintText, hint[1]); txt(el.hintSub, hint[2]);
+      txt(el.hintText, dsk(hint[1])); txt(el.hintSub, dsk(hint[2]));
       el.hint.classList.toggle("right", hint[3] === "right"); el.hint.classList.toggle("left", hint[3] === "left");
     }
   }
@@ -11722,7 +11805,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     }
     if (jc.practice) { practiceLeft = Math.max(0, practiceLeft - 1); if (practiceLeft === 0) { S.tutorialDone = true; S.physicsNew = false; S.flightNew = false; } }
     save();
-    const entry = Object.assign({ n: S.jumps, newBest, gate: J.gate, rec: jc.rec, tip: coachTip(sc), practice: jc.practice, who: jc.who, windOff: J.wind.mode === "off", mood: jc.mood, grpNew: !!jc.grpNew,
+    const entry = Object.assign({ n: S.jumps, newBest, gate: J.gate, rec: jc.rec, tip: dsk(coachTip(sc)), practice: jc.practice, who: jc.who, windOff: J.wind.mode === "off", mood: jc.mood, grpNew: !!jc.grpNew,
       v: J.vTakeoff * 3.6, ft: J.tf, maxH: J.stats.maxH, path: jc.ghostRec, hillKey: H.key, ctx: ctxMode,
       vIn: J.stats.vMaxIn * 3.6, vFl: J.stats.vMaxFl * 3.6, vLand: J.stats.vLand * 3.6, dtL: J.landing.dtL, expert: !!jc.expert,
       inOk: J.stats.inT > 0.5 ? Math.round(100 * J.stats.inOk / J.stats.inT) : null, vLoss: J.stats.vLoss * 3.6 }, sc);
@@ -11737,7 +11820,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       if (jc.expert) { t.ex = (t.ex || 0) + 1; if (sc.kind !== "fall") best("exFar", sc.dist); }
       save();
     }
-    if (ctxMode === "comp") { comp.record("me", sc); entry.rank = comp.standings(false).find((x) => x.id === "me").rank; }
+    if (ctxMode === "comp") { comp.record("me", sc); entry.rank = comp.standings(false).find((x) => x.id === "me").rank; if (jc.beginner) { comp.beg = true; if (champ) champ.beg = true; } }
     if (ctxMode === "hot") {
       const hp = hot.current();
       if (hp && sc.kind !== "fall" && jc.ghostRec.length > 4) (hot.gh || (hot.gh = {}))[hp.id] = { name: hp.name, d: sc.dist, path: jc.ghostRec, look: hotLook(hp.bib) };
@@ -13841,7 +13924,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
           : `Weiten ${fmt1(r1.dist)} m und ${comp.res.me.r2 ? fmt1(comp.res.me.r2.dist) + " m" : "–"}.`;
         const cb = S.compBest[H2.key];
         const lv = ["easy", "mid", "pro"].indexOf(comp.level);
-        if (!cb || lv > cb.lv || (lv === cb.lv && me.rank < cb.place)) { S.compBest[H2.key] = { place: me.rank, level: comp.level, lv }; save(); text += " Dein bestes Wettkampfergebnis auf dieser Schanze."; }
+        if (comp.beg) text += " Mit Anfängerhilfen, zählt nicht für deine Rekorde.";
+        else if (!cb || lv > cb.lv || (lv === cb.lv && me.rank < cb.place)) { S.compBest[H2.key] = { place: me.rank, level: comp.level, lv }; save(); text += " Dein bestes Wettkampfergebnis auf dieser Schanze."; }
       } else text = "Du bist nicht innerhalb von 10 Sekunden nach Grün gestartet.";
       if (champ && me && me.rank) {
         const r1 = comp.res.me.r1, r2 = comp.res.me.r2;
@@ -14114,7 +14198,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     openChampHub();
   }
   function champRecordEnd() {
-    if (!champ || !champ.done) return;
+    if (!champ || !champ.done || champ.beg) return;   // mit Anfängerhilfen kein Bestergebnis
     const m = CP.champStandings(champ).find((x) => x.id === "me");
     const lv = ["easy", "mid", "pro"].indexOf(champ.level), b = S.champBest[champ.format];
     if (!b || lv > b.lv || (lv === b.lv && m.rank < b.place)) S.champBest[champ.format] = { place: m.rank, level: champ.level, lv, date: new Date().toISOString().slice(0, 10) };
@@ -14444,17 +14528,28 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     segSet("segSens", String(S.sens));
     segSet("segTod", S.tod);
     segSet("segSpeed", String(trainSpeed()));
-    $("tgAssist").setAttribute("aria-checked", String(S.assist && !S.expert));
-    $("tgAssist").disabled = !!S.expert;
-    $("tgExpert").setAttribute("aria-checked", String(!!S.expert));
-    $("tgBeginner").setAttribute("aria-checked", String(!!S.beginner));
+    segSet("segHelp", helpLevel());
+    segSet("segSetTab", setTab);
+    for (const k of ["play", "help", "dev", "data"]) vis($("setPane-" + k), k === setTab);
+    $("segSetTab").querySelectorAll("button").forEach((b) => { b.setAttribute("role", "tab"); b.setAttribute("aria-selected", String(b.dataset.v === setTab)); });
+    // Maus und Touchpad: andere Worte für dieselbe Steuerung
+    txt($("setCtlNote"), desk() ? "Im Flug: Maus bewegen, ohne zu klicken (oder Pfeiltasten). Hoch = Vorlage, runter = aufrecht, seitlich = Balance."
+      : "Im Flug: Daumen auflegen und schieben. Hoch = Vorlage, runter = aufrecht, seitlich = Balance.");
+    vis($("rowSetOnline"), !!ON);
     $("tgSound").setAttribute("aria-checked", String(S.sound));
     $("tgVibe").setAttribute("aria-checked", String(S.vibe));
     $("tgMusic").setAttribute("aria-checked", String(S.music !== false));
     $("tgFps").setAttribute("aria-checked", String(!!S.fps));
     vis($("rowVibe"), Hap.ok);
   }
-  let settingsFrom = null;
+  let settingsFrom = null, setTab = "play";
+  // Hilfen als eine Stufe: Anfänger (anhalten, gelber Kreis, Ideallinie), Standard, ohne Hilfen, Experte (Hocke selbst halten, keine Hilfen)
+  const helpLevel = () => (S.expert ? "expert" : S.beginner ? "beginner" : S.assist ? "standard" : "none");
+  function setHelp(v) {
+    if (!["beginner", "standard", "none", "expert"].includes(v)) return;
+    S.beginner = v === "beginner"; S.expert = v === "expert"; S.assist = v !== "none";
+    save(); fillSettings(); refreshTitle();
+  }
   function openSettings(from) { settingsFrom = from; setOverlay("settings"); }
   function closeSettings() {
     save(); refreshTitle();
@@ -14713,9 +14808,9 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   const toggle = (id, key, after) => on(id, () => { S[key] = !S[key]; save(); fillSettings(); if (after) after(); });
   // Tempo im Training (alte Spielstände: „Zeitlupe an“ = 50 %)
   seg("segSpeed", (v) => { S.speed = +v; S.slow = +v < 1; save(); segSet("segSpeed", v); if (jc && !jc.practice && ctxMode === "training") jc.slow = trainSpeed(); });
-  toggle("tgAssist", "assist");
-  toggle("tgExpert", "expert", () => { if (S.expert) { S.beginner = false; save(); fillSettings(); softNotice("Experte: Daumen in der Anfahrt halten (Hocke), an der Kante loslassen. Keine Hilfen."); } });
-  toggle("tgBeginner", "beginner", () => { if (S.beginner) { S.expert = false; save(); fillSettings(); softNotice("Anfänger: Vor dem Absprung drücken und halten, im Flug mit dem Finger im gelben Kreis bleiben, vor der Landung loslassen."); } refreshTitle(); });
+  seg("segHelp", setHelp);
+  seg("segSetTab", (v) => { setTab = v; fillSettings(); });
+  on("btnSetOnline", () => openOnline("settings"));
   toggle("tgSound", "sound", () => { if (!S.sound) Snd.off(); else { Snd.unlock(); Snd.set("crowd", 0.07, null, 0.4); Snd.beep(880, 0.12); } });
   toggle("tgVibe", "vibe", () => vib(20));
   toggle("tgFps", "fps", () => fpsMeter());
@@ -14737,7 +14832,10 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     return { x: e.clientX - origin.x, y: e.clientY - origin.y };
   }
   const interactive = (t) => t.closest && t.closest("button, input, select, label, .screen:not([hidden]) .panel-strong, .tcard, .dialog");
+  let hoverPos = null;   // letzte Mausposition (Bühne), für das Lenken ohne gedrückte Taste
+  const notePtr = (e) => { if (e.pointerType) ptrType = e.pointerType === "mouse" ? "mouse" : "touch"; if (e.pointerType === "mouse") hoverPos = toStage(e); };
   stage.addEventListener("pointerdown", (e) => {
+    notePtr(e);
     if (interactive(e.target)) return;
     if (overlay) return;
     if (mode === "jump" && J && J.phase === "gate" && (nearGateBox(e) || performance.now() - gateTapT < 450)) return;
@@ -14755,7 +14853,9 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     }
   });
   stage.addEventListener("pointermove", (e) => {
-    if (!drag || e.pointerId !== drag.id || !J) return;
+    notePtr(e);
+    // Lenken ohne Taste (Maus, Touchpad): jede Mausbewegung zählt, solange der Flug läuft
+    if (!drag || !J || (e.pointerId !== drag.id && !(drag.hover && e.pointerType === "mouse"))) return;
     const p = toStage(e);
     drag.x = p.x; drag.y = p.y;
     // Experte in der Anfahrt: Daumen hoch = tiefer in die Hocke, runter = höher (wie im Flug: hoch = Vorlage)
@@ -15020,7 +15120,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   // ------------------------------------------------------------------ Online-Fenster: Spielstand per Code, auf dieses Gerät holen, Online-Daten löschen
   let olFrom = null, olLoad = null, olDelArm = 0;
   function openOnline(from) { olFrom = from; olLoad = null; setOverlay("online"); }
-  function closeOnline() { setOverlay(olFrom === "info" ? "info" : null); }
+  function closeOnline() { setOverlay(olFrom === "info" ? "info" : olFrom === "settings" ? "settings" : null); }
   function fillOnline() {
     vis($("olOff"), !ON); vis($("olBody"), !!ON);
     if (!ON) return;
