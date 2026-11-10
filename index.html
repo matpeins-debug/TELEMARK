@@ -3235,8 +3235,9 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     for (let row = 0; row < 4; row++) for (let i = 0; i < 9; i++) rect(x + 5 + i * ((w - 10) / 8.6), yb - h + 10 + row * 9, 3.2, 5.2, (row + i) % 5 === 2 ? P.winHi : P.win);
     rect(x + w / 2 - 5, yb - 8, 10, 8, P.door);
   }
-  function block(x, yb, w, h, rr) {
-    const tone = rr() < 0.5 ? P.wall : mix(P.wall, P.wallSide, 0.35);
+  const BUNT = [I.ocker, mix(I.rot, I.papier, 0.45), mix(I.himmel, I.papier, 0.25), mix(I.gruen, I.papier, 0.45), mix(I.ocker, I.rot, 0.35), mix(I.papier, I.ocker, 0.25)];
+  function block(x, yb, w, h, rr, bunt) {
+    const tone = bunt ? (P.abend ? mix(BUNT[Math.floor(rr() * BUNT.length)], I.violett, 0.55) : mix(BUNT[Math.floor(rr() * BUNT.length)], P.wall, 0.15)) : rr() < 0.5 ? P.wall : mix(P.wall, P.wallSide, 0.35);
     shade([[x + w, yb], [x + w + 5, yb - 2], [x + w + 5, yb - h - 2], [x + w, yb - h]], P.wallSide);
     rect(x, yb - h, w, h, tone);
     if (rr() < 0.5) { rect(x - 1, yb - h - 2, w + 2, 2.4, P.roofSnow); }
@@ -3273,7 +3274,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     const rr = rng(Cn.seed || 9);
     for (const row of Cn.rows) {
       let x = row.x0;
-      while (x < row.x1) { const w = 10 + rr() * 16, h = row.hmin + rr() * (row.hmax - row.hmin); block(x, row.y, w, h, rr); x += w + rr() * 2; }
+      while (x < row.x1) { const w = 10 + rr() * 16, h = row.hmin + rr() * (row.hmax - row.hmin); block(x, row.y, w, h, rr, row.bunt); x += w + rr() * 2; }
       for (const c of (Cn.churches || [])) if (c.row === Cn.rows.indexOf(row)) church(c.x, c.yb, c.t, c.h);
     }
   }
@@ -3598,6 +3599,108 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     const pr = person(x, yb, h, { coat, hatC: I.rot, bob: I.papier, scarf: [I.rot, I.papier], cross: true, arms: [0.3, null] });
     ANIM(live, LI, bellAnim(x, pr.sh[1][0], pr.sh[1][1], h, coat, ph), x - 16, x + 22);
   }
+  // Andreas-Hofer-Denkmal am Bergisel: Steinsockel, Bronzefigur mit Fahne (k: Maßstab)
+  function hofer(x, yb, k) {
+    k = k || 1; ctx.save(); ctx.translate(x, yb); ctx.scale(k, k); ctx.translate(-x, -yb);
+    const st = tone(mix(P.wall, I.schatten, 0.22)), stD = mix(st, I.tinte, 0.3), bz = tone(mix(I.gruen, I.tinte, 0.55)), bzL = mix(bz, I.papier, 0.22);
+    shade([[x - 15, yb + 1], [x + 30, yb - 1], [x + 26, yb + 4], [x - 13, yb + 4]], P.valleyShade);
+    rect(x - 16, yb - 4, 32, 4, stD); rect(x - 13, yb - 8, 26, 4.2, st); rect(x + 6, yb - 8, 7, 4.2, stD);
+    rect(x - 9, yb - 30, 18, 22.2, st); rect(x + 4, yb - 30, 5, 22.2, stD);
+    rect(x - 6, yb - 25, 12, 7, mix(st, I.tinte, 0.12));
+    rect(x - 10.5, yb - 32.4, 21, 2.6, st); rect(x - 11, yb - 34, 22, 1.8, P.roofSnow);
+    const fb = yb - 34;
+    fill([[x - 3.6, fb], [x + 3.6, fb], [x + 3.2, fb - 12], [x - 3.2, fb - 12]], bz);
+    fill([[x + 0.8, fb], [x + 3.6, fb], [x + 3.2, fb - 12], [x + 0.8, fb - 12]], mix(bz, I.tinte, 0.3));
+    fill([[x - 4, fb - 11], [x + 4, fb - 11], [x + 2.6, fb - 13.8], [x - 2.6, fb - 13.8]], bz);
+    dot(x, fb - 15.8, 2.1, bz); rect(x - 3.6, fb - 17.6, 7.2, 1.2, bz); rect(x - 2, fb - 19.8, 4, 2.4, bz);
+    line([[x - 2.5, fb - 4], [x - 8.5, fb - 31]], bz, 1);
+    fill([[x - 8.5, fb - 31], [x - 19, fb - 28.5], [x - 17.5, fb - 23.5], [x - 7.6, fb - 25.5]], bzL);
+    line([[x + 2.6, fb - 10.5], [x + 8, fb - 13.5]], bz, 1.5);
+    ctx.restore();
+  }
+  // Tiroler Musikkapelle: Tuba, Flügelhorn, große Trommel; Noten steigen aus Tuba und Flügelhorn
+  function kapelle(x, yb, h, live) {
+    const tr = { coat: mix(I.gruen, I.tinte, 0.35), legs: mix(I.dach, I.tinte, 0.35), hat: "filz", hatC: mix(I.gruen, I.tinte, 0.6), scarf: I.rot };
+    const gold = tone(mix(I.ocker, I.papier, 0.15)), goldD = mix(gold, I.dach, 0.45);
+    // 1: Tuba vor dem Bauch, Schallbecher über der linken Schulter
+    person(x, yb, h, Object.assign({}, tr, { hands: [[x - h * 0.08, yb - h * 0.56], [x + h * 0.12, yb - h * 0.62]] }));
+    ctx.beginPath(); ctx.ellipse(x, yb - h * 0.55, h * 0.13, h * 0.17, 0, 0, 6.2832); ctx.fillStyle = gold; ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x + h * 0.03, yb - h * 0.55, h * 0.07, h * 0.1, 0, 0, 6.2832); ctx.fillStyle = goldD; ctx.fill();
+    line([[x - h * 0.06, yb - h * 0.7], [x - h * 0.2, yb - h * 0.98]], gold, h * 0.07);
+    fill([[x - h * 0.2, yb - h * 0.95], [x - h * 0.34, yb - h * 1.1], [x - h * 0.08, yb - h * 1.16], [x - h * 0.13, yb - h * 0.98]], gold);
+    ctx.beginPath(); ctx.ellipse(x - h * 0.21, yb - h * 1.13, h * 0.14, h * 0.045, -0.2, 0, 6.2832); ctx.fillStyle = goldD; ctx.fill();
+    ANIM(live, LI, notesAnim(x - h * 0.24, yb - h * 1.15, x * 0.011), x - h * 0.4, x + h * 0.8);
+    // 2: Flügelhorn waagerecht vom Mund nach rechts
+    const x2 = x + h * 0.72, my = yb - h * 0.8;
+    person(x2, yb, h, Object.assign({}, tr, { hands: [[x2 + h * 0.2, my + 1.4], [x2 + h * 0.3, my + 1.2]] }));
+    line([[x2 + h * 0.06, my], [x2 + h * 0.4, my]], gold, 1.2);
+    fill([[x2 + h * 0.38, my - 0.6], [x2 + h * 0.5, my - 2.8], [x2 + h * 0.5, my + 2.8], [x2 + h * 0.38, my + 0.6]], gold);
+    line([[x2 + h * 0.17, my + 0.8], [x2 + h * 0.3, my + 0.8]], goldD, 0.8);
+    ANIM(live, LI, notesAnim(x2 + h * 0.48, my - 2, x * 0.017 + 0.4), x2, x2 + h * 1.2);
+    // 3: große Trommel vor dem Bauch, rot mit weißen Reifen und Schnüren
+    const x3 = x + h * 1.44, dy = yb - h * 0.62, dw = h * 0.42, dh = h * 0.32;
+    person(x3, yb, h, Object.assign({}, tr, { hands: [[x3 - dw * 0.62, dy + dh * 0.3], [x3 + dw * 0.62, dy + dh * 0.45]] }));
+    rect(x3 - dw / 2, dy, dw, dh, tone(I.rot)); rect(x3 + dw * 0.1, dy, dw * 0.4, dh, mix(tone(I.rot), I.tinte, 0.25));
+    rect(x3 - dw / 2 - 0.5, dy - 0.8, dw + 1, 1.6, tone(I.papier)); rect(x3 - dw / 2 - 0.5, dy + dh - 0.8, dw + 1, 1.6, tone(I.papier));
+    const zz = []; for (let i = 0; i <= 6; i++) zz.push([x3 - dw / 2 + (dw * i) / 6, i % 2 ? dy + dh - 1 : dy + 1]);
+    line(zz, tone(I.papier), 0.6);
+    line([[x3 + dw * 0.62, dy + dh * 0.45], [x3 + dw * 0.9, dy - dh * 0.2]], P.line, 0.8); dot(x3 + dw * 0.92, dy - dh * 0.24, 1.3, tone(I.papier));
+  }
+  // Goldenes Dachl: spätgotisches Bürgerhaus mit Prunkerker (Loggia über zwei Geschoße), darauf das vergoldete Schindeldach.
+  // In der Sonne blitzt es alle paar Sekunden auf, am Abend glänzt es warm. D = [x, yb, h]
+  function glint(x, y, r) {
+    const c = "#FFF6DC";
+    fill([[x, y - r], [x + r * 0.16, y], [x, y + r], [x - r * 0.16, y]], c);
+    fill([[x - r, y], [x, y - r * 0.16], [x + r, y], [x, y + r * 0.16]], c);
+    dot(x, y, r * 0.22, c);
+  }
+  function dachl(D, live) {
+    const [x, yb, h] = D, w = 26, wall = mix(P.wall, I.ocker, 0.14), side = P.wallSide, xl = x - w / 2, xr = x + w / 2;
+    shade([[xr, yb], [xr + 5, yb - 2], [xr + 5, yb - h - 2], [xr, yb - h]], side);
+    rect(xl, yb - h, w, h, wall);
+    fill([[xl - 1, yb - h], [x, yb - h - 14], [xr + 1, yb - h]], P.slate);
+    fill([[xl - 1, yb - h], [x, yb - h - 14], [x - 3, yb - h - 9.5], [xl + 4, yb - h - 1.2]], P.roofSnow);
+    for (const fy of [yb - h + 4.5, yb - h + 11]) for (const fx of [xl + 2, xl + 5.2, xr - 7, xr - 3.8]) rect(fx, fy, 1.8, 3, P.win);
+    rect(x - 2, yb - 7.5, 4, 7.5, P.door || mix(P.wall, I.tinte, 0.5));
+    const ew = 11, ex = x - ew / 2, et = yb - h * 0.84, eb = yb - h * 0.24;
+    shade([[ex + ew, eb], [ex + ew + 2.2, eb - 1], [ex + ew + 2.2, et - 1], [ex + ew, et]], side);
+    rect(ex, et, ew, eb - et, mix(wall, I.papier, 0.3));
+    rect(ex + 1.5, et + 2.6, ew - 3, 5, P.abend ? P.winHi : P.win); rect(ex + 1.5, et + 10, ew - 3, 5, P.win);
+    line([[ex, et + 8.8], [ex + ew, et + 8.8]], mix(wall, I.tinte, 0.35), 0.6); line([[ex + 1, eb], [ex + 3, eb + 2.6], [ex + ew - 3, eb + 2.6], [ex + ew - 1, eb]], mix(wall, I.tinte, 0.3), 0.7);
+    const gold = P.abend ? mix(I.ocker, "#FFD98A", 0.45) : mix(I.ocker, "#F4C04A", 0.4), goldD = mix(gold, I.dach, 0.35), goldL = mix(gold, "#FFF6DC", 0.55);
+    fill([[ex - 1.4, et], [x, et - 10.5], [ex + ew + 1.4, et]], gold);
+    fill([[x, et - 10.5], [ex + ew + 1.4, et], [x + 1.6, et]], goldD);
+    line([[x - 4.6, et - 2.6], [x + 4.6, et - 2.6]], goldD, 0.45); line([[x - 2.8, et - 5.4], [x + 2.8, et - 5.4]], goldD, 0.45);
+    line([[x - 3.6, et - 0.9], [x - 0.6, et - 8.8]], goldL, 0.9);
+    if (!P.abend) ANIM(live, 1, (t) => {
+      const u = (t + x * 0.013) % 6.5; if (u > 0.7) return;
+      const a = Math.sin((u / 0.7) * Math.PI); ctx.globalAlpha *= a; glint(x - 1.6, et - 5.4, 5.5 * a + 1); ctx.globalAlpha /= a;
+    }, x - 8, x + 8);
+  }
+  // Straßenbahn (rot-cremefarben, zwei Wagenteile, Stromabnehmer); fährt nach rechts, x = Heck
+  function tramAt(x, yb) {
+    const H = 11.5, cream = tone(mix(I.papier, I.ocker, 0.14)), red = tone(I.rot), win = P.abend ? P.win : mix(I.tief, I.himmel, 0.35);
+    for (const [x0, w] of [[x, 22], [x + 23.4, 23]]) {
+      rect(x0, yb - H - 1.6, w, H, cream); rect(x0, yb - 5.2, w, 2.8, red); rect(x0, yb - H - 1.6, w, 1.5, red);
+      for (let k = 0; k < 4; k++) rect(x0 + 2.2 + k * 5, yb - H + 0.9, 3.4, 3.8, win);
+      rect(x0 + w - 4, yb - H + 0.4, 2.4, 8.6, mix(cream, I.tinte, 0.25));
+    }
+    fill([[x + 46.4, yb - H - 1.6], [x + 49, yb - H + 1], [x + 49, yb - 2.4], [x + 46.4, yb - 2.4]], red);
+    line([[x + 30, yb - H - 1.6], [x + 33.5, yb - 19.6], [x + 37, yb - H - 1.6]], P.line, 0.6); line([[x + 31, yb - 19.6], [x + 36, yb - 19.6]], P.line, 0.9);
+    dots([x + 5, x + 17, x + 29, x + 41].map((wx) => [wx, yb - 1.3, 1.5]), P.line);
+  }
+  // Zwei Bahnen auf zwei Gleisen, Gegenrichtung hinten; sie kommen hinter den Eckhäusern (T.cover) hervor, die je Bild darüber gezeichnet werden
+  function tramAnim(T) {
+    const L = T.x1 - T.x0 + 120;
+    return (t) => {
+      ctx.save(); ctx.beginPath(); ctx.rect(T.x0, T.y - 30, T.x1 - T.x0, 34); ctx.clip();
+      const xb = T.x1 + 10 - ((t * T.speed + L * 0.47) % L);
+      ctx.save(); ctx.translate(xb + 24.5, 0); ctx.scale(-1, 1); ctx.translate(-(xb + 24.5), 0); tramAt(xb, T.y - 4); ctx.restore();
+      tramAt(T.x0 - 60 + ((t * T.speed) % L), T.y);
+      ctx.restore();
+      for (const c of (T.cover || [])) block(c[0], c[1], c[2], c[3], rng(c[4] || 7), false);
+    };
+  }
   const NEAR_ITEM = {
     drift: (it) => drift(it[1], it[2], it[3], it[4]),
     spruce: (it) => grove(it[1], true),
@@ -3608,6 +3711,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     rodelkind: (it) => { const pr = person(it[1], it[2], it[3], { kid: true, coat: it[4] || I.gruen, hatC: I.ocker, arms: [0.15, 0.55] }); rodel(it[1] + 6, it[2] + 1, pr.hands[1]); },
     alphorn: (it, live) => { const b = alphorn(it[1], it[2], it[3], it[4]); ANIM(live, LI, notesAnim(b[0], b[1], it[1] * 0.017), b[0] - 4, b[0] + 30); },
     fan: (it, live) => fan(it[1], it[2], it[3], it[4] || I.rot, live, it[1] * 0.031),
+    hofer: (it) => hofer(it[1], it[2], it[3]),
+    kapelle: (it, live) => kapelle(it[1], it[2], it[3], live),
   };
   // Nahebene: wird für die Plakat-Orte nicht mehr gebaut (nichts soll beim Flug durchs Bild ziehen); bleibt für Bäume und Stadel
   function nearSide(O, live) {
@@ -3699,6 +3804,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     const chim = [];
     for (const T of (O.town || [])) town(T, chim);
     if (M.city) city(M.city);
+    if (M.dachl) dachl(M.dachl, live);
     if (M.funicular) { const f = M.funicular; line([[f[0], f[1]], [f[2], f[3]]], P.line, 1.6); station(f[0], f[1]); station(f[2], f[3]); }
     // Details des Ortes vorn im Talgrund (früher Nahebene): von hinten nach vorn in der Reihenfolge der Daten
     const N = O.near || {};
@@ -3709,6 +3815,13 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (tg.length) ANIM(live, 1, () => { for (const G of tg) { portalDark(G); portalFace(G); } }, Math.min(...tg.map((G) => G.fx0)), Math.max(...tg.map((G) => G.fx1)));
     for (const f of (O.flags || [])) ANIM(live, 1, flagAnim(f[0], f[1], f[2], f[3], f[4], f[5] || FLAG_OF[O.id] || "at", f[0] * 0.013), f[0] - 2, f[0] + f[3] + 2);
     if (M.sleigh) { const S = M.sleigh; for (const d of [-1.4, 1.4]) line([[S.x0, S.y + d * 0.5 + 0.8], [S.x1, S.y + d * 0.5 + 0.8]], P.valleyShade, 0.6); ANIM(live, 1, sleighAnim(S), S.x0, S.x1); }
+    if (M.tram) {
+      const T = M.tram;
+      line([[T.x0, T.y + 0.6], [T.x1, T.y + 0.6]], P.line, 0.8); line([[T.x0, T.y - 3.4], [T.x1, T.y - 3.4]], P.line, 0.6);
+      line([[T.x0, T.y - 20.5], [T.x1, T.y - 20.5]], P.line, 0.4); line([[T.x0, T.y - 24.5], [T.x1, T.y - 24.5]], P.line, 0.35);
+      for (let x = T.x0 + 40; x < T.x1; x += 96) line([[x, T.y + 1], [x, T.y - 26]], P.line, 0.7);
+      ANIM(live, 1, tramAnim(T), T.x0 - 30, T.x1 + 30);
+    }
     if (M.glider) ANIM(live, 1, gliderAnim(M.glider), M.glider.cx - M.glider.rx - 20, M.glider.cx + M.glider.rx + 20);
     if (O.mist) ANIM(live, 1, mistAnim(O.fjord ? 568 : 662, 12, 11, hash(O.id) ^ 9), -1e4, 1e4);
   }
@@ -4698,6 +4811,30 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         stations: { hungerburg: -168, seegrube: -126, hafelekar: -94 },
       },
       town: { kind: "city", v0: 14, v1: 64, dens: 1.15, river: [31, 36], tall: [[-40, 8, 22], [130, 10, 18], [-250, 9, 16]], church: { c: 70, type: "onion2", h: 40 } },
+      // Plakat (Schritt 4): Nordkette mit Hungerburg, Seegrube und Hafelekar, Nordkettenbahn in zwei Sektionen und Hungerburgbahn, die Stadt am Inn
+      // mit Dom und Zwiebelturm. Daten wie in telemark-orte.js, die Kette nach beiden Seiten verlängert.
+      // Details: bunte Häuser am Inn (Mariahilf), Goldenes Dachl (blitzt in der Sonne), Straßenbahn mit Oberleitung, Andreas-Hofer-Denkmal,
+      // Tiroler Musikkapelle, Fahnen.
+      plakat: {
+        id: "innsbruck", moon: [986, 178],
+        ranges: [{ style: "alpin", rough: 0.15, rocky: 1.4, detail: 0.55, tree: 448, ctrl: [
+          [-720, 296], [-640, 258, "S"], [-560, 288, "V"], [-470, 250, "S"], [-380, 282, "V"], [-290, 256, "S"], [-200, 288, "V"], [-120, 280],
+          [-40, 300], [50, 258], [120, 224, "S"], [170, 244], [220, 228], [270, 252, "V"], [330, 234], [372, 242], [422, 214, "S"], [482, 238], [552, 224], [632, 248, "V"],
+          [722, 232, "S"], [812, 258], [902, 246], [1002, 274, "V"], [1102, 264, "S"], [1202, 292], [1330, 304],
+          [1440, 282, "S"], [1550, 306, "V"], [1660, 288, "S"], [1780, 312, "V"], [1880, 296, "S"], [1990, 308]] }],
+        far: { drift: [[422, 214, 0.7]] },
+        cables: [[480, 474, 448, 344, 9], [448, 344, 426, 218, 9]],
+        mid: { funicular: [604, 566, 482, 478, 12], hamlet: { cx: 470, yb: 484 }, river: { y: 612, h: 9, x0: 520 },
+          city: { rows: [{ y: 602, x0: 560, x1: 1720, hmin: 14, hmax: 30, bunt: true }, { y: 644, x0: 626, x1: 1720, hmin: 18, hmax: 40 }],
+            churches: [{ x: 900, yb: 646, t: "twin", h: 74, row: 1 }, { x: 1090, yb: 646, t: "onion", h: 62, row: 1 }] },
+          dachl: [992, 647, 44],
+          tram: { y: 653, x0: 606, x1: 1720, speed: 17, cover: [[596, 657, 22, 34, 31]] } },
+        flags: [[1010, 736, 66, 38, 26, "at"], [1056, 728, 60, 38, 26, "at"]],
+        near: { items: [
+          ["drift", 842, 930, 786, 6], ["hofer", 884, 782, 1.15],
+          ["drift", 1084, 1218, 786, 6], ["kapelle", 1112, 782, 36],
+        ] },
+      },
     },
     bischofshofen: {
       moon: 0.64,
@@ -8284,7 +8421,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.40";
+  const VERSION = "0.41";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
