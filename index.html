@@ -3595,6 +3595,10 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     const legs = tone(o.legs || mix(I.tinte, I.tief, 0.35)), boot = tone(I.tinte), mitt = tone(o.mitt || o.hatC || I.tinte);
     const lw = h * 0.1, gp = h * 0.025, lh = yb - yj - h * 0.05;
     rect(x - gp / 2 - lw, yj - 1, lw, lh + 1, legs); rect(x + gp / 2, yj - 1, lw, lh + 1, mix(legs, I.tinte, 0.25));
+    if (o.parzenica) {
+      // Parzenica: herzförmige Stickerei vorn auf den hellen Filzhosen
+      for (const d of [-1, 1]) { const px = x + d * (gp / 2 + lw / 2), py = yj + lh * 0.18; dot(px, py, lw * 0.32, tone(I.rot)); dot(px, py + lw * 0.42, lw * 0.22, tone(I.navy)); }
+    }
     if (o.stockings) { const sc = tone(o.stockings), sy = yb - lh * 0.48; rect(x - gp / 2 - lw, sy, lw, yb - sy, sc); rect(x + gp / 2, sy, lw, yb - sy, mix(sc, I.tinte, 0.12)); }
     rect(x - gp / 2 - lw - 0.5, yb - h * 0.065, lw + 1, h * 0.065, boot); rect(x + gp / 2 - 0.5, yb - h * 0.065, lw + 1, h * 0.065, boot);
     if (o.skirt) {
@@ -3635,7 +3639,12 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     }
     dot(x, hy, hr, skin());
     const hc = tone(o.hatC || I.rot);
-    if (o.hat === "schuetzen") {
+    if (o.hat === "goral") {
+      // flacher schwarzer Góralenhut mit breiter Krempe und einem Band aus weißen Kaurimuscheln
+      fill([[x - hr * 0.86, hy - hr * 0.62], [x + hr * 0.86, hy - hr * 0.62], [x + hr * 0.76, hy - hr * 1.3], [x - hr * 0.76, hy - hr * 1.3]], hc);
+      rect(x - hr * 1.9, hy - hr * 0.84, hr * 3.8, hr * 0.32, hc);
+      for (let i = -3; i <= 3; i++) dot(x + i * hr * 0.24, hy - hr * 0.86, hr * 0.1, tone(I.papier));
+    } else if (o.hat === "schuetzen") {
       // schwarzer Hut mit breiter Krempe, darauf der Federbusch (Spielhahnstoß) leierförmig nach beiden Seiten
       fill([[x - hr * 0.78, hy - hr * 0.6], [x + hr * 0.78, hy - hr * 0.6], [x + hr * 0.64, hy - hr * 1.55], [x - hr * 0.64, hy - hr * 1.55]], hc);
       rect(x - hr * 1.75, hy - hr * 0.82, hr * 3.5, hr * 0.36, hc);
@@ -4180,6 +4189,139 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       for (const L of list) skater(L.x, L.y, L.h, L.ph, L.col, L.dir, L.back);
     };
   }
+  // Góralen-Kapelle aus Zakopane: zwei Geiger und ein Bassist (Basy) in Tracht: Hut mit Muschelband, helle Filzhose mit
+  // Parzenica, dunkle Weste. Die Bögen streichen, Noten steigen auf.
+  function goralKapelle(x, yb, h, live) {
+    const tr = { coat: mix(I.papier, I.ocker, 0.12), vest: mix(I.dach, I.tinte, 0.45), legs: mix(I.papier, I.ocker, 0.18), parzenica: true, hat: "goral", hatC: I.tinte, arms: [null, null] };
+    const list = [];
+    for (let i = 0; i < 3; i++) { const xi = x + i * h * 0.72, pr = person(xi, yb, h, tr); list.push({ x: xi, sh: pr.sh, bass: i === 2 }); }
+    ANIM(live, LI, (t) => {
+      const wood = tone(mix(P.wood, I.ocker, 0.3)), woodD = mix(wood, I.tinte, 0.4), sleeve = tone(mix(I.papier, I.ocker, 0.12)), mitt = skin(), bowC = tone(mix(P.wood, I.tinte, 0.2));
+      list.forEach((M, i) => {
+        const [ls, rs] = M.sh, st = Math.sin(t * (i === 2 ? 3.2 : 4.6) + i * 1.3);
+        if (!M.bass) {
+          // Geige unter dem Kinn an der linken Schulter (im Bild rechts), Bogen quer darüber
+          const vx = rs[0] + h * 0.06, vy = rs[1] - h * 0.02;
+          ctx.save(); ctx.translate(vx, vy); ctx.rotate(-0.5);
+          ctx.beginPath(); ctx.ellipse(0, 0, h * 0.11, h * 0.055, 0, 0, 6.2832); ctx.fillStyle = wood; ctx.fill();
+          line([[h * 0.08, 0], [h * 0.25, 0]], woodD, h * 0.025); ctx.restore();
+          limb(rs[0], rs[1], vx + h * 0.2, vy - h * 0.1, h * 0.08, mix(sleeve, I.tinte, 0.15), mitt);
+          const bx = vx - h * 0.05 + st * h * 0.12, by = vy + h * 0.05;
+          limb(ls[0], ls[1], bx - h * 0.1, by + h * 0.04, h * 0.08, sleeve, mitt);
+          line([[bx - h * 0.12, by + h * 0.05], [bx + h * 0.24, by - h * 0.06]], bowC, 0.7);
+        } else {
+          // Basy: großer Bass vor dem Körper, Bogen waagerecht
+          const bx = M.x - h * 0.04, by = yb - h * 0.36;
+          ctx.beginPath(); ctx.ellipse(bx, by, h * 0.15, h * 0.26, 0, 0, 6.2832); ctx.fillStyle = wood; ctx.fill();
+          ctx.beginPath(); ctx.ellipse(bx, by - h * 0.06, h * 0.1, h * 0.06, 0, 0, 6.2832); ctx.fillStyle = mix(wood, I.ocker, 0.25); ctx.fill();
+          line([[bx, by - h * 0.24], [bx + h * 0.02, by - h * 0.62]], woodD, h * 0.035);
+          line([[bx, by + h * 0.24], [bx, by + h * 0.34]], woodD, h * 0.02);
+          limb(rs[0], rs[1], bx + h * 0.03, by - h * 0.46, h * 0.08, mix(sleeve, I.tinte, 0.15), mitt);
+          const hx = bx - h * 0.2 + st * h * 0.14, hy = by + h * 0.02;
+          limb(ls[0], ls[1], hx, hy, h * 0.08, sleeve, mitt);
+          line([[hx - h * 0.04, hy], [hx + h * 0.34, hy + h * 0.02]], bowC, 0.8);
+        }
+      });
+    }, x - h * 0.5, x + h * 2.2);
+    ANIM(live, LI, notesAnim(x + h * 0.3, yb - h * 1.05, x * 0.013), x, x + h * 0.9);
+    ANIM(live, LI, notesAnim(x + h * 1.02, yb - h * 1.05, x * 0.017 + 0.5), x + h * 0.7, x + h * 1.6);
+  }
+  // Fans mit einer Riesenfahne in Weiß-Rot: vier halten sie mit erhobenen Armen über die Köpfe, sie wogt im Wind
+  function riesenfahne(x, yb, h, n, live) {
+    const hands = [];
+    for (let i = 0; i < n; i++) {
+      const xi = x + i * h * 0.62, kid = i === 2;
+      const pr = person(xi, yb, kid ? h * 0.72 : h, { coat: [I.rot, I.papier, I.rot, I.navy][i % 4], hatC: i % 2 ? I.rot : I.papier, bob: i % 2 ? I.papier : I.rot, scarf: [I.papier, I.rot], kid, arms: [2.7, 2.7] });
+      if (pr.hands[0]) hands.push(pr.hands[0]); if (pr.hands[1]) hands.push(pr.hands[1]);
+    }
+    hands.sort((a, b) => a[0] - b[0]);
+    const x0 = hands[0][0] - h * 0.1, x1 = hands[hands.length - 1][0] + h * 0.1, fh = h * 0.4, top = Math.min(...hands.map((q) => q[1])) - fh + h * 0.03;
+    ANIM(live, LI, (t) => {
+      const N = 16, up = [], mid = [], lo = [];
+      for (let i = 0; i <= N; i++) { const u = i / N, xx = x0 + (x1 - x0) * u, w = Math.sin(t * 2.6 - u * 7) * h * 0.05 + Math.sin(t * 1.3 + u * 3) * h * 0.03; up.push([xx, top + w]); mid.push([xx, top + fh * 0.5 + w * 1.4]); lo.push([xx, top + fh + w * 1.8]); }
+      const wt = tone(mix(I.papier, I.schatten, 0.2));
+      fill(up.concat(mid.slice().reverse()), wt); fill(mid.concat(lo.slice().reverse()), tone(I.rot));
+      line(up, mix(wt, I.tinte, 0.3), 0.6);
+    }, x0 - 4, x1 + 4);
+  }
+  // Oscypek-Stand: Holzbude mit steilem Schindeldach im Zakopane-Stil, auf der Theke die spindelförmigen geräucherten Käse mit Muster,
+  // daneben ein kleiner Grill mit Glut und Rauch, der Verkäufer mit Góralenhut
+  function oscypek(x, yb, k, live) {
+    ctx.save(); ctx.translate(x, yb); ctx.scale(k, k); ctx.translate(-x, -yb);
+    const w = 40, hW = 20, wd = tone(mix(P.wood, I.ocker, 0.15)), wdD = mix(wd, I.tinte, 0.38), plank = mix(wd, I.tinte, 0.22);
+    shade([[x + w, yb], [x + w + 8, yb - 4], [x + w + 8, yb - hW - 4], [x + w, yb - hW]], wdD);
+    rect(x, yb - hW, w, hW, wd);
+    for (let py = yb - 3; py > yb - hW; py -= 3.2) line([[x, py], [x + w, py]], plank, 0.5);
+    rect(x + 4, yb - hW + 5, w - 8, 9, P.abend ? mix(I.ocker, I.papier, 0.3) : mix(I.tinte, wd, 0.3));
+    dot(x + w * 0.62, yb - hW + 9.6, 2.2, skin());
+    rect(x + w * 0.62 - 3.4, yb - hW + 6.2, 6.8, 0.9, tone(I.tinte)); rect(x + w * 0.62 - 2.2, yb - hW + 5, 4.4, 1.4, tone(I.tinte));
+    rect(x + 2, yb - hW + 13.6, w - 4, 2.4, tone(mix(P.wood, I.papier, 0.35)));
+    const cheese = tone(mix(I.ocker, I.dach, 0.35)), cheeseL = mix(cheese, I.papier, 0.35);
+    for (let i = 0; i < 5; i++) { const cx = x + 7 + i * 6.4, cy = yb - hW + 12.4; ctx.beginPath(); ctx.ellipse(cx, cy, 2.8, 1.25, 0, 0, 6.2832); ctx.fillStyle = cheese; ctx.fill(); line([[cx - 1.2, cy], [cx + 1.2, cy]], cheeseL, 0.4); }
+    fill([[x - 4, yb - hW + 1], [x + w / 2, yb - hW - 19], [x + w + 4, yb - hW + 1]], tone(mix(P.wood, I.tinte, 0.45)));
+    fill([[x - 3, yb - hW], [x + w / 2, yb - hW - 18], [x + w * 0.42, yb - hW - 12], [x + 2, yb - hW - 1.5]], P.roofSnow);
+    for (let i = 1; i < 4; i++) line([[x + w / 2 - i * 4.6, yb - hW - 18 + i * 4.6], [x + w / 2 + i * 4.6, yb - hW - 18 + i * 4.6]], mix(wd, I.tinte, 0.5), 0.35);
+    ctx.restore();
+    const gx = x + (w + 8) * k, gy = yb - 7 * k;
+    rect(gx - 4 * k, gy, 8 * k, 1.2 * k, tone(I.tinte)); line([[gx - 3 * k, gy + 1], [gx - 3.6 * k, yb]], tone(I.tinte), 0.6); line([[gx + 3 * k, gy + 1], [gx + 3.6 * k, yb]], tone(I.tinte), 0.6);
+    for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.ellipse(gx - 2.2 * k + i * 2.2 * k, gy - 0.8 * k, 1.1 * k, 0.6 * k, 0, 0, 6.2832); ctx.fillStyle = tone(mix(I.ocker, I.dach, 0.4)); ctx.fill(); }
+    ANIM(live, LI, (t) => { const g = 0.6 + 0.4 * Math.sin(t * 7.3) * Math.sin(t * 3.1); rect(gx - 3.4 * k, gy + 1.2 * k, 6.8 * k, 0.9 * k, mix(I.rot, I.ocker, 0.3 + g * 0.4)); }, gx - 5, gx + 5);
+    ANIM(live, LI, smokeAnim(gx, gy - 2 * k, 0.7 * k, 0.6), gx - 40 * k, gx + 6);
+  }
+  // Podhale: Heuschober um eine Stange (Stogi) mit Schneehaube, Hirtenhütten (Bacówki) aus Balken mit steilem Schindeldach und Rauch
+  function stog(x, yb, h) {
+    const hay = tone(mix(I.ocker, P.wood, 0.4)), hayD = mix(hay, I.tinte, 0.3), pole = tone(mix(P.wood, I.tinte, 0.4));
+    shade([[x - h * 0.3, yb + 0.6], [x + h * 0.7, yb], [x + h * 0.55, yb + 2.2], [x - h * 0.25, yb + 2.2]], P.valleyShade);
+    line([[x, yb - h * 0.75], [x, yb - h * 1.1]], pole, Math.max(0.6, h * 0.05));
+    const O = [[-0.36, 0], [-0.39, -0.17], [-0.36, -0.36], [-0.28, -0.53], [-0.17, -0.66], [-0.06, -0.73], [0.06, -0.73], [0.17, -0.66], [0.28, -0.53], [0.36, -0.36], [0.39, -0.17], [0.36, 0]];
+    const at = (q) => q.map(([u, v]) => [x + u * h, yb + v * h]);
+    fill(at(O), hay);
+    fill(at([[0.06, -0.73], [0.17, -0.66], [0.28, -0.53], [0.36, -0.36], [0.39, -0.17], [0.36, 0], [0.08, 0], [0.12, -0.36]]), hayD);
+    for (const v of [-0.2, -0.42]) line(at([[-0.37, v], [0, v - 0.03], [0.37, v]]), mix(hay, I.tinte, 0.18), 0.5);
+    fill(at([[-0.22, -0.61], [-0.1, -0.71], [0.1, -0.71], [0.22, -0.61], [0.1, -0.57], [-0.1, -0.58]]), P.roofSnow);
+  }
+  function bacowka(x, yb, w, live) {
+    const h = w * 0.42, wd = tone(mix(P.wood, I.dach, 0.2)), wdD = mix(wd, I.tinte, 0.4);
+    shade([[x + w, yb], [x + w + 6, yb - 2.5], [x + w + 6, yb - h - 2.5], [x + w, yb - h]], wdD);
+    rect(x, yb - h, w, h, wd);
+    for (let yy = yb - 2.2; yy > yb - h; yy -= 2.4) line([[x, yy], [x + w, yy]], wdD, 0.5);
+    rect(x + w * 0.4, yb - h * 0.7, w * 0.2, h * 0.7, mix(wd, I.tinte, 0.55));
+    fill([[x - 2.5, yb - h], [x + w / 2, yb - h - w * 0.62], [x + w + 2.5, yb - h]], tone(mix(P.wood, I.tinte, 0.5)));
+    fill([[x - 2, yb - h - 0.5], [x + w / 2, yb - h - w * 0.62], [x + w * 0.4, yb - h - w * 0.42], [x + 2, yb - h - 1.6]], P.roofSnow);
+    ANIM(live, 1, smokeAnim(x + w * 0.7, yb - h - w * 0.36, 0.55, x * 0.01), x + w * 0.7 - 30, x + w * 0.7 + 6);
+  }
+  // Kulig: zwei Pferdeschlitten hintereinander durchs Tal (über die ganze Breite); abends hält jeder Kutscher eine Fackel
+  function kuligAnim(K) {
+    const L = K.x1 - K.x0 + 200;
+    return (t) => {
+      const back = K.x1 + 100 - ((t * K.speed * 0.9 + L * 0.5) % L);
+      ctx.save(); ctx.translate(2 * back + 30, 0); ctx.scale(-1, 1); sleighAt(back, K.y - 5, t + 3, I.navy); ctx.restore();
+      for (const [off, col] of [[0, I.rot], [58, I.gruen]]) {
+        const xx = K.x0 - 100 + ((t * K.speed) % L) - off;
+        sleighAt(xx, K.y, t + off, col);
+        if (P.abend) {
+          const fx = xx + 16.5, fy = K.y - 17, fl = 1 + 0.25 * Math.sin(t * 13 + off);
+          line([[xx + 14.6, K.y - 9], [fx, fy]], tone(I.dach), 0.7);
+          const gr = ctx.createRadialGradient(fx, fy - 1.5, 0.2, fx, fy - 1.5, 9); gr.addColorStop(0, "rgba(255,200,110,0.5)"); gr.addColorStop(1, "rgba(255,200,110,0)");
+          ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(fx, fy - 1.5, 9, 0, 6.2832); ctx.fill();
+          fill([[fx - 1.1, fy], [fx + Math.sin(t * 9 + off) * 0.6, fy - 4.2 * fl], [fx + 1.1, fy]], mix(I.ocker, I.papier, 0.3));
+        }
+      }
+    };
+  }
+  // Standseilbahn: zwei Wagen pendeln gegenläufig und kreuzen sich in der Mitte (Periode f[4] s)
+  function funicularAnim(f) {
+    const [ax, ay, bx, by, per] = f, ang = Math.atan2(by - ay, bx - ax);
+    return (t) => {
+      const u = 0.5 - 0.5 * Math.cos((t / (per || 12)) * 6.2832);
+      for (const [v, d] of [[u, -1.6], [1 - u, 1.6]]) {
+        const x = ax + (bx - ax) * v, y = ay + (by - ay) * v;
+        ctx.save(); ctx.translate(x, y + d * 0.4); ctx.rotate(ang);
+        rect(-6, -6.4, 12, 5.6, tone(I.rot)); rect(-4.6, -5.2, 9.2, 2, P.abend ? P.winHi : P.wall); rect(-6.4, -7.4, 12.8, 1.4, P.roofSnow);
+        ctx.restore();
+      }
+    };
+  }
   // Straßenbahn (rot-cremefarben, zwei Wagenteile, Stromabnehmer); fährt nach rechts, x = Heck
   function tramAt(x, yb) {
     const H = 11.5, cream = tone(mix(I.papier, I.ocker, 0.14)), red = tone(I.rot), win = P.abend ? P.win : mix(I.tief, I.himmel, 0.35);
@@ -4220,6 +4362,9 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     elch: (it, live) => ANIM(live, LI, elchAnim(it[1], it[2], it[3], it[4] || 0), it[1] - it[3], it[1] + it[3]),
     kapelle: (it, live) => kapelle(it[1], it[2], it[3], live),
     schuetzen: (it, live) => schuetzen(it[1], it[2], it[3], it[4] || 4, live),
+    goralKapelle: (it, live) => goralKapelle(it[1], it[2], it[3], live),
+    riesenfahne: (it, live) => riesenfahne(it[1], it[2], it[3], it[4] || 4, live),
+    oscypek: (it, live) => oscypek(it[1], it[2], it[3] || 1, live),
     herde: (it, live) => { heuraufe(it[1] + 84 * it[3], it[2] + 1.5 * it[3], it[3] * 1.15); ANIM(live, LI, herdeAnim([it[1], it[2], it[3]]), it[1] - 10, it[1] + 120 * it[3]); },
 
   };
@@ -4317,7 +4462,10 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     for (const T of (O.town || [])) town(T, chim);
     if (M.city) city(M.city, live);
     if (M.dachl) dachl(M.dachl, live);
-    if (M.funicular) { const f = M.funicular; line([[f[0], f[1]], [f[2], f[3]]], P.line, 1.6); station(f[0], f[1]); station(f[2], f[3]); }
+    if (M.funicular) { const f = M.funicular; line([[f[0], f[1]], [f[2], f[3]]], P.line, 1.6); station(f[0], f[1]); station(f[2], f[3]); ANIM(live, 1, funicularAnim(f), Math.min(f[0], f[2]) - 8, Math.max(f[0], f[2]) + 8); }
+    for (const st of (M.stogi || [])) stog(st[0], st[1], st[2]);
+    for (const b of (M.bacowki || [])) bacowka(b[0], b[1], b[2], live);
+    if (M.kulig) { const K = Object.assign({}, M.kulig, { x0: X0 - 40, x1: X1 + 40 }); for (const d of [-1.4, 1.4]) line([[K.x0, K.y + d * 0.5 + 0.8], [K.x1, K.y + d * 0.5 + 0.8]], P.valleyShade, 0.6); ANIM(live, 1, kuligAnim(K), K.x0, K.x1); }
     if (M.loipe) loipe(M.loipe, live);
     // Details des Ortes vorn im Talgrund (früher Nahebene): von hinten nach vorn in der Reihenfolge der Daten
     const N = O.near || {};
@@ -4523,8 +4671,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     };
   }
   // Pferdeschlitten: fährt gemächlich nach rechts über die Spur x0 … x1 (dort abgeschnitten); Pferd trabt, Glöckchen am Geschirr
-  function sleighAt(x, yb, t) {
-    const red = tone(I.rot), redD = mix(red, I.tinte, 0.35), horse = tone(mix(I.dach, I.tinte, 0.5)), horseD = mix(horse, I.tinte, 0.35);
+  function sleighAt(x, yb, t, col) {
+    const red = tone(col || I.rot), redD = mix(red, I.tinte, 0.35), horse = tone(mix(I.dach, I.tinte, 0.5)), horseD = mix(horse, I.tinte, 0.35);
     line([[x - 1, yb - 0.5], [x + 15, yb - 0.5], [x + 17.4, yb - 3.2]], P.line, 0.8);
     for (const px of [x + 2, x + 11]) line([[px, yb - 0.5], [px, yb - 2.6]], P.line, 0.7);
     fill([[x, yb - 2.4], [x + 14, yb - 2.4], [x + 15.4, yb - 6.4], [x + 7, yb - 6.4], [x + 5.4, yb - 9.6], [x, yb - 9.6]], red);
@@ -5409,6 +5557,30 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       cross: { c: -178 },
       cable: { c0: 250, c1: 372 },
       town: { kind: "village", v0: 18, v1: 62, dens: 0.95, roofK: 0.6, church: { c: 70, type: "spire", h: 46 } },
+      // Plakat (Schritt 4): Tatra mit dem Giewont und seinem Gipfelkreuz, dahinter die Hohe Tatra, rechts die Gubałówka mit Skiwiese
+      // und Standseilbahn; Zakopane mit Holzhäusern im Zakopane-Stil und Holzkirche. Daten wie in telemark-orte.js, verlängert.
+      // Details: Kulig (Pferdeschlitten in beide Richtungen, abends mit Fackeln), Heuschober (Stogi) und Hirtenhütten mit Rauch,
+      // Góralen-Kapelle mit Geigen und Bass, Fans mit Riesenfahne in Weiß-Rot, Oscypek-Stand mit Grill, eine polnische Fahne.
+      plakat: {
+        id: "zakopane", moon: [986, 178],
+        ranges: [
+          { style: "alpin", far: true, rough: 0.24, tree: 520, ctrl: [[300, 548], [420, 334], [500, 292, "S"], [560, 318, "V"], [624, 300, "S"], [704, 342, "V"], [782, 330, "S"], [880, 404], [960, 548]] },
+          { style: "alpin", rough: 0.2, rocky: 1.5, tree: 470, ctrl: [[-720, 470], [-620, 436, "S"], [-520, 458, "V"], [-410, 420, "S"], [-300, 446, "V"], [-190, 412, "S"], [-100, 436],
+            [-40, 434], [50, 394], [120, 354, "S"], [170, 374, "V"], [232, 332], [272, 300], [302, 274, "S"], [322, 282], [342, 300, "V"], [382, 294, "S"], [432, 324, "V"], [502, 318, "S"], [582, 352, "V"], [662, 404], [742, 452], [820, 548]] },
+          { style: "huegel", rough: 0.04, ctrl: [[720, 548], [840, 486], [940, 462, "S"], [1080, 468, "V"], [1200, 456, "S"], [1330, 470], [1480, 462, "S"], [1640, 474, "V"], [1800, 460, "S"], [1990, 470]], pisten: [[1000, 40]] },
+        ],
+        far: { cross: [302, 274], drift: [[302, 274, 0.7]] },
+        mid: { funicular: [930, 584, 1018, 470, 14], kulig: { y: 676, speed: 20 },
+          stogi: [[612, 640, 26], [646, 646, 30], [700, 638, 24], [748, 650, 28], [604, 704, 32], [668, 712, 36]], bacowki: [[566, 652, 30], [770, 708, 34]] },
+        town: [{ house: "goral", cx: 1040, w: 420, y0: 600, y1: 654, churches: [{ x: 1120, yb: 628, t: "wood", h: 70 }], skip: [[1090, 1160, 1]] }],
+        flags: [[1012, 736, 66, 38, 24, "pl"]],
+        near: { items: [
+          ["drift", 806, 894, 788, 6], ["goralKapelle", 822, 784, 35],
+          ["drift", 1052, 1170, 789, 6], ["riesenfahne", 1074, 786, 35, 4],
+          ["drift", 1182, 1262, 788, 6], ["oscypek", 1190, 784, 1],
+          ["drift", 1262, 1336, 778, 8], ["spruce", [[1286, 772, 120, 0], [1318, 778, 92, 2]]],
+        ] },
+      },
     },
     // Sauerland: sanfte Waldhügel, Hängebrücke (Skywalk) über ein Tal, Aussichtsturm auf dem Ettelsberg, Viadukt und Fachwerkdorf
     willingen: {
@@ -8982,7 +9154,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.42";
+  const VERSION = "0.43";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
