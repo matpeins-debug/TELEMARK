@@ -339,6 +339,11 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .toggle[aria-checked="true"] i { left: 25px; }
 .set-tut { margin-top: 6px; }
 .set-jp-txt { color: var(--text) !important; font-family: var(--font-display); font-weight: 700; font-size: 18px !important; letter-spacing: 0.04em; overflow: hidden; text-overflow: ellipsis; }
+/* Einstellungen: Umschalter nie quetschen (sonst bricht „75 %“ um oder wird abgeschnitten), lieber bricht die Beschriftung um */
+.set-row .lbl { white-space: normal; min-width: 0; }
+.set-row .seg { flex-shrink: 0; }
+.set-row .seg button { padding: 0 10px; }
+.set-reset-txt { font-size: 13px !important; line-height: 16px; font-weight: 500 !important; max-width: 190px; }
 
 /* Springer: Name, Nation, Aussehen mit Vorschau */
 .jumper { width: 760px; max-width: calc(100% - 32px); max-height: calc(100% - 20px); overflow: auto; gap: 10px; padding: 14px 20px 16px; touch-action: pan-y; }
@@ -1471,7 +1476,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         <div class="set-row"><span class="lbl">Startluke</span><div class="stepper"><button type="button" id="setGateMinus" class="mini-btn" aria-label="Luke tiefer">−</button><span id="setGateVal" class="num stepper-val">12</span><button type="button" id="setGatePlus" class="mini-btn" aria-label="Luke höher">+</button><span id="setGateNote" class="note">Standard 12</span></div></div>
         <div class="set-row"><span class="lbl">Wind</span><div id="segWind" class="seg" role="radiogroup" aria-label="Wind"><button type="button" data-v="off">Aus</button><button type="button" data-v="var">Wechselnd</button><button type="button" data-v="strong">Böig</button></div></div>
         <span class="kicker kicker-gap">SPIELSTAND</span>
-        <div class="set-row"><span id="setResetTxt" class="lbl set-jp-txt">Bestweiten, Sterne, Meisterschaft</span><button type="button" id="btnReset" class="btn btn-secondary btn-s"><span>Zurücksetzen</span></button></div>
+        <div class="set-row"><span id="setResetTxt" class="lbl set-reset-txt">Bestweiten, Sterne und Meisterschaft löschen</span><button type="button" id="btnReset" class="btn btn-secondary btn-s"><span>Zurücksetzen</span></button></div>
       </div>
       <div class="set-col">
         <span class="kicker">SPIEL</span>
@@ -9815,7 +9820,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.48";
+  const VERSION = "0.49";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -10155,7 +10160,30 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     "hintSub", "toast", "toastTitle", "toastSub", "replayBadge", "replayHint", "btnPause", "hillStats", "tjFlag", "tjName"].forEach((id) => { el[id] = $(id); });
   const SCREENS = { title: "scrTitle", tutorial: "scrTutorial", result: "scrResult", setup: "scrSetup", board: "scrBoard", hand: "scrHand", final: "scrFinal", arcade: "scrArcade", chal: "scrChal", champ: "scrChamp", multi: "scrMulti", tour: "scrTour" };
   const vis = (e, on) => { if (e.hidden === on) e.hidden = !on; };
-  const txt = (e, s) => { if (e.textContent !== s) e.textContent = s; };
+  // Zahl und Einheit (75 %, 148,5 m, 142,4 P.) und Wort und Zahl (HS 140, Luke 12, Platz 3) nie trennen: geschütztes Leerzeichen
+  const NB_U = /(\d) (?=(?:%|°|km\/h|m\/s|min|ms|m|s|P\.|Pkt\.?|Punkte?|PUNKTE?|Springer|SPRINGER|Schanzen|SCHANZEN|Sprünge|Versuche|Sterne)(?![A-Za-zÄÖÜäöüß]))/g;
+  const NB_W = /(^|[^A-Za-zÄÖÜäöüß])(HS|K|Luke|LUKE|Platz|PLATZ|Rang|Durchgang|DURCHGANG|Sprung|SPRUNG|Versuch|VERSUCH|Schanze|SCHANZE|Tournee|TOURNEE|Nr\.|Aufwind|Rückenwind|Wind|Standard) (?=[\d−+])/g;
+  const nb = (s) => (typeof s === "string" && /\d/.test(s) ? s.replace(NB_U, "$1\u00a0").replace(NB_W, "$1$2\u00a0") : s);
+  const txt = (e, s) => { s = nb(s); if (e.textContent !== s) e.textContent = s; };
+  // dasselbe für die Vorlage und für Text aus innerHTML: nur Textknoten, nie Attribute oder SVG-Pfade
+  (function nbWatch() {
+    const skip = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, INPUT: 1 };
+    const fix = (t) => { const p = t.parentNode; if (!p || skip[p.nodeName]) return; const v = nb(t.data); if (v !== t.data) t.data = v; };
+    const walk = (n) => {
+      if (n.nodeType === 3) { fix(n); return; }
+      if (n.nodeType !== 1 || skip[n.nodeName]) return;
+      const w = document.createTreeWalker(n, NodeFilter.SHOW_TEXT);
+      for (let t = w.nextNode(); t; t = w.nextNode()) fix(t);
+    };
+    try {
+      walk(document.body);
+      const mo = new MutationObserver((recs) => {
+        for (const r of recs) { if (r.type === "characterData") fix(r.target); else for (const n of r.addedNodes) walk(n); }
+        mo.takeRecords();   // die eigenen Änderungen nicht noch einmal ansehen
+      });
+      mo.observe(document.body, { childList: true, subtree: true, characterData: true });
+    } catch (e) { /* ohne geht es auch */ }
+  })();
 
   // ------------------------------------------------------------------ Bühne & Skalierung
   let W = 844, Hs = 390, rotated = false, uiS = 1, origin = { x: 0, y: 0 };
@@ -14396,7 +14424,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     vis($("btnOlSave"), !saved && !off); vis($("btnOlNow"), saved && !off); vis($("btnOlStop"), saved);
     vis($("olLoadBox"), !!olLoad);
     $("tgOnline").setAttribute("aria-checked", String(!S.noOnline));
-    txt($("olPriv"), "Freiwillig und nur, wenn du es nutzt: Für Gruppen speichern wir Name, Nation, Farben und Sprünge, sichtbar für alle mit dem Gruppen-Link, für den Online-Spielstand deinen Spielstand. Gespeichert bei Supabase Inc. auf Servern in Frankfurt (Art. 6 Abs. 1 lit. b DSGVO). Gruppen werden 30 Tage nach dem letzten Sprung gelöscht, Spielstände nach 13 Monaten ohne Nutzung. Deinen Code speichern wir nur als Prüfwert.");
+    txt($("olPriv"), "Freiwillig und nur, wenn du es nutzt: Für Gruppen speichern wir Name, Nation, Farben und Sprünge, sichtbar für alle mit dem Gruppen-Link, für den Online-Spielstand deinen Spielstand. Gespeichert bei Supabase Inc. auf Servern in Frankfurt (Art. 6 Abs. 1 lit. b DSGVO). Gruppen und Tourneen werden 30 Tage nach dem letzten Sprung gelöscht, dein Eintrag mit Namen ebenso, mit Online-Spielstand erst nach 13 Monaten ohne Nutzung. Deinen Code speichern wir nur als Prüfwert.");
   }
   on("btnOnline", () => openOnline(overlay === "info" ? "info" : null));
   on("btnOlDone", () => closeOnline());
