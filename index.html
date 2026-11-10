@@ -1169,6 +1169,155 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 .res-left.fit3 #rsGateRow { display: none; }
 
 
+/* ================================================================ Gruppe: Sprünge mit Reaktionen, Gespräch, Sprungkarte, Ansehen mit Zeitleiste */
+.chal.grp { width: 790px; max-width: calc(100% - 24px); height: min(370px, calc(100% - 16px)); gap: 8px; padding: 14px 18px; }
+.ch-grp { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); gap: 14px; flex: 1 1 auto; min-height: 0; }
+.ch-grp[hidden] { display: none; }
+.cg-main { display: flex; flex-direction: column; gap: 4px; min-height: 0; }
+.cg-main > .ch-lbl { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cg-rows { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 3px; touch-action: pan-y; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding-right: 2px; }
+.cg-side { display: flex; flex-direction: column; gap: 5px; min-height: 0; padding: 8px 10px; border-radius: 4px; background: var(--row); }
+.cg-hill { display: flex; flex-direction: column; gap: 1px; padding-bottom: 6px; margin-bottom: 2px; border-bottom: 1px dotted var(--line); }
+.cg-hill b { font-family: var(--font-display); font-weight: 700; font-size: 16px; line-height: 19px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cg-hill span { font-size: 12px; line-height: 15px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cg-feed { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; touch-action: pan-y; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.cg-empty { margin: 4px 0; font-size: 13px; line-height: 17px; color: var(--text-2); }
+.ch-add { padding: 0 14px 0 10px; gap: 4px; }
+.chal.grp .hd-btns { margin-top: 0; }
+.chal.grp .ch-other { margin-left: auto; }
+
+/* Sprung als Zeile: oben Springer, Weite, Punkte; darunter Reaktionen und der letzte Kommentar; rechts ▶ */
+.gj { display: grid; grid-template-columns: minmax(0, 1fr) 42px; gap: 5px; flex: none; }
+.gj-main { display: grid; grid-template-columns: 22px minmax(0, 1fr) 62px 48px; grid-template-rows: 20px 18px; column-gap: 6px; align-items: center; padding: 3px 8px 3px 6px;
+  border: 0; border-radius: 4px; background: var(--row); color: inherit; font: inherit; text-align: left; cursor: pointer; min-width: 0; }
+.gj-main:active { background: var(--row-2); }
+.gj.me .gj-main { background: var(--hi-soft); }
+.gj-r { grid-row: 1 / span 2; font-family: var(--font-display); font-weight: 700; font-size: 17px; text-align: center; color: var(--muted); }
+.gj.me .gj-r { color: var(--text); }
+.gj-who { display: flex; align-items: center; gap: 5px; min-width: 0; font-size: 14px; white-space: nowrap; }
+.gj-who .flag { flex: none; }
+.gj-nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.gj-who .you { flex: none; }
+.gj-d, .gj-p { text-align: right; font-family: var(--font-display); font-weight: 700; font-size: 15px; white-space: nowrap; }
+.gj-p { color: var(--muted); font-size: 14px; }
+.gj-t { grid-column: 2 / span 3; display: flex; align-items: center; gap: 4px; min-width: 0; overflow: hidden; white-space: nowrap; }
+.gj-c { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 12px; line-height: 16px; color: var(--text-2); }
+.gj-c b { font-weight: 700; color: var(--text); }
+.gj-c.dim { color: var(--muted); font-style: italic; }
+.tlk-n { display: inline-flex; align-items: center; gap: 2px; flex: none; height: 17px; padding: 0 6px 0 4px; border-radius: 9px; background: var(--row-2); font-size: 12px; line-height: 17px; color: var(--text); }
+.tlk-n b { font-family: var(--font-display); font-weight: 700; font-size: 11.5px; }
+.tlk-n svg { margin: 0 1px; }
+.tlk-n.mine { box-shadow: inset 0 0 0 1.5px var(--hi); }
+.gj-play { display: grid; place-items: center; padding: 0; border: 0; border-radius: 4px; background: var(--accent); color: var(--ink); cursor: pointer; }
+.gj-play:active { transform: scale(0.94); }
+.gj-play.off { background: var(--row); color: var(--muted); opacity: 0.6; cursor: default; }
+.gj-play svg { margin-left: 2px; }
+
+/* Gespräch: wer zu wessen Sprung, Moment im Flug, Reaktion oder Text */
+.tlk-row { display: flex; flex-direction: column; gap: 0; flex: none; padding: 3px 6px; border: 0; border-radius: 3px; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; min-width: 0; }
+.tlk-row:active { background: var(--row-2); }
+.tlk-row.old { opacity: 0.6; cursor: default; }
+.tlk-h { display: flex; align-items: baseline; gap: 0; min-width: 0; font-size: 11.5px; line-height: 15px; color: var(--muted); white-space: nowrap; }
+.tlk-h b { flex: none; color: var(--text); font-weight: 700; }
+.tlk-to { min-width: 0; margin-left: 4px; overflow: hidden; text-overflow: ellipsis; }
+.tlk-at { flex: none; margin-left: 6px; padding: 0 4px; border-radius: 3px; background: var(--row-2); font-size: 10.5px; line-height: 14px; color: var(--text-2); }
+.tlk-b { font-size: 13px; line-height: 17px; color: var(--text); overflow-wrap: anywhere; }
+.tlk-e { font-size: 19px; line-height: 22px; }
+
+/* Sprungkarte */
+.jcard { width: 660px; max-width: calc(100% - 24px); height: min(352px, calc(100% - 16px)); gap: 10px; padding: 14px 18px; }
+.jc-head { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.jc-head .rk-medal { width: 38px; height: 38px; font-size: 19px; }
+.jc-who { display: flex; flex-direction: column; gap: 1px; flex: 1 1 auto; min-width: 0; }
+.jc-name { display: flex; align-items: center; gap: 7px; min-width: 0; font-family: var(--font-display); font-weight: 800; font-size: 24px; line-height: 28px; text-transform: uppercase; white-space: nowrap; }
+.jc-name .flag, .jc-name .you, .jc-name svg { flex: none; }
+.jc-nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.jc-sub { font-size: 13px; line-height: 17px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.jc-head .btn-plain { flex: none; }
+.jc-body { display: grid; grid-template-columns: 236px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); gap: 14px; flex: 1 1 auto; min-height: 0; }
+.jc-left { display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+.jc-left .btn { width: 100%; justify-content: center; }
+.jc-react { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.jc-emo { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; height: 54px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: var(--row); color: var(--text); font: inherit; cursor: pointer; }
+.jc-emo .jc-e { font-size: 25px; line-height: 30px; }
+.jc-emo b { font-family: var(--font-display); font-weight: 700; font-size: 13px; line-height: 15px; min-height: 15px; }
+.jc-emo.mine { background: var(--hi-soft); border-color: var(--hi); }
+.jc-emo.pop .jc-e { animation: emoPop 0.42s cubic-bezier(0.2, 0.9, 0.3, 1.4); }
+@keyframes emoPop { 0% { transform: scale(1); } 35% { transform: scale(1.45) rotate(-8deg); } 70% { transform: scale(0.92) rotate(4deg); } 100% { transform: scale(1); } }
+.jc-whor { margin: 0; font-size: 12.5px; line-height: 17px; color: var(--text-2); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+.jc-right { display: flex; flex-direction: column; gap: 8px; min-height: 0; padding: 8px; border-radius: 4px; background: var(--row); }
+.jc-list { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 7px; touch-action: pan-y; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding: 2px 2px 0; }
+.jc-c { display: flex; flex-direction: column; gap: 1px; flex: none; }
+.jc-ch { display: flex; align-items: center; gap: 6px; font-size: 12px; line-height: 15px; color: var(--muted); }
+.jc-ch b { color: var(--text); }
+.jc-c.me .jc-ch b { color: var(--hi); }
+.jc-del { margin-left: auto; display: grid; place-items: center; width: 26px; height: 22px; padding: 0; border: 0; border-radius: 3px; background: none; color: var(--muted); cursor: pointer; }
+.jc-del:active { background: var(--row-2); }
+.jc-cb { font-size: 14px; line-height: 18px; color: var(--text); overflow-wrap: anywhere; }
+.jc-empty { margin: 2px 0; font-size: 13px; line-height: 17px; color: var(--text-2); }
+.jc-form { display: flex; gap: 6px; flex: none; }
+.jc-form input, .wt-form input { flex: 1 1 auto; min-width: 0; height: 42px; padding: 0 10px; border-radius: 3px; border: 1px solid var(--line-2); background: var(--row); color: var(--text); font: inherit; font-size: 16px; }
+.wt-form input { background: rgba(255, 255, 255, 0.08); }
+.jc-form .btn { flex: none; height: 42px; font-size: 16px; padding: 0 12px; }
+
+/* Ansehen: Reaktionen rechts, Zeitleiste unten, Einträge steigen über der Leiste auf */
+.wt-side { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; pointer-events: auto; }
+.wt-side[hidden] { display: none; }
+.wt-b { display: grid; place-items: center; width: 50px; height: 50px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: var(--panel-strong); color: var(--text); font-size: 25px; line-height: 1; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25); }
+.wt-b:active { transform: scale(0.9); }
+.wt-end { position: absolute; right: 25px; top: 12px; display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: var(--panel-strong); color: var(--text); cursor: pointer; pointer-events: auto; }
+.wt-end[hidden] { display: none; }
+.wt-line { position: absolute; left: 24px; right: 92px; bottom: 26px; height: 22px; pointer-events: none; }
+.wt-line[hidden] { display: none; }
+.wt-track { position: absolute; left: 0; right: 0; bottom: 8px; height: 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.3); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25); }
+.wt-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 3px; background: var(--hi); }
+.wt-land { position: absolute; top: -5px; bottom: -5px; width: 2px; margin-left: -1px; border-radius: 1px; background: var(--text); opacity: 0.75; }
+.wt-marks { position: absolute; inset: 0; }
+.wt-m { position: absolute; top: 50%; transform: translate(-50%, -50%); font-style: normal; font-size: 15px; line-height: 1; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35)); }
+.wt-m.c { width: 10px; height: 10px; border-radius: 50%; background: var(--gold); border: 2px solid var(--panel-strong); }
+.wt-m.me { filter: drop-shadow(0 0 2px var(--hi)); }
+.wt-pops { position: absolute; left: 0; right: 0; bottom: 0; height: 0; }
+.wt-pop { position: absolute; display: flex; align-items: center; gap: 6px; max-width: 280px; height: 32px; padding: 0 12px 0 10px; border-radius: 16px; border: 1px solid var(--line);
+  background: var(--panel-strong); color: var(--text); white-space: nowrap; transform: translateX(-50%); animation: wtPop 2s ease-out forwards; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25); }
+.wt-pop.me { border-color: var(--hi); }
+.wt-pop .wt-pe { font-size: 22px; line-height: 1; }
+.wt-pop b { flex: none; font-family: var(--font-display); font-weight: 700; font-size: 12px; letter-spacing: 0.06em; }
+.wt-pop.c span { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 14px; }
+@keyframes wtPop { 0% { opacity: 0; transform: translate(-50%, 12px) scale(0.6); } 9% { opacity: 1; transform: translate(-50%, 0) scale(1.08); } 15% { transform: translate(-50%, 0) scale(1); }
+  78% { opacity: 1; transform: translate(-50%, -6px); } 100% { opacity: 0; transform: translate(-50%, -28px); } }
+.wt-form { position: absolute; left: 50%; top: 62px; transform: translateX(-50%); width: min(600px, calc(100% - 150px)); display: flex; align-items: center; gap: 8px; padding: 8px 10px; pointer-events: auto; }
+.wt-form[hidden] { display: none; }
+.wt-at { flex: none; font-family: var(--font-display); font-weight: 700; font-size: 15px; white-space: nowrap; color: var(--hi); }
+.wt-form .btn { flex: none; height: 42px; font-size: 16px; padding: 0 14px; }
+.wt-form .btn-plain { flex: none; font-size: 14px; }
+
+/* Ergebnis in der Gruppe: links das Wesentliche, rechts die Gruppe */
+#scrResult.grpres .res-left { width: 336px; }
+#scrResult.grpres .res-right { left: 376px; }
+#scrResult.grpres .res-rows { display: none; }
+#scrResult.grpres .res-big { gap: 10px; }
+#scrResult.grpres .res-dist { font-size: 42px; line-height: 48px; }
+#scrResult.grpres .res-pts { font-size: 21px; }
+#scrResult.grpres #rsListHead { display: none; }
+#scrResult.grpres #rsList { gap: 3px; }
+.rs-grpbox { display: flex; flex-direction: column; gap: 8px; flex: 1 1 auto; min-height: 0; }
+.rs-grpbox[hidden] { display: none; }
+.rs-mini { margin: 0; font-size: 13px; line-height: 17px; color: var(--text-2); }
+.rs-count { margin: 0; padding: 7px 10px; border-radius: 4px; background: var(--row); border-left: 3px solid var(--muted); font-size: 14px; line-height: 18px; font-weight: 600; color: var(--text); }
+.rs-count.ok { border-left-color: var(--good); }
+.rs-count.no { border-left-color: var(--warn); }
+.rs-count.dim { color: var(--text-2); font-weight: 500; }
+#rsAna2 { margin: auto 0 0; }
+.rs-tkl { margin: 6px 0 0 2px; }
+
+/* Tournee mit bis zu acht Schanzen: Listen scrollen, Knöpfe bleiben stehen */
+.tour { height: min(370px, calc(100% - 16px)); overflow: hidden; }
+.to-body { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+.to-legs, .to-board { max-height: 100%; overflow-y: auto; touch-action: pan-y; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.tour .hd-btns .ch-add { margin-left: auto; }
+.ad-hill { margin: 2px 0; }
+.ad-hill .mu-hill-n { font-size: 17px; }
+
 </style>
 </head>
 <body>
@@ -1269,6 +1418,11 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   <div id="toast" class="panel toast" hidden><span id="toastTitle" class="toast-title"></span><span id="toastSub" class="toast-sub"></span></div>
   <div id="replayBadge" class="replay-badge" hidden><span class="rec"></span><span id="rpTxt">WIEDERHOLUNG</span></div>
   <div id="replayHint" class="hint-wrap" hidden><div class="hint panel"><span class="ico" data-icon="tap" data-size="22"></span><span>Tippen zum Beenden</span></div></div>
+  <!-- Sprung eines anderen ansehen: reagieren und kommentieren wie bei SoundCloud (zum Moment im Flug), Zeitleiste mit den Einträgen der anderen -->
+  <div id="wtSide" class="wt-side" role="group" aria-label="Reagieren" hidden></div>
+  <button type="button" id="btnWtEnd" class="wt-end" aria-label="Ansehen beenden" hidden><span class="ico" data-icon="x" data-size="20"></span></button>
+  <div id="wtLine" class="wt-line" hidden><div class="wt-track"><i id="wtFill" class="wt-fill"></i><i id="wtLand" class="wt-land"></i><div id="wtMarks" class="wt-marks"></div></div><div id="wtPops" class="wt-pops"></div></div>
+  <form id="wtForm" class="wt-form panel" autocomplete="off" hidden><span id="wtAt" class="wt-at">bei 0,0 s</span><input id="wtIn" type="text" maxlength="80" enterkeyhint="send" placeholder="Was sagst du dazu?" aria-label="Kommentar zu diesem Moment"><button type="submit" class="btn btn-primary btn-s"><span>Senden</span></button><button type="button" id="btnWtX" class="btn-plain">Abbrechen</button></form>
 </div>
 
 <!-- ============ Startbildschirm ============ -->
@@ -1366,6 +1520,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       <div class="res-sep"></div>
       <div class="res-row res-total"><span id="rsTotalLbl" class="rr-l">Gesamt</span><div class="rr-m"></div><span id="rsTotal" class="num rr-p"></span></div>
     </div>
+    <div id="rsGrpBox" class="rs-grpbox" hidden><p id="rsMini" class="rs-mini"></p><p id="rsCount" class="rs-count"></p><div id="rsAna2" class="res-ana"></div></div>
   </div>
   <div class="res-right panel-strong">
     <div class="rr-head"><h2 id="rsListTitle" class="h2">Deine Sprünge</h2><div id="rsTabs" class="seg seg-s rs-tabs" role="tablist" aria-label="Ansicht"><button type="button" data-v="list">Stand</button><button type="button" data-v="ana">Analyse</button><button type="button" data-v="det">Details</button><button type="button" data-v="champ">Gesamt</button></div></div>
@@ -1436,6 +1591,17 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       <p id="chCond" class="ch-cond"></p>
       <p id="chNote" class="hd-text"></p>
     </div>
+    <div id="chGrp" class="ch-grp" hidden>
+      <div class="cg-main">
+        <span class="ch-lbl">SPRÜNGE · <span class="ch-live">LIVE</span> · <span id="cgN">0 SPRINGER</span></span>
+        <div id="cgRows" class="cg-rows"></div>
+      </div>
+      <div class="cg-side">
+        <div class="cg-hill"><b id="cgHill"></b><span id="cgSub"></span><span id="cgCond"></span></div>
+        <span class="ch-lbl">GESPRÄCH</span>
+        <div id="cgFeed" class="cg-feed"></div>
+      </div>
+    </div>
     <div id="chPaste" class="ch-have" hidden>
       <h2 class="h1 ch-title">Link einfügen</h2>
       <p class="hd-text">Kopiere den Link aus WhatsApp und füge ihn hier ein.</p>
@@ -1446,6 +1612,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     <div class="hd-btns">
       <button type="button" id="btnChBack" class="btn btn-secondary btn-s"><span>Später</span></button>
       <button type="button" id="btnChOther" class="btn-plain ch-other">Anderer Link</button>
+      <button type="button" id="btnChAdd" class="btn btn-secondary btn-s ch-add" hidden><span class="ico" data-icon="plus" data-size="18"></span><span>Schanze</span></button>
       <button type="button" id="btnChGo" class="btn btn-primary btn-wide"><span id="chGoTxt">Annehmen</span><span class="ico" data-icon="arrow-right"></span></button>
     </div>
   </div>
@@ -1488,6 +1655,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     <p id="toNote" class="hd-text"></p>
     <div class="hd-btns">
       <button type="button" id="btnToShare" class="btn btn-secondary btn-s"><span>Link teilen</span></button>
+      <button type="button" id="btnToAdd" class="btn btn-secondary btn-s ch-add"><span class="ico" data-icon="plus" data-size="18"></span><span>Schanze</span></button>
       <button type="button" id="btnToGo" class="btn btn-primary btn-wide"><span id="toGoTxt">Springen</span><span class="ico" data-icon="arrow-right"></span></button>
     </div>
   </div>
@@ -1788,6 +1956,39 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     <h2 id="akTitle" class="h1">Gegeneinander, live</h2>
     <p id="akTxt" class="hd-text"></p>
     <div class="hd-btns"><button type="button" id="btnAkNo" class="btn btn-secondary btn-s"><span>Nur Link</span></button><button type="button" id="btnAkYes" class="btn btn-primary btn-wide"><span>Online-Gruppe</span><span class="ico" data-icon="arrow-right"></span></button></div>
+  </div>
+</section>
+
+<!-- ============ Sprungkarte: ansehen, reagieren, kommentieren ============ -->
+<section id="scrJcard" class="screen screen-dim3 center" hidden>
+  <div class="dialog jcard panel-strong" role="dialog" aria-labelledby="jcName">
+    <div class="jc-head">
+      <span id="jcRank" class="rk-medal"></span>
+      <div class="jc-who"><span id="jcName" class="jc-name"></span><span id="jcSub" class="jc-sub"></span></div>
+      <button type="button" id="btnJcBack" class="btn-plain">Zurück</button>
+    </div>
+    <div class="jc-body">
+      <div class="jc-left">
+        <button type="button" id="btnJcWatch" class="btn btn-primary btn-s"><span class="ico" data-icon="play" data-size="20"></span><span id="jcWatchTxt">Sprung ansehen</span></button>
+        <div id="jcReact" class="jc-react" role="group" aria-label="Reagieren"></div>
+        <p id="jcWhoR" class="jc-whor"></p>
+      </div>
+      <div class="jc-right">
+        <div id="jcList" class="jc-list"></div>
+        <form id="jcForm" class="jc-form" autocomplete="off"><input id="jcIn" type="text" maxlength="80" enterkeyhint="send" placeholder="Schreib was dazu …" aria-label="Kommentar"><button type="submit" id="btnJcSend" class="btn btn-secondary btn-s"><span>Senden</span></button></form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Gruppe um eine Schanze erweitern ============ -->
+<section id="scrAdd" class="screen screen-dim3 center" hidden>
+  <div class="dialog askdlg panel-strong" role="dialog" aria-labelledby="adTitle">
+    <span class="kicker">GRUPPE ERWEITERN</span>
+    <h2 id="adTitle" class="h1">Noch eine Schanze</h2>
+    <div class="mu-hill ad-hill"><button type="button" id="adPrev" class="ghost-btn" aria-label="Vorherige Schanze"><span class="ico" data-icon="chev-left" data-size="18"></span></button><span id="adHill" class="mu-hill-n"></span><button type="button" id="adNext" class="ghost-btn" aria-label="Nächste Schanze"><span class="ico" data-icon="chev-right" data-size="18"></span></button></div>
+    <p id="adTxt" class="hd-text"></p>
+    <div class="hd-btns"><button type="button" id="btnAdNo" class="btn btn-secondary btn-s"><span>Abbrechen</span></button><button type="button" id="btnAdYes" class="btn btn-primary btn-wide"><span id="adGoTxt">Dazunehmen</span><span class="ico" data-icon="arrow-right"></span></button></div>
   </div>
 </section>
 
@@ -10383,7 +10584,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.53.1";
+  const VERSION = "0.54";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -10453,6 +10654,9 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     pad: '<circle cx="12" cy="12" r="8.8"/><path d="M12 10v4M10 12h4" opacity="0.45"/><circle cx="14.6" cy="9.4" r="2.6" fill="currentColor" stroke="none"/>',
     replay: '<path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/>',
     play: '<path d="M8 5.5v13l10-6.5z" fill="currentColor"/>',
+    chat: '<path d="M4.5 5.5h15a1.5 1.5 0 0 1 1.5 1.5v8.5a1.5 1.5 0 0 1-1.5 1.5H10l-4.5 3.5v-3.5h-1A1.5 1.5 0 0 1 3 15.5V7a1.5 1.5 0 0 1 1.5-1.5z"/>',
+    plus: '<path d="M12 5v14"/><path d="M5 12h14"/>',
+    x: '<path d="M6 6l12 12"/><path d="M18 6L6 18"/>',
     "arrow-right": '<path d="M5 12h14"/><path d="M13 6l6 6-6 6"/>',
     home: '<path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/><path d="M10 20v-5h4v5"/>',
     info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.6" r="1.1" fill="currentColor" stroke="none"/>',
@@ -10528,7 +10732,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     chFmt: "tour", chLevel: "mid", chWind: "var", champ: null, party: null, champBest: {},
     gaugeLeft: false, gaugeSide: "off", flv: 4, hand: "right", sens: 1, ghosts: {}, tops: {}, tod: "auto", missions: {}, daily: null, look: null, expert: false, beginner: false,
     oc: null, osave: false, oat: "", groups: [], tours: [], opend: [], noOnline: false, onlineAsked: false, qdpr: 0, fps: false, n28: null,
-    taler: 0, gear: { ski: 0, suit: 0, bind: 0 }, waxes: [], wax: "u", svc: false, paid: {}, tlog: [], eco: 0 };
+    taler: 0, gear: { ski: 0, suit: 0, bind: 0 }, waxes: [], wax: "u", svc: false, paid: {}, tlog: [], eco: 0, tseen: {} };
   let S = JSON.parse(JSON.stringify(DEF));
   try {
     const raw = localStorage.getItem(KEY);
@@ -10573,6 +10777,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     keep(o.tops, (b) => isObj(b) && num(b.pts));
     keep(o.ghosts, (g) => isObj(g) && num(g.d) && Array.isArray(g.path));
     keep(o.gates, num);
+    keep(o.tseen, (v) => num(v) && v >= 0);
+    { const ks = Object.keys(o.tseen); if (ks.length > 24) for (const k of ks.slice(0, ks.length - 24)) delete o.tseen[k]; }
     keep(o.compBest, (b) => isObj(b) && num(b.place));
     keep(o.champBest, (b) => isObj(b) && num(b.place));
     keep(o.missions, (v) => num(v) && v >= 0 && v <= 3 && Math.round(v) === v);
@@ -11096,6 +11302,10 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     vis($("scrOnline"), name === "online");
     vis($("scrAsk"), name === "ask");
     vis($("scrShop"), name === "shop");
+    vis($("scrJcard"), name === "jcard");
+    vis($("scrAdd"), name === "add");
+    if (name === "jcard") fillJcard();
+    if (name === "add") fillAdd();
     if (name === "settings") fillSettings();
     if (name === "shop") fillShop();
     if (name === "online") fillOnline();
@@ -11467,7 +11677,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   function onAction(ev) {
     Snd.ensure();
     if (overlay) return false;
-    if (mode === "replay") { endReplay(); return true; }
+    if (mode === "replay") { if (rp && rp.pause) wtClose(); else endReplay(); return true; }
     if (mode !== "jump" || !J || jc.finished) return false;
     if (J.phase === "gate") { startInrun(); return true; }
     if (jc.freeze === "takeoff" && J.phase === "inrun") { jc.freeze = null; takeoffTap(); return true; }
@@ -12127,26 +12337,23 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
         sub = rk === 1 ? `${fmt1(me.total - others[0].total)} Punkte vor ${others[0].name}` : `${fmt1(hs[0].total - me.total)} Punkte hinter ${hs[0].name}`;
       }
     }
-    // Gruppe: deutlich sagen, ob dieser Sprung zählt (es zählt der beste nach Punkten; ein Sturz nie)
+    // Gruppe: der Platz (ob dieser Sprung zählt, steht links groß); auch nach einem Sturz, wenn es schon einen besten gibt
     const grpMe = ctxMode === "chal" && chal && chal.grp ? chal.board.find((x) => x.me) : null;
     const notCounted = grpMe && (r.kind === "fall" || (r.grpState === "ok" && chalPts(r.total) < grpMe.p));
-    const why = !notCounted ? "" : r.kind === "fall" ? `Sturz zählt nicht · dein bester: ${fmt1(grpMe.p)}` : r.dist > grpMe.d ? "Mehr Weite, weniger Punkte: zählt nicht" : `Zählt nicht · dein bester: ${fmt1(grpMe.p)}`;
     const newBest = !notCounted && r.grpState === "ok" && r.grpPrev != null && chalPts(r.total) > r.grpPrev;
     const tme = ctxMode === "chal" && chal && chal.tour && tour && (r.grpState === "ok" || notCounted) ? tour.tot.find((x) => x.me) : null;
     if (tme) {
       const T = tour.tot, sec = T.find((x) => !x.me && x.r >= tme.r), lead = T[0];
       rk = tme.r;
       head = rk === 1 ? "Du führst die Tournee" : `Tournee: Platz ${rk} von ${tour.total}`;
-      sub = notCounted ? why
-        : (newBest ? "Neue Bestleistung · " : grpMe ? `Hier Platz ${grpMe.r} · ` : "") + (rk === 1 ? (sec ? `${fmt1(tme.p - sec.p)} Punkte vor ${sec.n}` : "als Erster dabei") : `${fmt1(lead.p - tme.p)} Punkte hinter ${lead.n}`);
+      sub = (newBest ? "Neue Bestleistung · " : grpMe ? `Hier Platz ${grpMe.r} · ` : "") + (rk === 1 ? (sec ? `${fmt1(tme.p - sec.p)} Punkte vor ${sec.n}` : "als Erster dabei") : `${fmt1(lead.p - tme.p)} Punkte hinter ${lead.n}`);
     } else if (ctxMode === "chal" && chal && chal.grp && (r.grpState === "ok" || notCounted)) {
       const b = chal.board, me = grpMe;
       if (me) {
         rk = me.r;
         head = rk === 1 ? "Du führst die Gruppe" : `Platz ${rk} von ${chal.total}`;
         const sec = b.find((x) => x.r === 2), lead = b[0];
-        sub = notCounted ? why
-          : (newBest ? "Neue Bestleistung · " : "") + (rk === 1 ? (sec ? `${fmt1(me.p - sec.p)} Punkte vor ${sec.n}` : "als Erster in der Gruppe") : `${fmt1(lead.p - me.p)} Punkte hinter ${lead.n}`);
+        sub = (newBest ? "Neue Bestleistung · " : "") + (rk === 1 ? (sec ? `${fmt1(me.p - sec.p)} Punkte vor ${sec.n}` : "als Erster in der Gruppe") : `${fmt1(lead.p - me.p)} Punkte hinter ${lead.n}`);
       }
     }
     rsRankOn = !!rk;
@@ -12331,7 +12538,15 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     txt($("rsTip"), r.tip);
     const grpMode = ctxMode === "chal" && !!chal && !!chal.grp;   // in der Gruppe braucht die Rangliste den Platz
     vis($("rsTip"), ctxMode !== "mission" && ctxMode !== "comp" && !grpMode);
-    vis($("rsAna"), ctxMode !== "comp" && !(ctxMode === "mission" && ms && ms.m.n28));   // 1928: Platz für die Tabelle
+    vis($("rsAna"), ctxMode !== "comp" && !(ctxMode === "mission" && ms && ms.m.n28) && !grpMode);   // 1928: Platz für die Tabelle
+    // Gruppe: links nur das Wesentliche (Weite, Punkte, zählt er?, Analyse), die ganze Wertung steht unter „Details“; rechts die Gruppe
+    $("scrResult").classList.toggle("grpres", grpMode);
+    vis($("rsGrpBox"), grpMode);
+    if (grpMode) {
+      txt($("rsMini"), `Weite ${fmt1(r.distPts)} · Haltung ${fmt1(r.style)} · Wind ${fmtS(r.windPts)}${Math.abs(r.gatePts || 0) >= 0.05 ? ` · Luke ${fmtS(r.gatePts)}` : ""}`);
+      $("rsAna2").innerHTML = $("rsAna").innerHTML;
+      grpCountLine(r);
+    }
     // Platzierung groß oben, Ansichten: Stand, Details zum Sprung, in der Meisterschaft die Gesamtwertung live
     rankHeader(r);
     $("rsDet").innerHTML = detailsHtml(r);
@@ -12887,9 +13102,9 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const ta = $("dyShareTxt"); ta.value = text; vis(ta, true); ta.focus(); ta.select();
   }
   let snackT = 0;
-  function showToastSafeText(t, sub) {
+  function showToastSafeText(t, sub, ms) {
     const n = $("snack"); n.innerHTML = `<b>${esc(t)}</b><span>${esc(sub)}</span>`; vis(n, true);
-    clearTimeout(snackT); snackT = setTimeout(() => vis(n, false), 1600);
+    clearTimeout(snackT); snackT = setTimeout(() => vis(n, false), ms || 1600);
   }
 
   // ------------------------------------------------------------------ Herausforderung per Link
@@ -13202,16 +13417,20 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const Hh = Hill.getHill(b.h), nat = (c) => (NATIONS.some((y) => y[0] === c) ? c : "");
     const board = (Array.isArray(b.b) ? b.b : []).filter((x) => x && typeof x === "object").map((x) => ({
       r: Math.max(1, Math.round(+x.r) || 1), n: String(x.n || "SPRINGER").slice(0, 12), c: nat(x.c), d: clamp(+x.d || 0, 0, 400), p: clamp(+x.p || 0, -100, 500),
-      k: KIND_SHORT[x.k] ? x.k : "twofoot", x: Math.max(1, Math.round(+x.x) || 1), me: x.me === true, l: lookDecode(x.l) }));
+      k: KIND_SHORT[x.k] ? x.k : "twofoot", x: Math.max(1, Math.round(+x.x) || 1), me: x.me === true, l: lookDecode(x.l), id: isRid(x.id) ? x.id : null }));
     const lead = board[0] || { n: "SPRINGER", c: "", d: 0, p: 0, k: "twofoot" };
     let path = null;
     try { path = b.gh ? ghostUnpack2(String(b.gh)) : null; } catch (e) { path = null; }
-    return {
+    const c = {
       grp: b.g, h: b.h, g: clamp(Math.round(+b.gate) || Hh.refGate, 1, Hh.gates), w: WIND_NAME[b.w] ? b.w : "var",
       s: Number.isFinite(+b.s) ? Math.abs(Math.round(+b.s)) % 2147483647 : 1, t: TOD_NAME[b.t] ? b.t : "evening",
       n: lead.n, c: lead.c, d: lead.d, p: lead.p, k: lead.k, path, r: [],
       tries: keep ? keep.tries : 0, best: keep ? keep.best : null, ghosts: keep ? keep.ghosts : null, board, total: Math.max(board.length, Math.round(+b.n) || 0),
+      // neuester Eintrag im Gespräch (ändert er sich, wird das Gespräch neu geladen); gehört die Gruppe zu einer Tournee, deren Code
+      tk: b.tk != null && Number.isFinite(+b.tk) ? Math.max(0, Math.round(+b.tk)) : 0, tourCode: OL.groupOk(b.tour) ? b.tour : null,
     };
+    if (keep && keep.tour) c.tour = keep.tour;   // Schanze einer Tournee bleibt es auch nach dem Nachladen
+    return c;
   }
   function rememberGroup(c) {
     const me = c.board.find((x) => x.me);
@@ -13232,10 +13451,15 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
         if (mode === "chal" && chalPaste) fillGroupList();
         return;
       }
+      if (c.tourCode) {   // inzwischen ist eine Schanze dazugekommen: aus der Gruppe ist eine Tournee geworden (gleicher Link)
+        S.groups = S.groups.filter((x) => x.g !== code); saveLocal();
+        grpBusy = false; openTourCode(c.tourCode); return;
+      }
       rememberGroup(c);
       openChal(c);
       flushPending();
       loadGhosts(c.grp);
+      talkSync(c);
     } catch (e) { onlineFail(e, "GRUPPE NICHT GELADEN"); }
     finally { grpBusy = false; }
   }
@@ -13267,7 +13491,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const nat = (c) => (NATIONS.some((y) => y[0] === c) ? c : "");
     const tot = (Array.isArray(b.tot) ? b.tot : []).filter((x) => x && typeof x === "object").map((x) => ({
       r: Math.max(1, Math.round(+x.r) || 1), n: String(x.n || "SPRINGER").slice(0, 12), c: nat(x.c), p: clamp(+x.p || 0, -400, 2000), d: clamp(+x.d || 0, 0, 1600),
-      k: clamp(Math.round(+x.k) || 0, 0, 4), me: x.me === true, l: lookDecode(x.l) }));
+      k: clamp(Math.round(+x.k) || 0, 0, 8), me: x.me === true, l: lookDecode(x.l) }));
     legs.forEach((c, i) => {
       c.tour = { t: b.t, leg: i + 1, n: legs.length };
       const old = keep && keep.legs[i];
@@ -13319,10 +13543,11 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   }
   function fillTour() {
     const t = tour, n = t.legs.length, nx = tourNextLeg(null);
-    txt($("toTitle"), "Mini-Tournee");
-    $("toLegs").innerHTML = `<span class="ch-lbl">SCHANZEN · ANTIPPEN ZUM SPRINGEN</span>` + t.legs.map((c, i) => {
+    txt($("toTitle"), n > 4 ? "Tournee" : "Mini-Tournee");
+    vis($("btnToAdd"), onlineReady() && n < 8);
+    $("toLegs").innerHTML = `<span class="ch-lbl">SCHANZEN · ANTIPPEN ZUM ÖFFNEN</span>` + t.legs.map((c, i) => {
       const mine = c.board.find((x) => x.me), lead = c.board[0], Hh = Hill.getHill(c.h);
-      return `<button type="button" class="to-leg${mine ? " done" : ""}${i === nx ? " next" : ""}" data-leg="${i}" aria-label="${esc(Hh.name)} springen"><b>${i + 1}</b>` +
+      return `<button type="button" class="to-leg${mine ? " done" : ""}${i === nx ? " next" : ""}" data-leg="${i}" aria-label="${esc(Hh.name)} öffnen"><b>${i + 1}</b>` +
         `<span class="to-h">${esc(Hh.short || Hh.name)}<small>HS${Hh.HS}</small></span><span class="to-me">${mine ? `${fmt1(mine.p)} P.` : "offen"}</span>` +
         `<span class="to-lead">${lead ? `führt: ${lead.me ? "du" : esc(lead.n)} ${fmt1(lead.p)}` : "noch niemand gesprungen"}</span>${icon("arrow-right", 15)}</button>`;
     }).join("");
@@ -13356,6 +13581,54 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       tourPoll();
     }, 5000);
   }
+  // Gruppe oder Tournee um eine Schanze erweitern: Code und Link bleiben, aus einer Gruppe wird eine Tournee (höchstens 8 Schanzen).
+  // Vorschlag: eine Schanze, die noch nicht dabei ist, möglichst an einem anderen Ort.
+  let addCtx = null, addBusy = false;
+  function openAdd() {
+    const legs = mode === "tour" && tour ? tour.legs : chal && chal.tour && tour ? tour.legs : chal && chal.grp ? [chal] : [];
+    if (!legs.length || !onlineReady()) return;
+    if (legs.length >= 8) { showToastSafeText("HÖCHSTENS 8 SCHANZEN", "Mehr passen in eine Tournee nicht"); return; }
+    const have = legs.map((c) => c.h), places = have.map((k) => k.split("-")[0]);
+    const free = HILL_ORDER.filter((k) => !have.includes(k)), list = free.length ? free : HILL_ORDER.slice();
+    const fresh = list.filter((k) => !places.includes(k.split("-")[0]));
+    const pick = (fresh.length ? fresh : list)[Math.floor(Math.random() * (fresh.length || list.length))];
+    addCtx = { g: legs[0].grp, n: legs.length, list, i: Math.max(0, list.indexOf(pick)), from: mode };
+    setOverlay("add");
+  }
+  function fillAdd() {
+    if (!addCtx) return;
+    const Hh = Hill.getHill(addCtx.list[addCtx.i]);
+    txt($("adHill"), `${Hh.short || Hh.name} · HS${Hh.HS}`);
+    txt($("adTitle"), addCtx.n === 1 ? "Noch eine Schanze" : `Schanze ${addCtx.n + 1}`);
+    txt($("adTxt"), (addCtx.n === 1 ? "Aus der Gruppe wird eine Tournee mit Gesamtwertung. " : "") +
+      "Alle in der Gruppe sehen die neue Schanze sofort, der Link bleibt derselbe. Wind wie bisher, bisherige Sprünge bleiben.");
+  }
+  function cycleAdd(d) { if (!addCtx) return; addCtx.i = (addCtx.i + d + addCtx.list.length) % addCtx.list.length; fillAdd(); }
+  async function addGo() {
+    if (!addCtx || addBusy) return;
+    if (!S.name) { askName(() => { setOverlay("add"); addGo(); }); return; }
+    const k = addCtx.list[addCtx.i], Hh = Hill.getHill(k);
+    addBusy = true; txt($("adGoTxt"), "Wird angelegt …");
+    try {
+      const t = tourFrom(await ON.rpc("tm_group_extend", { p_code: myCode(), p_name: meName(), p_nation: S.nation || "", p_group: addCtx.g, p_hills: [k],
+        p_gates: [Hh.refGate], p_seeds: [1 + Math.floor(Math.random() * 2147483000)], p_look: lookCode(S.look) }), tour && tour.t === addCtx.g ? tour : null);
+      if (!t) { const e = new Error("leere Antwort"); e.status = 500; throw e; }
+      S.groups = S.groups.filter((x) => !t.legs.some((c) => c.grp === x.g)); saveLocal();
+      rememberTour(t);
+      addCtx = null; setOverlay(null);
+      openTour(t);
+      for (const c of t.legs) if (c.board.length) loadGhosts(c.grp);
+      showToastSafeText("SCHANZE IST DABEI", `${Hh.short || Hh.name}: alle sehen sie sofort, der Link bleibt gleich`, 2600);
+    } catch (e) { onlineFail(e, "GEHT GERADE NICHT"); }
+    finally { addBusy = false; txt($("adGoTxt"), "Dazunehmen"); }
+  }
+  // Schanze der Tournee öffnen: ihre Sprünge (ansehen, reagieren), von dort springen
+  function tourLeg(i) {
+    if (!tour || !tour.legs[i]) return;
+    clearTimeout(tourT);
+    openChal(tour.legs[i]);
+    loadGhosts(chal.grp); talkSync(chal);
+  }
   function tourJump(i) {
     if (!tour || !tour.legs[i]) return;
     clearTimeout(tourT);
@@ -13376,13 +13649,275 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
         try { path = ghostUnpack2(x.gh); } catch (e) { path = null; }
         const nat = NATIONS.some((y) => y[0] === x.c) ? x.c : "", n = String(x.n || "SPRINGER").slice(0, 12), lk = lookDecode(x.l);
         return path && path.length > 4 ? { r: Math.round(+x.r) || 0, n, c: nat, name: x.me === true ? "DU" : n, d: clamp(+x.d || 0, 0, 400), k: x.k === "telemark" ? "telemark" : "twofoot",
-          path, me: x.me === true, look: x.me === true ? lookFor(S.look) : lk ? lookFor(lk) : natLook(nat) } : null;
+          path, me: x.me === true, look: x.me === true ? lookFor(S.look) : lk ? lookFor(lk) : natLook(nat), id: isRid(x.id) ? x.id : null } : null;
       }).filter(Boolean);
       for (const c of T) c.ghosts = gs;
       // der Sprung wartet noch oben an der Luke: die Geister fliegen gleich mit
       if (mode === "jump" && jc && J && J.phase === "gate" && ctxMode === "chal" && chal && chal.grp === g && !(jc.ghosts && jc.ghosts.length) && gs.length) { jc.ghost = null; jc.ghosts = gs.slice(0, 6); }
-      if (mode === "chal" && !chalPaste && chal && chal.grp === g) fillChal();
+      if (mode === "chal" && !chalPaste && chal && chal.grp === g) renderGroup();
+      if (mode === "result" && ctxMode === "chal" && chal && chal.grp === g && lastResult && rsTab === "list" && rsFill) rsFill();
+      if (overlay === "jcard" && jcOpen && jcOpen.g === g) fillJcard();
     } catch (e) { /* ohne Geister weiter */ }
+  }
+
+  // ------------------------------------------------------------------ Gespräch: Reaktionen und Kommentare zu den Sprüngen einer Gruppe
+  // Wie bei SoundCloud: beim Ansehen zu einem Moment im Flug (Sekunden ab dem Absprung), sonst zum ganzen Sprung. Jede Reaktion gibt es
+  // je Spieler einmal (noch einmal tippen nimmt sie zurück). Je Gruppe die letzten 300 Einträge; verbessert sich jemand, gehört das
+  // Bisherige zum alten Sprung (old): es steht dann nur noch im Gespräch, nicht mehr an seinem neuen Sprung.
+  const TALK_EMO = { like: "👍", lol: "😂", wow: "😮", fire: "🔥" }, TALK_K = Object.keys(TALK_EMO);
+  const TALK_NAME = { like: "Daumen hoch", lol: "Lachen", wow: "Staunen", fire: "Feuer" };
+  const talk = {}, talkBusy = {};
+  function isRid(v) { return typeof v === "string" && /^[0-9a-f]{10}$/.test(v); }
+  function talkParse(L) {
+    const nat = (c) => (NATIONS.some((y) => y[0] === c) ? c : "");
+    return (Array.isArray(L) ? L : []).filter((x) => x && typeof x === "object" && isRid(x.j) && (TALK_EMO[x.k] || x.k === "c")).map((x) => ({
+      i: Math.max(0, Math.round(+x.i) || 0), j: x.j, k: x.k, b: x.k === "c" ? String(x.b || "").slice(0, 80) : "",
+      t: x.t == null || !Number.isFinite(+x.t) ? null : clamp(+x.t, 0, 60), a: String(x.a || "SPRINGER").slice(0, 12), c: nat(x.c),
+      me: x.me === true, old: x.old === true })).filter((x) => x.k !== "c" || x.b.trim());
+  }
+  // Gruppe zu einem Code: die offene oder eine Schanze der Tournee
+  function grpByCode(g) {
+    if (chal && chal.grp === g) return chal;
+    return (tour && tour.legs.find((c) => c.grp === g)) || null;
+  }
+  const talkOf = (g, id) => ((talk[g] && talk[g].list) || []).filter((x) => x.j === id && !x.old);
+  function talkSum(g, id) {
+    const L = talkOf(g, id), n = {}, mine = {}, who = {};
+    for (const x of L) if (x.k !== "c") { n[x.k] = (n[x.k] || 0) + 1; if (x.me) mine[x.k] = true; (who[x.k] || (who[x.k] = [])).push(x.me ? "DU" : x.a); }
+    return { n, mine, who, cm: L.filter((x) => x.k === "c") };
+  }
+  // Rangliste geladen: hat sich im Gespräch etwas getan, das Gespräch nachladen (ohne Einträge gar nicht erst fragen)
+  function talkSync(c) {
+    if (!ON || !c || !c.grp) return;
+    const T = talk[c.grp];
+    if (T && T.tk === c.tk) return;
+    if (!c.tk) { talk[c.grp] = { tk: 0, list: [] }; talkShow(c.grp); return; }
+    talkLoad(c.grp);
+  }
+  async function talkLoad(g) {
+    if (!ON || talkBusy[g]) return;
+    talkBusy[g] = true;
+    try { talkSet(g, await ON.rpc("tm_talk_get", { p_group: g, p_code: S.oc || null }, 8000)); }
+    catch (e) { /* beim nächsten Mal wieder */ }
+    finally { talkBusy[g] = false; }
+  }
+  function talkSet(g, L) {
+    const list = talkParse(L);
+    talk[g] = { tk: list.reduce((m, x) => Math.max(m, x.i), 0), list };
+    talkNews(g);
+    talkShow(g);
+  }
+  // Neues von anderen zum eigenen Sprung seit dem letzten Blick: kurz einblenden (nicht mitten im Sprung)
+  function talkNews(g) {
+    const c = grpByCode(g), me = c && c.board.find((x) => x.me), T = talk[g], seen = S.tseen[g] || 0;
+    if (!T || T.tk <= seen) return;
+    const fresh = me && me.id ? T.list.filter((x) => x.j === me.id && !x.me && !x.old && x.i > seen) : [];
+    S.tseen[g] = T.tk; saveLocal();
+    if (!fresh.length || mode === "jump" || mode === "replay") return;
+    const parts = fresh.slice(-3).map((x) => x.k === "c" ? `${x.a}: „${x.b}“` : `${TALK_EMO[x.k]} ${x.a}`);
+    showToastSafeText("NEU ZU DEINEM SPRUNG", parts.join(" · "), 3600);
+  }
+  // alles, was gerade zu sehen ist, neu zeichnen
+  function talkShow(g) {
+    if (mode === "chal" && !chalPaste && chal && chal.grp === g) renderGroup();
+    if (overlay === "jcard" && jcOpen && jcOpen.g === g) fillJcard();
+    if (mode === "result" && ctxMode === "chal" && chal && chal.grp === g && lastResult && rsTab === "list" && rsFill) rsFill();
+    if (mode === "replay" && rp && rp.watch && rp.watch.g === g) wtMarks();
+  }
+  // Reaktion sofort zeigen (der Server bestätigt gleich danach mit der ganzen Liste)
+  function talkToggleLocal(g, id, k, t) {
+    const T = talk[g] || (talk[g] = { tk: 0, list: [] });
+    const i = T.list.findIndex((x) => x.j === id && x.k === k && x.me && !x.old);
+    if (i >= 0) T.list.splice(i, 1);
+    else T.list.push({ i: 0, j: id, k, b: "", t: t == null ? null : t, a: meName(), c: S.nation || "", me: true, old: false });
+    talkShow(g);
+  }
+  async function talkPost(g, id, k, body, t) {
+    if (!ON || !g || !isRid(id) || !(TALK_EMO[k] || k === "c")) return false;
+    try {
+      talkSet(g, await ON.rpc("tm_talk", { p_code: myCode(), p_name: meName(), p_nation: S.nation || "", p_group: g, p_target: id, p_kind: k,
+        p_body: k === "c" ? String(body || "").slice(0, 80) : null, p_t: t == null ? null : Math.round(clamp(t, 0, 60) * 10) / 10 }, 8000));
+      return true;
+    } catch (e) {
+      onlineFail(e, k === "c" ? "NICHT GESENDET" : "GEHT GERADE NICHT");
+      talkLoad(g);   // die eigene Anzeige wieder richtigstellen
+      return false;
+    }
+  }
+  async function talkDel(g, i) {
+    try { talkSet(g, await ON.rpc("tm_talk_del", { p_code: myCode(), p_group: g, p_id: i }, 8000)); }
+    catch (e) { onlineFail(e, "NICHT GELÖSCHT"); }
+  }
+  // Geist zu einer Zeile der Rangliste (nach Kennung, bei altem Server nach Platz und Name)
+  function ghostFor(c, x) {
+    const gs = (c && c.ghosts) || [];
+    let i = x.id ? gs.findIndex((g) => g.id === x.id) : -1;
+    if (i < 0) i = gs.findIndex((g) => g.r === x.r && g.n === x.n);
+    return i;
+  }
+  // Sprünge als Zeilen: Platz, Springer, Weite, Punkte, darunter Reaktionen und der letzte Kommentar.
+  // Zeile antippen = Sprungkarte (ansehen, reagieren, schreiben), ▶ = gleich ansehen.
+  function jumpRowsHtml(c, rows) {
+    return rows.map((x) => {
+      const wi = ghostFor(c, x), s = x.id ? talkSum(c.grp, x.id) : null;
+      const chips = s ? TALK_K.filter((k) => s.n[k]).map((k) => `<span class="tlk-n${s.mine[k] ? " mine" : ""}">${TALK_EMO[k]}<b>${s.n[k]}</b></span>`).join("") +
+        (s.cm.length ? `<span class="tlk-n">${icon("chat", 13)}<b>${s.cm.length}</b></span>` : "") : "";
+      const last = s && s.cm.length ? s.cm[s.cm.length - 1] : null;
+      const line = chips || last ? chips + (last ? `<span class="gj-c"><b>${esc(last.me ? "DU" : last.a)}:</b> ${esc(last.b)}</span>` : "")
+        : `<span class="gj-c dim">${!x.id ? "" : x.me ? "dein Sprung · antippen: was sagen die anderen?" : `antippen: ${TALK_EMO.like} ${TALK_EMO.lol} oder etwas schreiben`}</span>`;
+      return `<div class="gj${x.me ? " me" : ""}"><button type="button" class="gj-main"${x.id ? ` data-card="${x.id}"` : ""} aria-label="${esc(x.n)}: ${fmt1(x.d)} m, ${fmt1(x.p)} Punkte">` +
+        `<span class="gj-r">${x.r}</span><span class="gj-who">${helm(x.me ? lookFor(S.look) : x.l ? lookFor(x.l) : natLook(x.c), x.r)}${x.c ? flagSpan(x.c) : ""}<span class="gj-nm">${esc(x.n)}</span>${x.me ? '<span class="you">DU</span>' : ""}</span>` +
+        `<span class="gj-d">${fmt1(x.d)} m</span><span class="gj-p">${fmt1(x.p)}</span><span class="gj-t">${line}</span></button>` +
+        (wi >= 0 ? `<button type="button" class="gj-play" data-watch="${wi}" aria-label="Sprung von ${esc(x.n)} ansehen">${icon("play", 18)}</button>`
+          : `<span class="gj-play off" aria-hidden="true">${icon("play", 18)}</span>`) + `</div>`;
+    }).join("");
+  }
+  // Gespräch der Gruppe, Neuestes zuerst; antippen öffnet den Sprung
+  function talkFeedHtml(c, n) {
+    const T = talk[c.grp], L = T ? T.list.slice(-n).reverse() : [];
+    if (!L.length) return `<p class="cg-empty">Noch nichts los. Tipp auf einen Sprung: ansehen, ${TALK_EMO.like} oder ${TALK_EMO.lol} geben, etwas dazuschreiben.</p>`;
+    return L.map((x) => {
+      const who = c.board.find((y) => y.id === x.j), tn = who ? (who.me ? "deinem Sprung" : who.n) : "einem Sprung";
+      const at = x.t != null ? `<span class="tlk-at">${fmt1(x.t)} s</span>` : "";
+      return `<button type="button" class="tlk-row${x.old ? " old" : ""}${x.me ? " me" : ""}"${who && !x.old ? ` data-card="${x.j}"` : ""}>` +
+        `<span class="tlk-h"><b>${esc(x.me ? "DU" : x.a)}</b><span class="tlk-to"> zu ${esc(tn)}${x.old ? " (früher)" : ""}</span>${at}</span>` +
+        (x.k === "c" ? `<span class="tlk-b">${esc(x.b)}</span>` : `<span class="tlk-e">${TALK_EMO[x.k]}</span>`) + `</button>`;
+    }).join("");
+  }
+  // Inhalt neu setzen, ohne dass die Liste nach oben springt
+  function keepScroll(el, html) { const top = el.scrollTop; el.innerHTML = html; el.scrollTop = top; }
+
+  // ------------------------------------------------------------------ Sprungkarte: ansehen, reagieren, Kommentare lesen und schreiben
+  let jcOpen = null;   // { g, id, back }
+  function openJcard(g, id) {
+    const c = grpByCode(g);
+    if (!c || !c.board.some((y) => y.id === id)) return;
+    jcOpen = { g, id, from: mode };
+    $("jcIn").value = "";
+    setOverlay("jcard");
+    if (talk[g] == null) talkLoad(g);
+  }
+  function closeJcard() { jcOpen = null; setOverlay(null); }
+  function fillJcard() {
+    const c = jcOpen && grpByCode(jcOpen.g), x = c && c.board.find((y) => y.id === jcOpen.id);
+    if (!x) { closeJcard(); return; }
+    const r = $("jcRank"); r.className = `rk-medal ${x.r === 1 ? "g" : x.r === 2 ? "s" : x.r === 3 ? "b" : ""}`; r.textContent = String(x.r);
+    $("jcName").innerHTML = `${helm(x.me ? lookFor(S.look) : x.l ? lookFor(x.l) : natLook(x.c), x.r)}${x.c ? flagSpan(x.c) : ""}<span class="jc-nm">${esc(x.n)}</span>${x.me ? '<span class="you">DU</span>' : ""}`;
+    const Hh = Hill.getHill(c.h);
+    txt($("jcSub"), `${fmt1(x.d)} m · ${fmt1(x.p)} Punkte · ${KIND_SHORT[x.k]} · ${Hh.short || Hh.name}`);
+    const gi = ghostFor(c, x);
+    $("btnJcWatch").disabled = gi < 0;
+    txt($("jcWatchTxt"), gi >= 0 ? (x.me ? "Deinen Sprung ansehen" : "Sprung ansehen") : c.ghosts == null ? "Sprung wird geladen …" : "Kein Flug gespeichert");
+    const s = talkSum(c.grp, x.id);
+    $("jcReact").innerHTML = TALK_K.map((k) => `<button type="button" class="jc-emo${s.mine[k] ? " mine" : ""}" data-k="${k}" aria-pressed="${!!s.mine[k]}" aria-label="${TALK_NAME[k]}">` +
+      `<span class="jc-e">${TALK_EMO[k]}</span><b>${s.n[k] || ""}</b></button>`).join("");
+    txt($("jcWhoR"), TALK_K.filter((k) => s.who[k]).map((k) => `${TALK_EMO[k]} ${s.who[k].join(", ")}`).join("  ·  ")
+      || (x.me ? "Noch keine Reaktion auf deinen Sprung." : "Noch keine Reaktion. Sei der Erste!"));
+    const L = $("jcList"), atEnd = L.scrollTop + L.clientHeight >= L.scrollHeight - 8;
+    L.innerHTML = s.cm.length ? s.cm.map((y) => `<div class="jc-c${y.me ? " me" : ""}"><span class="jc-ch"><b>${esc(y.me ? "DU" : y.a)}</b>` +
+      `${y.t != null ? `<span class="tlk-at">bei ${fmt1(y.t)} s</span>` : ""}${y.me && y.i ? `<button type="button" class="jc-del" data-del="${y.i}" aria-label="Kommentar löschen">${icon("x", 13)}</button>` : ""}</span>` +
+      `<span class="jc-cb">${esc(y.b)}</span></div>`).join("")
+      : `<p class="jc-empty">${x.me ? "Noch keine Kommentare zu deinem Sprung." : "Noch keine Kommentare."} Beim Ansehen kannst du auch zu einem Moment im Flug etwas schreiben.</p>`;
+    if (atEnd || !L.dataset.seen) { L.scrollTop = L.scrollHeight; L.dataset.seen = "1"; }
+  }
+  function jcReact(k) {
+    if (!jcOpen) return;
+    const { g, id } = jcOpen;
+    talkToggleLocal(g, id, k, null);
+    const b = $("jcReact").querySelector(`[data-k="${k}"]`); if (b) { b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop"); }
+    vib(10);
+    talkPost(g, id, k, null, null);
+  }
+  async function jcSend() {
+    if (!jcOpen) return;
+    const v = $("jcIn").value.replace(/\s+/g, " ").trim().slice(0, 80);
+    if (!v) { $("jcIn").focus(); return; }
+    if (!S.name) { askName(() => { setOverlay("jcard"); jcSend(); }); return; }
+    const { g, id } = jcOpen, btn = $("btnJcSend");
+    btn.disabled = true;
+    const ok = await talkPost(g, id, "c", v, null);
+    btn.disabled = false;
+    if (ok) { $("jcIn").value = ""; $("jcList").scrollTop = $("jcList").scrollHeight; }
+  }
+  // von der Karte aus ansehen: danach zurück auf die Karte (in der Gruppe oder auf dem Ergebnis)
+  function jcWatch() {
+    if (!jcOpen) return;
+    const { g, id, from } = jcOpen, c = grpByCode(g), x = c && c.board.find((y) => y.id === id), i = x ? ghostFor(c, x) : -1;
+    if (i < 0) return;
+    setOverlay(null);
+    watchGhost(c, i, () => { if (from === "result") backToResult(); else openChal(c); openJcard(g, id); });
+  }
+
+  // ------------------------------------------------------------------ Beim Ansehen: reagieren und kommentieren wie bei SoundCloud
+  // Rechts die Reaktionen (gelten für den Moment im Flug), unten die Zeitleiste mit den Einträgen der anderen; erreicht die Wiedergabe
+  // einen Eintrag, steigt er über der Leiste auf. Kommentar: die Wiedergabe hält an, bis er geschrieben ist.
+  let wtLanes = [0, 0, 0];
+  const wtOn = () => !!(rp && rp.watch && rp.watch.g && rp.watch.id && ON && !S.noOnline);
+  function wtOpen() {
+    const on = wtOn();
+    vis($("wtSide"), on); vis($("wtLine"), on); vis($("wtForm"), false); vis($("btnWtEnd"), on);
+    vis(el.replayHint, !on);   // die Zeitleiste sagt selbst, wie man beendet
+    $("wtPops").innerHTML = ""; wtLanes = [0, 0, 0];
+    if (!on) return;
+    $("wtSide").innerHTML = TALK_K.map((k) => `<button type="button" class="wt-b" data-k="${k}" aria-label="${TALK_NAME[k]} (zu diesem Moment)">${TALK_EMO[k]}</button>`).join("") +
+      `<button type="button" class="wt-b wt-c" data-k="c" aria-label="Kommentar zu diesem Moment">${icon("chat", 22)}</button>`;
+    wtMarks(); wtStep(-1, 0);
+    if (rp.watch.g && talk[rp.watch.g] == null) talkLoad(rp.watch.g);
+  }
+  function wtHide() { for (const id of ["wtSide", "wtLine", "wtForm", "btnWtEnd"]) vis($(id), false); $("wtPops").innerHTML = ""; }
+  const wtX = (t) => `${(100 * clamp(t / Math.max(0.1, rp.t1), 0, 1)).toFixed(2)}%`;
+  function wtMarks() {
+    if (!wtOn()) return;
+    const w = rp.watch, L = talkOf(w.g, w.id).filter((x) => x.t != null);
+    $("wtMarks").innerHTML = L.map((x) => `<i class="wt-m${x.k === "c" ? " c" : ""}${x.me ? " me" : ""}" style="left:${wtX(x.t)}">${x.k === "c" ? "" : TALK_EMO[x.k]}</i>`).join("");
+    $("wtLand").style.left = wtX(rp.tL);
+  }
+  // jedes Bild: Fortschritt, und was zwischen dem letzten und diesem Moment liegt, steigt auf
+  function wtStep(t0, t1) {
+    if (!wtOn()) return;
+    $("wtFill").style.width = wtX(t1);
+    const w = rp.watch;
+    for (const x of talkOf(w.g, w.id)) if (x.t != null && x.t > t0 && x.t <= t1 && !(x.me && x.i === 0)) wtPop(x);
+  }
+  function wtPop(x) {
+    const now = performance.now(), dur = x.k === "c" ? 3400 : 2000;
+    let lane = wtLanes.findIndex((u) => u <= now);
+    if (lane < 0) lane = wtLanes.indexOf(Math.min(...wtLanes));
+    wtLanes[lane] = now + (x.k === "c" ? 1500 : 700);
+    const e = document.createElement("div");
+    e.className = `wt-pop${x.k === "c" ? " c" : ""}${x.me ? " me" : ""}`;
+    e.style.left = `${(100 * clamp(x.t / Math.max(0.1, rp ? rp.t1 : 1), 0.08, 0.86)).toFixed(1)}%`;
+    e.style.bottom = `${30 + lane * 36}px`;
+    e.style.animationDuration = `${dur}ms`;
+    e.innerHTML = x.k === "c" ? `<b>${esc(x.me ? "DU" : x.a)}</b><span>${esc(x.b)}</span>` : `<span class="wt-pe">${TALK_EMO[x.k]}</span><b>${esc(x.me ? "DU" : x.a)}</b>`;
+    $("wtPops").appendChild(e);
+    setTimeout(() => e.remove(), dur);
+  }
+  // Reaktion zu diesem Moment: beim Ansehen nur dazugeben (schon gegeben: nur aufsteigen lassen)
+  function wtReact(k) {
+    if (!wtOn()) return;
+    const w = rp.watch, t = Math.floor(clamp(rp.t, 0, 60) * 10) / 10;   // abgerundet: steigt später nicht noch einmal auf
+    wtPop({ k, t, me: true, a: meName(), b: "" });
+    vib(10);
+    if (talkOf(w.g, w.id).some((x) => x.k === k && x.me)) return;
+    talkToggleLocal(w.g, w.id, k, t);
+    talkPost(w.g, w.id, k, null, t);
+  }
+  function wtComment() {
+    if (!wtOn()) return;
+    rp.pause = true; rp.cT = Math.floor(clamp(rp.t, 0, 60) * 10) / 10;
+    txt($("wtAt"), `bei ${fmt1(rp.cT)} s`);
+    $("wtIn").value = ""; vis($("wtForm"), true);
+    setTimeout(() => $("wtIn").focus(), 30);
+  }
+  function wtClose() { vis($("wtForm"), false); $("wtIn").blur(); if (rp) rp.pause = false; }
+  function wtSend() {
+    const v = $("wtIn").value.replace(/\s+/g, " ").trim().slice(0, 80);
+    if (!rp || !rp.watch || !v) { wtClose(); return; }
+    const w = rp.watch, t = rp.cT;
+    wtClose();
+    wtPop({ k: "c", t, me: true, a: meName(), b: v });
+    talkPost(w.g, w.id, "c", v, t);
   }
   // Live: solange die Gruppe offen ist, alle 5 Sekunden nachsehen
   function groupPoll() {
@@ -13393,9 +13928,15 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
         try {
           const c = groupChal(await ON.rpc("tm_group_get", { p_group: chal.grp, p_code: S.oc || null }, 6000), chal);
           if (c && c.grp === chal.grp && mode === "chal" && !chalPaste) {
+            if (c.tourCode && !chal.tour) {   // jemand hat eine Schanze dazugenommen
+              S.groups = S.groups.filter((x) => x.g !== c.grp); saveLocal();
+              openTourCode(c.tourCode); showToastSafeText("NEUE SCHANZE DABEI", "Aus der Gruppe ist eine Tournee geworden", 2600);
+              return;
+            }
             const changed = JSON.stringify(c.board) !== JSON.stringify(chal.board);
-            chal = c; rememberGroup(c);
-            if (changed) { fillChal(); loadGhosts(c.grp); }   // neue Plätze: auch die Geister neu holen
+            chal = c; if (!c.tour) rememberGroup(c);
+            if (changed) { renderGroup(); loadGhosts(c.grp); }   // neue Plätze: auch die Geister neu holen
+            talkSync(c);
           }
         } catch (e) { /* beim nächsten Mal wieder */ }
       }
@@ -13418,11 +13959,11 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
         if (t && chal && chal.grp === g) {
           tour = t; rememberTour(t);
           const c = t.legs[tr.leg - 1];
-          if (c) { c.ghosts = chal.ghosts; c.tries = chal.tries; c.best = chal.best; chal = c; loadGhosts(g); }
+          if (c) { c.ghosts = chal.ghosts; c.tries = chal.tries; c.best = chal.best; chal = c; loadGhosts(g); talkSync(c); }
         }
       } else {
         const c = groupChal(await ON.rpc("tm_group_post2", { p_code: myCode(), p_name: meName(), p_nation: S.nation || "", p_group: g, p_dist: p.d, p_points: p.p, p_kind: p.k, p_ghost: p.gh, p_look: lookCode(S.look) }), chal);
-        if (c && chal && chal.grp === g) { chal = c; rememberGroup(c); loadGhosts(g); }
+        if (c && chal && chal.grp === g) { chal = c; rememberGroup(c); loadGhosts(g); talkSync(c); }
       }
       entry.grpState = "ok";
     } catch (e) {
@@ -13461,22 +14002,31 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     else if (me) { chip.className = me.r === 1 ? "chip chip-cyan" : "chip chip-dim"; chip.textContent = me.r === 1 ? "FÜHRUNG" : `PLATZ ${me.r}`; }
     else { chip.className = "chip chip-dim"; chip.textContent = "GRUPPE"; }
   }
+  // Ergebnis in der Gruppe, rechts: die Sprünge der Gruppe (antippen = Sprungkarte, ▶ = ansehen) und das Neueste aus dem Gespräch
   function grpListHtml(r) {
     const b = chal.board, me = b.find((x) => x.me);
-    let rows = b.slice(0, 6);
-    if (me && !rows.includes(me)) rows = rows.slice(0, 5).concat([me]);
-    let h = rows.map((x) => standRow({ rank: x.r, nation: x.c, name: x.n, dist: x.d, total: x.p }, { me: x.me, helm: x.me ? lookFor(S.look) : x.l ? lookFor(x.l) : natLook(x.c) })).join("");
-    if (!me && r.kind !== "fall") h += standRow({ rank: null, nation: S.nation, name: meName(), dist: r.dist, total: chalPts(r.total) }, { me: true, helm: lookFor(S.look) });
-    // zählt er oder nicht? Es zählt der beste Sprung nach Punkten (Weite, Haltung, Wind), ein Sturz nie
-    const pts = chalPts(r.total), bestTxt = me ? `Dein bester Sprung bleibt ${fmt1(me.d)} m mit ${fmt1(me.p)} Punkten.` : "";
-    const note = r.kind === "fall" ? `Sturz: Dieser Sprung zählt nicht. ${bestTxt || "Es zählt nur ein gestandener Sprung."}`
-      : r.grpState === "send" ? "Wird an die Gruppe gesendet …"
-      : r.grpState === "fail" ? (r.grpQueued ? "Keine Verbindung: Der Sprung wird nachgesendet." : "Dieser Sprung wurde nicht gesendet.")
-      : r.grpState === "ok" && me && pts < me.p ? `Dieser Sprung zählt nicht: ${fmt1(pts)} Punkte${r.dist > me.d ? `, trotz ${fmt1(r.dist)} m` : ""}. ${bestTxt}${r.dist > me.d ? " Es zählen die Punkte, nicht die Weite." : ""}`
-      : r.grpState === "ok" && r.grpPrev != null && pts > r.grpPrev ? `Neue Bestleistung: Dieser Sprung zählt jetzt (vorher ${fmt1(r.grpPrev)} Punkte).${chal.tour && tour ? " " + tourNote() : ""}`
-      : chal.tour && tour ? tourNote()
-      : chal.tries > 1 ? `Es zählt dein bester Sprung · ${chal.tries} Versuche` : "Es zählt dein bester Sprung. Die Rangliste sehen alle live.";
-    return h + `<p class="msr-goal">${esc(note)}</p>`;
+    let rows = b.slice(0, 40);
+    if (me && !rows.includes(me)) rows = rows.concat([me]);
+    if (!me && r.kind !== "fall") rows = rows.concat([{ r: "–", n: meName(), c: S.nation || "", d: r.dist, p: chalPts(r.total), k: r.kind, me: true, id: null, x: 1 }]);
+    const T = talk[chal.grp], feed = T && T.list.length ? `<span class="ch-lbl rs-tkl">GESPRÄCH</span>${talkFeedHtml(chal, 3)}`
+      : `<p class="msr-goal">Tipp auf einen Sprung: ansehen, ${TALK_EMO.like} oder ${TALK_EMO.lol} geben, etwas dazuschreiben.</p>`;
+    return jumpRowsHtml(chal, rows) + feed;
+  }
+  // Ergebnis in der Gruppe, links: zählt dieser Sprung? (es zählt der beste nach Punkten, ein Sturz nie)
+  function grpStatus(r) {
+    const me = chal && chal.board.find((x) => x.me), pts = chalPts(r.total);
+    if (r.kind === "fall") return ["no", me ? `Sturz zählt nicht · dein bester bleibt ${fmt1(me.d)} m, ${fmt1(me.p)} Punkte` : "Sturz zählt nicht · es zählt nur ein gestandener Sprung"];
+    if (r.grpState === "send") return ["dim", "Wird an die Gruppe gesendet …"];
+    if (r.grpState === "fail") return ["no", r.grpQueued ? "Keine Verbindung: wird nachgesendet" : "Nicht gesendet"];
+    if (r.grpState !== "ok") return ["dim", "Es zählt dein bester Sprung"];
+    if (me && pts < me.p) return ["no", r.dist > me.d ? `Zählt nicht: mehr Weite, aber weniger Punkte als dein bester (${fmt1(me.p)})` : `Zählt nicht · dein bester bleibt ${fmt1(me.d)} m, ${fmt1(me.p)} Punkte`];
+    if (r.grpPrev == null) return ["ok", chal.tour ? "Zählt · dein erster Sprung auf dieser Schanze" : "Zählt · dein erster Sprung in der Gruppe"];
+    if (pts > r.grpPrev) return ["ok", `Neue Bestleistung · zählt (vorher ${fmt1(r.grpPrev)} Punkte)`];
+    return ["ok", "Zählt · so gut wie dein bester"];
+  }
+  function grpCountLine(r) {
+    const [c, t] = grpStatus(r), e = $("rsCount");
+    e.className = `rs-count ${c}`; txt(e, t);
   }
   function tourNote() {
     const me = tour.tot.find((x) => x.me), n = tour.legs.length, left = tour.legs.filter((c) => !c.board.some((x) => x.me)).length;
@@ -13484,47 +14034,27 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   }
   function grpRefresh(r) {
     grpChip(r, $("rsChip"));
+    grpCountLine(r);
     txt($("rsSession"), chal.tour ? `Tournee ${chal.tour.leg}/${chal.tour.n} · ${H.name} · Luke ${chal.g}` : `${H.name} · Luke ${chal.g} · ${chal.total} Springer`);
     rankHeader(r);
     if (rsTab !== "list") vis($("rsRank"), false);
     else if (rsFill) rsFill();
   }
-  // Duell-Bildschirm: Gruppe mit Live-Rangliste
-  function fillGroup() {
-    const Hh = Hill.getHill(chal.h), b = chal.board, me = b.find((x) => x.me), leadMe = !!(b[0] && b[0].me);
-    vis($("scrChal").querySelector(".ch-target"), b.length > 0);
-    if (!b.length) {
-      vis($("chFlag"), false); txt($("chName"), "Neue Gruppe");
-      txt($("chHill"), `${Hh.name} · ${hillSub(Hh)}`);
-      txt($("chCond"), `Luke ${chal.g} · Wind ${WIND_NAME[chal.w]} · ${TOD_NAME[chal.t]}`);
-      $("chBoard").innerHTML = `<span class="ch-lbl">RANGLISTE · <span class="ch-live">LIVE</span> · 0 SPRINGER</span><span class="chb-more">Noch niemand gesprungen. Schick den Link und spring als Erster!</span>`;
-      vis($("chBoard"), true);
-      txt($("chNote"), "Gleicher Wind für alle, die Besten fliegen als Geister mit. Dein bester Sprung zählt. Name und Ergebnis sehen alle mit dem Link.");
-      groupPoll();
-      return;
-    }
-    $("chFlag").innerHTML = chal.c ? flag(chal.c) : ""; vis($("chFlag"), !!chal.c);
-    txt($("chName"), chal.n);
-    txt($("chHill"), `${leadMe ? "Du führst" : "führt"} die Gruppe · ${Hh.name} · ${hillSub(Hh)}`);
-    txt($("chCond"), `Luke ${chal.g} · Wind ${WIND_NAME[chal.w]} · ${TOD_NAME[chal.t]}`);
-    txt($("chDist"), fmt1(chal.d) + " m");
-    txt($("chPts"), `${fmt1(chal.p)} Punkte · ${KIND_SHORT[chal.k]}`);
-    let rows = b.slice(0, 6);
-    if (me && !rows.includes(me)) rows = rows.slice(0, 5).concat([me]);
-    const gs = chal.ghosts || [], canWatch = (x) => gs.findIndex((g) => g.r === x.r && g.n === x.n);
-    $("chBoard").innerHTML = `<span class="ch-lbl">RANGLISTE · <span class="ch-live">LIVE</span> · ${chal.total} SPRINGER</span>` +
-      rows.map((x) => {
-        const wi = canWatch(x), w = wi >= 0, tag = w ? "button" : "span";
-        return `<${tag}${w ? ` type="button" aria-label="Sprung von ${esc(x.n)} ansehen" data-i="${wi}"` : ""} class="chb-row${x.me ? " main" : ""}${w ? " can" : ""}"><b>${x.r}.</b>` +
-          `<span class="chb-m">${helm(x.me ? lookFor(S.look) : x.l ? lookFor(x.l) : natLook(x.c), x.r)}${x.c ? flagSpan(x.c) : ""}</span><span class="chb-n">${esc(x.n)}${x.me ? " · DU" : ""}</span>` +
-          `<span class="chb-p">${fmt1(x.p)}</span>${w ? icon("play", 13) : "<span></span>"}</${tag}>`;
-      }).join("") +
-      (chal.total > rows.length ? `<span class="chb-more">und ${chal.total - rows.length} weitere</span>` : "");
-    vis($("chBoard"), true);
-    txt($("chNote"), S.tutorialDone
-      ? `Gleicher Wind für alle, die Besten fliegen als Geister mit${(chal.ghosts || []).length ? ", Name antippen zeigt den Sprung" : ""}. Dein bester Sprung zählt. Name und Ergebnis sehen alle mit dem Link.`
-      : "Zuerst drei kurze Übungssprünge in Zeitlupe, dann geht es los. Name und Ergebnis sehen alle mit dem Link.");
-    groupPoll();
+  // Gruppe: links die Sprünge (antippen = Sprungkarte, ▶ = ansehen, darunter Reaktionen), rechts Schanze, Bedingungen und das Gespräch
+  function fillGroup() { renderGroup(); groupPoll(); }
+  function renderGroup() {
+    if (!chal || !chal.grp) return;
+    const Hh = Hill.getHill(chal.h), b = chal.board, me = b.find((x) => x.me);
+    txt($("chKicker"), chal.tour ? `TOURNEE · SCHANZE ${chal.tour.leg} VON ${chal.tour.n}` : "ONLINE-GRUPPE");
+    txt($("cgN"), `${chal.total} SPRINGER`);
+    txt($("cgHill"), Hh.name); txt($("cgSub"), hillSub(Hh));
+    txt($("cgCond"), `Luke ${chal.g} · Wind ${WIND_NAME[chal.w]} · ${TOD_NAME[chal.t]}` + (S.tutorialDone ? "" : " · zuerst drei kurze Übungssprünge"));
+    let rows = b.slice(0, 40);
+    if (me && !rows.includes(me)) rows = rows.concat([me]);
+    keepScroll($("cgRows"), rows.length ? jumpRowsHtml(chal, rows) + (chal.total > rows.length ? `<span class="chb-more">und ${chal.total - rows.length} weitere</span>` : "")
+      : `<p class="cg-empty">Noch niemand gesprungen. Schick den Link und spring als Erster!</p>`);
+    keepScroll($("cgFeed"), talkFeedHtml(chal, 20));
+    vis($("btnChAdd"), onlineReady() && !(chal.tour && chal.tour.n >= 8));
   }
   function fillGroupList() {
     const el = $("chGroups"), L = ON ? S.groups.slice(0, 3) : [];
@@ -13537,7 +14067,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   // Beim ersten Mal kurz erklären, was online passiert
   function askOnline(cb) {
     askCb = cb;
-    txt($("akTxt"), "Alle springen mit demselben Wind, die Rangliste sehen alle live, egal wie viele mitmachen. Dafür speichern wir Name, Nation, Farben und Sprünge bei Supabase (Server in Frankfurt), sichtbar für alle mit dem Link und 30 Tage nach dem letzten Sprung gelöscht. Ändern unter Info → Online.");
+    txt($("akTxt"), "Alle springen mit demselben Wind, die Rangliste sehen alle live, egal wie viele mitmachen. Dafür speichern wir Name, Nation, Farben, Sprünge und eure Reaktionen und Kommentare bei Supabase (Server in Frankfurt), sichtbar für alle mit dem Link und 30 Tage nach dem letzten Sprung gelöscht. Ändern unter Info → Online.");
     setOverlay("ask");
   }
   // Spielstand online: ohne Geister (groß, auf jedem Gerät neu) und ohne die Online-Angaben dieses Geräts
@@ -13697,7 +14227,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const grp = !chalPaste && !!chal && !!chal.grp;
     $("scrChal").querySelector(".dialog").classList.toggle("grp", grp);
     txt($("chKicker"), grp ? "ONLINE-GRUPPE" : chalPaste ? "DUELL" : "HERAUSFORDERUNG");
-    vis($("chHave"), !chalPaste); vis($("chPaste"), chalPaste); vis($("btnChOther"), !chalPaste);
+    vis($("chHave"), !chalPaste && !grp); vis($("chGrp"), grp); vis($("chPaste"), chalPaste); vis($("btnChOther"), !chalPaste);
+    if (!grp) vis($("btnChAdd"), false);
     txt($("btnChOther"), grp ? "Link teilen" : "Anderer Link");
     txt($("chGoTxt"), chalPaste ? "Öffnen" : grp ? "Springen" : "Annehmen");
     txt($("btnChBack").querySelector("span"), chalPaste || grp ? "Zurück" : "Später");
@@ -13842,9 +14373,16 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   function endReplay() {
     if (!rp) return;
     const w = rp.watch;
-    rp = null; vis(el.replayBadge, false); vis(el.replayHint, false); vis(hud, false);
+    rp = null; vis(el.replayBadge, false); vis(el.replayHint, false); vis(hud, false); wtHide();
     if (w) { vis(el.windPanel, true); w.back(); return; }
     showResult(lastResult);
+  }
+  // zurück auf die Ergebnistafel, ohne sie neu aufzubauen (nach dem Ansehen eines anderen Sprungs)
+  function backToResult() {
+    if (!lastResult || !J) { goTitle(); return; }
+    mode = "result"; vis(hud, false); showScreen("result"); applyColor();
+    if (rsFill && rsTab === "list") rsFill();
+    fitResLeft();
   }
   // Den Sprung eines anderen ansehen: aus seiner Flugbahn (Geist) eine Wiederholung ab dem Absprung, im Auslauf bis zum Abschwingen.
   // Der Geist hat nur 5 Bilder je Sekunde, die Landung liegt fast immer zwischen zweien. Sie wird genau auf die angesagte Weite gelegt
@@ -13882,12 +14420,12 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     }
     return { rec, tT };
   }
-  function startWatch(g, back) {
+  function startWatch(g, back, grp) {
     const w = g && g.path && g.path.length > 4 ? watchRec(g) : null;
     if (!w) { showToastSafeText("SPRUNG NICHT VERFÜGBAR", "Für diesen Sprung gibt es keine Flugbahn"); return; }
     const big = g.d >= H.K + 0.45 * (H.HS - H.K), tele = g.k === "telemark";
     const mood = big ? (tele ? "great" : "good") : g.d >= H.K - 4 ? (tele ? "good" : "ok") : g.d >= H.K - 16 ? "ok" : "bad";
-    rp = { rec: w.rec, t: 0, t1: w.rec[w.rec.length - 1].t, i: 0, tL: w.tT, mood, watch: { name: g.me ? "DEIN SPRUNG" : g.n, d: g.d, back } };
+    rp = { rec: w.rec, t: 0, t1: w.rec[w.rec.length - 1].t, i: 0, tL: w.tT, mood, watch: { name: g.me ? "DEIN SPRUNG" : g.n, d: g.d, back, g: grp || null, id: isRid(g.id) ? g.id : null } };
     txt($("rpTxt"), `${rp.watch.name} · ${fmt1(g.d)} m`);
     clearTimeout(grpT);
     mode = "replay"; showScreen(null); vis(hud, true);
@@ -13897,13 +14435,16 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     renderer.setLook(g.look || lookFor(DEF_LOOK));
     vis(el.windPanel, false);   // der Wind von damals ist nicht bekannt
     updateCam(camTarget(w.rec[0]), 0, true);
+    wtOpen();
   }
-  function watchGroupRow(i) {
-    const g = chal && chal.ghosts && chal.ghosts[i];
+  // Geist i einer Gruppe ansehen (mit Reaktionen und Kommentaren, wenn online)
+  function watchGhost(c, i, back) {
+    const g = c && c.ghosts && c.ghosts[i];
     if (!g) return;
-    H = Hill.getHill(chal.h); renderer.setTheme(chal.t);
-    startWatch(g, () => openChal(chal));
+    H = Hill.getHill(c.h); renderer.setTheme(c.t);
+    startWatch(g, back, c.grp);
   }
+  function watchGroupRow(i) { const c = chal; watchGhost(c, i, () => openChal(c)); }
 
   // ------------------------------------------------------------------ Demo-Sprung im Startbildschirm
   function stepDemo(dt) {
@@ -15013,7 +15554,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   on("btnToBack", () => { clearTimeout(tourT); openMulti(); });
   on("btnToShare", async () => { if (tour) await shareLink(tourText(tour)); });
   on("btnToGo", () => { if (!tour) return; const nx = tourNextLeg(null); tourJump(nx >= 0 ? nx : 0); });
-  $("toLegs").addEventListener("click", (e) => { const b = e.target.closest("[data-leg]"); if (b) tourJump(+b.dataset.leg); });
+  $("toLegs").addEventListener("click", (e) => { const b = e.target.closest("[data-leg]"); if (b) tourLeg(+b.dataset.leg); });
   on("btnMuNew", () => muStart());
   on("muShuffle", () => { muTour = muTourPick(); fillMultiHill(); });
   on("muPrev", () => { const i = HILL_ORDER.indexOf(H.key); setHill(HILL_ORDER[(i - 1 + HILL_ORDER.length) % HILL_ORDER.length]); fillMultiHill(); });
@@ -15031,7 +15572,38 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   on("btnChGo", () => chalGo());
   on("btnChBack", () => { if (chalPaste && chal && !chal.grp) { chalPaste = false; fillChal(); } else if (chal && chal.tour && tour) openTour(tour); else openMulti(); });
   // in der Gruppe: Link teilen; bei einer Herausforderung: anderen Link einfügen
-  on("btnChOther", async () => { if (!chalPaste && chal && chal.grp) { await shareLink(groupText(chal)); return; } chalPaste = true; fillChal(); $("chIn").focus(); });
+  on("btnChOther", async () => {
+    if (!chalPaste && chal && chal.grp) { await shareLink(chal.tour && tour ? tourText(tour) : groupText(chal)); return; }
+    chalPaste = true; fillChal(); $("chIn").focus();
+  });
+  // Gruppe: Sprünge antippen (Karte), ▶ (ansehen), Gespräch antippen (Karte), Schanze dazunehmen
+  $("cgRows").addEventListener("click", (e) => {
+    const w = e.target.closest("[data-watch]"); if (w) { watchGroupRow(+w.dataset.watch); return; }
+    const c = e.target.closest("[data-card]"); if (c && chal) openJcard(chal.grp, c.dataset.card);
+  });
+  $("cgFeed").addEventListener("click", (e) => { const c = e.target.closest("[data-card]"); if (c && chal) openJcard(chal.grp, c.dataset.card); });
+  $("rsList").addEventListener("click", (e) => {
+    if (!(ctxMode === "chal" && chal && chal.grp)) return;
+    const w = e.target.closest("[data-watch]"); if (w) { const c = chal; watchGhost(c, +w.dataset.watch, () => backToResult()); return; }
+    const c = e.target.closest("[data-card]"); if (c) openJcard(chal.grp, c.dataset.card);
+  });
+  on("btnChAdd", () => openAdd());
+  on("btnToAdd", () => openAdd());
+  on("adPrev", () => cycleAdd(-1));
+  on("adNext", () => cycleAdd(1));
+  on("btnAdNo", () => { addCtx = null; setOverlay(null); });
+  on("btnAdYes", () => addGo());
+  // Sprungkarte
+  on("btnJcBack", () => closeJcard());
+  on("btnJcWatch", () => jcWatch());
+  $("jcReact").addEventListener("click", (e) => { const b = e.target.closest("[data-k]"); if (b) jcReact(b.dataset.k); });
+  $("jcForm").addEventListener("submit", (e) => { e.preventDefault(); jcSend(); });
+  $("jcList").addEventListener("click", (e) => { const b = e.target.closest("[data-del]"); if (b && jcOpen) talkDel(jcOpen.g, +b.dataset.del); });
+  // beim Ansehen
+  $("wtSide").addEventListener("click", (e) => { const b = e.target.closest("[data-k]"); if (!b) return; if (b.dataset.k === "c") wtComment(); else wtReact(b.dataset.k); });
+  $("wtForm").addEventListener("submit", (e) => { e.preventDefault(); wtSend(); });
+  on("btnWtX", () => wtClose());
+  on("btnWtEnd", () => { if (mode === "replay") endReplay(); });
   $("chIn").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); chalGo(); } e.stopPropagation(); });
   on("hillPrev", () => cycleHill(-1));
   on("hillNext", () => cycleHill(1));
@@ -15314,7 +15886,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       return;
     }
     if (e.key === "Escape" || e.key === "p" || e.key === "P") {
-      if (overlay === "settings") closeSettings(); else if (overlay === "shop") closeShop(); else if (overlay === "jumper") closeJumper(); else if (overlay === "pause" || overlay === "records" || overlay === "hill") setOverlay(null); else if (overlay === "info") closeInfo(); else if (overlay === "pic") setOverlay(null); else if (mode === "arcade" || mode === "chal" || mode === "multi" || mode === "tour") goTitle(); else pause();
+      if (overlay === "jcard") closeJcard(); else if (overlay === "add") { addCtx = null; setOverlay(null); } else if (overlay === "settings") closeSettings(); else if (overlay === "shop") closeShop(); else if (overlay === "jumper") closeJumper(); else if (overlay === "pause" || overlay === "records" || overlay === "hill") setOverlay(null); else if (overlay === "info") closeInfo(); else if (overlay === "pic") setOverlay(null); else if (mode === "arcade" || mode === "chal" || mode === "multi" || mode === "tour") goTitle(); else pause();
       return;
     }
     if (overlay) return;
@@ -15424,8 +15996,10 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       }).filter(Boolean);
     } else if (mode === "replay" && rp) {
       const rs = rp.watch ? (rp.t > rp.tL + 0.4 ? 1 : 0.75) : rp.t > rp.tL + 0.5 ? 0.8 : 0.5;   // nach der Landung etwas schneller: der Jubel muss nicht in Zeitlupe
-      rp.t += dtReal * rs;
+      const t0 = rp.t;
+      if (!rp.pause) rp.t += dtReal * rs;   // beim Schreiben eines Kommentars steht das Bild
       st = replaySnap();
+      if (rp.watch) wtStep(t0, rp.t);
       jv = jumperVisual(st, false, { mood: rp.mood });
       updateCam(camTarget(st), dtReal * rs, false);
       if (st.phase === "flight") txt(el.distVal, st.x > 1 ? fmt1(Math.max(0, Math.floor(Hill.groundAt(H, st.x).d * 2) / 2)) + " m" : "–");
@@ -15562,7 +16136,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     vis($("btnOlSave"), !saved && !off); vis($("btnOlNow"), saved && !off); vis($("btnOlStop"), saved);
     vis($("olLoadBox"), !!olLoad);
     $("tgOnline").setAttribute("aria-checked", String(!S.noOnline));
-    txt($("olPriv"), "Freiwillig und nur, wenn du es nutzt: Für Gruppen speichern wir Name, Nation, Farben und Sprünge, sichtbar für alle mit dem Gruppen-Link, für den Online-Spielstand deinen Spielstand. Gespeichert bei Supabase Inc. auf Servern in Frankfurt (Art. 6 Abs. 1 lit. b DSGVO). Gruppen und Tourneen werden 30 Tage nach dem letzten Sprung gelöscht, dein Eintrag mit Namen ebenso, mit Online-Spielstand erst nach 13 Monaten ohne Nutzung. Deinen Code speichern wir nur als Prüfwert.");
+    txt($("olPriv"), "Freiwillig und nur, wenn du es nutzt: Für Gruppen speichern wir Name, Nation, Farben, Sprünge sowie Reaktionen und Kommentare zu Sprüngen, sichtbar für alle mit dem Gruppen-Link, für den Online-Spielstand deinen Spielstand. Gespeichert bei Supabase Inc. auf Servern in Frankfurt (Art. 6 Abs. 1 lit. b DSGVO). Gruppen und Tourneen werden 30 Tage nach dem letzten Sprung gelöscht, dein Eintrag mit Namen ebenso, mit Online-Spielstand erst nach 13 Monaten ohne Nutzung. Deinen Code speichern wir nur als Prüfwert.");
   }
   on("btnOnline", () => openOnline(overlay === "info" ? "info" : null));
   on("btnOlDone", () => closeOnline());
