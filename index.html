@@ -3318,7 +3318,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     for (let x = x0; x <= x1; x += 15) { rect(x - 1.2, yy(x) - 14, 2.6, 15, post); rect(x - 1.6, yy(x) - 15.6, 3.4, 2, P.tSnow); }
   }
   // Nahebene: Schneebank unten rechts, Loipe, dazu je Ort eigene Bäume oder Bauten (O.near), nie überall dieselbe Gruppe
-  function nearSide(O) {
+  function nearSide(O, live) {
+    for (const f of (O.flags || [])) if (f[1] >= 650) ANIM(live, 2, flagAnim(f[0], f[1], f[2], f[3], f[4], f[5] || FLAG_OF[O.id] || "at", f[0] * 0.013), f[0] - 2, f[0] + f[3] + 2);
     // Oberkante; mit XE (feste Ebene) endet der Hang hinter dem Bildrand mit einer Kuppe statt an der Leinwand
     const top = XE == null ? [[960, 744], [1060, 718], [1170, 700], [1300, 688], [X1 + 20, 680]]
       : [[960, 744], [1060, 718], [1170, 700], [1300, 688], [XE + 10, 682], [XE + 90, 684], [XE + 160, 700], [XE + 220, 736], [XE + 262, 790], [XE + 285, 900]];
@@ -3396,11 +3397,12 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (F.cross) { const [x, y] = F.cross; line([[x, y + 1], [x, y - 15]], I.tinte, 1.8); line([[x - 5, y - 10], [x + 5, y - 10]], I.tinte, 1.8); }
     for (const cb of (O.cables || [])) {
       line([[cb[0], cb[1]], [cb[2], cb[3]]], P.line, 1.1); station(cb[0], cb[1] + 1); station(cb[2], cb[3] + 1);
-      // bis zum Animations-Haken (Schritt 3): Kabine über das alte live.cable, Lage in Panorama-Einheiten
-      if (live && !live.cable) live.cable = { A: [(cb[0] - 640) * U, (cb[1] - HOR) * U], B: [(cb[2] - 640) * U, (cb[3] - HOR) * U], layer: 0, sp: 2 * Math.PI / (cb[4] || 9) };
+      ANIM(live, 0, cabinAnim(cb), Math.min(cb[0], cb[2]) - 8, Math.max(cb[0], cb[2]) + 8);
     }
+    for (const d of (F.drift || [])) ANIM(live, 0, driftAnim(d[0], d[1], d[2], d[0] * 0.01), d[0], d[0] + 80 * d[2]);
+    if (O.mist !== false) ANIM(live, 0, mistAnim(O.fjord ? O.fjord.y0 + 8 : 524, 17, 7, hash(O.id) ^ 3), -1e4, 1e4);
   }
-  function midLayer(O) {
+  function midLayer(O, live) {
     r = rng(hash(O.id) ^ 23);
     valley(O);
     valleyDetail(O);
@@ -3412,16 +3414,24 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     for (const k of (M.kozolci || [])) kozolec(k[0], k[1]);
     for (const g of (M.groves || [])) grove(g, true);
     if (M.hamlet) { const h = M.hamlet; for (const [dx, w] of [[-34, 10], [-20, 12], [-6, 9], [8, 12], [22, 10]]) house(h.cx + dx, h.yb + (dx % 3), w, w * 0.62, preset("chalet", rng(3))); }
-    for (const T of (O.town || [])) town(T, null);
+    const chim = [];
+    for (const T of (O.town || [])) town(T, chim);
     if (M.city) city(M.city);
     if (M.funicular) { const f = M.funicular; line([[f[0], f[1]], [f[2], f[3]]], P.line, 1.6); station(f[0], f[1]); station(f[2], f[3]); }
+    for (const [x, y, sc, ph] of chim) ANIM(live, 1, smokeAnim(x, y, sc, ph), x - 50 * sc, x + 6);
+    if (M.train) ANIM(live, 1, trainAnim(M.train), M.train.x0, M.train.x1);
+    for (const f of (O.flags || [])) if (f[1] < 650) ANIM(live, 1, flagAnim(f[0], f[1], f[2], f[3], f[4], f[5] || FLAG_OF[O.id] || "at", f[0] * 0.013), f[0] - 2, f[0] + f[3] + 2);
+    if (O.mist !== false) ANIM(live, 1, mistAnim(O.fjord ? 568 : 662, 12, 11, hash(O.id) ^ 9), -1e4, 1e4);
   }
   // Eine Ebene zeichnen. c: Fläche mit Ursprung Mitte/Horizont in Panorama-Einheiten, ext: { c0, c1 } der Ebene
+  // Bewegte Details (Schritt 3): beim Bau einer Ebene gesammelt, je Bild auf der Leinwand an der Lage ihrer Ebene gezeichnet
+  // (animate). live.anim[0] fern, [1] mittel, [2] nah; jede Funktion zeichnet im Entwurfsraum und kennt ihre Breite (x0, x1).
+  const ANIM = (live, i, fn, x0, x1) => { if (!live) return; const A = live.anim || (live.anim = [[], [], []]); fn.x0 = x0; fn.x1 = x1; A[i].push(fn); };
   function paintLayer(id, c, O, ext, tod, live) {
     ctx = c; P = palFor(tod); OFF = [1.3, 0.7]; r = rng(hash(O.id) ^ 11);
     X0 = 640 + ext.c0 / U; X1 = 640 + ext.c1 / U; XE = ext.edge != null ? 640 + ext.edge / U : null;
     c.save(); c.scale(U, U); c.translate(-640, -HOR); c.lineJoin = "round"; c.lineCap = "butt";
-    if (id === "far") farLayer(O, live); else if (id === "mid") midLayer(O); else if (id === "near") nearSide(O); else frontSide(O);
+    if (id === "far") farLayer(O, live); else if (id === "mid") midLayer(O, live); else if (id === "near") nearSide(O, live); else frontSide(O);
     c.restore();
   }
   // Farbe unter einer Ebene (wo ihre Fläche endet)
@@ -3498,6 +3508,69 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     const pt = (u, v) => [x + u * w, y0 + v * h + wv(u)];
     const q = (u0, u1, v0, v1, col) => { const pts = []; for (let i = 0; i <= 6; i++) pts.push(pt(u0 + (u1 - u0) * i / 6, v0)); for (let i = 6; i >= 0; i--) pts.push(pt(u0 + (u1 - u0) * i / 6, v1)); fill(pts, col); };
     (FLAGS[kind] || FLAGS.at)(q);
+  }
+  // ------------------------------------------------------------------ Bewegte Details (Entwurf: telemark-orte.js, „Bewegte Details")
+  // Kreise einer Farbe in einem Pfad: wenige Füllungen je Bild
+  const dots = (list, c) => { if (!list.length) return; ctx.beginPath(); for (const [x, y, rr] of list) { ctx.moveTo(x + rr, y); ctx.arc(x, y, rr, 0, 6.2832); } ctx.fillStyle = c; ctx.fill(); };
+  // Kaminrauch: sieben Wölkchen steigen schräg nach links und werden größer
+  function smokeAnim(x, y, s, ph) {
+    return (t) => {
+      const d = [], l = [];
+      for (let i = 6; i >= 0; i--) { const u = ((t * 0.16 + ph) + i / 7) % 1, px = x - u * 24 * s - u * u * 18 * s, py = y - u * 30 * s, rr = (1.3 + u * 3.6) * s * (u > 0.82 ? (1 - u) / 0.18 : 1); if (rr <= 0.1) continue; d.push([px + 0.5 * s, py + 0.7 * s, rr]); l.push([px, py, rr]); }
+      dots(d, P.smokeD); dots(l, P.smoke);
+    };
+  }
+  // Fahne am Mast, weht von der Stange weg
+  function flagAnim(x, yb, pole, w, h, kind, ph) {
+    return (t) => { line([[x, yb], [x, yb - pole]], I.tinte, 1.8); flagShape(x, yb - pole + 1, w, h, kind, (u) => Math.sin(t * 3.4 + ph - u * 5) * h * 0.13 * u); };
+  }
+  // Zug im Tal: zwei Wagen und Lok mit Dampf, läuft über die Strecke x0 … x1 (dort abgeschnitten)
+  function trainAt(x, yb, t) {
+    for (let i = 0; i < 2; i++) { const cx = x + i * 37; rect(cx, yb - 12, 34, 10, P.roof); rect(cx - 1, yb - 14, 36, 2.4, P.roofSnow); for (let k = 0; k < 5; k++) rect(cx + 3 + k * 6.2, yb - 9.5, 3.4, 3.6, P.winHi); }
+    const lx = x + 76;
+    rect(lx, yb - 15, 11, 13, P.loco); rect(lx - 0.5, yb - 16.5, 12, 2, P.roofSnow); rect(lx + 11, yb - 11, 24, 9, P.loco); rect(lx + 29, yb - 17, 3.4, 6, P.loco); rect(lx + 33, yb - 5, 3, 3, I.rot);
+    dots([x + 6, x + 28, x + 43, x + 65, lx + 4, lx + 16, lx + 26].map((wx) => [wx, yb - 1.4, 2.1]), P.line);
+    const sx = lx + 30.7, sy = yb - 18, d = [], l = [];
+    for (let i = 9; i >= 0; i--) { const u = (i + (t * 2.2) % 1) / 10, px = sx - u * 86, py = sy - u * 30 + u * u * 10, rr = 2.6 + u * 9; d.push([px + 0.8, py + rr * 0.3, rr]); l.push([px, py - rr * 0.08, rr * 0.92]); }
+    dots(d, P.smokeD); dots(l, P.smoke);
+  }
+  function trainAnim(T) {
+    const L = (T.x1 - T.x0) + 260;
+    return (t) => { const x = T.x0 - 130 + ((t * T.speed) % L); ctx.save(); ctx.beginPath(); ctx.rect(T.x0, T.y - 60, T.x1 - T.x0, 80); ctx.clip(); trainAt(x, T.y, t); ctx.restore(); };
+  }
+  // Seilbahn: zwei Kabinen pendeln gegenläufig zwischen Tal- und Bergstation (Periode per s)
+  function cabinAnim(c) {
+    const [ax, ay, bx, by, per] = c;
+    return (t) => { const u = 0.5 - 0.5 * Math.cos((t / (per || 9)) * 2 * Math.PI); for (const v of [u, 1 - u]) { const x = ax + (bx - ax) * v, y = ay + (by - ay) * v; line([[x, y], [x, y + 5]], P.line, 0.9); rect(x - 4, y + 5, 8, 6, I.rot); rect(x - 3, y + 6.5, 6, 2, P.wall); } };
+  }
+  // Schneefahne am Grat: Wölkchen wehen vom Gipfel nach rechts und vergehen
+  function driftAnim(px, py, s, ph) {
+    return (t) => {
+      const l = [];
+      for (let i = 0; i < 7; i++) { const u = ((t * 0.18 + ph) + i / 7) % 1, x = px + 4 + u * 70 * s, y = py + 2 + u * 12 * s + Math.sin(u * 7 + t) * 2 * s, rr = (1 + u * 5) * s * (u < 0.15 ? u / 0.15 : 1 - u); if (rr > 0.2) l.push([x, y, rr]); }
+      dots(l, P.abend ? P.alp.firn : P.alp.lit);
+    };
+  }
+  // Talnebel: vier Linsen ziehen langsam vorbei (Vollton mit dunklerer Unterkante)
+  function mistAnim(y, h, speed, seed) {
+    const rr = rng(seed), segs = [];
+    for (let i = 0; i < 4; i++) segs.push({ x: rr() * 1700, L: 260 + rr() * 380, h: h * (0.6 + rr() * 0.6), dy: (rr() - 0.5) * h * 1.2, ph: rr() * 6 });
+    return (t) => {
+      const col = P.abend ? mix(P.valley, P.sky[4], 0.35) : mix(I.papier, I.dunst, 0.25), colD = P.abend ? mix(P.valleyShade, P.sky[3], 0.3) : mix(I.dunst, I.schatten, 0.35);
+      for (const g of segs) {
+        const cx = ((g.x + t * speed) % 1900) - 300, yy = y + g.dy, top = [], bot = [];
+        for (let k = 0; k <= 14; k++) { const u = k / 14, x = cx - g.L / 2 + u * g.L, env = Math.pow(Math.sin(u * Math.PI), 0.7); top.push([x, yy - g.h * env + Math.sin(u * 9 + g.ph + t * 0.2) * 1.6]); bot.push([x, yy + g.h * 0.35 * env]); }
+        const shp = top.concat(bot.reverse());
+        shade(shp, colD);
+        fill(shp.map((p, i) => [p[0], p[1] + (i < top.length ? 2.2 : -1)]), col);
+      }
+    };
+  }
+  // Je Bild: die bewegten Details einer Ebene zeichnen (Leinwand im Entwurfsraum: Ursprung Ebene, Maßstab U·k). x0/x1: sichtbarer
+  // Bereich in Entwurfs-px; Details außerhalb entfallen.
+  function animate(c, tod, list, t, x0, x1) {
+    ctx = c; P = palFor(tod); OFF = [1.3, 0.7]; c.lineJoin = "round"; c.lineCap = "butt";
+    for (const fn of list) if (fn.x1 >= x0 && fn.x0 <= x1) fn(t);
   }
   // Richterturm: Kabine mit Fensterband und zwei Landesfahnen; Holz auf Gitterstützen oder verputzter Pfeiler. Fuß bei (x, yb).
   function judgeTower(place, x, yb) {
@@ -3620,7 +3693,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     return { cv, w, up, h, dpr, m };
   }
 
-  root.TMPlakat = { INK: I, PAL, palFor, mix, rng, hash, U, HOR, BASE, paintLayer, layerGround, peakOf, buildSky, skyX, grainTile, sprayStrip, erdLine,
+  root.TMPlakat = { INK: I, PAL, palFor, mix, rng, hash, U, HOR, BASE, paintLayer, layerGround, peakOf, buildSky, skyX, grainTile, sprayStrip, erdLine, animate,
     hangPlan, drawWith, OVT, FLAG_OF };
 })(typeof window !== "undefined" ? window : globalThis);
 
@@ -4892,7 +4965,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       }
       const yb = q.dy + q.dh;
       if (yb < Hs && L.ground) { ctx.fillStyle = L.ground; ctx.fillRect(0, yb - 1, W, Hs - yb + 2); }
-      pos.push({ ox: q.ox, oy: q.oy });
+      pos.push({ ox: q.ox, oy: q.oy, on: na > 0.01 && !q.off, a: na });
     }
     drawLive(ctx, P, pos, W, k, t);
     return pos;
@@ -4916,6 +4989,17 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         const x = pos[0].ox + (A[0] + (B[0] - A[0]) * u) * k, y = pos[0].oy + (A[1] + (B[1] - A[1]) * u) * k;
         ctx.fillStyle = TH.night ? "rgba(255,226,160,0.95)" : "#C8463A"; ctx.fillRect(x - 1.4 * k, y, 2.8 * k, 1.8 * k);
       }
+    }
+    // Bewegte Details der Plakat-Orte (Schneefahnen, Seilbahn, Zug, Rauch, Fahnen, Talnebel): je Ebene in ihrer Lage, nur sichtbare
+    const A = live.anim;
+    if (A) for (let i = 0; i < A.length; i++) {
+      const q = pos[i];
+      if (!q || !A[i].length || q.on === false) continue;
+      const s = k * PK.U, x0 = 640 - (q.ox + 30) / s, x1 = 640 + (W + 30 - q.ox) / s;
+      ctx.save(); if (q.a < 0.999) ctx.globalAlpha = q.a;
+      ctx.translate(q.ox, q.oy); ctx.scale(s, s); ctx.translate(-640, -PK.HOR);
+      PK.animate(ctx, TH.name, A[i], t, x0, x1);
+      ctx.restore();
     }
     if (live.ferry) {
       const f = live.ferry, span = f.c1 - f.c0, u = ((t * 2.2) % (span + 200)) - 100;
@@ -4966,7 +5050,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       bgShow(m.c, on);
       if (on) { bgPos(m.c, q.dx, q.dy); bgAlpha(m.c, na); }
       if (m.g) { const yb = q.dy + q.dh; bgShow(m.g, yb < Hs); bgPos(m.g, 0, yb - 1); }
-      pos.push({ ox: q.ox, oy: q.oy });
+      pos.push({ ox: q.ox, oy: q.oy, on, a: na });
     }
     return pos;
   }
@@ -5444,7 +5528,10 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       const top = H.inrun[H.inrun.length - 1];
       // Gelände unter dem Anlauf: Abstand wächst von der Tischhöhe bis zur Turmhöhe am Start.
       // Turm auf einer Kuppe: links davon fällt das Gelände ins Tal; am Hang: es steigt weiter an.
-      const T = H.towerTop != null ? H.towerTop : 24;
+      const T0 = H.towerTop != null ? H.towerTop : 24, sup = archFor(H.key).sup;
+      // am Hang mit festem Unterbau (Beton, Stufen): Gelände knapp unter der Spur, die Spur steht auf kurzen Stützen (Entwurf: Holzbahn
+      // auf Stützen, Boden 4–6 m darunter). Türme (Gitter, Pfeiler, Stahlröhre) behalten ihre Höhe.
+      const T = H.hillside && (sup === "solid" || sup === "steps") ? Math.min(T0, H.tableH + 2.4) : T0;
       const under = [];
       const N = 14;
       for (let i = N; i >= 0; i--) {
@@ -6109,15 +6196,24 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
           ctx.fillStyle = "rgba(0,0,0,0.16)"; this.path([pts[1], S(p.x + 0.25, top), S(p.x + 0.4, gy - 0.5), pts[2]], true); ctx.fill();
         }
       } else {
-        // am Hang: Erdreich bis unter die Spur, darauf ein Betonsockel mit Fugen (bei "steps" mit der Treppe der Springer)
-        const top = [], fnd = [], cut = [];
+        // am Hang: Betonsockel mit Fugen auf Stützen (bei "steps" mit der Treppe der Springer)
+        const top = [], fnd = [];
         const st = Math.max(1, Math.round(2 / ds));
         for (let i = I.length - 1; i >= 0; i -= st) {
           const p = I[i]; if (!vis(p.x, 14)) continue;
-          top.push(S(p.x, p.y - dth(i))); fnd.push(S(p.x, p.y - dth(i) - 1.15)); cut.push(S(p.x, Math.min(G.terrainY(p.x), p.y - dth(i) - 1.15) - 0.4));
+          top.push(S(p.x, p.y - dth(i))); fnd.push(S(p.x, p.y - dth(i) - 1.15));
         }
         if (top.length > 1) {
-          ctx.fillStyle = C.ground; this.path(fnd.concat(cut.slice().reverse()), true); ctx.fill();
+          // Stützen bis zum Gelände (alle 5 m), statt einer Erdfüllung unter der Spur
+          ctx.strokeStyle = N(mixHex(A.side, "#3A4250", 0.5), 0.5); ctx.lineWidth = Math.max(1.2, 0.32 * pp); ctx.lineCap = "butt"; ctx.beginPath();
+          const pst = Math.max(1, Math.round(5 / ds));
+          for (let i = I.length - 1; i >= 0; i -= pst) {
+            const p = I[i]; if (!vis(p.x, 4)) continue;
+            const yb = p.y - dth(i) - 1.15, gy = G.terrainY(p.x);
+            if (yb - gy < 0.3) continue;
+            const [x, y1] = S(p.x, yb), [, y2] = S(p.x, gy - 0.4); ctx.moveTo(x, y1); ctx.lineTo(x, y2);
+          }
+          ctx.stroke();
           ctx.fillStyle = N(mixHex(A.side, "#3A4250", 0.3), 0.45); this.path(top.concat(fnd.slice().reverse()), true); ctx.fill();
           ctx.strokeStyle = "rgba(0,0,0,0.22)"; ctx.lineWidth = Math.max(1, 0.06 * pp); ctx.beginPath();
           for (let sM = 8; sM < Hh.inrunLen; sM += 8) {
@@ -6322,14 +6418,23 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       const lit = C.flood ? C.warm : "#5D7896";
       const gy = G.terrainY(tp.x - 2) - tp.y;          // Gelände unter dem Haus (relativ, negativ)
       const flag = (x, y, code) => {
+        if (pp <= 6) return;   // in der Übersicht zu klein: ohne Tuch kein Mast (sonst ein einzelner heller Strich)
         const [fx, fy] = P(x, y), [, fy2] = P(x, y + 3.2);
         ctx.strokeStyle = N("#C9CED6", 0.35); ctx.lineWidth = Math.max(1, 0.07 * pp);
         ctx.beginPath(); ctx.moveTo(fx, fy); ctx.lineTo(fx, fy2); ctx.stroke();
-        if (pp > 6) { ctx.save(); ctx.translate(fx + 0.5, fy2 + 0.05 * pp); Scene.drawFlag(ctx, code, 1.5 * pp, 1.0 * pp); ctx.restore(); }
+        ctx.save(); ctx.translate(fx + 0.5, fy2 + 0.05 * pp); Scene.drawFlag(ctx, code, 1.5 * pp, 1.0 * pp); ctx.restore();
+      };
+      // Häuschen über dem Gelände: auf zwei Stelzen bis zum Boden (statt in der Luft)
+      const stilts = (x0, x1) => {
+        if (gy > -0.3) return;
+        ctx.strokeStyle = N(mixHex(A.side, "#3A4250", 0.5), 0.5); ctx.lineWidth = Math.max(1.2, 0.3 * pp); ctx.lineCap = "butt"; ctx.beginPath();
+        for (const x of [x0 + 0.35, x1 - 0.35]) { const [a, b] = P(x, 0), [, c] = P(x, gy - 0.3); ctx.moveTo(a, b); ctx.lineTo(a, c); }
+        ctx.stroke();
       };
       const nat = { holmenkollen: "NOR", zakopane: "POL", innsbruck: "AUT", bischofshofen: "AUT", engelberg: "SUI", planica: "SLO", predazzo: "ITA", oberstdorf: "GER", garmisch: "GER", willingen: "GER" }[Hh.key.split("-")[0]];
       switch (A.hut) {
         case "glass": {
+          stilts(-4.9, 0.7);
           rect(-4.8, -0.35, 0.7, 0, N("#8E8A80"));
           rect(-4.3, 0, 0.2, 2.6, glass(0, 2.6));
           ctx.strokeStyle = N("#2B3442", 0.2); ctx.lineWidth = Math.max(1, 0.07 * pp); ctx.beginPath();
@@ -6351,6 +6456,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
           break;
         }
         case "chalet": {
+          stilts(-3.8, 0.2);
           rect(-3.8, 0, 0.2, 2.3, N("#7B5A3D"));
           if (pp > 9) { ctx.strokeStyle = N("#56402B", 0.4); ctx.lineWidth = Math.max(0.8, 0.04 * pp); ctx.beginPath();
             for (let y = 0.35; y < 2.3; y += 0.35) { const [a, b] = P(-3.8, y), [c] = P(0.2, y); ctx.moveTo(a, b); ctx.lineTo(c, b); } ctx.stroke(); }
@@ -6362,6 +6468,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
           break;
         }
         case "goral": {
+          stilts(-3.3, 0.1);
           // Holzhaus im Zakopane-Stil: dunkle Balken, sehr steiles Schindeldach mit Schneekante und Giebelspitze
           rect(-3.3, 0, 0.1, 2.0, N("#6A4A31"));
           if (pp > 9) { ctx.strokeStyle = N("#3E2B1C", 0.4); ctx.lineWidth = Math.max(0.8, 0.05 * pp); ctx.beginPath();
@@ -6410,6 +6517,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
           break;
         }
         case "timber": {
+          stilts(-5.0, 0.3);
           rect(-5.0, 0, 0.3, 2.6, N("#8A6A48"));
           if (pp > 9) { ctx.strokeStyle = N("#634A32", 0.4); ctx.lineWidth = Math.max(0.8, 0.04 * pp); ctx.beginPath();
             for (let x = -4.8; x < 0.3; x += 0.32) { const [a, b] = P(x, 0), [, c] = P(x, 2.6); ctx.moveTo(a, b); ctx.lineTo(a, c); } ctx.stroke(); }
@@ -7758,7 +7866,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.31";
+  const VERSION = "0.32";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
