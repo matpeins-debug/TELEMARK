@@ -1566,6 +1566,14 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       about: "Über Oslo wird seit 1892 gesprungen. Der Holmenkollen war Schauplatz der Winterspiele 1952 und der Weltmeisterschaften 1930, 1966, 1982 und 2011. Die heutige Stahlschanze wurde 2010 eröffnet, ihr fest eingebauter Windschutz ist weltweit einzigartig. Im März ist Oslo Station einer norwegischen Wettkampfserie.", tip: "Tiefe Lage, dichte Luft: Im Wettkampf reichen hier rund 88 km/h für Weiten bis HS.",
       source: "FIS Media Guide Oslo 2026", record: { m: 144.0, nation: "NOR", year: 2019, date: "2019-03-09", event: "Teamwettkampf, 1. Durchgang", gate: 10, wind: 1.38, speed: 88.4,
         how: "Luke für seine Gruppe von 12 auf 10 verkürzt, 2. Durchgang wegen Wind abgesagt. Ein Kombinierer sprang 2025 sogar 146,0 m; im Skispringen zählt das nicht." } },
+    // Midtstubakken (Normalschanze am Holmenkollen): skisprungschanzen.com (Anlauf, Tisch, Landewinkel, Tempo), Profil nach FIS-Norm.
+    // Luken und Windfaktoren geschätzt (wie die Normalschanze in Predazzo), keine Wettkampfdaten 2025/26.
+    { key: "holmenkollen-nh", alt: 300, name: "Holmenkollen", fullName: "Midtstubakken", place: "Oslo", nation: "NOR", cls: "Normalschanze", est: true,
+      K: 95, HS: 106, beta: 33.5, tableH: 2.38,
+      e1: 89.76, windKH: 1.048, windKT: 1.474, windTail: 13.5, windHead: 9.0, fisGate: 6.0, airK: 0.975, gateRefS: 80.26, gateRef: 13, gateRefV: 86.9, gateStep: 0.5, gates: 30, gamma: 35, r1: 93, t: 6.15, alpha: 10.75, r2: 110, v0: 90.36, towerTop: 16, hillside: true,
+      about: "Midtstubakken liegt rund 500 m vom Holmenkollen entfernt, an der U-Bahn-Station Midtstuen. Schon 1927 stand hier eine Schanze; die heutige wurde 2010 für die Weltmeisterschaft 2011 neu gebaut und war dort Normalschanze.", tip: "Normalschanze: Der Meter zählt 2,0 Punkte, der Flug ist kurz. Fehler kosten weniger Meter, aber jeder Meter wiegt mehr.",
+      source: "Richtwerte (skisprungschanzen.com, kein Zertifikat)", record: { m: 111.5, nation: "AUT", year: 2011, date: null, event: "2011 in Oslo", gate: null, wind: null, speed: null,
+        how: "Den Rekord teilt er sich mit einem Kombinierer. Luke und Wind sind nicht überliefert." } },
     // Schattenbergschanze: FIS-Zertifikat 149/GER vom 03.08.2022 (Scan)
     { key: "oberstdorf", alt: 860, name: "Oberstdorf", fullName: "Schattenbergschanze", place: "Oberstdorf", nation: "GER", cls: "Großschanze",
       K: 120, HS: 137, h: 59.52, n: 103.51, P: 108.85, betaP: 37.43, beta: 35.5, betaL: 33.56, tableH: 3.38,
@@ -1615,6 +1623,14 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       about: "Die Wielka Krokiew am Fuß der Tatra wurde 1925 eröffnet, seit 1980 springt hier jedes Jahr die Weltspitze. Zakopane war Gastgeber der Nordischen Ski-WM 1929, 1939 und 1962. Beim Umbau 2016/17 bekam die Schanze eine Eisspur im Anlauf und einen neuen Aufsprunghang mit HS 140 statt 134.", tip: "Eisspur im Anlauf: Eine Luke mehr bringt hier knapp 0,4 km/h und gut 2 m Weite.",
       source: "Richtwerte (Zertifikat nicht online)", record: { m: 147.0, nation: "JPN", year: 2020, date: "2020-01-25", event: "Teamspringen, 2. Durchgang", gate: 19, wind: -0.37, speed: 92.7,
         how: "Bei leichtem Rückenwind, 3,5 m über dem alten Rekord; die Luken waren damals anders nummeriert. 2024 wurde der Rekord eingestellt." } },
+    // Średnia Krokiew (Normalschanze, Umbau 2021): skisprungschanzen.com (Anlauf, Tisch, Landewinkel, Tempo), Profil nach FIS-Norm.
+    // Luken und Windfaktoren geschätzt (wie Predazzo HS107), keine Wettkampfdaten 2025/26.
+    { key: "zakopane-nh", alt: 900, name: "Zakopane", fullName: "Średnia Krokiew", place: "Zakopane", nation: "POL", cls: "Normalschanze", est: true,
+      K: 95, HS: 105, beta: 34.2, tableH: 2.07,
+      e1: 88.35, windKH: 1.063, windKT: 1.43, windTail: 13.5, windHead: 9.0, fisGate: 6.0, airK: 0.975, gateRefS: 80.85, gateRef: 17, gateRefV: 87.3, gateStep: 0.5, gates: 30, gamma: 35, r1: 93, t: 6.3, alpha: 10.5, r2: 110, v0: 89.64, towerTop: 14, hillside: true,
+      about: "Die Średnia Krokiew ist die Normalschanze gleich neben der Wielka Krokiew. Sie wurde 1950 eröffnet, war 1962 WM-Schanze und wurde 2021 umgebaut und auf HS 105 vergrößert. Für die Springer aus Zakopane ist sie die wichtigste Trainingsschanze.", tip: "Normalschanze: kurzer Flug, der Meter zählt 2,0 Punkte. Ein sauberer Absprung bringt hier mehr als jede Korrektur in der Luft.",
+      source: "Richtwerte (skisprungschanzen.com, kein Zertifikat)", record: { m: 109.5, nation: "POL", year: 2021, date: "2021-12-17", event: "Lotos Cup", gate: null, wind: null, speed: null,
+        how: "Bei einem polnischen Nachwuchswettbewerb kurz nach dem Umbau. Luke und Wind sind nicht überliefert." } },
     // Mühlenkopfschanze: aktuelles FIS-Zertifikat (HS147 seit 2021) nicht online; Profil aus Simulator-Datensätzen (h/n 0,59 wie im Zertifikat von 2010),
     // Luken aus den FIS-Ergebnislisten 2025/26 (Lukenlage 2026)
     { key: "willingen", alt: 680, name: "Willingen", fullName: "Mühlenkopfschanze", place: "Willingen", nation: "GER", cls: "Großschanze",
@@ -1639,11 +1655,27 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       about: "Planica gilt als Wiege des Skifliegens: 1936 sprang hier zum ersten Mal ein Mensch über 100 m. Die Flugschanze unter den Ponce-Gipfeln wurde 1969 eröffnet, 1994 flog man hier erstmals über 200 m. Beim Umbau 2013–2015 bekam sie einen neuen Anlauf aus Beton. Traditionell endet in Planica die Saison.", tip: "Skifliegen: Ein Meter zählt nur 1,2 Punkte, der Flug dauert über 8 Sekunden. Halte die Haltung lange ruhig, kleine Fehler wirken hier lange nach.",
       source: "FIS-Zertifikat 2015/2018", record: { m: 254.5, nation: "SLO", year: 2025, date: "2025-03-30", event: "Einzelspringen, 2. Durchgang", gate: 12, wind: 0.32, speed: 103.1,
         how: "Zugleich Weltrekord, 1 m über der alten Bestmarke von 2017. Gesprungen zwei Luken unter der Startluke des Durchgangs." } },
+    // Bloudkova velikanka (Großschanze in Planica, Neubau 2012): skisprungschanzen.com (Anlauf, Tisch, Landewinkel, Tempo), Profil nach FIS-Norm.
+    // Luken und Windfaktoren geschätzt (wie Engelberg), keine Wettkampfdaten 2025/26.
+    { key: "planica-lh", alt: 940, name: "Planica", fullName: "Bloudkova velikanka", place: "Planica", nation: "SLO", cls: "Großschanze", est: true,
+      K: 125, HS: 138, beta: 33.55, tableH: 3.1,
+      e1: 96.7, windKH: 1.064, windKT: 1.364, windTail: 15.66, windHead: 10.44, fisGate: 7.56, airK: 1.0, gateRefS: 89.2, gateRef: 17, gateRefV: 91.7, gateStep: 0.5, gates: 30, gamma: 35, r1: 105, t: 6.7, alpha: 11, r2: 100, v0: 95.2, towerTop: 10, hillside: true,
+      about: "Die Bloudkova velikanka steht gleich neben der Flugschanze. Sie wurde 1934 eröffnet, 1936 sprang hier erstmals ein Mensch über 100 m. Nach dem Einsturz 2001 wurde sie 2012 an derselben Stelle neu gebaut; 2023 war sie die Großschanze der Weltmeisterschaft.", tip: "Großschanze unter den Ponce-Gipfeln: rund 95 km/h Anfahrt. Ein ruhiger Flug trägt hier bis an die HS.",
+      source: "Richtwerte (skisprungschanzen.com, kein Zertifikat)", record: { m: 142.0, nation: "SLO", year: 2014, date: "2014-03-23", event: "Weltcup", gate: null, wind: null, speed: null,
+        how: "Gesprungen, als die Flugschanze nebenan umgebaut wurde und der Weltcup hierher auswich. Ein Kombinierer flog 2023 bei der WM 147,0 m; im Skispringen zählt das nicht." } },
+    // Heini-Klopfer-Skiflugschanze (Oberstdorf, Umbau 2014–2017): skisprungschanzen.com (Anlauf, Tisch, Landewinkel, Tempo), Profil wie Planica.
+    // Luken und Windfaktoren geschätzt (wie Planica), keine Wettkampfdaten 2025/26.
+    { key: "oberstdorf-fh", alt: 930, name: "Oberstdorf", fullName: "Heini-Klopfer-Skiflugschanze", place: "Oberstdorf", nation: "GER", cls: "Skiflugschanze", est: true,
+      K: 200, HS: 235, hn: 0.6, l1: 17, betaP: 36.3, beta: 33.9, betaL: 30.7, tableH: 3.4,
+      e1: 118, windKH: 1.184, windKT: 1.412, windTail: 21.6, windHead: 14.4, fisGate: 4.9, airK: 1.02, gateRefS: 104.0, gateRef: 18, gateRefV: 101.7, gateStep: 1.0, gates: 31, gamma: 38.7, r1: 105, t: 8.5, alpha: 11.2, r2: 100, r2L: 300, beta0: 9, outrun: 130, v0: 108, towerTop: 22, hillside: true,
+      about: "Die Heini-Klopfer-Skiflugschanze steht im Stillachtal, rund 7 km südlich der Schattenbergschanze. Sie wurde 1950 eröffnet und später nach ihrem Erbauer benannt; 21 Weltrekorde wurden hier gesprungen. Nach dem Umbau 2014–2017 hat sie HS 235.", tip: "Skifliegen mit dem steilsten Anlauf im Spiel: rund 108 km/h. Ein Meter zählt nur 1,2 Punkte, halte die Haltung lange ruhig.",
+      source: "Richtwerte (skisprungschanzen.com, kein Zertifikat)", record: { m: 242.5, nation: "SLO", year: 2022, date: "2022-03-20", event: "Weltcup", gate: null, wind: null, speed: null,
+        how: "Der weiteste Flug seit dem Umbau. Luke und Wind sind nicht überliefert." } },
   ];
 
   // Kalibrierung (test/calib_hills.js): Standardluke = perfekter Sprung ohne Wind landet bei HS - 1 (Normalschanze HS - 1,5),
   // Lukenfaktor in Punkten je Luke, Landedruck-Grenzen für Telemark und Sturz.
-  const CALIB = /*CALIB*/{"holmenkollen":{"refGate":11,"hardLanding":1.3,"fallLanding":2.05,"hardD":139,"fallD":146},"oberstdorf":{"refGate":12,"hardLanding":1.3,"fallLanding":2.05,"hardD":144,"fallD":149.5},"garmisch":{"refGate":14,"hardLanding":1.31,"fallLanding":2.06,"hardD":146,"fallD":151.5},"innsbruck":{"refGate":9,"hardLanding":1.5,"fallLanding":2.25,"hardD":130,"fallD":136},"bischofshofen":{"refGate":17,"hardLanding":1.36,"fallLanding":2.11,"hardD":145.5,"fallD":153},"predazzo-lh":{"refGate":16,"hardLanding":1.56,"fallLanding":2.31,"hardD":144,"fallD":150.5},"predazzo-nh":{"refGate":15,"hardLanding":1.49,"fallLanding":2.24,"hardD":110,"fallD":116},"zakopane":{"refGate":12,"hardLanding":1.3,"fallLanding":2.05,"hardD":143.5,"fallD":150.5},"willingen":{"refGate":10,"hardLanding":1.3,"fallLanding":2.05,"hardD":151.5,"fallD":159.5},"engelberg":{"refGate":14,"hardLanding":1.34,"fallLanding":2.09,"hardD":143.5,"fallD":149},"planica":{"refGate":9,"hardLanding":1.38,"fallLanding":2.13,"hardD":247,"fallD":256.5}}/*END*/;
+  const CALIB = /*CALIB*/{"holmenkollen":{"refGate":11,"hardLanding":1.3,"fallLanding":2.05,"hardD":139,"fallD":146},"oberstdorf":{"refGate":12,"hardLanding":1.3,"fallLanding":2.05,"hardD":144,"fallD":149.5},"garmisch":{"refGate":14,"hardLanding":1.31,"fallLanding":2.06,"hardD":146,"fallD":151.5},"innsbruck":{"refGate":9,"hardLanding":1.5,"fallLanding":2.25,"hardD":130,"fallD":136},"bischofshofen":{"refGate":17,"hardLanding":1.36,"fallLanding":2.11,"hardD":145.5,"fallD":153},"predazzo-lh":{"refGate":16,"hardLanding":1.56,"fallLanding":2.31,"hardD":144,"fallD":150.5},"predazzo-nh":{"refGate":15,"hardLanding":1.49,"fallLanding":2.24,"hardD":110,"fallD":116},"zakopane":{"refGate":12,"hardLanding":1.3,"fallLanding":2.05,"hardD":143.5,"fallD":150.5},"willingen":{"refGate":10,"hardLanding":1.3,"fallLanding":2.05,"hardD":151.5,"fallD":159.5},"engelberg":{"refGate":14,"hardLanding":1.34,"fallLanding":2.09,"hardD":143.5,"fallD":149},"planica":{"refGate":9,"hardLanding":1.38,"fallLanding":2.13,"hardD":247,"fallD":256.5},"holmenkollen-nh":{"refGate":13,"hardLanding":1.37,"fallLanding":2.12,"hardD":108.5,"fallD":116},"zakopane-nh":{"refGate":17,"hardLanding":1.3,"fallLanding":2.05,"hardD":108.5,"fallD":115},"planica-lh":{"refGate":17,"hardLanding":1.55,"fallLanding":2.3,"hardD":140.5,"fallD":147},"oberstdorf-fh":{"refGate":18,"hardLanding":1.3,"fallLanding":2.05,"hardD":244.5,"fallD":254}}/*END*/;
 
   // Fehlende Profilwerte nach FIS-Norm ergänzen (Mitte des erlaubten h/n-Bereichs, Landebereich als Kreis)
   function deriveDefaults(d) {
@@ -2618,14 +2650,15 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     tour: { label: "Tournee", hills: ["oberstdorf", "garmisch", "innsbruck", "bischofshofen"], scoring: "sum", ko: true },
     season4: { label: "Saison kurz", hills: ["engelberg", "zakopane", "willingen", "holmenkollen"], scoring: "place" },
     season: { label: "Saison", hills: ["engelberg", "oberstdorf", "garmisch", "innsbruck", "bischofshofen", "zakopane", "willingen", "predazzo-lh", "holmenkollen", "planica"], scoring: "place" },
-    flight: { label: "Skiflug-Woche", hills: ["planica", "planica"], scoring: "sum", fly: true },
+    flight: { label: "Skiflug-Woche", hills: ["oberstdorf-fh", "planica"], scoring: "sum", fly: true },
   };
   const ME_SEED = 19.5;   // deine Setzposition vor der ersten Station (wie im Einzelwettkampf: 30. von 50 am Start)
   const hillNation = (key) => { const h = Hill.HILLS.find((x) => x.key === key); return h ? h.nation : null; };
+  const isFly = (key) => { const h = Hill.HILLS.find((x) => x.key === key); return !!h && h.cls === "Skiflugschanze"; };
 
   function champNew(o) {
     const F = FORMATS[o.format] || FORMATS.tour;
-    const hills = F.hills.filter((k) => o.flyOk || k !== "planica");
+    const hills = F.hills.filter((k) => o.flyOk || !isFly(k));
     return { v: 1, kind: "ai", format: FORMATS[o.format] ? o.format : "tour", level: o.level || "mid", seed: o.seed >>> 0, windMode: o.windMode || "var",
       player: { name: o.player.name, nation: o.player.nation }, hills, station: 0, totals: {}, prevRank: {}, results: [], done: false, st: null };
   }
@@ -2637,7 +2670,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   }
   // Feld für Station i: feste Stärken plus Formkurve über die Saison, Tagesform, Heimvorteil und Skiflug-Spezialisten
   function champField(ch, i) {
-    const key = ch.hills[Math.min(i, ch.hills.length - 1)], home = hillNation(key), fly = key === "planica";
+    const key = ch.hills[Math.min(i, ch.hills.length - 1)], home = hillNation(key), fly = isFly(key);
     const day = Ph.rng(ch.seed * 7 + i * 104729 + 3);
     return makeField(ch.level, ch.seed).map((a) => {
       const rr = Ph.rng(ch.seed * 13 + (+a.id.slice(2)) * 389 + 1);
@@ -3712,13 +3745,14 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   };
   // Schanzenname je Ort für das Schanzenschild (Schanzennamen, keine Marken); Richterturm verputzt statt Holz auf Gitterstützen
   const SCHILD = { willingen: "MÜHLENKOPF", engelberg: "TITLIS-SCHANZE", predazzo: "DAL BEN", holmenkollen: "HOLMENKOLLEN", oberstdorf: "SCHATTENBERG", garmisch: "GUDIBERG",
-    innsbruck: "BERGISEL", bischofshofen: "BISCHOFSHOFEN", zakopane: "WIELKA KROKIEW", planica: "LETALNICA" };
+    innsbruck: "BERGISEL", bischofshofen: "BISCHOFSHOFEN", zakopane: "WIELKA KROKIEW", planica: "LETALNICA",
+    "oberstdorf-fh": "HEINI-KLOPFER", "planica-lh": "BLOUDKOVA", "holmenkollen-nh": "MIDTSTUBAKKEN", "zakopane-nh": "ŚREDNIA KROKIEW" };
   const PUTZ = { garmisch: 1, innsbruck: 1, oberstdorf: 1, planica: 1, predazzo: 1 };
   const HOUSE = { willingen: "fachwerk", engelberg: "chalet", predazzo: "italien", holmenkollen: "nordisch", oberstdorf: "chalet", garmisch: "bayern",
     innsbruck: "chalet", bischofshofen: "chalet", zakopane: "goral", planica: "chalet" };
   // Plan des Hangs für eine Schanze in Weltmetern: x am Hang, Tiefen relativ zur Kante bzw. zum Gürtel, Größen in m. Fest je Schanze.
   // place: Ort (ohne Variante), topX: Anlaufbeginn (x < 0), endX: Ende des Auslaufs, xK: x am K-Punkt, x03/x09: x bei 0,3·K und 0,9·K.
-  function hangPlan(place, topX, endX, xK, x03, x09) {
+  function hangPlan(place, topX, endX, xK, x03, x09, key) {
     const V = OVT[place] || OVT.engelberg, M = 3.5;
     const ox = (o) => (o < 393 ? (o - 393) / (393 - 34) * -topX : (o - 393) / (1300 - 393) * endX);
     const rr = rng(hash(place) ^ 0x7a11), tall = V.tall ? 1.3 : 1, out = { V, typ: V.typ, tall, x03, x09, endX, topX };
@@ -3743,7 +3777,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     // Latschen: niedrige Polster auf dem Schnee (Planica)
     out.humps = [];
     if (V.typ === "latschen") for (let x = topX - 60; x < ox(560); x += 2.6 + rr() * 4.6) if (rr() < 0.7) out.humps.push({ x, d: 4 + rr() * 40, h: 1.7 + rr() * 2.6 });
-    out.sign = { x: ox(610), d: 64 / M, text: SCHILD[place] || place.toUpperCase() };
+    out.sign = { x: ox(610), d: 64 / M, text: SCHILD[key] || SCHILD[place] || place.toUpperCase() };
     out.ph = V.ph || 0; out.thick = V.thick || 1;
     return out;
   }
@@ -4176,8 +4210,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   const SKIN = ["#E2BC9E", "#C9966F", "#8E5F43"];
   const HAT = [PI0.rot, PI0.papier, PI0.navy, PI0.ocker, PI0.himmel, PI0.gruen, PI0.tinte, pm(PI0.rot, PI0.violett, 0.4), PI0.tinte];
   const SHADE = PI0.tinte;
-  const HOME = { holmenkollen: "NOR", oberstdorf: "GER", garmisch: "GER", innsbruck: "AUT", bischofshofen: "AUT", "predazzo-lh": "ITA", "predazzo-nh": "ITA",
-    zakopane: "POL", willingen: "GER", engelberg: "SUI", planica: "SLO" };
+  const HOME = { holmenkollen: "NOR", "holmenkollen-nh": "NOR", oberstdorf: "GER", "oberstdorf-fh": "GER", garmisch: "GER", innsbruck: "AUT", bischofshofen: "AUT", "predazzo-lh": "ITA", "predazzo-nh": "ITA",
+    zakopane: "POL", "zakopane-nh": "POL", willingen: "GER", engelberg: "SUI", planica: "SLO", "planica-lh": "SLO" };
   const GUEST = ["POL", "SLO", "AUT", "GER", "NOR", "JPN", "SUI", "FIN", "CZE", "ITA", "USA"];
   const CHEER = {
     NOR: ["HEIA NORGE", "HEIA!"], GER: ["AUF GEHT'S!", "HOPP!"], AUT: ["HOPP AUSTRIA", "AUF GEHT'S!"], ITA: ["FORZA!", "FORZA AZZURRI"],
@@ -5798,6 +5832,13 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     engelberg: { sup: "solid", side: "#7E5D41", line: "#5A422E", rail: "boards", hut: "chalet", table: "block", acc: "#D52B1E", acc2: "#F4F1EA", text: "ENGELBERG", swiss: true },
     planica: { sup: "solid", side: "#AFA99D", line: "#827C71", rail: "net", hut: "roof", table: "block", acc: "#1E8A4C", acc2: "#F4F1EA", text: "LETALNICA" },
   };
+  // Zweite Schanzen eines Ortes: Bauweise des Ortes, eigener Name an der Seitenwand
+  Object.assign(ARCH, {
+    "oberstdorf-fh": Object.assign({}, ARCH.oberstdorf, { sup: "pylon", hut: "cube", text: "HEINI-KLOPFER" }),
+    "planica-lh": Object.assign({}, ARCH.planica, { text: "BLOUDKOVA" }),
+    "holmenkollen-nh": Object.assign({}, ARCH.holmenkollen, { sup: "solid", hut: "roof", table: "block", text: "MIDTSTUBAKKEN" }),
+    "zakopane-nh": Object.assign({}, ARCH.zakopane, { text: "ŚREDNIA KROKIEW" }),
+  });
   const archFor = (key) => ARCH[key] || ARCH[key.split("-")[0]] || ARCH.oberstdorf;
   // Stimmung je Schanze: nur noch der Schneefall (Anteil der Flocken); der Himmel kommt aus der gemeinsamen Palette
   const ATMO = {
@@ -5958,7 +5999,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       for (const p of land) if (p.x > ex[ex.length - 1] + 1e-6) { ex.push(p.x); ey.push(p.y); }
       for (const p of right) if (p[0] > ex[ex.length - 1] + 1e-6) { ex.push(p[0]); ey.push(p[1]); }
       const place = H.key.split("-")[0], at = (d) => Hill.landAtD(H, d).x;
-      const hang = PK.hangPlan(place, top.x, end.x, at(H.K), at(H.K * 0.3), at(H.K * 0.9));
+      const hang = PK.hangPlan(place, top.x, end.x, at(H.K), at(H.K * 0.3), at(H.K * 0.9), H.key);
       // Ankerpunkte (Welt-x) der festen Plakat-Ebenen: die Nahebene steht im Bild, wenn die Kamera bei 0,8 K ist (spätes Flugbild),
       // die Bande unten im Auslauf, etwa zwei Sekunden nach einer Landung am K-Punkt
       const anchor = { near: at(H.K * 0.8), front: at(H.K) + 0.33 * H.K };
@@ -8243,7 +8284,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.39";
+  const VERSION = "0.40";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -8358,9 +8399,11 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 
   // ------------------------------------------------------------------ Schanzen
   const FLY_KEY = "planica";
-  const BASE_ORDER = ["holmenkollen", "oberstdorf", "garmisch", "innsbruck", "bischofshofen", "zakopane", "willingen", "engelberg", "predazzo-lh", "predazzo-nh", FLY_KEY]
+  // Flugschanzen (Planica, Oberstdorf) sind erst nach den Sternen aus den Missionen offen; die zweiten Schanzen eines Ortes stehen gleich dahinter
+  const FLY_KEYS = [FLY_KEY, "oberstdorf-fh"];
+  const BASE_ORDER = ["holmenkollen", "holmenkollen-nh", "oberstdorf", "garmisch", "innsbruck", "bischofshofen", "zakopane", "zakopane-nh", "willingen", "engelberg", "predazzo-lh", "predazzo-nh", "planica-lh", FLY_KEY, "oberstdorf-fh"]
     .filter((k) => Hill.HILLS.some((h) => h.key === k));
-  let HILL_ORDER = BASE_ORDER.filter((k) => k !== FLY_KEY);
+  let HILL_ORDER = BASE_ORDER.filter((k) => !FLY_KEYS.includes(k));
   function hillSketch(Hh, w, h) {
     w = w || 44; h = h || 28;
     const a = [], b = [];
@@ -8481,7 +8524,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   const FLY_STARS = 12;
   const starTotal = () => Object.values(S.missions).reduce((a, b) => a + (b || 0), 0);
   const flyUnlocked = () => BASE_ORDER.includes(FLY_KEY) && starTotal() >= FLY_STARS;
-  function refreshHillOrder() { HILL_ORDER = BASE_ORDER.filter((k) => k !== FLY_KEY || flyUnlocked()); }
+  function refreshHillOrder() { HILL_ORDER = BASE_ORDER.filter((k) => !FLY_KEYS.includes(k) || flyUnlocked()); }
   refreshHillOrder();
   if (!HILL_ORDER.includes(S.hill)) S.hill = HILL_ORDER[0];
   if (!["off", "left", "right"].includes(S.gaugeSide)) S.gaugeSide = "off";
@@ -10146,7 +10189,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   const medalOf = (p) => (p >= CUP_MEDAL[2] ? 3 : p >= CUP_MEDAL[1] ? 2 : p >= CUP_MEDAL[0] ? 1 : 0);
   const medalHtml = (n, big) => `<i class="medal m${n}${big ? " big" : ""}" title="${MEDAL_NAME[n]}"></i>`;
   const fmtInt = (n) => Math.round(n).toLocaleString("de-DE");
-  const cupKeys = () => BASE_ORDER.filter((k) => Hill.HILLS.some((h) => h.key === k) && (k !== FLY_KEY || flyUnlocked()));
+  const cupKeys = () => BASE_ORDER.filter((k) => Hill.HILLS.some((h) => h.key === k) && (!FLY_KEYS.includes(k) || flyUnlocked()));
   const cupDisc = () => CUP[Math.min(ms.res.length, CUP.length - 1)];
   const cupTotal = (list) => list.reduce((a, x) => a + (x.cupPts || 0), 0);
   function cupPts(dz, r, Hh, c) {
@@ -10359,7 +10402,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   function dailySpec(date) {
     const seed = hash32("telemark-" + date) % 1000000007;
     const r = Ph.rng(seed);
-    const keys = BASE_ORDER.filter((k) => k !== FLY_KEY);
+    const keys = BASE_ORDER.filter((k) => !FLY_KEYS.includes(k));
     const ev = seasonEvent(date);
     let key = keys[Math.floor(r() * keys.length)];
     if (ev && Hill.HILLS.some((h) => h.key === ev[2])) key = ev[2];
@@ -11700,7 +11743,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     const fb = $("segChFmt").querySelector('button[data-v="flight"]');
     fb.classList.toggle("locked", !flyUnlocked()); fb.setAttribute("aria-disabled", String(!flyUnlocked()));
     setupHint("suChHint", S.chLevel, S.chWind);
-    const hs = CP.FORMATS[S.chFmt].hills.filter((k) => flyUnlocked() || k !== "planica");
+    const hs = CP.FORMATS[S.chFmt].hills.filter((k) => flyUnlocked() || !FLY_KEYS.includes(k));
     let note = S.chFmt === "flight" ? "Planica HS240, Tag 1 und Tag 2. " : `${hs.length} Stationen: ${hs.map(hillShort).join(" · ")}. `;
     note += CH_TXT[S.chFmt] + " Je Station zwei Durchgänge, der Führende springt in Gelb. Gespeichert wird nach jedem Sprung.";
     if (S.chFmt === "season" && !flyUnlocked()) note += " Ohne freigeschaltete Flugschanze endet die Saison am Holmenkollen.";
@@ -11903,7 +11946,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         if (r) lines.push(`<p><span class="rc-k">Schanzenrekord</span>${esc(recordStory(r))}</p>`);
         const std = Hill.CALIB[k] ? Hill.CALIB[k].refGate : "–";
         const Hh = Hill.getHill(k);
-        lines.push(`<p class="rc-src">Im Spiel: Luken wie in den Wettkämpfen 2025/26 (Luke ${Hh.gateRef} ≈ ${fmt1(Hh.gateRefV || 0)} km/h, Abstand ${String(Hh.gateStep).replace(".", ",")} m), Standardluke ${std} · Profil: ${esc(d.source)}</p>`);
+        lines.push(Hh.est ? `<p class="rc-src">Im Spiel: Luken geschätzt (Standardluke ${std} ≈ ${fmt1(Hh.gateRefV || 0)} km/h, Abstand ${String(Hh.gateStep).replace(".", ",")} m) · Profil: ${esc(d.source)}</p>`
+          : `<p class="rc-src">Im Spiel: Luken wie in den Wettkämpfen 2025/26 (Luke ${Hh.gateRef} ≈ ${fmt1(Hh.gateRefV || 0)} km/h, Abstand ${String(Hh.gateStep).replace(".", ",")} m), Standardluke ${std} · Profil: ${esc(d.source)}</p>`);
         more = `<div class="rc-more">${lines.join("")}</div>`;
       }
       return `<button type="button" class="rc-row${open ? " open" : ""}" data-k="${k}" aria-expanded="${open}"><span class="rc-h"><b>${esc(d.short || d.name)} HS${d.HS}</b><small>${esc(d.fullName)}</small></span><span class="rc-v">${own}</span><span class="rc-w">${cw}</span><span class="rc-rec">${rec}</span></button>${more}`;
@@ -12018,7 +12062,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       ["Steilste", deg(Hh.betaP)],
       ["Seehöhe", `${num(Hh.alt, 0)} m`],
       ["Luken", `${Hh.gates} à ${num(Hh.gateStep, 2)} m`],
-      ["Wettkampf", `L${Hh.gateRef} · ${num(Hh.gateRefV, 1)} km/h`],
+      Hh.est ? ["Anfahrt", `≈ ${num(Hh.v0, 1)} km/h (Plan)`] : ["Wettkampf", `L${Hh.gateRef} · ${num(Hh.gateRefV, 1)} km/h`],
       ["Standard", `Luke ${Hh.refGate}${perf.d ? ` · ${num(perf.d, 0)} m` : ""}`],
       ["Landung", Hh.hardD ? `hart ${num(Hh.hardD, 0)} · Sturz ${num(Hh.fallD, 0)}` : "–"],
     ];
