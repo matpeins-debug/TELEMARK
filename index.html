@@ -592,6 +592,21 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
 .msr-line .st { color: var(--gold); letter-spacing: 1px; }
 .msr-line .ok { color: var(--hi); font-weight: 700; text-align: right; }
 .msr-line.got { background: rgba(221, 164, 59, 0.14); }
+/* Schanzen-Challenge: Medaillen als kleine Münzen, Summe mit großer Medaille */
+.medal { display: inline-block; width: 15px; height: 15px; border-radius: 50%; vertical-align: -2px; box-shadow: inset 0 0 0 1.5px rgba(0, 0, 0, 0.22); }
+.medal.m0 { box-shadow: inset 0 0 0 1.5px var(--line); opacity: 0.8; }
+.medal.m1 { background: radial-gradient(circle at 35% 30%, #F0BE92, #A8683A 72%); }
+.medal.m2 { background: radial-gradient(circle at 35% 30%, #F7F8FA, #98A4B0 72%); }
+.medal.m3 { background: radial-gradient(circle at 35% 30%, #FFE59A, #C4901E 72%); }
+.medal.big { width: 30px; height: 30px; vertical-align: middle; }
+.ms-n .medal { width: 18px; height: 18px; }
+.cup-count { display: inline-flex; align-items: center; gap: 4px; }
+.cup-count .medal { width: 12px; height: 12px; margin-left: 6px; }
+.cup-line { grid-template-columns: 22px minmax(0, 1fr) 48px; }
+.cup-line small { color: var(--muted); font-size: 12px; margin-left: 4px; }
+.cup-sum { display: flex; align-items: center; gap: 10px; margin-top: 4px; font-size: 15px; }
+.cup-sum b { font-family: var(--font-display); font-size: 20px; letter-spacing: 0.04em; }
+.cup-sum span { color: var(--text-2); }
 .snack { position: absolute; left: 50%; top: 18px; transform: translateX(-50%); z-index: 30; display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 8px 18px; border-radius: 12px; pointer-events: none; }
 .snack b { font-family: var(--font-display); font-weight: 800; font-style: italic; font-size: 22px; line-height: 24px; color: var(--hi); }
 .snack span { font-size: 12px; color: var(--text-2); }
@@ -1049,7 +1064,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       </div>
       <div class="btn-row btn-row-ch">
         <button type="button" id="btnMulti" class="btn btn-secondary" aria-label="Mehrspieler: online mit Freunden oder an einem Handy"><span class="btn-two"><span>Mehrspieler</span><span id="muBadge" class="btn-badge" hidden></span></span><span class="ico" data-icon="chev-right"></span></button>
-        <button type="button" id="btnArcade" class="btn btn-secondary btn-arcade" aria-label="Arcade: Missionen, Tageschallenge, Skiflug"><span>Arcade</span><span id="arcNote" class="btn-note" hidden></span><span class="ico" data-icon="chev-right"></span></button>
+        <button type="button" id="btnArcade" class="btn btn-secondary btn-arcade" aria-label="Arcade: Schanzen-Challenge, Missionen, Tageschallenge, Skiflug"><span>Arcade</span><span id="arcNote" class="btn-note" hidden></span><span class="ico" data-icon="chev-right"></span></button>
       </div>
     </div>
     <div class="panel hill-card">
@@ -1175,7 +1190,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     <textarea id="dyShareTxt" class="dy-share" readonly hidden aria-label="Ergebnis zum Kopieren"></textarea>
   </div>
   <div class="ar-right panel-strong">
-    <div class="rr-head"><h2 class="h2">Missionen</h2><span id="msStars" class="rr-sub"></span></div>
+    <div class="rr-head"><h2 class="h2">Challenge &amp; Missionen</h2><span id="msStars" class="rr-sub"></span></div>
     <div id="msList" class="ms-list"></div>
   </div>
   <div class="res-btns">
@@ -8228,7 +8243,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.38";
+  const VERSION = "0.39";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -8365,7 +8380,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   // ------------------------------------------------------------------ Speicher (nur in diesem Browser)
   const KEY = "telemark.v1";
   const DEF = { v: 4, name: "", nation: "AUT", color: "#FF8A3D", hill: "holmenkollen", gates: {}, wind: "var", slow: false, assist: true, sound: true, vibe: true,
-    tutorialDone: false, bests: {}, compBest: {}, jumps: 0, telemarks: 0, sumD: 0, level: "mid", compWind: "var",
+    tutorialDone: false, bests: {}, compBest: {}, cup: {}, jumps: 0, telemarks: 0, sumD: 0, level: "mid", compWind: "var",
     hot: { n: 2, names: ["SPIELER 1", "SPIELER 2", "SPIELER 3", "SPIELER 4", "SPIELER 5", "SPIELER 6", "SPIELER 7", "SPIELER 8"], rounds: 2, wind: "var", fmt: "one" },
     chFmt: "tour", chLevel: "mid", chWind: "var", champ: null, party: null, champBest: {},
     gaugeLeft: false, gaugeSide: "off", flv: 4, hand: "right", sens: 1, ghosts: {}, tops: {}, tod: "auto", missions: {}, daily: null, look: null, expert: false, beginner: false,
@@ -8940,8 +8955,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       const p = hot.current(); gate = hot.gate; refGate = hot.gate; wind = hot.wind; jseed = hot.jumpSeedR;
       who = { name: p.name, nation: p.nation }; colors = HOT_COLORS[(p.bib - 1) % HOT_COLORS.length];
     } else if (ctxMode === "mission") {
-      const m = ms.m;
-      gate = clamp(H.refGate + (m.g || 0), 1, H.gates); refGate = H.refGate; wind = arcadeWind(m.wind || "off", seed);
+      const m = ms.m, dz = m.cup ? cupDisc() : null;
+      gate = clamp(H.refGate + (m.g || 0), 1, H.gates); refGate = H.refGate; wind = arcadeWind((dz && dz.wind) || m.wind || "off", seed);
     } else if (ctxMode === "daily") {
       gate = dc.gate; refGate = H.refGate; wind = arcadeWind(dc.wind, dc.seed); jseed = dc.seed * 7 + dc.tries.length + 1;
     } else if (ctxMode === "chal") {
@@ -9424,6 +9439,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (ctxMode === "hot" && party) return `Tournee ${party.station + 1}/${party.hills.length} · Durchgang ${hot.round}/${hot.rounds} · Luke ${st.gate}`;
     if (ctxMode === "hot") return `Durchgang ${hot.round}/${hot.rounds} · Luke ${st.gate}`;
     if (ctxMode === "chal") return chal.grp ? `Online-Gruppe · ${chal.total} Springer · Luke ${st.gate}` : `Herausforderung von ${chal.n} · Luke ${st.gate}`;
+    if (ctxMode === "mission" && ms.m.cup) return `Challenge · ${cupDisc().name} ${ms.res.length + 1}/4 · Luke ${st.gate}`;
     if (ctxMode === "mission") return `${ms.m.title}${ms.m.n || ms.m.hills ? ` · Sprung ${ms.res.length + 1}/${missionJumps(ms.m)}` : ""} · Luke ${st.gate}`;
     if (ctxMode === "daily") return `Tageschallenge · Versuch ${dc.tries.length + 1}/3 · Luke ${st.gate}`;
     return `Training${jc && jc.slow < 1 ? ` · Tempo ${Math.round(jc.slow * 100)} %` : ""}${jc && jc.beginner ? " mit Anhalten" : ""} · Luke ${st.gate}`;
@@ -9894,6 +9910,11 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     $("rsFlag").innerHTML = flag(who.nation); txt($("rsName"), who.name); txt($("rsNation"), who.nation);
     const chip = $("rsChip");
     if (ctxMode === "comp") { chip.className = "chip chip-cyan"; chip.textContent = `PLATZ ${r.rank}`; }
+    else if (ctxMode === "mission" && ms.m.cup && r.mission) {
+      const c = r.mission.cup;
+      chip.className = r.mission.done ? (c.medal ? "chip chip-cyan" : "chip chip-warn") : "chip chip-dim";
+      chip.textContent = r.mission.done ? (c.medal ? `${MEDAL_NAME[c.medal].toUpperCase()} · ${fmtInt(c.total)} PUNKTE` : `KEINE MEDAILLE · ${fmtInt(c.total)}`) : `${CUP[c.i].name.toUpperCase()} · ${fmtInt(c.pts)} PUNKTE`;
+    }
     else if (ctxMode === "mission" && r.mission && r.mission.done) { chip.className = r.mission.stars ? "chip chip-cyan" : "chip chip-warn"; chip.textContent = r.mission.stars ? `${"★".repeat(r.mission.stars)} MISSION` : "NOCH KEIN STERN"; }
     else if (ctxMode === "mission" && r.mission) { chip.className = "chip chip-dim"; chip.textContent = `SPRUNG ${ms.res.length}/${missionJumps(ms.m)}`; }
     else if (ctxMode === "daily") { chip.className = r.dailyBest ? "chip chip-cyan" : "chip chip-dim"; chip.textContent = r.dailyBest ? "BESTER VERSUCH" : `VERSUCH ${dc.tries.length}/3`; }
@@ -9954,7 +9975,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       fillStand = () => scrollList(list, hs.map(row), ".st-row.me");
     } else if (ctxMode === "mission") {
       txt($("rsListTitle"), ms.m.title);
-      txt($("rsSession"), `Mission ${missionIndex(ms.m)} · ${H.name}`);
+      txt($("rsSession"), ms.m.cup ? `${H.name} · HS${H.HS}` : `Mission ${missionIndex(ms.m)} · ${H.name}`);
       list.innerHTML = missionResultHtml(r);
     } else if (ctxMode === "daily") {
       txt($("rsListTitle"), "Tageschallenge");
@@ -10012,7 +10033,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     vis($("rsTabs").querySelector('[data-v="champ"]'), inCh);
     $("rsAnaBox").innerHTML = anaHtml(r);
     vis($("rsTabs").querySelector('[data-v="ana"]'), !!r.ana);
-    txt($("rsTabs").querySelector('[data-v="list"]'), { comp: "Stand", hot: "Wertung", training: "Sprünge", mission: "Mission", daily: "Versuche", chal: grpMode ? "Gruppe" : "Duell" }[ctxMode] || "Stand");
+    txt($("rsTabs").querySelector('[data-v="list"]'), { comp: "Stand", hot: "Wertung", training: "Sprünge", mission: ctxMode === "mission" && ms && ms.m.cup ? "Challenge" : "Mission", daily: "Versuche", chal: grpMode ? "Gruppe" : "Duell" }[ctxMode] || "Stand");
     if (inCh) champPane();
     // Stand, Wertung und Sprünge: der Reiter ist die Überschrift (Mission, Tageschallenge und Duell behalten ihren Titel)
     vis($("rsListTitle"), !["comp", "hot", "training", "daily", "chal"].includes(ctxMode) && $("rsListTitle").textContent.length <= 12);
@@ -10033,7 +10054,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (ctxMode === "chal") next = "Nochmal";
     if (ctxMode === "comp") next = "Weiter";
     if (ctxMode === "hot") next = hot.roundOver() ? (hot.round < hot.rounds ? `Durchgang ${hot.round + 1}` : "Endergebnis") : `Weiter: ${hot.current().name}`;
-    if (ctxMode === "mission") next = !r.mission.done ? `Sprung ${ms.res.length + 1}/${missionJumps(ms.m)}` : (r.mission.stars === 3 && nextMission(ms.m) ? "Nächste Mission" : "Nochmal");
+    if (ctxMode === "mission" && ms.m.cup) next = !r.mission.done ? `${CUP[ms.res.length].name} ${ms.res.length + 1}/4` : "Nochmal";
+    else if (ctxMode === "mission") next = !r.mission.done ? `Sprung ${ms.res.length + 1}/${missionJumps(ms.m)}` : (r.mission.stars === 3 && nextMission(ms.m) ? "Nächste Mission" : "Nochmal");
     if (ctxMode === "daily") next = dc.tries.length < 3 ? `Versuch ${dc.tries.length + 1}/3` : "Teilen";
     if (r.grpNew) next = grpNextTxt(r);
     txt($("btnNext").querySelector("span"), next);
@@ -10050,6 +10072,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (ctxMode === "hot") { afterHotJump(); return; }
     if (ctxMode === "mission") {
       const r = lastResult;
+      if (r && r.mission && r.mission.done && ms.m.cup) { startCup(ms.m.key); return; }
       if (r && r.mission && r.mission.done) {
         const nx = r.mission.stars === 3 ? nextMission(ms.m) : null;
         startMission(nx ? nx.id : ms.m.id);
@@ -10105,6 +10128,63 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     { id: "p8", tier: 3, title: "Weit und sicher", hill: "garmisch", g: 2, wind: "var", goal: { type: "land", d: (H) => H.HS + 2 }, text: "Steh den Sprung, Telemark ab HS+2 bringt drei Sterne." },
   ].filter((m) => (m.hills || [m.hill]).every((k) => Hill.HILLS.some((h) => h.key === k)));
   const missionJumps = (m) => (m.hills ? m.hills.length : m.n || 1);
+
+  // ------------------------------------------------------------------ Schanzen-Challenge: vier Disziplinen je Schanze, Medaille nach Punkten
+  // Vorbild ist der Quarterback-Wettbewerb von früher: Weite, Punktlandung, Wind lesen, Haltung. Ein Sprung je Disziplin,
+  // bis zu 1000 Punkte, die Summe entscheidet wie bei Track & Field über Gold, Silber oder Bronze. Läuft über die Missionstechnik.
+  const CUP = [
+    { id: "weite", name: "Weite", wind: "var", text: (Hh) => `Flieg so weit du kannst und steh den Sprung. An der HS (${fmt1(Hh.HS)} m) gibt es 1000 Punkte.`,
+      target: (Hh) => ({ d: Hh.HS, label: `1000 P · HS ${fmt1(Hh.HS)} m` }) },
+    { id: "ziel", name: "Punktlandung", wind: "off", text: (Hh, c) => `Lande genau auf der Ziellinie bei ${fmt1(c.zielT)} m. Jeder Meter daneben kostet 125 Punkte.`,
+      target: (Hh, c) => ({ d: c.zielT, label: `ZIEL ${fmt1(c.zielT)} m` }) },
+    { id: "wind", name: "Wind lesen", wind: { base: "strong", side: 0.5 }, text: () => "Böen und Seitenwind: Halte die Ski auf dem Luftpolster (goldene Linien) und steh den Sprung. Die Hälfte der Flugzeit im Kasten gibt 1000 Punkte.",
+      target: () => null },
+    { id: "stil", name: "Haltung", wind: "var", text: () => "Nur die Haltungsnoten zählen: ruhig fliegen und mit Telemark landen. Noten ab 59 geben 1000 Punkte.", target: () => null },
+  ];
+  const CUP_MEDAL = [2000, 2700, 3300];   // Bronze, Silber, Gold ab
+  const MEDAL_NAME = ["Keine Medaille", "Bronze", "Silber", "Gold"];
+  const medalOf = (p) => (p >= CUP_MEDAL[2] ? 3 : p >= CUP_MEDAL[1] ? 2 : p >= CUP_MEDAL[0] ? 1 : 0);
+  const medalHtml = (n, big) => `<i class="medal m${n}${big ? " big" : ""}" title="${MEDAL_NAME[n]}"></i>`;
+  const fmtInt = (n) => Math.round(n).toLocaleString("de-DE");
+  const cupKeys = () => BASE_ORDER.filter((k) => Hill.HILLS.some((h) => h.key === k) && (k !== FLY_KEY || flyUnlocked()));
+  const cupDisc = () => CUP[Math.min(ms.res.length, CUP.length - 1)];
+  const cupTotal = (list) => list.reduce((a, x) => a + (x.cupPts || 0), 0);
+  function cupPts(dz, r, Hh, c) {
+    if (r.kind === "fall") return 0;
+    if (dz.id === "weite") { const lo = Hh.K * 0.8; return Math.round(1000 * clamp((r.dist - lo) / (Hh.HS - lo), 0, 1)); }
+    if (dz.id === "ziel") return Math.round(1000 * clamp(1 - Math.abs(r.dist - c.zielT) / 8, 0, 1));
+    if (dz.id === "wind") return Math.round(1000 * clamp((r.inField || 0) / 50, 0, 1));
+    return Math.round(1000 * clamp((r.style - 48) / 11, 0, 1));
+  }
+  function medalCounts() { const c = [0, 0, 0, 0]; for (const k of Object.keys(S.cup || {})) c[(S.cup[k] && S.cup[k].medal) || 0]++; return c; }
+  function startCup(key) {
+    const Hh = Hill.getHill(key), rr = Ph.rng((Math.random() * 1e9) | 0);
+    const m = { id: "cup:" + key, cup: true, key, title: "Schanzen-Challenge", hill: key, n: CUP.length, tier: 0, wind: "var", goal: { type: "cup" }, text: "" };
+    ms = { m, res: [], best: (S.cup[key] || {}).pts || 0, zielT: Math.round(Hh.K * (0.88 + rr() * 0.16) * 2) / 2 };
+    missionJumpSetup();
+  }
+  function cupRecord(entry) {
+    const m = ms.m, i = ms.res.length, dz = CUP[i], pts = cupPts(dz, entry, H, ms);
+    ms.res.push(Object.assign({}, entry, { hill: H, cupPts: pts, disc: dz.id }));
+    const done = ms.res.length >= CUP.length, total = cupTotal(ms.res), medal = medalOf(total), prev = S.cup[m.key] || null;
+    let better = false;
+    if (done && (!prev || total > prev.pts)) { S.cup[m.key] = { pts: total, medal, at: todayStr() }; better = true; save(); }
+    entry.mission = { done, stars: done ? medal : null, partial: medal, best: (S.cup[m.key] || {}).pts || 0, cup: { i, pts, total, medal, better, prevMedal: prev ? prev.medal : 0 } };
+  }
+  function cupResultHtml(r) {
+    const c = r.mission.cup, done = r.mission.done;
+    let h = `<div class="ms-res cup-res">`;
+    h += CUP.map((dz, i) => {
+      const x = ms.res[i];
+      const det = !x ? "" : x.kind === "fall" ? "Sturz" : dz.id === "ziel" ? `${fmt1(x.dist)} m, Ziel ${fmt1(ms.zielT)} m` : dz.id === "wind" ? `${Math.round(x.inField || 0)} % im Kasten`
+        : dz.id === "stil" ? `Noten ${fmt1(x.style)}${x.kind === "telemark" ? " · Telemark" : ""}` : `${fmt1(x.dist)} m`;
+      return `<div class="msr-line cup-line${x ? " got" : ""}"><span class="st">${i + 1}</span><span>${esc(dz.name)}${det ? ` <small>${esc(det)}</small>` : ""}</span><span class="ok">${x ? fmtInt(x.cupPts) : "–"}</span></div>`;
+    }).join("");
+    const best = S.cup[ms.m.key], fresh = done && c.better && c.medal > c.prevMedal;
+    h += `<div class="cup-sum">${done ? medalHtml(c.medal, true) : ""}<b>${done ? MEDAL_NAME[c.medal] : `Nach ${ms.res.length} von 4`}</b><span>${fmtInt(c.total)} Punkte${fresh ? " · neu!" : done && best && !c.better ? ` · Bestwert ${fmtInt(best.pts)}` : ""}</span></div>`;
+    h += `<p class="msr-goal">Bronze ${fmtInt(CUP_MEDAL[0])} · Silber ${fmtInt(CUP_MEDAL[1])} · Gold ${fmtInt(CUP_MEDAL[2])}</p>`;
+    return h + "</div>";
+  }
   const missionIndex = (m) => MISSIONS.indexOf(m) + 1;
   const tierOpen = (t) => starTotal() >= TIERS[t].need;
   function nextMission(m) {
@@ -10149,6 +10229,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     return 0;
   }
   function missionTarget(m, Hh) {
+    if (m.cup) { const dz = cupDisc(); return dz.target(Hh, ms); }
     const g = m.goal, t = typeof g.t === "function" ? g.t(Hh) : g.t;
     if (g.type === "dist" || g.type === "tele") return { d: t[2], label: `★★★ ${fmt1(t[2])} m` };
     if (g.type === "window") { const c = g.c(Hh); return { d: c, label: `ZIEL ${fmt1(c)} m` }; }
@@ -10197,7 +10278,12 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       if (g) { txt(el.goalKicker, g[0]); txt(el.goalTitle, g[1]); txt(el.goalText, g[2]); txt(el.goalStars, ""); }
       return;
     }
-    if (ctxMode === "mission") {
+    if (ctxMode === "mission" && ms.m.cup) {
+      const i = ms.res.length, dz = CUP[i], sum = cupTotal(ms.res);
+      txt(el.goalKicker, `SCHANZEN-CHALLENGE · DISZIPLIN ${i + 1}/4`);
+      txt(el.goalTitle, dz.name); txt(el.goalText, dz.text(H, ms));
+      txt(el.goalStars, `${i ? `Bisher ${fmtInt(sum)} Punkte · ` : ""}Bronze ${fmtInt(CUP_MEDAL[0])} · Silber ${fmtInt(CUP_MEDAL[1])} · Gold ${fmtInt(CUP_MEDAL[2])}`);
+    } else if (ctxMode === "mission") {
       const m = ms.m;
       txt(el.goalKicker, `MISSION ${missionIndex(m)}${missionJumps(m) > 1 ? ` · SPRUNG ${ms.res.length + 1}/${missionJumps(m)}` : ""}`);
       txt(el.goalTitle, m.title); txt(el.goalText, m.text);
@@ -10223,6 +10309,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     newJump();
   }
   function missionRecord(entry) {
+    if (ms.m.cup) { cupRecord(entry); return; }
     const m = ms.m;
     ms.res.push(Object.assign({}, entry, { hill: H }));
     const done = ms.res.length >= missionJumps(m);
@@ -10233,6 +10320,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     entry.mission = { done, stars: done ? st : null, partial: st, best: S.missions[m.id] || 0, unlockFly: !flyBefore && flyUnlocked(), gained: starTotal() - before };
   }
   function missionResultHtml(r) {
+    if (ms.m.cup) return cupResultHtml(r);
     const m = ms.m, mm = r.mission, steps = goalSteps(m, ms.res[0].hill || H);
     const got = mm.done ? mm.stars : mm.partial;
     let h = `<div class="ms-res"><div class="msr-top"><div class="msr-stars">${"<i>★</i>".repeat(got)}${"★".repeat(3 - got)}</div><p class="msr-goal">${esc(m.text)}</p></div>`;
@@ -10814,6 +10902,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   function cardContext(r) {
     if (r.ctx === "chal" && chal) return r.chalWin > 0 ? `Duell gegen ${chal.n}: gewonnen` : r.chalWin < 0 ? `Duell gegen ${chal.n}: verloren` : `Duell gegen ${chal.n}: Gleichstand`;
     if (r.ctx === "daily") { const sp = dailySpec(dailyState().date); return `Tageschallenge ${dateDE(sp.date)}${sp.ev && sp.ev !== "Weltspitze" ? ` · ${sp.ev}` : ""}`; }
+    if (r.ctx === "mission" && ms && ms.m && ms.m.cup) return `Schanzen-Challenge · ${CUP[r.mission && r.mission.cup ? r.mission.cup.i : 0].name}`;
     if (r.ctx === "mission" && ms && ms.m) return `Mission „${ms.m.title}“`;
     return r.newBest ? "Neue Bestweite" : "Training";
   }
@@ -11022,9 +11111,15 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     txt($("dyGoTxt"), st.tries.length >= 3 ? "Fertig für heute" : st.tries.length ? `Versuch ${st.tries.length + 1}/3` : "Starten");
     $("btnDyGo").disabled = st.tries.length >= 3;
     $("btnDyShare").disabled = !st.tries.length;
-    const tot = starTotal(), max = MISSIONS.length * 3;
+    const tot = starTotal(), max = MISSIONS.length * 3, mc = medalCounts();
     txt($("msStars"), `${tot} / ${max} ★`);
-    let h = "", lastTier = -1;
+    let h = `<div class="ms-tier"><span>SCHANZEN-CHALLENGE</span><small class="cup-count">${medalHtml(3)} ${mc[3]} ${medalHtml(2)} ${mc[2]} ${medalHtml(1)} ${mc[1]}</small></div>`;
+    for (const key of cupKeys()) {
+      const Hc = Hill.getHill(key), b = S.cup[key];
+      h += `<button type="button" class="ms-row cup-row" data-cup="${key}"><span class="ms-n">${medalHtml(b ? b.medal : 0)}</span>` +
+        `<span class="ms-t"><b>${esc(Hc.short || Hc.name)}</b><small>HS${Hc.HS} · ${b ? `Bestwert ${fmtInt(b.pts)} Punkte` : "Weite, Punktlandung, Wind lesen, Haltung"}</small></span><span class="ms-s">${b && b.medal ? MEDAL_NAME[b.medal] : ""}</span></button>`;
+    }
+    let lastTier = -1;
     const order = MISSIONS.slice().sort((a, b) => a.tier - b.tier);
     for (const m of order) {
       if (m.tier !== lastTier) {
@@ -11038,7 +11133,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         `<span class="ms-t"><b>${esc(m.title)}</b><small>${esc(where)} · ${esc(m.text)}</small></span><span class="ms-s">${"<i>★</i>".repeat(got)}${"★".repeat(3 - got)}</span></button>`;
     }
     $("msList").innerHTML = h;
-    txt($("arcNote"), `Missionen ${tot} ★ · Tageschallenge · Skiflug`);
+    txt($("arcNote"), `Challenge ${mc[1] + mc[2] + mc[3]} Medaillen · Missionen ${tot} ★ · Tageschallenge`);
   }
 
   // ------------------------------------------------------------------ Wiederholung
@@ -11990,7 +12085,10 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   on("btnArBack", () => goTitle());
   on("btnDyGo", () => startDaily());
   on("btnDyShare", () => shareDaily());
-  $("msList").addEventListener("click", (e) => { const b = e.target.closest("button[data-id]"); if (b && !b.disabled) startMission(b.dataset.id); });
+  $("msList").addEventListener("click", (e) => {
+    const c = e.target.closest("button[data-cup]"); if (c) { startCup(c.dataset.cup); return; }
+    const b = e.target.closest("button[data-id]"); if (b && !b.disabled) startMission(b.dataset.id);
+  });
   on("btnHot", () => { if (S.party && !S.party.done) { party = S.party; champ = null; openChampHub(); } else openSetup("hot"); });
   on("btnArChal", () => openChal(null, !chal));
   on("btnDuel", () => openChal(null, !chal || !!chal.grp));
