@@ -4931,17 +4931,19 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   // Lage einer Ebene auf dem Bildschirm (auf ganze Gerätepixel gerundet: Kopie ohne Filterung, schnell)
   // Feste Ebenen (L.rel): Entwurfs-c 0 liegt in der Bildmitte, wenn die Kamera am Ankerpunkt der Ebene steht (anc[L.id]); ohne
   // Anker oder ganz außerhalb des Bilds off (nur der Boden darunter wird gefüllt).
-  function layerPos(P, L, cam, hor, vOff, k, W, anc) {
+  // exact: ohne Runden (Ebenen im Browser: die Grafik verschiebt sie stufenlos; gerundet liefen langsame Ebenen in Pixelsprüngen)
+  function layerPos(P, L, cam, hor, vOff, k, W, anc, exact) {
     const dpr = P.dpr || 1, sc = P.res / k, dw = L.cv.width / sc, dh = L.cv.height / sc;
-    const dy = Math.round((hor + vOff - L.top * k) * dpr) / dpr;
+    const rd = exact ? (v) => v : (v) => Math.round(v * dpr) / dpr;
+    const dy = rd(hor + vOff - L.top * k);
     if (L.rel != null) {
       const xa = anc ? anc[L.id] : null;
       if (xa == null) return { dx: 0, dy, dw, dh, ox: -1e5, oy: dy + L.top * k, off: true };
-      const dx = Math.round((W / 2 + (xa - cam.cx) * cam.ppm * L.rel + L.c0 * k) * dpr) / dpr;
+      const dx = rd(W / 2 + (xa - cam.cx) * cam.ppm * L.rel + L.c0 * k);
       return { dx, dy, dw, dh, ox: dx - L.c0 * k, oy: dy + L.top * k, off: dx > W || dx + dw < 0 };
     }
     let uA = clamp(L.wl / 2 - W / (2 * k) + (cam.cx - CX_REF) * L.par, 0, L.wl - W / k);
-    const dx = Math.round(-uA * k * dpr) / dpr; uA = -dx / k;
+    const dx = rd(-uA * k); uA = -dx / k;
     return { dx, dy, dw, dh, ox: (L.wl / 2 - uA) * k, oy: dy + L.top * k };
   }
   // Vordergrund (Bande, Zweige): nach Hang, Springer und Partikeln, vor dem Schneefall
@@ -5017,7 +5019,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   // Himmel und Panorama-Ebenen sind fertige Bilder. Statt sie in jedem Bild auf die Leinwand zu kopieren, liegen sie als eigene
   // Elemente hinter der (durchsichtigen) Leinwand und werden nur verschoben: das erledigt die Grafikkarte, die Leinwand zeichnet
   // nur noch Schanze, Springer und Vordergrund. Die lebenden Lichter zeichnet weiter die Leinwand (drawLive).
-  const bgPos = (e, x, y) => { const v = `translate3d(${x}px,${y}px,0)`; if (e._t !== v) { e._t = v; e.style.transform = v; } };
+  const bgPos = (e, x, y) => { const v = `translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,0)`; if (e._t !== v) { e._t = v; e.style.transform = v; } };
   const bgShow = (e, on) => { if (e._on !== on) { e._on = on; e.style.visibility = on ? "" : "hidden"; } };
   const bgAlpha = (e, a) => { const v = a >= 0.995 ? "" : a.toFixed(3); if (e._a !== v) { e._a = v; e.style.opacity = v; } };
   function mountPanorama(root, P, k) {
@@ -5039,14 +5041,13 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   function placePanorama(M, P, cam, hor, vs, k, W, Hs, anc) {
     const S = P.sky, pos = [];
     if (S && M.sky) {
-      const dpr = P.dpr || 1, h = S.cv.height / S.res;
-      const y0 = Math.round((hor + (S.ya - PK.HOR) * S.s) * dpr) / dpr;
+      const h = S.cv.height / S.res, y0 = hor + (S.ya - PK.HOR) * S.s;
       bgPos(M.sky, 0, y0); bgPos(M.skyBot, 0, y0 + h - 1);
     }
     for (let i = 0; i < P.layers.length; i++) {
       const L = P.layers[i], m = M.layers[i];
       const vOff = i === 0 ? 0 : i === 1 ? vs * 0.12 : vs * 0.3;
-      const q = layerPos(P, L, cam, hor, vOff, k, W, anc), na = i === 2 ? nearAlpha(cam, k) : 1, on = na > 0.01 && !q.off;
+      const q = layerPos(P, L, cam, hor, vOff, k, W, anc, true), na = i === 2 ? nearAlpha(cam, k) : 1, on = na > 0.01 && !q.off;
       bgShow(m.c, on);
       if (on) { bgPos(m.c, q.dx, q.dy); bgAlpha(m.c, na); }
       if (m.g) { const yb = q.dy + q.dh; bgShow(m.g, yb < Hs); bgPos(m.g, 0, yb - 1); }
@@ -5626,7 +5627,9 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       const vis = (x, y, m) => x > xMin - (m || 0) && x < xMax + (m || 0) && y > yMin - (m || 0) && y < yMax + (m || 0);
 
       this.background(G, cam, k, v);
-      this.backTrees(G, cam, k, xMin, xMax);
+      // Bäume hinter der Kante: bei ruhender Kamera (Menü, Übersicht: tausende Punkte) einmal zeichnen, dann nur kopieren
+      const q = (x) => Math.round(x * 512), camKey = q(cam.cx) + "," + q(cam.cy) + "," + q(cam.ppm) + "," + q(cam.ax) + "," + q(cam.ay) + "|" + W + "x" + H + "@" + this.dpr + "|" + this.theme + "|" + G.H.key;
+      this.stillLayer("back", camKey, () => this.backTrees(G, cam, k, xMin, xMax));
       this.lights(G, S, cam, k, vis, v.t);
       // Zuschauer, Banden und Objekte hinter der Schneeoberfläche (bewegt, darum immer live)
       Scene.drawWorld(ctx, v.hill, G.world, cam, { W, H, t: v.t, focus: v.focus, screen: v.screen }, G.rightY);
@@ -5798,6 +5801,24 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         ctx.fill();
         if (C.flood) { const R = hw * 2.4; ctx.drawImage(this.glowSprite(), tx - R, ty - R, 2 * R, 2 * R); }
       }
+    }
+
+    // Ruhende Kamera: eine Zeichnung (draw) einmal in eine eigene Fläche, danach nur kopieren; bewegt sich die Kamera, direkt zeichnen
+    stillLayer(slot, key, draw) {
+      const st = this.still || (this.still = {});
+      const F = st[slot] || (st[slot] = { key: null, same: 0, cv: null, c: null, ok: false });
+      if (F.key !== key) { F.key = key; F.same = 0; F.ok = false; } else F.same++;
+      if (F.same < 2 || typeof document === "undefined") { draw(); return; }
+      if (!F.cv || F.cv.width !== this.cv.width || F.cv.height !== this.cv.height) {
+        F.cv = document.createElement("canvas"); F.cv.width = this.cv.width; F.cv.height = this.cv.height; F.c = F.cv.getContext("2d"); F.ok = false;
+      }
+      if (!F.ok) {
+        F.c.setTransform(1, 0, 0, 1, 0, 0); F.c.clearRect(0, 0, F.cv.width, F.cv.height); F.c.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+        const c0 = this.ctx; this.ctx = F.c;
+        try { draw(); } finally { this.ctx = c0; }
+        F.ok = true;
+      }
+      const ctx = this.ctx; ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(F.cv, 0, 0); ctx.restore();
     }
 
     // Gelände und Aufsprunghang aus einem Stück: eine Oberkante (G.edge) vom Gelände unter dem Anlauf über den Hang bis hinter
@@ -7866,7 +7887,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.32";
+  const VERSION = "0.33";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -12028,9 +12049,10 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     snow.update(cam, dtReal, W, Hs, wNow);
     const dim = mode === "tutorial" ? 0.55 : (mode === "result" || mode === "final") ? 0.25 : (mode === "board" || mode === "hand" || mode === "setup" || mode === "arcade" || mode === "chal" || mode === "champ" || mode === "multi") ? 0.35 : 0;
     const focus = st ? { x: st.x, landed: (st.phase === "outrun" || st.phase === "done") && st.kind !== "fall" } : null;
-    // Menüs und Tafeln: Hintergrund mit 30 Bildern je Sekunde zeichnen (halbe Arbeit, spart Akku); Sprung und Wiederholung immer flüssig
+    // Menüs und Tafeln zeichnen jetzt auch mit voller Bildrate: Kulisse und ruhender Hang sind zwischengespeichert, und die bewegten
+    // Details (Zug, Seilbahn, Nebel, Probesprung) liefen mit 30 Bildern je Sekunde sichtbar ruckig. Nur hinter deckenden Tafeln halb.
     menuAcc += dtReal;
-    if (mode !== "jump" && mode !== "replay" && menuAcc < 1 / 31) { if (overlay === "jumper") drawJumperPreview(tAnim); return; }
+    if (mode !== "jump" && mode !== "replay" && mode !== "title" && menuAcc < 1 / 31) { if (overlay === "jumper") drawJumperPreview(tAnim); return; }
     menuAcc = 0;
     if (mode === "final" || mode === "champ") drawPodium(tAnim);
     renderer.draw({ hill: H, cam, t: tAnim, jumper: jv, ghost, ghosts, gate: J && J.phase === "gate" ? J.gate : null, best,
