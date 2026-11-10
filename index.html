@@ -975,12 +975,88 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 .logo { white-space: nowrap; font-size: 66px; line-height: 68px; }
 .btn-col > .btn { position: relative; }
 
+/* =====================================================================================================
+   Winterspiele 1928 (Nostalgie): Wochenschau-Optik und Stummfilm-Zwischentitel
+   ===================================================================================================== */
+#filmFx { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+#filmFx > div { position: absolute; inset: 0; }
+/* Sepia: Farbton aus der Ebene, Helligkeit aus dem Bild darunter */
+.fx-sepia { background: #A2804F; mix-blend-mode: color; }
+.fx-tone { background: rgba(70, 44, 16, 0.12); }   /* warm und etwas dunkler, ohne zweite Mischebene (spart Rechenzeit) */
+.fx-grain { inset: -64px !important; background-repeat: repeat; opacity: 0.2; animation: fxGrain 0.42s steps(6) infinite; }
+@keyframes fxGrain { 0% { transform: translate(0, 0); } 17% { transform: translate(-23px, 11px); } 33% { transform: translate(17px, -29px); }
+  50% { transform: translate(-41px, -7px); } 67% { transform: translate(29px, 37px); } 83% { transform: translate(-11px, 23px); } 100% { transform: translate(5px, -15px); } }
+/* Kratzer: zwei helle Linien, die springen und verschwinden */
+.fx-scratch { background: linear-gradient(90deg, transparent 0 31%, rgba(255, 248, 230, 0.55) 31.05%, transparent 31.2% 100%),
+  linear-gradient(90deg, transparent 0 72%, rgba(40, 26, 12, 0.45) 72.05%, transparent 72.15% 100%); animation: fxScratch 1.9s steps(1) infinite; }
+@keyframes fxScratch { 0% { transform: translateX(0); opacity: 0.9; } 13% { transform: translateX(-17%); opacity: 0.4; } 21% { opacity: 0; } 46% { transform: translateX(9%); opacity: 0.7; }
+  58% { transform: translateX(-26%); opacity: 0; } 71% { transform: translateX(4%); opacity: 0.8; } 85% { transform: translateX(14%); opacity: 0.3; } }
+/* dunkle Ränder und leichtes Flackern der Lampe */
+.fx-vig { background: radial-gradient(ellipse 72% 78% at 50% 48%, transparent 58%, rgba(28, 17, 6, 0.62) 100%); animation: fxFlicker 0.19s steps(2) infinite; }
+@keyframes fxFlicker { 0% { opacity: 0.86; } 50% { opacity: 1; } }
+
+body.tc-on, body.tc-on #app { background: #0D0A07; }
+.ztitel { position: absolute; inset: -80px; z-index: 70; display: flex; align-items: center; justify-content: center; background: #0D0A07; cursor: pointer; }
+.ztitel.in { animation: tcIn 0.45s ease-out; }
+@keyframes tcIn { 0% { opacity: 0; } 30% { opacity: 0.7; } 45% { opacity: 0.45; } 100% { opacity: 1; } }
+.tc-in { position: relative; width: min(640px, calc(100% - 64px)); padding: 26px 34px 30px; text-align: center; color: #EFE4CC;
+  border: 2px solid rgba(239, 228, 204, 0.85); outline: 1px solid rgba(239, 228, 204, 0.45); outline-offset: 6px; animation: fxFlicker 0.23s steps(2) infinite; }
+.tc-in::before, .tc-in::after { content: "◆"; position: absolute; left: 50%; transform: translateX(-50%); font-size: 12px; color: rgba(239, 228, 204, 0.85); }
+.tc-in::before { top: -9px; } .tc-in::after { bottom: -9px; }
+.ztitel .tc-text { margin: 0; font-family: var(--font-body); font-style: italic; font-size: 36px; line-height: 42px; letter-spacing: 0.01em; color: #F1E7CF; }
+.ztitel .tc-sub { margin: 12px 0 0; font-family: var(--font-body); font-size: 18px; line-height: 24px; color: #D9CDB0; }
+.tc-btns { display: flex; gap: 14px; justify-content: center; margin-top: 18px; }
+.tc-btn { display: flex; flex-direction: column; gap: 3px; min-width: 210px; max-width: 260px; padding: 10px 16px; border: 2px solid rgba(239, 228, 204, 0.85); border-radius: 2px;
+  background: transparent; color: #EFE4CC; cursor: pointer; }
+.tc-btn b { font-family: var(--font-display); font-size: 19px; letter-spacing: 0.05em; text-transform: uppercase; }
+.tc-btn small { font-family: var(--font-body); font-size: 13px; line-height: 16px; color: #CFC2A4; }
+.tc-btn:active { background: rgba(239, 228, 204, 0.12); }
+.tc-hint { display: block; margin-top: 16px; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(239, 228, 204, 0.5); }
+.tc-btns:not([hidden]) ~ .tc-hint { display: none; }
+/* 1928 in den Challenges und auf der Ergebnistafel */
+.n28-pick { background: rgba(162, 128, 79, 0.16); }
+.n28-res .cup-line { grid-template-columns: 22px minmax(0, 1fr) 64px; }
+.st-row.n28-row { grid-template-columns: 22px minmax(0, 1fr) 90px 56px; gap: 6px; height: 24px; }
+.st-row.n28-row .sr-n { font-size: 13px; gap: 5px; text-overflow: ellipsis; }
+.st-row.n28-row .sr-d { font-size: 14px; }
+.st-row.n28-row .sr-p { font-size: 15px; }
+.n28-gap { text-align: center; font-size: 12px; line-height: 8px; color: var(--muted); }
+.n28-sum { margin-top: 2px; }
+.n28-sum b { font-size: 18px; }
+.n28-sum .medal { flex: none; }
+
+/* HUD im Stummfilm-Look (1928): dunkle Tafeln mit doppeltem cremefarbenem Rahmen und Buchschrift wie die Zwischentitel.
+   Keine Messwerte, die es damals nicht gab: kein Tempo, Wind nur in Worten, keine Höhe über dem Hang. */
+body.era28 #hud .panel { background: rgba(18, 13, 8, 0.86); border: 1.5px solid rgba(239, 228, 204, 0.8); border-radius: 1px;
+  box-shadow: 0 0 0 3px rgba(18, 13, 8, 0.86), 0 0 0 4px rgba(239, 228, 204, 0.38); color: #EFE4CC; }
+body.era28 #hud .kicker { color: #D9C9A3; font-family: var(--font-body); font-style: italic; font-weight: 400; letter-spacing: 0.08em; text-transform: none; }
+body.era28 #hud .pp-name, body.era28 #hud .dist-val { color: #F1E7CF; }
+body.era28 #hud .pp-sub, body.era28 #hud .pp-nat { color: #CDBF9F; }
+body.era28 #speedBox, body.era28 #windVal, body.era28 #windSide, body.era28 #distH { display: none !important; }
+body.era28 .wind-panel { min-width: 0; }
+body.era28 .wind-lbl, body.era28 .wind-panel.head .wind-lbl, body.era28 .wind-panel.tail .wind-lbl { font-family: var(--font-body); font-style: italic; font-size: 16px; line-height: 20px; color: #EFE4CC; }
+body.era28 #hud .toast { background: rgba(13, 10, 7, 0.92); padding: 10px 20px 12px; align-items: center; }
+body.era28 #hud .toast-title, body.era28 #hud .toast-title.cyan, body.era28 #hud .toast-title.warn { font-family: var(--font-body); font-style: italic; font-weight: 400; font-size: 30px; line-height: 34px;
+  letter-spacing: 0.01em; color: #F1E7CF; text-transform: none; }
+body.era28 #hud .toast-sub { color: #CDBF9F; font-size: 13px; }
+body.era28 #hud .chip { background: transparent; border: 1px solid rgba(239, 228, 204, 0.7); color: #EFE4CC; }
+body.era28 #hud .hint { color: #EFE4CC; }
+body.era28 #hud .hint-sub { color: #CDBF9F; }
+body.era28 #hud .tap-pill { background: rgba(13, 10, 7, 0.9); color: #EFE4CC; border: 1px solid rgba(239, 228, 204, 0.8); }
+body.era28 #hud .icon-btn { background: rgba(18, 13, 8, 0.86); color: #EFE4CC; border-color: rgba(239, 228, 204, 0.8); }
+body.era28 #hud .lights { display: none; }
+body.era28 #hud .start-title, body.era28 #hud .goal-title { font-family: var(--font-body); font-style: italic; font-weight: 400; letter-spacing: 0.01em; color: #F1E7CF; }
+body.era28 #hud .hint, body.era28 #hud .hint-sub { font-family: var(--font-body); }
+body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0.85) saturate(0.7); }
+
 </style>
 </head>
 <body>
 <div id="app">
 <div id="stage">
 <canvas id="scene" aria-hidden="true"></canvas>
+<!-- Winterspiele 1928: Wochenschau über Kulisse und Leinwand (sepia, Korn, Kratzer, Flackern), unter dem HUD -->
+<div id="filmFx" aria-hidden="true" hidden><div class="fx-sepia"></div><div class="fx-tone"></div><div class="fx-grain"></div><div class="fx-scratch"></div><div class="fx-vig"></div></div>
 <div id="ui">
 
 <!-- ============ HUD während des Sprungs ============ -->
@@ -1162,9 +1238,9 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       <div class="res-row"><span class="rr-l">Haltung</span><div id="rsJudges" class="rr-m judges"></div><span id="rsStyle" class="num rr-p"></span></div>
       <p id="rsStyleWhy" class="res-why"></p>
       <div class="res-row"><span class="rr-l">Wind</span><div id="rsWindTxt" class="rr-m"></div><span id="rsWindPts" class="num rr-p"></span></div>
-      <div id="rsGateRow" class="res-row"><span class="rr-l">Luke</span><div id="rsGateTxt" class="rr-m"></div><span id="rsGatePts" class="num rr-p"></span></div>
+      <div id="rsGateRow" class="res-row"><span id="rsGateLbl" class="rr-l">Luke</span><div id="rsGateTxt" class="rr-m"></div><span id="rsGatePts" class="num rr-p"></span></div>
       <div class="res-sep"></div>
-      <div class="res-row res-total"><span class="rr-l">Gesamt</span><div class="rr-m"></div><span id="rsTotal" class="num rr-p"></span></div>
+      <div class="res-row res-total"><span id="rsTotalLbl" class="rr-l">Gesamt</span><div class="rr-m"></div><span id="rsTotal" class="num rr-p"></span></div>
     </div>
   </div>
   <div class="res-right panel-strong">
@@ -1577,6 +1653,11 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   </div>
 </section>
 
+<!-- ============ Stummfilm-Zwischentitel (Winterspiele 1928) ============ -->
+<div id="tcard" class="ztitel" hidden role="dialog" aria-live="polite">
+  <div class="tc-in"><p id="tcText" class="tc-text"></p><p id="tcSub" class="tc-sub"></p><div id="tcBtns" class="tc-btns" hidden></div><span class="tc-hint">Tippen zum Weitermachen</span></div>
+</div>
+
 </div>
 </div>
 </div>
@@ -1712,11 +1793,22 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       about: "Die Heini-Klopfer-Skiflugschanze steht im Stillachtal, rund 7 km südlich der Schattenbergschanze. Sie wurde 1950 eröffnet und später nach ihrem Erbauer benannt; 21 Weltrekorde wurden hier gesprungen. Nach dem Umbau 2014–2017 hat sie HS 235.", tip: "Skifliegen mit dem steilsten Anlauf im Spiel: rund 108 km/h. Ein Meter zählt nur 1,2 Punkte, halte die Haltung lange ruhig.",
       source: "Richtwerte (skisprungschanzen.com, kein Zertifikat)", record: { m: 242.5, nation: "SLO", year: 2022, date: "2022-03-20", event: "Weltcup", gate: null, wind: null, speed: null,
         how: "Der weiteste Flug seit dem Umbau. Luke und Wind sind nicht überliefert." } },
+    // Olympiaschanze St. Moritz, Winterspiele 1928 (nur im Nostalgie-Springen, nicht in der Schanzenliste): K-Punkt 66 m (Olympedia),
+    // Profil nach Richtwerten mit steilem Aufsprung und hohem Tisch wie damals. era: Technik von 1928 (parallele Ski, weniger Auftrieb
+    // über airK), stärkere Böen (gustK), Wertung ohne Wind- und Lukenpunkte mit drei Richtern. HS gab es noch nicht: Ende der Landezone.
+    { key: "stmoritz", alt: 1800, name: "St. Moritz", fullName: "Olympiaschanze", place: "St. Moritz", nation: "SUI", cls: "Olympiaschanze 1928", era: 1928, meterValue: 2.0,
+      K: 66, HS: 72, hn: 0.62, betaP: 38.5, beta: 36.5, betaL: 33.5, tableH: 3.0,
+      e1: 64, windKH: 1.0, windKT: 1.25, windTail: 9.0, windHead: 6.0, fisGate: 0, airK: 0.7, gateStep: 1.2, gates: 12, gateTop: 63.5,
+      gamma: 32, r1: 60, t: 4.0, alpha: 8, r2: 60, outrun: 90, towerTop: 12, hillside: true, gustK: { p: 2.4, r: 3.1 },
+      about: "Für die Winterspiele 1928 wurde am Hang über St. Moritz Bad die Olympiaschanze gebaut, damals eine der größten der Welt. Am 18. Februar sprangen 38 Springer aus 13 Ländern vor rund 8.000 Zuschauern. Wegen Eis im Anlauf fuhr man im ersten Durchgang mit weniger Tempo; vor dem zweiten stritt man 40 Minuten lang um das volle Tempo.",
+      tip: "Damals zählte die Haltung so viel wie die Weite: Über den K-Punkt hinaus gibt es keine Extrapunkte, ohne Telemark kaum eine gute Note.",
+      source: "Olympedia (K-Punkt, Ergebnisse 1928), Profil nach Richtwerten", record: { m: 64.0, nation: "NOR", year: 1928, date: "1928-02-18", event: "Winterspiele, 2. Durchgang", gate: null, wind: null, speed: null,
+        how: "Der weiteste gestandene Sprung der Spiele, aufrecht angefahren, um nicht zu schnell zu werden. Ein anderer Norweger flog mit voller Hocke 73,0 m, kam aber nicht sauber in den Auslauf." } },
   ];
 
   // Kalibrierung (test/calib_hills.js): Standardluke = perfekter Sprung ohne Wind landet bei HS - 1 (Normalschanze HS - 1,5),
   // Lukenfaktor in Punkten je Luke, Landedruck-Grenzen für Telemark und Sturz.
-  const CALIB = /*CALIB*/{"holmenkollen":{"refGate":11,"hardLanding":1.3,"fallLanding":2.05,"hardD":139,"fallD":146},"oberstdorf":{"refGate":12,"hardLanding":1.3,"fallLanding":2.05,"hardD":144,"fallD":149.5},"garmisch":{"refGate":14,"hardLanding":1.31,"fallLanding":2.06,"hardD":146,"fallD":151.5},"innsbruck":{"refGate":9,"hardLanding":1.5,"fallLanding":2.25,"hardD":130,"fallD":136},"bischofshofen":{"refGate":17,"hardLanding":1.36,"fallLanding":2.11,"hardD":145.5,"fallD":153},"predazzo-lh":{"refGate":16,"hardLanding":1.56,"fallLanding":2.31,"hardD":144,"fallD":150.5},"predazzo-nh":{"refGate":15,"hardLanding":1.49,"fallLanding":2.24,"hardD":110,"fallD":116},"zakopane":{"refGate":12,"hardLanding":1.3,"fallLanding":2.05,"hardD":143.5,"fallD":150.5},"willingen":{"refGate":10,"hardLanding":1.3,"fallLanding":2.05,"hardD":151.5,"fallD":159.5},"engelberg":{"refGate":14,"hardLanding":1.34,"fallLanding":2.09,"hardD":143.5,"fallD":149},"planica":{"refGate":9,"hardLanding":1.38,"fallLanding":2.13,"hardD":247,"fallD":256.5},"holmenkollen-nh":{"refGate":13,"hardLanding":1.37,"fallLanding":2.12,"hardD":108.5,"fallD":116},"zakopane-nh":{"refGate":17,"hardLanding":1.3,"fallLanding":2.05,"hardD":108.5,"fallD":115},"planica-lh":{"refGate":17,"hardLanding":1.55,"fallLanding":2.3,"hardD":140.5,"fallD":147},"oberstdorf-fh":{"refGate":18,"hardLanding":1.3,"fallLanding":2.05,"hardD":244.5,"fallD":254}}/*END*/;
+  const CALIB = /*CALIB*/{"holmenkollen":{"refGate":11,"hardLanding":1.3,"fallLanding":2.05,"hardD":139,"fallD":146},"oberstdorf":{"refGate":12,"hardLanding":1.3,"fallLanding":2.05,"hardD":144,"fallD":149.5},"garmisch":{"refGate":14,"hardLanding":1.31,"fallLanding":2.06,"hardD":146,"fallD":151.5},"innsbruck":{"refGate":9,"hardLanding":1.5,"fallLanding":2.25,"hardD":130,"fallD":136},"bischofshofen":{"refGate":17,"hardLanding":1.36,"fallLanding":2.11,"hardD":145.5,"fallD":153},"predazzo-lh":{"refGate":16,"hardLanding":1.56,"fallLanding":2.31,"hardD":144,"fallD":150.5},"predazzo-nh":{"refGate":15,"hardLanding":1.49,"fallLanding":2.24,"hardD":110,"fallD":116},"zakopane":{"refGate":12,"hardLanding":1.3,"fallLanding":2.05,"hardD":143.5,"fallD":150.5},"willingen":{"refGate":10,"hardLanding":1.3,"fallLanding":2.05,"hardD":151.5,"fallD":159.5},"engelberg":{"refGate":14,"hardLanding":1.34,"fallLanding":2.09,"hardD":143.5,"fallD":149},"planica":{"refGate":9,"hardLanding":1.38,"fallLanding":2.13,"hardD":247,"fallD":256.5},"holmenkollen-nh":{"refGate":13,"hardLanding":1.37,"fallLanding":2.12,"hardD":108.5,"fallD":116},"zakopane-nh":{"refGate":17,"hardLanding":1.3,"fallLanding":2.05,"hardD":108.5,"fallD":115},"planica-lh":{"refGate":17,"hardLanding":1.55,"fallLanding":2.3,"hardD":140.5,"fallD":147},"oberstdorf-fh":{"refGate":18,"hardLanding":1.3,"fallLanding":2.05,"hardD":244.5,"fallD":254},"stmoritz":{"refGate":6,"hardLanding":2.34,"fallLanding":3.09,"hardD":69,"fallD":72.5}}/*END*/;
 
   // Fehlende Profilwerte nach FIS-Norm ergänzen (Mitte des erlaubten h/n-Bereichs, Landebereich als Kreis)
   function deriveDefaults(d) {
@@ -2000,6 +2092,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     hardLanding: 1.35, fallLanding: 1.7,
     // Auslauf
     muSnow: 0.045, cdaStand: 0.45, brake: 3.4,
+    // 1928: aufrecht angefahren (Luftwiderstand im Anlauf), Abzug ohne Telemark, Weitennote je Meter unter K, Sturz kürzt die Weitennote
+    cdaUpright: 0.36, twoFoot28: 3.6, mark28: 0.42, fall28: 0.4,
   };
 
   function smooth(t) { t = Math.max(0, Math.min(1, t)); return t * t * (3 - 2 * t); }
@@ -2078,6 +2172,10 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       this.follow = opts.follow !== false;
       // Flugtechnik/Material (KI-Springer < 1) mal Abgleich der Schanze mit echten Weitenergebnissen
       this.aeroK = (opts.aero || 1) * (hill.airK || 1);
+      // 1928: aufrecht abfahren wie die Norweger (weniger Tempo, sicherere Landung)
+      this.upright = !!opts.upright;
+      // stärkere Böen auf alten Schanzen (Haltung p, Seitenlage r)
+      this.gustK = hill.gustK || { p: 1, r: 1 };
       // Luftdichte am Schanzenort (Höhenlage, etwa −3 °C): dünnere Luft trägt weniger
       this.rho = hill.rho || P.rho;
       this.rand = rng(opts.seed || 12345);
@@ -2186,7 +2284,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
           inK = 1 + P.inDrag * this.pIn * this.pIn;
           this.stats.inT += dt; if (Math.abs(this.pIn) <= 0.2) this.stats.inOk += dt;
         }
-        const cda = P.cdaCrouch * inK + (P.cdaExt - P.cdaCrouch * inK) * ext;
+        const cIn = this.upright ? P.cdaUpright : P.cdaCrouch * inK;
+        const cda = cIn + (P.cdaExt - cIn) * ext;
         const W = this.wind.at(Math.max(0, tr.x), this.t) * 0.35; // im Anlauf windgeschützt
         const vr = this.v + W;
         const acc = P.g * Math.sin(th) - P.muIn * (P.g * Math.cos(th) + this.v * this.v * tr.k)
@@ -2204,7 +2303,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       if (this.phase === "flight") {
         this.tf += dt;
         // Haltung = Eingabe + Störung
-        const gs = this.wind.gust;
+        const gs = this.wind.gust * this.gustK.p;
         this.gust += (-this.gust / P.gustTau) * dt + gs * Math.sqrt(2 * dt / P.gustTau) * this.rand.gauss();
         this.pOpt = P.optEarly * (1 - smooth(this.tf / P.optT));
         const startD = this.follow ? this.pOpt : P.startDist * Math.exp(-this.tf / P.startDecay);
@@ -2212,7 +2311,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         if (this.kick) this.kick *= Math.exp(-dt / 0.35);
         this.p = clamp(this.u + this.dist, -1.6, 1.6);
         // Balance: Seitenwind (baut sich nach dem Absprung auf) + Böen; die Seitenlage ist rollstabil und kehrt langsam zur Mitte zurück
-        const gR = this.wind.gustR != null ? this.wind.gustR : 0.1;
+        const gR = (this.wind.gustR != null ? this.wind.gustR : 0.1) * this.gustK.r;
         this.gustR += (-this.gustR / P.gustTauR) * dt + gR * Math.sqrt(2 * dt / P.gustTauR) * this.rand.gauss();
         this.distR = (this.wind.side || 0) * smooth(this.tf / 0.8) + this.gustR + (this.kickR || 0);
         if (this.kickR) this.kickR *= Math.exp(-dt / 0.5);
@@ -2345,13 +2444,13 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         const off = Math.max(0, Math.abs(L.dtL - P.teleBest) - P.teleBand);
         land = Math.min(1.5, off * P.teleSlope) + Math.max(0, L.hEq - ((H.hardLanding || P.hardLanding) - 0.25)) * 2.0;
       } else if (L.kind === "twofoot") {
-        land = 2.0 + Math.max(0, L.hEq - ((H.hardLanding || P.hardLanding) - 0.15)) * 1.5;
+        land = (H.era ? P.twoFoot28 : 2.0) + Math.max(0, L.hEq - ((H.hardLanding || P.hardLanding) - 0.15)) * 1.5;
       } else {
         land = 3.0; outrun = 7.0;
       }
       flight = Math.min(5, flight); land = Math.min(5, land);
-      const judges = [];
-      for (let j = 0; j < 5; j++) {
+      const judges = [], nJ = H.era ? 3 : 5;   // 1928: drei Richter, alle zählen
+      for (let j = 0; j < nJ; j++) {
         const bias = [0.1, -0.15, 0.05, 0.2, -0.1][j];
         let ded = flight + land + outrun + bias + r.gauss() * 0.28;
         let sc = 20 - ded;
@@ -2359,18 +2458,26 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         judges.push(sc);
       }
       const sorted = judges.map((v, i) => ({ v, i })).sort((a, b) => a.v - b.v);
-      const struck = [sorted[0].i, sorted[4].i];
+      const struck = nJ === 5 ? [sorted[0].i, sorted[4].i] : [];
       const style = judges.reduce((s, v, i) => s + (struck.includes(i) ? 0 : v), 0);
       const distPts = Math.max(0, H.kValue + H.meterValue * (L.dist - H.K));
       const wAvg = st.windN > 0 ? st.windSum / st.windN : 0;
       // Windfaktoren der Schanze aus den FIS-Ergebnislisten (Punkte je m/s); sonst Näherung
       const hwF = H.windHead || (H.HS - 36) / 20 * H.meterValue, twF = H.windTail || hwF * 1.5;
-      const windPts = this.wind.mode === "off" ? 0 : (wAvg >= 0 ? -hwF * wAvg : -twF * wAvg);
-      const gatePts = (this.refGate - this.gate) * (H.gateFactor || 0);
+      // 1928: kein Ausgleich für Wind und Anlauf
+      const windPts = this.wind.mode === "off" || H.era ? 0 : (wAvg >= 0 ? -hwF * wAvg : -twF * wAvg);
+      const gatePts = H.era ? 0 : (this.refGate - this.gate) * (H.gateFactor || 0);
       const total = Math.max(0, distPts + style + windPts + gatePts);
       const r1 = (v) => Math.round(v * 10) / 10;
+      // Note wie 1928 (0 bis 20): Mittel aus Weitennote (bis zum K-Punkt) und Haltungsnote der Richter; Sturz kürzt die Weitennote
+      let note = null;
+      if (H.era) {
+        let dm = clamp(20 - Math.max(0, H.K - L.dist) * P.mark28, 0, 20);
+        if (L.kind === "fall") dm *= P.fall28;
+        note = Math.round(((dm + style / judges.length) / 2) * 1000) / 1000;
+      }
       return {
-        dist: L.dist, kind: L.kind, distPts: r1(distPts), judges, struck, style: r1(style),
+        dist: L.dist, kind: L.kind, distPts: r1(distPts), judges, struck, style: r1(style), note,
         wind: r1(wAvg), windPts: r1(windPts), gatePts: r1(gatePts), total: r1(total),
         flightDed: flight, landDed: land, zone: this.takeoffQ ? this.takeoffQ.zone : "none",
         takeErr: this.takeoffQ && this.takeoffQ.e != null ? Math.round(this.takeoffQ.e * 1000) : null,
@@ -3411,7 +3518,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     const rr = rng(T.seed || 5);
     const items = cluster(T, rr).map((h) => ({ yb: h.yb, h, draw: () => house(h.x, h.yb, h.w, h.h, preset(T.house, rr)) }));
     for (const c of (T.churches || [])) items.push({ yb: c.yb, draw: () => church(c.x, c.yb, c.t, c.h) });
-    for (const e of (T.extra || [])) items.push({ yb: e.yb, draw: () => (e.t === "abbey" ? abbey(e.x0, e.x1, e.yb, e.h) : hotel(e.x, e.yb, e.w, e.h)) });
+    const EX = { abbey: (e) => abbey(e.x0, e.x1, e.yb, e.h), palace: (e) => palace28(e.x, e.yb, e.s), schiefturm: (e) => schiefturm28(e.x, e.yb, e.h) };
+    for (const e of (T.extra || [])) items.push({ yb: e.yb, draw: () => (EX[e.t] ? EX[e.t](e) : hotel(e.x, e.yb, e.w, e.h)) });
     items.sort((a, b) => a.yb - b.yb).forEach((it) => it.draw());
     const hs = items.filter((it) => it.h && it.h.k > 0);
     if (chimneys) for (let i = 0; i < Math.min(T.smoke == null ? 5 : T.smoke, hs.length); i++) { const h = hs[Math.floor(rr() * hs.length)].h; chimneys.push([h.x + h.w * 0.72, h.yb - h.h - h.w * 0.22, 0.7 + h.k * 0.2, rr() * 10]); }
@@ -3707,6 +3815,11 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     } else if (o.hat === "filz") {
       fill([[x - hr * 0.8, hy - hr * 0.6], [x + hr * 0.8, hy - hr * 0.6], [x + hr * 0.66, hy - hr * 1.6], [x - hr * 0.66, hy - hr * 1.6]], hc);
       rect(x - hr * 1.6, hy - hr * 0.8, hr * 3.2, hr * 0.34, hc);
+    } else if (o.hat === "glocke") {
+      // Glockenhut der Zwanziger: tief in die Stirn gezogen, schmale Krempe, Band
+      ctx.beginPath(); ctx.ellipse(x, hy - hr * 0.18, hr * 1.12, hr * 1.16, 0, Math.PI, 0); ctx.closePath(); ctx.fillStyle = hc; ctx.fill();
+      rect(x - hr * 1.32, hy - hr * 0.3, hr * 2.64, hr * 0.3, mix(hc, I.tinte, 0.22));
+      rect(x - hr * 1.08, hy - hr * 0.62, hr * 2.16, hr * 0.2, tone(o.bob || I.papier));
     } else if (o.hat === "kappe") {
       ctx.beginPath(); ctx.ellipse(x, hy - hr * 0.25, hr * 1.02, hr * 0.95, 0, Math.PI, 0); ctx.closePath(); ctx.fillStyle = hc; ctx.fill();
       rect(x - hr * 0.2, hy - hr * 0.42, hr * 1.7, hr * 0.32, hc);
@@ -4864,6 +4977,145 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       for (const c of (T.cover || [])) block(c[0], c[1], c[2], c[3], rng(c[4] || 7), false);
     };
   }
+  // ------------------------------------------------------------------ St. Moritz 1928 (Nostalgie)
+  // Grandhotel mit dem spitzen Turm (Wahrzeichen über dem See): langer Bau mit Walmdach und Fensterreihen, links der hohe Turm
+  function palace28(x, yb, s) {
+    s = s || 1;
+    const w = 74 * s, h = 33 * s, tw = 12 * s, th = 58 * s, tx = x + 5 * s;
+    shade([[x + w, yb], [x + w + 15 * s, yb - 6 * s], [x + w + 15 * s, yb - h - 6 * s], [x + w, yb - h]], P.wallSide);
+    rect(x, yb - h, w, h, P.wall);
+    fill([[x - 2, yb - h], [x + 6 * s, yb - h - 11 * s], [x + w - 6 * s, yb - h - 11 * s], [x + w + 2, yb - h]], P.roof);
+    shade([[x + w + 2, yb - h], [x + w - 6 * s, yb - h - 11 * s], [x + w + 9 * s, yb - h - 17 * s], [x + w + 16 * s, yb - h - 6 * s]], mix(P.roof, I.tinte, 0.2));
+    fill([[x + 6 * s, yb - h - 11 * s], [x + 9 * s, yb - h - 14 * s], [x + w - 9 * s, yb - h - 14 * s], [x + w - 6 * s, yb - h - 11 * s]], P.roofSnow);
+    rect(x, yb - h + 2.5 * s, w, 2 * s, mix(P.wall, I.tinte, 0.18));
+    for (let row = 0; row < 3; row++) for (let i = 0; i < 10; i++) rect(x + 21 * s + i * ((w - 26 * s) / 9.6), yb - h + 8 * s + row * 8.6 * s, 2.8 * s, 4.4 * s, (row * 3 + i) % 7 === 3 ? P.winHi : P.win);
+    rect(x + w * 0.62, yb - 8 * s, 9 * s, 8 * s, P.door);
+    // Turm: schlank, Fenster in zwei Reihen, spitzer Helm mit Schattenseite und Wetterfahne
+    rect(tx, yb - th, tw, th, mix(P.wall, P.wallSide, 0.22));
+    shade([[tx + tw, yb - th], [tx + tw + 4 * s, yb - th - 2 * s], [tx + tw + 4 * s, yb - 2 * s], [tx + tw, yb]], P.wallSide);
+    for (let k = 0; k < 5; k++) { rect(tx + 2.6 * s, yb - th + 8 * s + k * 9.4 * s, 2.4 * s, 4.4 * s, P.win); rect(tx + 7 * s, yb - th + 8 * s + k * 9.4 * s, 2.4 * s, 4.4 * s, P.win); }
+    rect(tx - 1 * s, yb - th, tw + 2 * s, 2 * s, mix(P.wall, I.tinte, 0.2));
+    fill([[tx - 1.6 * s, yb - th], [tx + tw / 2, yb - th - 24 * s], [tx + tw + 1.6 * s, yb - th]], P.roof);
+    fill([[tx + tw / 2, yb - th - 24 * s], [tx + tw + 1.6 * s, yb - th], [tx + tw * 0.62, yb - th]], mix(P.roof, I.tinte, 0.22));
+    line([[tx + tw / 2, yb - th - 24 * s], [tx + tw / 2, yb - th - 29 * s]], P.line, 0.7);
+    fill([[tx + tw / 2, yb - th - 29 * s], [tx + tw / 2 + 3.4 * s, yb - th - 28 * s], [tx + tw / 2, yb - th - 27 * s]], P.line);
+  }
+  // Schiefer Turm: Glockenturm der alten Mauritiuskirche, um gut 5° geneigt, mit Schallöffnungen und Zeltdach
+  function schiefturm28(x, yb, h) {
+    const w = h * 0.26;
+    ctx.save(); ctx.translate(x, yb); ctx.rotate(0.096);
+    shade([[w / 2, 0], [w / 2 + 3, -1.4], [w / 2 + 3, -h - 1.4], [w / 2, -h]], P.wallSide);
+    rect(-w / 2, -h, w, h, mix(P.wall, I.schatten, 0.3));
+    for (let yy = -h + 4; yy < -2; yy += 5) line([[-w / 2, yy], [w / 2, yy]], mix(P.wall, I.tinte, 0.12), 0.35);
+    for (const dx of [-w * 0.3, w * 0.06]) rect(dx, -h * 0.84, w * 0.2, h * 0.12, P.door);
+    rect(-w / 2 - 0.6, -h - 0.6, w + 1.2, 1.4, mix(P.wall, I.tinte, 0.25));
+    fill([[-w / 2 - 1, -h], [0, -h * 1.34], [w / 2 + 1, -h]], P.roof);
+    fill([[0, -h * 1.34], [w / 2 + 1, -h], [w * 0.16, -h]], mix(P.roof, I.tinte, 0.22));
+    fill([[-w / 2 - 1, -h], [0, -h * 1.34], [-w * 0.1, -h * 1.24], [-w / 2 + 0.5, -h]], P.roofSnow);
+    ctx.restore();
+  }
+  // Der zugefrorene See mit Pferderennen: Eis mit Schnee, die Rennbahn als Oval, kleine Holztribüne mit bunten Wimpeln
+  function see28(T, live) {
+    const { cx, cy, rx, ry } = T, ice = mix(I.dunst, I.himmel, 0.2), iceL = mix(ice, I.papier, 0.55);
+    ctx.beginPath(); ctx.ellipse(cx + 2, cy + 1.4, rx + 3, ry + 2, 0, 0, 6.2832); ctx.fillStyle = P.valleyShade; ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, 6.2832); ctx.fillStyle = ice; ctx.fill();
+    ctx.save(); ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, 6.2832); ctx.clip();
+    ctx.beginPath(); ctx.ellipse(cx + rx * 0.08, cy - ry * 0.12, rx * 0.86, ry * 0.62, 0, 0, 6.2832); ctx.fillStyle = iceL; ctx.fill();
+    const rr = rng(28);
+    for (let i = 0; i < 18; i++) { const a = rr() * 6.2832, q = 0.7 + rr() * 0.25, x = cx + Math.cos(a) * rx * q, y = cy + Math.sin(a) * ry * q, l = 10 + rr() * 22; line([[x - l / 2, y], [x + l / 2, y + (rr() - 0.5)]], mix(ice, I.tinte, 0.08), 0.5); }
+    ctx.restore();
+    const top = []; for (let i = 0; i <= 24; i++) { const a = Math.PI + (i / 24) * Math.PI; top.push([cx + Math.cos(a) * (rx + 2), cy + Math.sin(a) * (ry + 1.5)]); }
+    line(top, P.valley, 2.4);
+    const K = T.track;
+    ctx.beginPath(); ctx.ellipse(K.cx, K.cy, K.rx + 2.6, K.ry + 1.6, 0, 0, 6.2832); ctx.strokeStyle = mix(P.valleyShade, I.tinte, 0.2); ctx.lineWidth = 0.7; ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(K.cx, K.cy, K.rx - 2.6, K.ry - 1.6, 0, 0, 6.2832); ctx.stroke();
+    // Tribüne: Holzgerüst mit Dach, Zuschauer als Punkte, Wimpelleine
+    const gx = K.cx - 34, gy = K.cy - K.ry - 3, wd = tone(mix(P.wood, I.ocker, 0.15)), wdD = mix(wd, I.tinte, 0.35);
+    shade([[gx + 58, gy], [gx + 64, gy - 2], [gx + 64, gy - 13], [gx + 58, gy - 11]], wdD);
+    fill([[gx, gy], [gx + 58, gy], [gx + 58, gy - 11], [gx, gy - 11]], wd);
+    for (let r2 = 0; r2 < 3; r2++) line([[gx + 1, gy - 2.5 - r2 * 3], [gx + 57, gy - 2.5 - r2 * 3]], wdD, 0.5);
+    fill([[gx - 3, gy - 11], [gx + 61, gy - 11], [gx + 58, gy - 16], [gx, gy - 16]], tone(mix(I.rot, I.dach, 0.25)));
+    rect(gx - 0.5, gy - 17.4, 59, 1.6, P.roofSnow);
+    const cr = rng(7), people = [];
+    for (let r2 = 0; r2 < 3; r2++) for (let i = 0; i < 16; i++) if (cr() < 0.8) people.push([gx + 3 + i * 3.4 + cr(), gy - 3.6 - r2 * 3, 0.95]);
+    dots(people, tone(mix(I.tinte, I.dach, 0.4)));
+    const pen = []; for (let i = 0; i <= 12; i++) pen.push([gx - 18 + i * 8, gy - 22 + Math.sin(i * 0.8) * 1.2]);
+    line([[gx - 18, gy - 4], [gx - 18, gy - 23]], P.line, 0.6); line([[gx + 78, gy - 4], [gx + 78, gy - 23]], P.line, 0.6);
+    line(pen.map((p, i) => [p[0], p[1] + Math.sin(i / 12 * Math.PI) * 3]), P.line, 0.35);
+    const PC = [I.rot, I.ocker, I.navy, I.gruen, I.papier];
+    pen.forEach((p, i) => { if (i % 1 === 0 && i < 12) { const y = p[1] + Math.sin(i / 12 * Math.PI) * 3; fill([[p[0] + 1, y], [p[0] + 5, y], [p[0] + 3, y + 3.6]], tone(PC[i % PC.length])); } });
+    ANIM(live, 1, galoppAnim(K), K.cx - K.rx - 24, K.cx + K.rx + 24);
+  }
+  // Rennpferd im Galopp mit Jockey (von der Seite, dir -1 = nach links): Beine paarweise gestreckt und angezogen, Schweif weht
+  function horse28(x, yb, s, ph, col, silk, dir) {
+    ctx.save(); ctx.translate(x, yb); if (dir < 0) ctx.scale(-1, 1); ctx.scale(s, s);
+    const c = tone(col), cD = mix(c, I.tinte, 0.38), b = Math.sin(ph) * 0.5;
+    const leg = (x0, fwd, off, colL) => { const sw = Math.sin(ph + off); line([[x0, -7.4 + b], [x0 + sw * 2.4 * fwd, -3.8 + Math.abs(sw) * 0.5], [x0 + sw * 4.2 * fwd + fwd * 0.6, -0.3 + Math.max(0, -sw) * 1.4]], colL, 1.15); };
+    ctx.lineCap = "round";
+    leg(-3.8, -1, 0.6, cD); leg(3.4, 1, 3.5, cD);
+    ctx.beginPath(); ctx.ellipse(0, -8.6 + b, 6.6, 2.9, -0.04, 0, 6.2832); ctx.fillStyle = c; ctx.fill();
+    fill([[4.2, -10.2 + b], [8.6, -14 + b * 1.4], [11.4, -13.4 + b * 1.4], [10.4, -11.4 + b * 1.4], [6.2, -8.2 + b]], c);
+    fill([[8.6, -14 + b * 1.4], [13, -12.4 + b * 1.4], [12.6, -11.2 + b * 1.4], [10.2, -11.6 + b * 1.4]], c);
+    line([[-6.4, -9.6 + b], [-9.6, -9.4 + Math.cos(ph) * 0.9], [-12, -8 + Math.cos(ph) * 1.3]], cD, 1.25);
+    leg(-2.6, -1, 1.9, c); leg(4.6, 1, 4.8, c);
+    const sc = tone(silk);
+    fill([[-1.4, -10.8 + b], [2.6, -14.6 + b * 0.8], [4.6, -13.8 + b * 0.8], [1.6, -10.6 + b]], sc);
+    line([[3, -13.4 + b * 0.8], [7.2, -12.6 + b]], sc, 0.75);
+    dot(4.8, -15.4 + b * 0.8, 1.15, skin());
+    ctx.beginPath(); ctx.arc(4.8, -15.8 + b * 0.8, 1.25, Math.PI, 0); ctx.fillStyle = sc; ctx.fill();
+    ctx.lineCap = "butt"; ctx.restore();
+  }
+  function galoppAnim(K) {
+    const HS = [[0, I.dach, I.rot], [0.08, mix(I.dach, I.tinte, 0.45), I.navy], [0.17, mix(I.ocker, I.dach, 0.45), I.gruen], [0.27, I.tinte, I.ocker]];
+    return (t) => {
+      const list = HS.map(([o, col, silk], i) => {
+        const a = -t * (0.2 + i * 0.006) - o, sa = Math.sin(a);
+        return { x: K.cx + Math.cos(a) * K.rx, y: K.cy + sa * K.ry, col, silk, dir: sa > 0 ? 1 : -1, ph: t * 10.5 + i * 1.7, s: 0.62 + 0.3 * (sa + 1) / 2 };
+      });
+      list.sort((p, q) => p.y - q.y);
+      for (const L of list) horse28(L.x, L.y, L.s, L.ph, L.col, L.silk, L.dir);
+    };
+  }
+  // Rhätische Bahn mit dem „Krokodil“: Lok mit langen Vorbauten und Führerhaus in der Mitte, Stromabnehmer; zwei Wagen
+  function kroko28(x, yb) {
+    const loco = tone(mix(I.dach, I.ocker, 0.2)), locoD = mix(loco, I.tinte, 0.35), car = tone(mix(I.gruen, I.tinte, 0.3));
+    for (let i = 0; i < 2; i++) { const cx = x + i * 36; rect(cx, yb - 11.5, 33, 9.5, car); rect(cx - 1, yb - 13.6, 35, 2.4, P.roofSnow); for (let k = 0; k < 5; k++) rect(cx + 3 + k * 6.1, yb - 9.4, 3.2, 3.4, P.winHi); }
+    const lx = x + 74;
+    rect(lx, yb - 8.5, 10, 6.5, loco); rect(lx + 10, yb - 13.5, 12, 11.5, loco); rect(lx + 22, yb - 8.5, 10, 6.5, loco);
+    fill([[lx + 32, yb - 8.5], [lx + 34.4, yb - 6], [lx + 34.4, yb - 2], [lx + 32, yb - 2]], locoD);
+    rect(lx + 9.5, yb - 15, 13, 1.8, P.roofSnow); rect(lx - 0.4, yb - 9.7, 10.8, 1.3, P.roofSnow); rect(lx + 21.6, yb - 9.7, 10.8, 1.3, P.roofSnow);
+    rect(lx + 12.4, yb - 11.6, 3, 3, P.winHi); rect(lx + 17, yb - 11.6, 3, 3, P.winHi);
+    line([[lx + 13, yb - 15], [lx + 16, yb - 20.2], [lx + 19, yb - 15]], P.line, 0.6); line([[lx + 13.6, yb - 20.4], [lx + 18.4, yb - 20.4]], P.line, 0.9);
+    dots([x + 6, x + 27, x + 42, x + 63, lx + 3, lx + 7, lx + 13, lx + 19, lx + 25, lx + 29].map((wx) => [wx, yb - 1.3, 1.8]), P.line);
+  }
+  // Kameramann der Wochenschau: Holzkamera mit zwei Filmspulen auf dem Stativ, er dreht die Kurbel (bewegt)
+  function kamera28(x, yb, h, live) {
+    const wd = tone(mix(P.wood, I.tinte, 0.3)), box = tone(mix(I.tinte, I.dach, 0.4)), cy = yb - h * 0.6;
+    line([[x, cy], [x - h * 0.17, yb]], wd, h * 0.03); line([[x, cy], [x + h * 0.15, yb]], wd, h * 0.03); line([[x, cy], [x + h * 0.02, yb]], mix(wd, I.tinte, 0.2), h * 0.024);
+    rect(x - h * 0.14, cy - h * 0.16, h * 0.27, h * 0.17, box);
+    rect(x - h * 0.24, cy - h * 0.12, h * 0.1, h * 0.08, mix(box, I.tinte, 0.35));
+    dot(x - h * 0.25, cy - h * 0.08, h * 0.03, mix(I.himmel, I.tinte, 0.3));
+    for (const dx of [-0.06, 0.08]) { dot(x + dx * h, cy - h * 0.23, h * 0.07, box); dot(x + dx * h, cy - h * 0.23, h * 0.025, mix(box, I.papier, 0.4)); }
+    const pr = person(x + h * 0.32, yb, h, { coat: mix(I.dach, I.tinte, 0.3), legs: mix(I.dach, I.tinte, 0.5), hat: "kappe", hatC: mix(I.ocker, I.tinte, 0.45), arms: [null, 0.18] });
+    const kx = x + h * 0.14, ky = cy - h * 0.08, r0 = h * 0.05, sx = pr.sh[0][0], sy = pr.sh[0][1];
+    ANIM(live, LI, (t) => {
+      const a = t * 7.2, ex = kx + Math.cos(a) * r0, ey = ky + Math.sin(a) * r0;
+      line([[kx, ky], [ex, ey]], P.line, h * 0.018);
+      limb(sx, sy, ex + h * 0.01, ey, h * 0.08, tone(mix(I.dach, I.tinte, 0.3)), skin());
+    }, x - h * 0.3, x + h * 0.55);
+  }
+  // Zuschauer der Zwanziger: Herren im langen Mantel mit Filzhut, Damen mit Glockenhut, Pelzkragen und Rock; Kinder mit Mütze
+  function leute28(list) {
+    const COAT = [mix(I.tinte, I.dach, 0.35), I.navy, mix(I.dach, I.ocker, 0.3), mix(I.gruen, I.tinte, 0.35), mix(I.tinte, I.tief, 0.4)];
+    for (const [x, yb, h, seed, kind] of list) {
+      const rr = rng(seed * 7919 + 29), c = COAT[Math.floor(rr() * COAT.length)];
+      if (kind === "f") person(x, yb, h, { coat: c, hat: "glocke", hatC: [I.rot, I.ocker, I.papier, mix(I.rot, I.violett, 0.4)][Math.floor(rr() * 4)], bob: I.tinte,
+        skirt: mix(c, I.tinte, 0.15), scarf: mix(I.papier, I.ocker, 0.3), legs: mix(I.dunst, I.tinte, 0.4), arms: [0.1, rr() < 0.4 ? 2.5 : 0.18] });
+      else if (kind === "kid") person(x, yb, h, { kid: true, coat: I.rot, hat: "bommel", hatC: I.papier, knit: I.rot, arms: [0.3, 2.4] });
+      else person(x, yb, h, { coat: c, hat: "filz", hatC: mix(I.tinte, I.dach, 0.25 + rr() * 0.4), scarf: rr() < 0.5 ? mix(I.papier, I.dunst, 0.2) : null, arms: [0.1, rr() < 0.3 ? 2.7 : 0.15] });
+    }
+  }
+
   const NEAR_ITEM = {
     drift: (it) => drift(it[1], it[2], it[3], it[4]),
     spruce: (it) => grove(it[1], true),
@@ -4891,6 +5143,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     perchten: (it, live) => perchten(it[1], it[2], it[3], it[4] || 2, live),
     alpini: (it, live) => alpini(it[1], it[2], it[3], it[4] || 4, live),
     auto: (it) => auto(it[1], it[2], it[3] || 1),
+    kamera28: (it, live) => kamera28(it[1], it[2], it[3], live),
+    leute28: (it) => leute28(it[1]),
     larch: (it) => { for (const [x, yb, h] of it[1]) { shade([[x, yb + 1], [x + h * 0.6, yb], [x + h * 0.5, yb + 3], [x, yb + 3]], P.valleyShade); larch(x, yb, h); } },
     eisstock: (it, live) => eisstock(it[1], it[2], it[3], live),
     bienenhaus: (it) => bienenhaus(it[1], it[2], it[3] || 1),
@@ -4970,6 +5224,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     valley(O);
     // Eisteich vor den Bäumen des Talgrunds (die Gruppe am Ufer steht davor)
     if ((O.mid || {}).eisteich) { const E = O.mid.eisteich; eisteich({ cx: E[0], cy: E[1], rx: E[2], ry: E[3] }, live); }
+    if ((O.mid || {}).see28) see28(O.mid.see28, live);
     valleyDetail(O);
     wege();
     const M = O.mid || {};
@@ -4984,6 +5239,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       TR = Object.assign({}, TR, { x0: L ? L.xo : TR.x0, x1: R ? R.xo : TR.x1 });
     }
     if (TR) line([[TR.x0, TR.y + 0.6], [TR.x1, TR.y + 0.6]], P.line, 1.2);
+    if (TR && TR.kroko) { line([[TR.x0, TR.y - 21.6], [TR.x1, TR.y - 21.6]], P.line, 0.35); for (let x = TR.x0 + 30; x < TR.x1; x += 84) line([[x, TR.y + 0.6], [x, TR.y - 24], [x + 4, TR.y - 24]], P.line, 0.6); }
     for (const [x, d] of (M.tunnels || [])) tunnel(x, (M.train || M.viaduct).y, d);
     for (const k of (M.kozolci || [])) kozolec(k[0], k[1]);
     for (const g of (M.groves || [])) grove(g, true);
@@ -5050,14 +5306,15 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     bischofshofen: { typ: "fichte", thick: 1.35, ph: 7 },
     zakopane: { typ: "fichte", thick: 1.5, ph: 8, tall: true },
     planica: { typ: "latschen", kahl: true, fels: [[30, 50, 60], [170, 90, 48], [320, 60, 40], [470, 120, 34]] },
+    stmoritz: { typ: "laerche", thick: 0.8, ph: 9, gaps: [[180, 250]], huette: [[196, 32, 24]] },
   };
   // Schanzenname je Ort für das Schanzenschild (Schanzennamen, keine Marken); Richterturm verputzt statt Holz auf Gitterstützen
   const SCHILD = { willingen: "MÜHLENKOPF", engelberg: "TITLIS-SCHANZE", predazzo: "DAL BEN", holmenkollen: "HOLMENKOLLEN", oberstdorf: "SCHATTENBERG", garmisch: "GUDIBERG",
-    innsbruck: "BERGISEL", bischofshofen: "BISCHOFSHOFEN", zakopane: "WIELKA KROKIEW", planica: "LETALNICA",
+    innsbruck: "BERGISEL", bischofshofen: "BISCHOFSHOFEN", zakopane: "WIELKA KROKIEW", planica: "LETALNICA", stmoritz: "OLYMPIASCHANZE",
     "oberstdorf-fh": "HEINI-KLOPFER", "planica-lh": "BLOUDKOVA", "holmenkollen-nh": "MIDTSTUBAKKEN", "zakopane-nh": "ŚREDNIA KROKIEW" };
   const PUTZ = { garmisch: 1, innsbruck: 1, oberstdorf: 1, planica: 1, predazzo: 1 };
   const HOUSE = { willingen: "fachwerk", engelberg: "chalet", predazzo: "italien", holmenkollen: "nordisch", oberstdorf: "chalet", garmisch: "bayern",
-    innsbruck: "chalet", bischofshofen: "chalet", zakopane: "goral", planica: "chalet" };
+    innsbruck: "chalet", bischofshofen: "chalet", zakopane: "goral", planica: "chalet", stmoritz: "chalet" };
   // Plan des Hangs für eine Schanze in Weltmetern: x am Hang, Tiefen relativ zur Kante bzw. zum Gürtel, Größen in m. Fest je Schanze.
   // place: Ort (ohne Variante), topX: Anlaufbeginn (x < 0), endX: Ende des Auslaufs, xK: x am K-Punkt, x03/x09: x bei 0,3·K und 0,9·K.
   function hangPlan(place, topX, endX, xK, x03, x09, key) {
@@ -5114,6 +5371,12 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       line(S([[-0.36, 0.6], [-0.18, 0.54], [0, 0.6], [0.18, 0.54], [0.36, 0.6]]), I.kobalt, 0.45);
       for (const st of S([[-0.36, -0.62], [0.36, -0.62], [0, -0.4]])) dot(st[0], st[1], 0.55, I.ocker);
     },
+    olymp: (q, pt) => {
+      q(0, 1, 0, 1, mix(I.papier, I.schatten, 0.12));
+      const edge = []; for (let i = 0; i <= 8; i++) edge.push(pt(i / 8, 0)); edge.push(pt(1, 1)); line(edge, mix(I.schatten, I.tinte, 0.35), 0.45);
+      const ring = (u, v, col) => { const p = []; for (let i = 0; i <= 18; i++) { const a = (i / 18) * 6.2832; p.push(pt(u + Math.cos(a) * 0.085, v + Math.sin(a) * 0.15)); } line(p, col, 0.7); };
+      ring(0.3, 0.4, I.kobalt); ring(0.5, 0.4, I.tinte); ring(0.7, 0.4, I.rot); ring(0.4, 0.56, I.ocker); ring(0.6, 0.56, I.gruen);
+    },
     by: (q) => { for (let i = 0; i < 5; i++) for (let j = 0; j < 3; j++) q(i / 5, (i + 1) / 5, j / 3, (j + 1) / 3, (i + j) % 2 ? I.papier : I.himmel); },
     // Salzburg: Rot-Weiß mit dem Landeswappen (gespalten: links ein schwarzer Löwe auf Gold, rechts Rot-Weiß-Rot)
     sbg: (q, pt) => {
@@ -5141,7 +5404,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       fill(S([[-0.3, -0.7], [-0.08, -0.7], [-0.1, -0.84], [-0.19, -0.77], [-0.28, -0.84]]), I.ocker);
     },
   };
-  const FLAG_OF = { willingen: "de", engelberg: "ch", predazzo: "it", holmenkollen: "no", oberstdorf: "de", garmisch: "de", innsbruck: "at", bischofshofen: "at", zakopane: "pl", planica: "si" };
+  const FLAG_OF = { stmoritz: "ch", willingen: "de", engelberg: "ch", predazzo: "it", holmenkollen: "no", oberstdorf: "de", garmisch: "de", innsbruck: "at", bischofshofen: "at", zakopane: "pl", planica: "si" };
   function flagShape(x, y0, w, h, kind, wv) {
     const pt = (u, v) => [x + u * w, y0 + v * h + wv(u)];
     const q = (u0, u1, v0, v1, col) => { const pts = []; for (let i = 0; i <= 6; i++) pts.push(pt(u0 + (u1 - u0) * i / 6, v0)); for (let i = 6; i >= 0; i--) pts.push(pt(u0 + (u1 - u0) * i / 6, v1)); fill(pts, col); };
@@ -5176,6 +5439,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     return (t) => {
       ctx.save(); ctx.beginPath(); ctx.rect(T.x0, T.y - 70, T.x1 - T.x0, 90); ctx.clip();
       if (T.modern) { trainModern(xAt(t), T.y); ctx.restore(); return; }
+      if (T.kroko) { kroko28(xAt(t), T.y); ctx.restore(); return; }
       trainBody(xAt(t), T.y);
       const sy = T.y - 18, d = [], l = [];
       for (let i = 0; i < N; i++) {
@@ -5560,7 +5824,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   const HAT = [PI0.rot, PI0.papier, PI0.navy, PI0.ocker, PI0.himmel, PI0.gruen, PI0.tinte, pm(PI0.rot, PI0.violett, 0.4), PI0.tinte];
   const SHADE = PI0.tinte;
   const HOME = { holmenkollen: "NOR", "holmenkollen-nh": "NOR", oberstdorf: "GER", "oberstdorf-fh": "GER", garmisch: "GER", innsbruck: "AUT", bischofshofen: "AUT", "predazzo-lh": "ITA", "predazzo-nh": "ITA",
-    zakopane: "POL", "zakopane-nh": "POL", willingen: "GER", engelberg: "SUI", planica: "SLO", "planica-lh": "SLO" };
+    zakopane: "POL", "zakopane-nh": "POL", willingen: "GER", engelberg: "SUI", planica: "SLO", "planica-lh": "SLO", stmoritz: "SUI" };
   const GUEST = ["POL", "SLO", "AUT", "GER", "NOR", "JPN", "SUI", "FIN", "CZE", "ITA", "USA"];
   const CHEER = {
     NOR: ["HEIA NORGE", "HEIA!"], GER: ["AUF GEHT'S!", "HOPP!"], AUT: ["HOPP AUSTRIA", "AUF GEHT'S!"], ITA: ["FORZA!", "FORZA AZZURRI"],
@@ -5581,6 +5845,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     willingen: { bg: ["#2E7D4F", "#F1EEE6", "#3B3320"], fg: ["#F1EEE6", "#2E7D4F", "#C8A24A"], word: "SAUERLAND" },
     engelberg: { bg: ["#D52B1E", "#F1EEE6", "#2B3442"], fg: ["#F1EEE6", "#D52B1E", "#2B3442"], word: "ENGELBERG" },
     planica: { bg: ["#1E8A4C", "#F1EEE6", "#1F3563"], fg: ["#F1EEE6", "#1E8A4C", "#C8202F"], word: "PLANICA" },
+    stmoritz: { bg: ["#D52B1E", "#F1EEE6", "#2B3442"], fg: ["#F1EEE6", "#D52B1E", "#2B3442"], word: "ST. MORITZ 1928" },
   };
   function buildWorld(H) {
     const r = rng(hash(H.key) ^ 0x5eed);
@@ -6308,6 +6573,32 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
           ["drift", 804, 912, 789, 6], ["polka", 826, 785, 35],
           ["drift", 1076, 1158, 789, 6], ["bienenhaus", 1090, 786, 1],
           ["drift", 1232, 1334, 778, 8], ["spruce", [[1262, 772, 104, 0], [1300, 779, 80, 2]]],
+        ] },
+      },
+    },
+    // St. Moritz 1928 (Nostalgie-Springen): links der spitze Piz Julier, über dem Ort der Piz Nair, rechts Rosatsch und Corvatsch mit
+    // Gletschern. Im Tal der zugefrorene See mit dem Pferderennen und der Holztribüne, darüber der Ort am Hang mit dem Grandhotel
+    // (spitzer Turm), dem schiefen Turm und dem Kulm; am Ufer die Rhätische Bahn mit dem Krokodil, ein Pferdeschlitten.
+    // Vorn der Kameramann der Wochenschau an der Kurbel, Zuschauer der Zwanziger (Filzhut, Glockenhut), Schweizer und olympische Fahne.
+    stmoritz: {
+      moon: 0.6,
+      plakat: {
+        id: "stmoritz", moon: [986, 178],
+        ranges: [
+          { style: "alpin", far: true, rough: 0.26, tree: 520, firn: [1000, 1220, 40], ctrl: [[780, 548], [860, 450], [930, 380], [990, 320], [1040, 286, "S"], [1084, 300, "V"], [1140, 262, "S"], [1200, 296, "V"], [1260, 340], [1330, 420], [1420, 548]] },
+          { style: "alpin", rough: 0.3, rocky: 1.4, tree: 500, ctrl: [[-700, 470], [-560, 452], [-420, 462], [-280, 430], [-150, 410], [-40, 380], [60, 340], [140, 290], [196, 246, "S"], [222, 238, "S"], [252, 262, "V"], [300, 300], [360, 342, "V"], [430, 318], [500, 300, "S"], [560, 318, "V"], [620, 352], [680, 400], [760, 470], [820, 548]] },
+          { style: "alpin", rough: 0.22, tree: 492, firn: [962, 1150, 30], ctrl: [[860, 548], [920, 470], [970, 410], [1010, 364, "S"], [1050, 384, "V"], [1110, 350, "S"], [1180, 386, "V"], [1260, 372, "S"], [1350, 404], [1460, 420], [1580, 440], [1700, 436], [1840, 452], [1990, 462]] },
+        ],
+        far: { drift: [[222, 238, 1], [1140, 262, 0.8], [1010, 364, 0.6]] },
+        mid: { see28: { cx: 930, cy: 646, rx: 330, ry: 22, track: { cx: 960, cy: 648, rx: 158, ry: 10 } }, train: { y: 676, x0: 560, x1: 1300, speed: 34, kroko: true },
+          sleigh: { x0: 600, x1: 1280, y: 692, speed: 13 } },
+        town: [{ house: "chalet", cx: 520, w: 330, y0: 588, y1: 626, dens: 0.8, extra: [{ t: "palace", x: 492, yb: 614, s: 0.86 }, { t: "schiefturm", x: 628, yb: 602, h: 30 }, { t: "hotel", x: 380, yb: 596, w: 58, h: 38 }],
+          skip: [[486, 600, 2], [372, 446, 1], [618, 640, 1]] }],
+        flags: [[1010, 738, 64, 36, 22, "ch"], [1058, 736, 60, 36, 22, "olymp"]],
+        near: { items: [
+          ["drift", 804, 900, 790, 6], ["kamera28", 842, 788, 38],
+          ["drift", 904, 1000, 788, 6], ["leute28", [[924, 786, 37, 1, "m"], [940, 787, 34, 2, "f"], [956, 785, 36, 3, "m"], [970, 788, 22, 4, "kid"], [986, 786, 35, 5, "f"]]],
+          ["drift", 1180, 1334, 774, 8], ["larch", [[1236, 768, 96], [1278, 774, 74], [1308, 770, 58]]],
         ] },
       },
     },
@@ -7090,6 +7381,23 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       ab: [-1, -4.6], kb: [0.5, -16], af: [0, -4.6], kf: [1.6, -16],
       hip: [0, -27], sh: [0.6, -43], head: [1.2, -49.6], face: [1, 0],
       eb: [-5, -51], hb: [-9.5, -60], ef: [6.5, -51], hf: [10.5, -60] }),
+    // 1928 (Kongsberger Stil): Ski parallel und fast waagrecht, Beine gestreckt, aus der Hüfte weit nach vorn gebeugt; die Arme rudern (row28)
+    flight28: P({
+      sf: [[-27, 2.2], [40, -2.8]], sn: [[-26.5, 3.0], [40.5, -2.0]],
+      ab: [-0.6, -0.5], kb: [4.6, -13.2], af: [0.4, 0.2], kf: [5.4, -12.6],
+      hip: [10.6, -25.2], sh: [24.4, -35.4], head: [30.2, -39.8], face: [0.82, 0.57],
+      eb: [31, -33], hb: [38, -30], ef: [31.5, -32.5], hf: [38.5, -29.5] }),
+    // 1928 aufrecht angefahren (wie die Norweger im 2. Durchgang): Knie leicht gebeugt, Oberkörper aufrecht, Arme vorn zum Ausbalancieren
+    upright28: P(Object.assign({}, SK_IN, {
+      ab: [-0.6, -4.6], kb: [5.2, -15.6], af: [0, -4.6], kf: [5.8, -15.3],
+      hip: [2.6, -27.5], sh: [8.2, -43.2], head: [10.2, -49.5], face: [0.98, 0.1],
+      eb: [14.5, -36], hb: [21.5, -35], ef: [15, -35.5], hf: [22, -34.4] })),
+    // 1928 nach dem Sturz: im Schnee sitzen, Beine nach vorn, auf die Hände gestützt, Kopf leicht schief
+    sitSnow: P({
+      sf: [[-14, -1.2], [46, -1.2]], sn: [[-12, -1.8], [48, -1.8]],
+      ab: [16, -4.2], kb: [7, -9.5], af: [18, -4.4], kf: [8.5, -9.8],
+      hip: [-3, -6.5], sh: [-6.5, -22.5], head: [-5.5, -29.2], face: [0.6, 0.8],
+      eb: [-11, -13.5], hb: [-14, -4.5], ef: [-9.5, -13], hf: [-12, -4] }),
     fall: P({
       sf: [[-26, -7], [30, -15]], sn: [[-34, -1.8], [24, 3]],
       ab: [-6, -5.5], kb: [-10, -9], af: [0, -3], kf: [-6, -7.5],
@@ -7158,6 +7466,15 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   }
 
   // Seitenlage im Flug: Ski-Spitzen und Arme der kameranahen Seite sinken, die andere Seite hebt sich (r > 0 = rechts tiefer)
+  // 1928: Arme rudern um die Schulter (amp 0 = ruhig nach vorn oben, 1 = volle Kreise); fern leicht versetzt zum nahen Arm
+  function row28(base, t, amp) {
+    const o = Object.assign({}, base), [sx, sy] = o.sh;
+    const ang = (lag) => { const sway = -0.25 + 0.35 * Math.sin(2.1 * t + lag); return (1 - amp) * sway + amp * (7.5 * t + lag); };
+    const arm = (a) => { const e = [sx + 8.4 * Math.cos(a), sy - 8.4 * Math.sin(a)], b = a - 0.38; return [e, [e[0] + 7.6 * Math.cos(b), e[1] - 7.6 * Math.sin(b)]]; };
+    [o.ef, o.hf] = arm(ang(0)); [o.eb, o.hb] = arm(ang(0.7));
+    return o;
+  }
+
   function roll(base, r) {
     if (!r) return base;
     const o = Object.assign({}, base), d = Math.max(-1.4, Math.min(1.4, r)) * 7;
@@ -7372,12 +7689,14 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     "planica-lh": Object.assign({}, ARCH.planica, { text: "BLOUDKOVA" }),
     "holmenkollen-nh": Object.assign({}, ARCH.holmenkollen, { sup: "solid", hut: "roof", table: "block", text: "MIDTSTUBAKKEN" }),
     "zakopane-nh": Object.assign({}, ARCH.zakopane, { text: "ŚREDNIA KROKIEW" }),
+    // 1928: Holzgerüst, Bretter am Anlauf, hölzerne Startbude, Schweizer Rot
+    stmoritz: { sup: "truss", side: "#8A6A48", line: "#5E4630", rail: "boards", hut: "timber", table: "block", acc: "#D52B1E", acc2: "#F4F1EA", text: "OLYMPIA 1928", swiss: true },
   });
   const archFor = (key) => ARCH[key] || ARCH[key.split("-")[0]] || ARCH.oberstdorf;
   // Stimmung je Schanze: nur noch der Schneefall (Anteil der Flocken); der Himmel kommt aus der gemeinsamen Palette
   const ATMO = {
     holmenkollen: { snow: 1 }, oberstdorf: { snow: 0.6 }, garmisch: { snow: 0.3 }, innsbruck: { snow: 0.25 }, bischofshofen: { snow: 0.85 },
-    predazzo: { snow: 0.4 }, zakopane: { snow: 1.25 }, willingen: { snow: 0.95 }, engelberg: { snow: 0.5 }, planica: { snow: 0.7 },
+    predazzo: { snow: 0.4 }, zakopane: { snow: 1.25 }, willingen: { snow: 0.95 }, engelberg: { snow: 0.5 }, planica: { snow: 0.7 }, stmoritz: { snow: 0.35 },
   };
   const atmoFor = (key) => ATMO[key] || ATMO[key.split("-")[0]] || ATMO.oberstdorf;
   function mixHex(a, b, t) {
@@ -7527,13 +7846,15 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       // in ihrer Höhe. Früher stand der Fuß 2,6 m über dem Profil: im Flugbild endete der Mast dann frei in der Luft.
       const edgeY = (x) => edgeAt({ edgeX: ex, edgeY: ey }, x) - 1.2;
       const mast = (x, top, tx) => { const y = edgeY(x); masts.push({ x, y, h: Math.max(6, top - y), tx }); };
-      for (const f of [0.18, 0.53, 0.87, 1.22]) {
-        const d = Math.round(f * H.K), p = Hill.landAtD(H, d);
-        mast(p.x + 3, p.y + 15.6, Hill.landAtD(H, d + 16));
+      if (!H.era) {   // 1928: kein Flutlicht
+        for (const f of [0.18, 0.53, 0.87, 1.22]) {
+          const d = Math.round(f * H.K), p = Hill.landAtD(H, d);
+          mast(p.x + 3, p.y + 15.6, Hill.landAtD(H, d + 16));
+        }
+        for (const dx of [16, 62]) mast(H.U.x + dx, H.U.y + 21, { x: H.U.x + dx - 4, y: H.U.y });
+        masts.push({ x: top.x + 6, y: terrainY(top.x + 6), h: Math.max(14, top.y - terrainY(top.x + 6) + 6), tx: { x: top.x + 28, y: top.y - 12 } });
+        masts.push({ x: -34, y: terrainY(-34), h: Math.max(12, Hill.inrunAt(H, 34).y - terrainY(-34) + 8), tx: { x: -10, y: 2 } });
       }
-      for (const dx of [16, 62]) mast(H.U.x + dx, H.U.y + 21, { x: H.U.x + dx - 4, y: H.U.y });
-      masts.push({ x: top.x + 6, y: terrainY(top.x + 6), h: Math.max(14, top.y - terrainY(top.x + 6) + 6), tx: { x: top.x + 28, y: top.y - 12 } });
-      masts.push({ x: -34, y: terrainY(-34), h: Math.max(12, Hill.inrunAt(H, 34).y - terrainY(-34) + 8), tx: { x: -10, y: 2 } });
       const place = H.key.split("-")[0], at = (d) => Hill.landAtD(H, d).x;
       const hang = PK.hangPlan(place, top.x, end.x, at(H.K), at(H.K * 0.3), at(H.K * 0.9), H.key);
       // Ankerpunkte (Welt-x) der festen Plakat-Ebenen: die Nahebene steht im Bild, wenn die Kamera bei 0,8 K ist (spätes Flugbild),
@@ -7578,6 +7899,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         if (v.speedLines) this.speedLines(S, cam, k, v);
         this.jumper(S, cam, k, v.jumper);
       }
+      if (v.cap) this.cap28(S, cam, k, v.cap, this.look);
       if (v.particles) this.particles(S, cam, k, v.particles);
       // Vordergrund der Plakat-Orte (Bande, Zweige): vor dem Hang, hinter dem HUD
       Scene.drawFront(ctx, this.pano, cam, this.hor, this.vs, k, W, H, G.anchor);
@@ -8650,9 +8972,69 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       }
       ctx.fillStyle = "rgba(255,255,255,0.2)"; ctx.fill();
     }
+    // Springer von 1928: Mütze statt Helm, Pullover mit Bordüre, Knickerbocker, helle Wollstrümpfe, Lederschuhe, Holzski
+    figure28(J, L) {
+      const ctx = this.ctx, cr = this.cr == null ? 0.9 : this.cr;
+      ctx.lineCap = "round"; ctx.lineJoin = "round";
+      const at = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+      const wood = "#A8763F", woodD = "#7C5430", pants = "#4D4237", pantsD = "#3A3129", sock = "#E7DECB", sockD = "#C9BEA6", boot = "#4A2F1F", skin = "#E6BE98";
+      const boot1 = (ank, ski) => {
+        const dx = ski[1][0] - ski[0][0], dy = ski[1][1] - ski[0][1], l = Math.hypot(dx, dy) || 1, ux = dx / l, uy = dy / l;
+        return [[ank[0] - ux * 2.4, ank[1] - uy * 2.4 + 0.6], [ank[0] + ux * 3.0, ank[1] + uy * 3.0 + 0.6], 2.0, 1.8];
+      };
+      const held = J.held, flat = (a) => [[a[0] - 1, a[1]], [a[0] + 1, a[1]]];
+      const ski = (sk, col) => { const keep = C.skiEdge; C.skiEdge = "#3A2A1C"; this.ski(sk[0], sk[1], col, 3.2, 6.5); C.skiEdge = keep; };
+      if (held) { ski(held[0], woodD); ski(held[1], wood); }
+      else ski(J.sf, woodD);
+      // hinteres Bein: Knickerbocker bis unters Knie (bauschig), dann Strumpf
+      this.part([[J.hip, J.kb, 3.2, 2.9], [J.kb, at(J.kb, J.ab, 0.22), 2.9, 2.2]], pantsD);
+      this.part([[at(J.kb, J.ab, 0.2), J.ab, 1.8, 1.5]], sockD);
+      this.part([boot1(J.ab, held ? flat(J.ab) : J.sf)], boot);
+      this.part([[J.sh, J.eb, 1.9, 1.6], [J.eb, J.hb, 1.6, 1.3]], L.suitD);
+      this.part([[J.hb, J.hb, 1.45, 1.45]], L.suitD);
+      // Pullover mit heller Bordüre über der Brust
+      this.part([[J.hip, J.sh, 3.8, 4.1]], L.suit);
+      this.part([[at(J.hip, J.sh, 0.6), at(J.hip, J.sh, 0.78), 4.15, 4.2]], L.accent, true);
+      this.part([[at(J.hip, J.sh, 0.0), at(J.hip, J.sh, 0.1), 3.9, 3.9]], L.suitD, true);
+      this.part([[J.hip, J.kf, 3.4, 3.1], [J.kf, at(J.kf, J.af, 0.22), 3.1, 2.3]], pants);
+      this.part([[at(J.kf, J.af, 0.2), J.af, 1.9, 1.6]], sock);
+      this.part([[at(J.kf, J.af, 0.2), at(J.kf, J.af, 0.3), 2.0, 1.95]], L.accent, true);
+      this.part([boot1(J.af, held ? flat(J.af) : J.sn)], boot);
+      const [sx, sy] = J.sh, [hx, hy] = J.head, [dx, dy] = J.face;
+      this.part([[[sx, sy], [sx + (hx - sx) * 0.6, sy + (hy - sy) * 0.6], 2.0, 1.7]], skin);
+      // Kopf, dann die Wollmütze über Scheitel und Hinterkopf mit Bommel
+      ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(hx, hy, 4.4 + cr, 0, 6.283); ctx.fill();
+      ctx.fillStyle = skin; ctx.beginPath(); ctx.arc(hx, hy, 4.4, 0, 6.283); ctx.fill();
+      ctx.fillStyle = "rgba(60,30,20,0.55)"; ctx.beginPath(); ctx.arc(hx + dx * 2.2 - dy * 0.6, hy + dy * 2.2 + dx * 0.6, 0.7, 0, 6.283); ctx.fill();
+      if (!L.capOff) {
+        // Mitte der Mütze: Richtung Scheitel (von der Schulter durch den Kopf), ein Stück zum Hinterkopf hin
+        const up = Math.atan2(hy - sy, hx - sx), back = Math.atan2(-dy, -dx), c = up + 0.35 * Math.atan2(Math.sin(back - up), Math.cos(back - up));
+        ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(hx, hy, 5.0 + cr * 0.8, c - 1.85, c + 1.85); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = L.helmet; ctx.beginPath(); ctx.arc(hx, hy, 5.0, c - 1.85, c + 1.85); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = "rgba(255,255,255,0.18)"; ctx.beginPath(); ctx.arc(hx, hy, 5.0, c - 1.85, c - 1.2); ctx.lineTo(hx, hy); ctx.closePath(); ctx.fill();
+        const bx = hx + Math.cos(c) * 5.9, by = hy + Math.sin(c) * 5.9;
+        ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(bx, by, 2.0 + cr * 0.6, 0, 6.283); ctx.fill();
+        ctx.fillStyle = L.accent; ctx.beginPath(); ctx.arc(bx, by, 2.0, 0, 6.283); ctx.fill();
+      }
+      this.part([[J.sh, J.ef, 2.0, 1.7], [J.ef, J.hf, 1.7, 1.35]], L.suit);
+      this.part([[J.hf, J.hf, 1.5, 1.5]], L.suit);
+      this.part([[at(J.ef, J.hf, 0.82), J.hf, 1.4, 1.4]], L.accent, true);
+      if (!held) ski(J.sn, wood);
+    }
+    // Mütze, die beim Sturz wegfliegt (Welt: x, y in m, a Drehung in Grad)
+    cap28(S, cam, k, c, look) {
+      const ctx = this.ctx, [x, y] = S(c.x, c.y), sc = Math.max(0.5, cam.ppm / 27 * JSCALE);
+      ctx.save(); ctx.translate(x, y); ctx.rotate(c.a * DEG); ctx.scale(sc, sc);
+      ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(0, 0, 5.8, Math.PI, 0); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = look.helmet; ctx.beginPath(); ctx.arc(0, -0.2, 4.95, Math.PI, 0); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(0, -6.2, 2.6, 0, 6.283); ctx.fill();
+      ctx.fillStyle = look.accent; ctx.beginPath(); ctx.arc(0, -6.2, 2.0, 0, 6.283); ctx.fill();
+      ctx.restore();
+    }
     figure(J, L) {
       const ctx = this.ctx;
       L = L || this.look;
+      if (L.era === 1928) { this.figure28(J, L); return; }
       const plain = L === GHOST_LOOK;
       ctx.lineCap = "round"; ctx.lineJoin = "round";
       // Muster: Streifen längs über Rumpf, Bein und Arm; zweifarbig = Beine in der Zweitfarbe
@@ -8905,7 +9287,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   // Springer in einen beliebigen Canvas zeichnen (Vorschau im Springer-Menü)
   function drawFigure(ctx, pose, look) { const r = Object.create(Renderer.prototype); r.ctx = ctx; r.figure(pose, Object.assign({}, DEFAULT_LOOK, look)); }
   root.TMRender = { Renderer, Snow, POSES, blend, lean, roll, posture, C, drawFigure, DEFAULT_LOOK, flagCloth,
-    gest: { gate: gatePose, push: pushPose, outrun: outrunPose, fallUp: fallUpPose } };
+    gest: { gate: gatePose, push: pushPose, outrun: outrunPose, fallUp: fallUpPose }, row28 };
 })(typeof window !== "undefined" ? window : globalThis);
 
 /* TELEMARK – Ton (WebAudio) und Vibration. Alles synthetisch, keine Dateien.
@@ -9336,6 +9718,15 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       this.burst(B.white, "lowpass", 4500, 700, 0.7, 0.4, 1.3, t0 + 0.1, 0, J2);
     },
     stopped(kind) { if (this.ok() && kind !== "fall") this.burst(this.buf.white, "lowpass", 3800, 900, 0.7, 0.3, 0.5, null, 0, this.bus.jump); },
+    // 1928: Filmprojektor rattert unter den Zwischentiteln (kurze, helle Klicks im Takt des Filmtransports, leise)
+    projector(dur) {
+      if (!this.ok()) return;
+      const t0 = this.ctx.currentTime, n = Math.min(80, Math.round((dur || 2) * 18));
+      for (let i = 0; i < n; i++) {
+        const fade = Math.max(0.08, Math.min(1, (i + 1) / 6, (n - i) / 6));
+        this.burst(this.buf.white, "bandpass", 2600, 2000, 4, 0.07 * fade, 0.018, t0 + i / 18 + (Math.random() - 0.5) * 0.004, 0, this.bus.jump);
+      }
+    },
     // Menge reagiert auf die Landung: Jubel nach Weite und Telemark, bei Sturz ein Aufstöhnen, danach Applaus
     crowdReact(kind, q) {
       const c = this.ctx, t = c.currentTime, N = this.nodes;
@@ -9820,7 +10211,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.49";
+  const VERSION = "0.50";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -9926,6 +10317,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       case "ITA": s = r(0, 0, w / 3, h, "#009246") + r(w / 3, 0, w / 3, h, "#FFF") + r(2 * w / 3, 0, w / 3, h, "#CE2B37"); break;
       case "CZE": s = r(0, 0, w, h / 2, "#FFF") + r(0, h / 2, w, h / 2, "#D7141A") + `<path d="M0 0L${w * 0.5} ${h / 2}L0 ${h}Z" fill="#11457E"/>`; break;
       case "FRA": s = r(0, 0, w / 3, h, "#0055A4") + r(w / 3, 0, w / 3, h, "#FFF") + r(2 * w / 3, 0, w / 3, h, "#EF4135"); break;
+      case "SWE": s = r(0, 0, w, h, "#006AA7") + r(5, 0, 3.2, h, "#FECC00") + r(0, 4.4, w, 3.2, "#FECC00"); break;
       case "USA": { s = ""; for (let i = 0; i < 7; i++) s += r(0, i * h / 6.5, w, h / 13, "#B22234"); s = r(0, 0, w, h, "#FFF") + s + r(0, 0, w * 0.42, h * 0.54, "#3C3B6E"); break; }
       default: s = r(0, 0, w, h, "#C8102E") + r(0, h / 3, w, h / 3, "#FFF");
     }
@@ -9963,7 +10355,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     hot: { n: 2, names: ["SPIELER 1", "SPIELER 2", "SPIELER 3", "SPIELER 4", "SPIELER 5", "SPIELER 6", "SPIELER 7", "SPIELER 8"], rounds: 2, wind: "var", fmt: "one" },
     chFmt: "tour", chLevel: "mid", chWind: "var", champ: null, party: null, champBest: {},
     gaugeLeft: false, gaugeSide: "off", flv: 4, hand: "right", sens: 1, ghosts: {}, tops: {}, tod: "auto", missions: {}, daily: null, look: null, expert: false, beginner: false,
-    oc: null, osave: false, oat: "", groups: [], tours: [], opend: [], noOnline: false, onlineAsked: false, qdpr: 0, fps: false };
+    oc: null, osave: false, oat: "", groups: [], tours: [], opend: [], noOnline: false, onlineAsked: false, qdpr: 0, fps: false, n28: null };
   let S = JSON.parse(JSON.stringify(DEF));
   try {
     const raw = localStorage.getItem(KEY);
@@ -10046,6 +10438,10 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     const gOk = (x) => isObj(x) && /^[A-HJ-NP-Z2-9]{7}$/.test(x.g) && hillOk(x.h);
     if (!o.groups.every(gOk)) { o.groups = o.groups.filter(gOk); fixed++; }
     if (o.groups.length > 8) o.groups.length = 8;
+    const tOk = (x) => isObj(x) && /^[A-HJ-NP-Z2-9]{7}$/.test(x.t) && Array.isArray(x.hs) && x.hs.length >= 2 && x.hs.every(hillOk);
+    if (!o.tours.every(tOk)) { o.tours = o.tours.filter(tOk); fixed++; }
+    if (o.tours.length > 8) o.tours.length = 8;
+    if (o.n28 != null && !(isObj(o.n28) && num(o.n28.best) && num(o.n28.medal))) { o.n28 = null; fixed++; }
     const pOk = (x) => isObj(x) && /^[A-HJ-NP-Z2-9]{7}$/.test(x.g) && num(x.d) && num(x.p) && (x.k === "telemark" || x.k === "twofoot");
     if (!o.opend.every(pOk)) { o.opend = o.opend.filter(pOk); fixed++; }
     if (o.opend.length > 6) o.opend.length = 6;
@@ -10163,7 +10559,10 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   // Zahl und Einheit (75 %, 148,5 m, 142,4 P.) und Wort und Zahl (HS 140, Luke 12, Platz 3) nie trennen: geschütztes Leerzeichen
   const NB_U = /(\d) (?=(?:%|°|km\/h|m\/s|min|ms|m|s|P\.|Pkt\.?|Punkte?|PUNKTE?|Springer|SPRINGER|Schanzen|SCHANZEN|Sprünge|Versuche|Sterne)(?![A-Za-zÄÖÜäöüß]))/g;
   const NB_W = /(^|[^A-Za-zÄÖÜäöüß])(HS|K|Luke|LUKE|Platz|PLATZ|Rang|Durchgang|DURCHGANG|Sprung|SPRUNG|Versuch|VERSUCH|Schanze|SCHANZE|Tournee|TOURNEE|Nr\.|Aufwind|Rückenwind|Wind|Standard) (?=[\d−+])/g;
-  const nb = (s) => (typeof s === "string" && /\d/.test(s) ? s.replace(NB_U, "$1\u00a0").replace(NB_W, "$1$2\u00a0") : s);
+  // dazu: Ordnungszahl und Wort (1. Durchgang, 18. Februar) und Bezeichnung vor einem Messwert mit Einheit (Landung 94,9 km/h, Vorlage 96 %)
+  const NB_O = /(\d\.) (?=[A-ZÄÖÜ])/g;
+  const NB_L = /([A-Za-zÄÖÜäöüß]{2,}) (?=[−+]?\d[\d,.]*[ \u00a0](?:%|°|km\/h|m\/s|ms|m|s|P\.|Pkt|Punkte)(?![A-Za-zÄÖÜäöüß]))/g;
+  const nb = (s) => (typeof s === "string" && /\d/.test(s) ? s.replace(NB_U, "$1\u00a0").replace(NB_W, "$1$2\u00a0").replace(NB_O, "$1\u00a0").replace(NB_L, "$1\u00a0").replace(/ · /g, "\u00a0· ") : s);   // Trennpunkt bleibt am Wort davor
   const txt = (e, s) => { s = nb(s); if (e.textContent !== s) e.textContent = s; };
   // dasselbe für die Vorlage und für Text aus innerHTML: nur Textknoten, nie Attribute oder SVG-Pfade
   (function nbWatch() {
@@ -10295,7 +10694,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   function snap(j) {
     const st = { t: j.t, phase: j.phase, x: j.x, y: j.y, tPhase: j.tPhase, v: 0, vx: 0, vy: 0, ang: 0, beta: 0, p: j.p, prepF: j.prepF, crashF: j.crashF,
       tf: j.tf, r: j.r || 0, pOpt: j.pOpt || 0, tapAge: null, s: j.s, tau: j.tau, kind: j.landing ? j.landing.kind : null, tLand: 0, tookTap: j.tapTime != null && !j.lateAirTap, gate: j.gate,
-      pIn: j.inCtl ? j.pIn || 0 : 0 };
+      pIn: j.inCtl ? j.pIn || 0 : 0, upright: !!j.upright };
     if (j.phase === "gate" || j.phase === "inrun") {
       const tr = Hill.inrunAt(H, Math.max(0, j.s));
       st.ang = tr.ang; st.v = j.v;
@@ -10327,6 +10726,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       pose = G.push(opt.from || POSES.sit, st.tPhase, moved);
       // Experte: zu hoch = der Springer richtet sich sichtbar auf, zu tief = Oberkörper sinkt
       if (st.pIn) pose = st.pIn > 0 ? RM.blend(pose, POSES.takeoff, clamp(st.pIn, 0, 1.2) * 0.42) : RM.lean(pose, clamp(-st.pIn, 0, 1.2) * 9);
+      // 1928 aufrecht: nach dem Abstoßen aufrichten, der Oberkörper bleibt senkrecht (gegen die Spur nach vorn geneigt)
+      if (st.upright) pose = RM.blend(pose, RM.lean(POSES.upright28, st.ang * 0.75), smooth((moved - 2) / 5));
       if (st.tapAge != null) pose = RM.blend(pose, POSES.takeoff, smooth(st.tapAge / 0.26));
       rot = st.ang; y += 0.05;
       if (gs != null && moved < 14) { const g0 = Hill.inrunAt(H, gs); bar = { x: g0.x, y: g0.y + 0.05, rot: g0.ang }; }
@@ -10342,7 +10743,9 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       // Flattern der Ski in der Strömung (Gefahr: stark) und Schaukeln des ganzen Körpers bei unruhiger Lage
       const jit = (0.25 + 1.2 * un + 4.5 * dng) * Math.sin(t * 47) * live;
       const wob = (2.2 * un * Math.sin(t * 7.3) + 2.6 * dng * Math.sin(t * 19.5)) * live * f;
-      pose = RM.blend(start, RM.posture(POSES.flight, e * live, r * live, jit), f);
+      // 1928: parallele Ski, aus der Hüfte gebeugt, die Arme rudern (ruhig nach vorn, bei Unruhe in vollen Kreisen)
+      const base = H.era ? RM.row28(POSES.flight28, t, clamp(0.35 + 1.1 * un + 0.8 * dng, 0, 1)) : POSES.flight;
+      pose = RM.blend(start, RM.posture(base, e * live, r * live, jit), f);
       rot = lerp(11, e * 8 * live + wob, f);
       const qe = smooth((0.2 - Math.abs(e)) / 0.08), qr = smooth((0.26 - Math.abs(r)) / 0.08);
       air = { a: clamp((st.v - 3) / 20, 0, 1) * f * live * (1 - crash), ang: Math.atan2(-st.vy, st.vx) / DEG,
@@ -10361,10 +10764,23 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       rot = st.beta;
     } else {
       const tl = st.tLand;
-      pose = RM.blend(POSES.prep, POSES.fall, smooth(tl / 0.3));
-      rot = st.beta + 360 * (1 - Math.pow(1 - clamp(tl / 0.95, 0, 1), 2));
-      y += Math.sin(clamp(tl / 0.95, 0, 1) * Math.PI) * 0.9;
-      if (st.phase === "done") { pose = G.fallUp(st.tPhase); rot = st.beta; }
+      if (H.era) {
+        // 1928: zwei Purzelbäume mit Hüpfern, dann sitzt er verdutzt im Schnee (schüttelt den Kopf) und rappelt sich auf
+        const u = clamp(tl / 1.5, 0, 1);
+        pose = RM.blend(RM.blend(POSES.prep, POSES.fall, smooth(tl / 0.25)), POSES.sitSnow, smooth((tl - 1.2) / 0.4));
+        rot = st.beta + (u < 1 ? 720 * (1 - Math.pow(1 - u, 2)) : 0);
+        y += Math.abs(Math.sin(u * Math.PI * 2)) * 1.3 * (1 - u);
+        if (st.phase === "done") {
+          const td = st.tPhase;
+          pose = td < 1.4 ? RM.lean(POSES.sitSnow, Math.sin(td * 11) * 6 * smooth((1.2 - td) / 0.4)) : G.fallUp(td - 1.4);
+          rot = st.beta;
+        }
+      } else {
+        pose = RM.blend(POSES.prep, POSES.fall, smooth(tl / 0.3));
+        rot = st.beta + 360 * (1 - Math.pow(1 - clamp(tl / 0.95, 0, 1), 2));
+        y += Math.sin(clamp(tl / 0.95, 0, 1) * Math.PI) * 0.9;
+        if (st.phase === "done") { pose = G.fallUp(st.tPhase); rot = st.beta; }
+      }
     }
     return { x, y, pose, rot, bench, shadow, air, bar };
   }
@@ -10415,7 +10831,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       t = { cx: st.x, cy: st.y, ppm: lerp(29, lerp(FLY_PPM, 22, l), e) - 5 * pull, ax: lerp(0.36, lerp(0.3, 0.4, l), e), ay: lerp(0.5, lerp(0.42, 0.5, l), e) - 0.04 * pull };
     } else {
       // Auslauf: nach der Landung näher heran, damit man Jubel und Gesten sieht (nach einem Sturz nicht)
-      const z = st.kind === "fall" ? 0 : smooth((st.tLand - 0.75) / 1.2);
+      const z = st.kind === "fall" ? (H.era ? smooth((st.tLand - 0.5) / 1.4) : 0) : smooth((st.tLand - 0.75) / 1.2);
       t = { cx: st.x, cy: st.y, ppm: lerp(19, 28, z), ax: lerp(0.42, 0.45, z), ay: lerp(0.66, 0.68, z) };
     }
     t.ppm *= k; t.ax *= W; t.ay *= Hs;
@@ -10558,7 +10974,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       who = { name: p.name, nation: p.nation }; colors = HOT_COLORS[(p.bib - 1) % HOT_COLORS.length];
     } else if (ctxMode === "mission") {
       const m = ms.m, dz = m.cup ? cupDisc() : null;
-      gate = clamp(H.refGate + (m.g || 0), 1, H.gates); refGate = H.refGate; wind = arcadeWind((dz && dz.wind) || m.wind || "off", seed);
+      gate = m.n28 ? N28_GATE[Math.min(1, ms.res.length)] : clamp(H.refGate + (m.g || 0), 1, H.gates); refGate = H.refGate; wind = arcadeWind((dz && dz.wind) || m.wind || "off", seed);
     } else if (ctxMode === "daily") {
       gate = dc.gate; refGate = H.refGate; wind = arcadeWind(dc.wind, dc.seed); jseed = dc.seed * 7 + dc.tries.length + 1;
     } else if (ctxMode === "chal") {
@@ -10571,7 +10987,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     }
     const expert = !!S.expert && ctxMode !== "hot" && !practice;
     const beginner = !!S.beginner && !expert && ctxMode === "training" && !grpNew;
-    J = new Ph.Jump(H, { gate, refGate, wind, seed: jseed, inrunCtl: expert });
+    J = new Ph.Jump(H, { gate, refGate, wind, seed: jseed, inrunCtl: expert, upright: ctxMode === "mission" && !!ms.m.n28 && ms.res.length === 1 && !!ms.upright });
     jc = { seed: jseed, practice, light: "red", tLight: 0.9 + Math.random() * 1.2, rec: [], recT: -1, slow: practice ? [0.5, 0.7, 1][clamp(3 - practiceLeft, 0, 2)] : (ctxMode === "training" ? trainSpeed() : 1),
       drag: null, timing: null, toastT: 0, doneT: 0, dragged: false, finished: false, who, colors,
       countdown: ctxMode === "comp" || ctxMode === "hot" ? 10 : null, ghostRec: [], ghostT: -1, toLead: null, speedT: 0,
@@ -10596,6 +11012,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     }
     if (practice) practiceN = 3 - practiceLeft + 1;
     applyColor(colors);
+    if (H.era) renderer.setLook(Object.assign(lookFor(S.look), { era: 1928 }));   // Pullover, Mütze, Holzski
     const yl = champLeader();
     if (yl && ((champ && ctxMode === "comp" && yl === "me") || (party && ctxMode === "hot" && yl === hot.current().id))) renderer.look.bib = YELLOW;
     mode = "jump"; particles = []; acc = 0; setOverlay(null); showScreen(null);
@@ -10845,7 +11262,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
         jc.timing = jc.timing || { pos: 1, zone: z };
         jc.timing.zone = z; jc.timing.final = lbl;
         if (z === "none") jc.timing.pos = 1;
-        if (!jc.expert) showToast(lbl, z === "perfect" ? "voller Abdruck" : z === "good" ? "fast perfekt" : z === "none" ? "vor der Kante tippen" : "kostet Weite", z === "perfect" || z === "good" ? "cyan" : "warn", 1.4, true);   // seitlich: der Springer bleibt beim Abheben frei sichtbar
+        if (!jc.expert && H.era) showToast({ perfect: "Ein Satz wie ein Adler!", good: "Guter Absprung.", early: "Zu früh gesprungen!", late: "Zu spät!", none: "Kein Absprung!" }[z], z === "perfect" ? "voller Abdruck" : z === "good" ? "fast perfekt" : z === "none" ? "vor der Kante tippen" : "kostet Weite", "", 1.5, true);
+        else if (!jc.expert) showToast(lbl, z === "perfect" ? "voller Abdruck" : z === "good" ? "fast perfekt" : z === "none" ? "vor der Kante tippen" : "kostet Weite", z === "perfect" || z === "good" ? "cyan" : "warn", 1.4, true);   // seitlich: der Springer bleibt beim Abheben frei sichtbar
         vib(z === "perfect" ? [15, 40, 15] : z === "good" ? 20 : 45);   // gut: kurz und knackig, daneben: länger
         Snd.takeoff(z);
         jc.speedT = 1.1;
@@ -10856,14 +11274,16 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       if (ev.type === "touchdown") {
         const L = J.landing;
         jc.mood = jumpMood(L);
-        spray(L.x, J.y, L.kind === "fall" ? 70 : 34, Math.min(9, 3 + L.vt * 0.2), -L.beta);
+        spray(L.x, J.y, L.kind === "fall" ? (H.era ? 120 : 70) : 34, Math.min(9, 3 + L.vt * 0.2), -L.beta);
+        if (H.era && L.kind === "fall") { jc.cap28 = { x: J.x, y: J.y + 1.4, vx: J.vx * 0.45, vy: 4.5 + Math.random() * 1.5, a: 0, va: (Math.random() < 0.5 ? -1 : 1) * 620, rest: false }; renderer.look.capOff = true; }
         Snd.touchdown(L.kind, clamp((L.dist - H.K * 0.75) / (H.HS - H.K * 0.75), 0, 1.2), L.why);
-        if (L.kind === "telemark") { showToast("TELEMARK!", L.early ? "zu früh vorbereitet" : "saubere Landung", "", 1.6, true); vib([20, 40, 30]); }
+        if (L.kind === "telemark") { showToast(H.era ? "Telemark!" : "TELEMARK!", L.early ? "zu früh vorbereitet" : H.era ? "wie im Lehrbuch" : "saubere Landung", "", 1.6, true); vib([20, 40, 30]); }
+        else if (L.kind === "twofoot" && H.era) { showToast("Ohne Telemark.", L.why === "hard" ? "zu weit: harte Landung" : "die Richter runzeln die Stirn", "warn", 2.2, true); vib(45); }
         else if (L.kind === "twofoot") { showToast("OHNE TELEMARK", L.why === "hard" ? "zu weit: harte Landung" : L.why === "late" ? "zu spät getippt" : L.why === "roll" ? "zu schräg aufgesetzt" : "nicht zur Landung getippt", "warn", 2.2, true); vib(45); }
         else {
           const cw = J.crashWhy;
           const sub = cw === "roll" ? "Balance verloren" : cw === "rollLand" ? "schräg aufgesetzt" : J.noseDive ? "zu viel Vorlage" : (L.dtL != null && L.dtL < 0.12 ? "zu spät getippt" : "zu harte Landung");
-          showToast("STURZ", sub, "warn", 2.4, true); vib([70, 50, 120]);
+          showToast(H.era ? "Sturz!" : "STURZ", sub, "warn", 2.4, true); vib([70, 50, 120]);
         }
         txt(el.distVal, fmt1(L.dist) + " m");
         if (ctxMode === "training" && !jc.beginner && L.kind !== "fall" && (jc.prevBest == null || L.dist > jc.prevBest)) { vis(el.distChip, true); txt(el.distChip, "NEUE BESTWEITE"); }
@@ -10872,6 +11292,15 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       if (ev.type === "stopped") { jc.doneT = 0; Snd.stopped(J.landing ? J.landing.kind : null); }
     }
     J.events.length = 0;
+  }
+
+  // 1928: Die Mütze fliegt beim Sturz davon und bleibt im Schnee liegen
+  function stepCap28(dt) {
+    const c = jc.cap28;
+    if (c.rest) return;
+    c.vy -= 9.81 * dt; c.vx *= 1 - 0.4 * dt; c.x += c.vx * dt; c.y += c.vy * dt; c.a += c.va * dt;
+    const g = Hill.groundAt(H, c.x);
+    if (c.y <= g.y + 0.12 && c.vy < 0) { c.y = g.y + 0.12; c.rest = true; c.a = -g.beta; }
   }
 
   function showToast(title, sub, cls, dur, side) {
@@ -10958,13 +11387,14 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     stepParticles(dt);
     if (jc.toastT > 0) { jc.toastT -= dtReal; if (jc.toastT <= 0) vis(el.toast, false); }
     if (jc.speedT > 0) jc.speedT -= dtReal;
+    if (jc.cap28) stepCap28(dt);
     if (J.phase === "done") {
       jc.doneT += dtReal;
-      if (jc.doneT > 0.8 && !jc.finished) finishJump();
+      if (jc.doneT > (H.era && J.landing && J.landing.kind === "fall" ? 2.9 : 0.8) && !jc.finished) finishJump();
     }
     // Ergebnis nicht erst nach dem ganzen Auslauf: der Springer bremst im Hintergrund weiter
     // nach einem großen Sprung etwas länger: der Jubel gehört dazu
-    const hold = jc.mood === "great" ? 4.2 : jc.mood === "good" ? 3.8 : 3.4;
+    const hold = H.era && jc.mood === "fall" ? 6.4 : jc.mood === "great" ? 4.2 : jc.mood === "good" ? 3.8 : 3.4;
     if ((J.phase === "outrun" || J.phase === "crash") && J.touchT != null && J.t - J.touchT > hold && !jc.finished) finishJump();
     // Ton folgt der Physik: Spur im Anlauf, Luft im Flug (Tempo, Haltung, Seitenlage), Schnee und Bremsen im Auslauf, Publikum nach Weite
     const fly = J.phase === "flight";
@@ -11042,6 +11472,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (ctxMode === "hot") return `Durchgang ${hot.round}/${hot.rounds} · Luke ${st.gate}`;
     if (ctxMode === "chal") return chal.tour ? `Online-Tournee · Schanze ${chal.tour.leg}/${chal.tour.n} · Luke ${st.gate}` : chal.grp ? `Online-Gruppe · ${chal.total} Springer · Luke ${st.gate}` : `Herausforderung von ${chal.n} · Luke ${st.gate}`;
     if (ctxMode === "mission" && ms.m.cup) return `Challenge · ${cupDisc().name} ${ms.res.length + 1}/4 · Luke ${st.gate}`;
+    if (ctxMode === "mission" && ms.m.n28) return `Winterspiele 1928 · ${Math.min(2, ms.res.length + (jc && jc.finished ? 0 : 1))}. Durchgang`;
     if (ctxMode === "mission") return `${ms.m.title}${ms.m.n || ms.m.hills ? ` · Sprung ${ms.res.length + 1}/${missionJumps(ms.m)}` : ""} · Luke ${st.gate}`;
     if (ctxMode === "daily") return `Tageschallenge · Versuch ${dc.tries.length + 1}/3 · Luke ${st.gate}`;
     return `Training${jc && jc.slow < 1 ? ` · Tempo ${Math.round(jc.slow * 100)} %` : ""}${jc && jc.beginner ? " mit Anhalten" : ""} · Luke ${st.gate}`;
@@ -11053,6 +11484,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     txt(el.ppSub, subLine(st));
     const w = J.wind.mode === "off" ? 0 : (ph === "flight" ? J.windVec(Math.max(0, J.x)).w : J.wind.display(J.t));
     const wi = windInfo(w);
+    // 1928: kein Messgerät, nur das Gefühl für den Wind
+    if (H.era) { const a = Math.abs(w), dir = w > 0 ? "Aufwind" : "Rückenwind"; wi.lbl = a < 0.3 ? "fast windstill" : a < 1 ? `leichter ${dir}` : a < 2 ? dir : `kräftiger ${dir}`; }
     txt(el.windVal, wi.val); txt(el.windLbl, wi.lbl);
     el.windPanel.classList.toggle("tail", wi.tail);
     el.windPanel.classList.toggle("head", w >= 0.05);
@@ -11068,8 +11501,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (atGate) {
       el.lightR.className = "light" + (jc.light === "red" ? " on-r" : "");
       el.lightG.className = "light" + (jc.light === "green" ? " on-g" : "");
-      txt(el.startTitle, jc.light === "green" ? "Los!" : "Warte auf Grün");
-      let sub = jc.light === "green" ? (jc.expert ? "Daumen auflegen und halten, an der Kante loslassen" : "Tippen zum Start") : (J.wind.mode === "off" ? "Wind aus" : "Wind wird gemessen");
+      txt(el.startTitle, H.era ? (jc.light === "green" ? "Die Fahne ist unten!" : "Der Starter hebt die Fahne") : jc.light === "green" ? "Los!" : "Warte auf Grün");
+      let sub = jc.light === "green" ? (jc.expert ? "Daumen auflegen und halten, an der Kante loslassen" : "Tippen zum Start") : H.era ? "Mütze zurechtrücken" : (J.wind.mode === "off" ? "Wind aus" : "Wind wird gemessen");
       if (jc.light === "green" && jc.countdown != null) sub = `${jc.expert ? "Daumen auflegen" : "Tippen zum Start"} · noch ${Math.max(0, Math.ceil(jc.countdown))} s`;
       el.startBox.classList.toggle("urgent", jc.light === "green" && jc.countdown != null && jc.countdown <= 5);
       txt(el.startSub, sub);
@@ -11311,8 +11744,10 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (ctxMode === "chal") chalRecord(entry);
     if (ctxMode === "chal" && chal && chal.grp) postGroup(entry);
     lastResult = entry;
-    showResult(entry);
+    if (H.era && entry.kind === "fall") titleCards([{ text: N28_FALL[(Math.random() * N28_FALL.length) | 0], dur: 2.4 }], () => { if (lastResult === entry && mode === "jump") showResult(entry); });
+    else showResult(entry);
   }
+  const N28_FALL = ["Hoppla!", "Der Hang war schneller.", "Ein Fall für die Wochenschau!", "Schnee von gestern.", "Mit dem Hosenboden gelandet.", "Die Mütze flog weiter."];
 
   // Tabelle in die verfügbare Höhe einpassen: oben die Besten, darunter abgesetzt die festen Zeilen
   // (eigene Zeile, Platz 30), die immer sichtbar bleiben. pins: [{ rank, html }]
@@ -11396,6 +11831,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (r.kind === "fall") return "fall";
     if (ctxMode === "chal") return r.chalWin > 0 ? "win" : r.chalWin < 0 ? "lose" : "good";
     if (ctxMode === "comp") return r.rank === 1 ? "win" : r.rank <= 3 ? "good" : null;
+    if (ctxMode === "mission" && ms.m.n28) return r.kind === "fall" ? "fall" : r.mission && r.mission.done ? (r.mission.n28.medal === 3 ? "win" : r.mission.n28.medal ? "good" : "lose") : (r.note >= 18 ? "good" : null);
     if (ctxMode === "mission") return r.mission && r.mission.done ? (r.mission.stars === 3 ? "win" : r.mission.stars ? "good" : "lose") : null;
     if (ctxMode === "daily") return r.dailyBest ? "good" : null;
     if (r.newBest) return "win";
@@ -11518,6 +11954,11 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     $("rsFlag").innerHTML = flag(who.nation); txt($("rsName"), who.name); txt($("rsNation"), who.nation);
     const chip = $("rsChip");
     if (ctxMode === "comp") { chip.className = "chip chip-cyan"; chip.textContent = `PLATZ ${r.rank}`; }
+    else if (ctxMode === "mission" && ms.m.n28 && r.mission) {
+      const c = r.mission.n28;
+      chip.className = r.mission.done ? (c.medal ? "chip chip-cyan" : "chip chip-warn") : "chip chip-dim";
+      chip.textContent = r.mission.done ? (c.medal ? `${MEDAL_NAME[c.medal].toUpperCase()} 1928` : `PLATZ ${c.rank} · 1928`) : "1. DURCHGANG";
+    }
     else if (ctxMode === "mission" && ms.m.cup && r.mission) {
       const c = r.mission.cup;
       chip.className = r.mission.done ? (c.medal ? "chip chip-cyan" : "chip chip-warn") : "chip chip-dim";
@@ -11533,7 +11974,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     else if (r.kind === "fall") { chip.className = "chip chip-warn"; chip.textContent = "STURZ"; }
     else { chip.className = "chip chip-dim"; chip.textContent = ctxMode === "hot" ? `DURCHGANG ${hot.round}` : (r.practice ? "ÜBUNGSSPRUNG" : "TRAINING"); }
     txt($("rsDist"), fmt1(r.dist) + " m");
-    txt($("rsPts"), fmt1(r.total) + " Pkt.");
+    txt($("rsPts"), r.note != null ? "Note " + fmtNote(r.note) : fmt1(r.total) + " Pkt.");
     txt($("rsDistTxt"), `${fmt1(r.dist)} m · K-Punkt ${H.K} m`);
     txt($("rsDistPts"), fmt1(r.distPts));
     $("rsJudges").innerHTML = r.judges.map((v, i) => `<span class="${r.struck.includes(i) ? "struck" : ""}">${fmt1(v)}</span>`).join("");
@@ -11546,13 +11987,15 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       : why + `je Richter Flug −${fmt1(r.flightDed)}${r.landDed >= 0.25 ? `, Landung −${fmt1(r.landDed)}` : ""}`);
     txt($("rsStyle"), fmt1(r.style));
     const wi = windInfo(r.wind);
-    txt($("rsWindTxt"), r.windOff ? "Wind aus" : `${wi.lbl} ${wi.val}`);
+    txt($("rsWindTxt"), r.windOff ? "Wind aus" : `${wi.lbl} ${wi.val}${H.era ? " · ohne Ausgleich" : ""}`);
     txt($("rsWindPts"), fmtS(r.windPts));
     vis($("rsGateRow"), true);
-    txt($("rsGateTxt"), ctxMode === "comp" ? `Luke ${r.gate} · Start ${comp.startGate}` : `Luke ${r.gate} · Standard ${H.refGate}`);
+    txt($("rsGateTxt"), H.era ? (r.gate < N28_GATE[1] ? "verkürzt (Eis im Anlauf)" : "vom Turm, volles Tempo") : ctxMode === "comp" ? `Luke ${r.gate} · Start ${comp.startGate}` : `Luke ${r.gate} · Standard ${H.refGate}`);
+    txt($("rsGateLbl"), H.era ? "Anlauf" : "Luke");
     vis($("rsListHead"), ctxMode !== "mission" && ctxMode !== "daily");
     txt($("rsGatePts"), fmtS(r.gatePts));
-    txt($("rsTotal"), fmt1(r.total));
+    txt($("rsTotal"), r.note != null ? fmtNote(r.note) : fmt1(r.total));
+    txt($("rsTotalLbl"), r.note != null ? "Note 1928" : "Gesamt");
     const list = $("rsList"), head = $("rsListHead");
     freshLists();
     list.classList.remove("scroll"); list.classList.add("fit"); list._render = null;
@@ -11583,7 +12026,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       fillStand = () => scrollList(list, hs.map(row), ".st-row.me");
     } else if (ctxMode === "mission") {
       txt($("rsListTitle"), ms.m.title);
-      txt($("rsSession"), ms.m.cup ? `${H.name} · HS${H.HS}` : `Mission ${missionIndex(ms.m)} · ${H.name}`);
+      txt($("rsSession"), ms.m.n28 ? `Olympiaschanze St. Moritz · K${H.K}` : ms.m.cup ? `${H.name} · HS${H.HS}` : `Mission ${missionIndex(ms.m)} · ${H.name}`);
       list.innerHTML = missionResultHtml(r);
     } else if (ctxMode === "daily") {
       txt($("rsListTitle"), "Tageschallenge");
@@ -11633,7 +12076,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     txt($("rsTip"), r.tip);
     const grpMode = ctxMode === "chal" && !!chal && !!chal.grp;   // in der Gruppe braucht die Rangliste den Platz
     vis($("rsTip"), ctxMode !== "mission" && ctxMode !== "comp" && !grpMode);
-    vis($("rsAna"), ctxMode !== "comp");
+    vis($("rsAna"), ctxMode !== "comp" && !(ctxMode === "mission" && ms && ms.m.n28));   // 1928: Platz für die Tabelle
     // Platzierung groß oben, Ansichten: Stand, Details zum Sprung, in der Meisterschaft die Gesamtwertung live
     rankHeader(r);
     $("rsDet").innerHTML = detailsHtml(r);
@@ -11641,7 +12084,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     vis($("rsTabs").querySelector('[data-v="champ"]'), inCh);
     $("rsAnaBox").innerHTML = anaHtml(r);
     vis($("rsTabs").querySelector('[data-v="ana"]'), !!r.ana);
-    txt($("rsTabs").querySelector('[data-v="list"]'), { comp: "Stand", hot: "Wertung", training: "Sprünge", mission: ctxMode === "mission" && ms && ms.m.cup ? "Challenge" : "Mission", daily: "Versuche", chal: grpMode ? (chal && chal.tour ? "Schanze" : "Gruppe") : "Duell" }[ctxMode] || "Stand");
+    txt($("rsTabs").querySelector('[data-v="list"]'), { comp: "Stand", hot: "Wertung", training: "Sprünge", mission: ctxMode === "mission" && ms && ms.m.n28 ? "1928" : ctxMode === "mission" && ms && ms.m.cup ? "Challenge" : "Mission", daily: "Versuche", chal: grpMode ? (chal && chal.tour ? "Schanze" : "Gruppe") : "Duell" }[ctxMode] || "Stand");
     if (inCh) champPane();
     // Stand, Wertung und Sprünge: der Reiter ist die Überschrift (Mission, Tageschallenge und Duell behalten ihren Titel)
     vis($("rsListTitle"), !["comp", "hot", "training", "daily", "chal"].includes(ctxMode) && $("rsListTitle").textContent.length <= 12);
@@ -11663,7 +12106,8 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (ctxMode === "chal" && chal && chal.tour && tour) { const nx = tourNextLeg(chal.tour.leg - 1); next = nx >= 0 ? `Weiter: ${hillShort(tour.legs[nx].h)}` : "Gesamtwertung"; }
     if (ctxMode === "comp") next = "Weiter";
     if (ctxMode === "hot") next = hot.roundOver() ? (hot.round < hot.rounds ? `Durchgang ${hot.round + 1}` : "Endergebnis") : `Weiter: ${hot.current().name}`;
-    if (ctxMode === "mission" && ms.m.cup) next = !r.mission.done ? `${CUP[ms.res.length].name} ${ms.res.length + 1}/4` : "Nochmal";
+    if (ctxMode === "mission" && ms.m.n28) next = !r.mission.done ? "2. Durchgang" : "Nochmal";
+    else if (ctxMode === "mission" && ms.m.cup) next = !r.mission.done ? `${CUP[ms.res.length].name} ${ms.res.length + 1}/4` : "Nochmal";
     else if (ctxMode === "mission") next = !r.mission.done ? `Sprung ${ms.res.length + 1}/${missionJumps(ms.m)}` : (r.mission.stars === 3 && nextMission(ms.m) ? "Nächste Mission" : "Nochmal");
     if (ctxMode === "daily") next = dc.tries.length < 3 ? `Versuch ${dc.tries.length + 1}/3` : "Teilen";
     if (r.grpNew) next = grpNextTxt(r);
@@ -11687,6 +12131,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     if (ctxMode === "mission") {
       const r = lastResult;
       if (r && r.mission && r.mission.done && ms.m.cup) { startCup(ms.m.key); return; }
+      if (ms.m.n28) { if (r && r.mission && r.mission.done) startN28(); else n28Round2(); return; }
       if (r && r.mission && r.mission.done) {
         const nx = r.mission.stars === 3 ? nextMission(ms.m) : null;
         startMission(nx ? nx.id : ms.m.id);
@@ -11799,6 +12244,117 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     h += `<p class="msr-goal">Bronze ${fmtInt(CUP_MEDAL[0])} · Silber ${fmtInt(CUP_MEDAL[1])} · Gold ${fmtInt(CUP_MEDAL[2])}</p>`;
     return h + "</div>";
   }
+  // ------------------------------------------------------------------ Nostalgie: Winterspiele 1928 in St. Moritz
+  // Zwei Durchgänge wie damals: der erste mit verkürztem Anlauf (Eis im Anlauf), vor dem zweiten der Streit um das volle Tempo:
+  // volle Hocke (schnell, über 70 m gefährlich) oder aufrecht wie die Norweger. Gewertet wird die Note von 0 bis 20 (Weite bis zum
+  // K-Punkt und Haltung), verglichen mit dem echten Feld von 1928 (Olympedia: Nation, Weiten, Note; Sturz = 1). Ohne Namen.
+  const N28 = [
+    ["NOR", 60.0, 64.0, 19.208], ["NOR", 57.5, 62.5, 18.542], ["TCH", 57.0, 59.5, 17.937], ["SWE", 53.5, 60.0, 16.937], ["SWE", 48.0, 59.0, 16.708],
+    ["USA", 53.0, 59.5, 16.687], ["SUI", 52.0, 58.0, 16.541], ["SUI", 52.5, 58.5, 16.458], ["GER", 50.0, 57.0, 16.291], ["SWE", 51.5, 61.0, 16.187],
+    ["GER", 48.5, 62.0, 16.020], ["FIN", 50.0, 56.0, 15.833], ["ITA", 50.0, 59.0, 15.750], ["USA", 49.0, 56.0, 15.583], ["TCH", 46.0, 59.0, 15.500],
+    ["CAN", 49.0, 57.0, 15.500], ["GER", 46.5, 55.5, 15.333], ["USA", 51.0, 53.0, 15.291], ["GER", 49.5, 54.0, 14.853], ["TCH", 49.5, 51.0, 14.728],
+    ["TCH", 48.5, 49.0, 14.478], ["FIN", 45.0, 47.5, 13.978], ["POL", 41.0, 58.0, 13.917], ["FRA", 47.0, 54.0, 13.833], ["POL", 41.0, 53.0, 13.166],
+    ["FRA", 40.5, 47.0, 12.678], ["POL", 41.5, 46.5, 12.604], ["NOR", 56.5, 73.0, 12.562, 0, 1], ["AUT", 36.5, 52.0, 12.062], ["SUI", 57.5, 62.0, 12.020, 0, 1],
+    ["SWE", 52.0, 62.5, 11.500], ["SUI", 48.5, 63.0, 10.782, 0, 1], ["ITA", 46.5, 59.0, 10.020], ["ITA", 48.0, 49.5, 9.687], ["FRA", 35.0, 40.0, 8.125],
+    ["NOR", 56.5, 64.5, 6.500, 1, 1], ["POL", 56.5, 62.5, 6.333, 1, 1], ["JPN", 34.0, 39.0, 4.000],
+  ];
+  const N28_LAND = { NOR: "Norwegen", TCH: "ČSR", SWE: "Schweden", USA: "USA", SUI: "Schweiz", GER: "Deutschland", FIN: "Finnland",
+    ITA: "Italien", CAN: "Kanada", POL: "Polen", FRA: "Frankreich", AUT: "Österreich", JPN: "Japan" };
+  const N28_GATE = [4, 10];   // 1. Durchgang verkürzt, 2. Durchgang vom Turm (volles Tempo)
+  const fmtNote = (v) => (Math.round(v * 1000) / 1000).toLocaleString("de-DE", { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+  const flag28 = (c) => (c === "CAN" ? "" : flagSpan(c === "TCH" ? "CZE" : c));   // Tschechoslowakei: dieselbe Flagge; Kanada 1928 ohne Ahornblatt
+  // Note je Durchgang für das alte Feld: Haltungsnote aus der echten Gesamtnote zurückgerechnet (gleich in beiden Durchgängen)
+  let n28FieldC = null;
+  function n28Field() {
+    if (n28FieldC) return n28FieldC;
+    const mark = (d, f) => clamp(20 - Math.max(0, 66 - d) * Ph.P.mark28, 0, 20) * (f ? Ph.P.fall28 : 1);
+    return (n28FieldC = N28.map(([c, d1, d2, n, f1, f2], i) => {
+      const m1 = mark(d1, f1), m2 = mark(d2, f2), st = clamp(2 * n - (m1 + m2) / 2, 0, 20);
+      return { id: "h" + i, c, d1, d2, n, f1: !!f1, f2: !!f2, r1: Math.round(((m1 + st) / 2) * 1000) / 1000 };
+    }));
+  }
+  function startN28() {
+    const m = { id: "n28", n28: true, title: "Winterspiele 1928", hill: "stmoritz", n: 2, tier: 0, wind: "var", tod: "afternoon", goal: { type: "n28" }, text: "" };
+    titleCards([
+      { text: "St. Moritz, 18. Februar 1928", sub: "II. Olympische Winterspiele · Sprunglauf auf der Olympiaschanze" },
+      { text: "Eis im Anlauf!", sub: "Der erste Durchgang wird mit verkürztem Anlauf gesprungen." },
+    ], () => { ms = { m, res: [], upright: false, best: (S.n28 || {}).best || 0 }; missionJumpSetup(); });
+  }
+  // vor dem 2. Durchgang: der Streit um das volle Tempo, dann die Wahl
+  function n28Round2() {
+    titleCards([
+      { text: "Streit am Turm", sub: "Vierzig Minuten lang wird gestritten. Die Mitteleuropäer setzen das volle Tempo durch, der Schnee ist hart und schnell." },
+      { text: "Wie fährst du los?", btns: [
+        { label: "Volle Hocke", sub: "schnell und weit, über 70 m kaum zu stehen", go: () => { ms.upright = false; missionJumpSetup(); } },
+        { label: "Aufrecht wie die Norweger", sub: "langsamer, dafür sicher in der Landung", go: () => { ms.upright = true; missionJumpSetup(); } }] },
+    ]);
+  }
+  function n28Record(entry) {
+    const up = ms.res.length === 1 && !!ms.upright;
+    ms.res.push(Object.assign({}, entry, { hill: H, upright: up }));
+    const done = ms.res.length >= 2, notes = ms.res.map((x) => x.note || 0);
+    const fin = done ? Math.round(((notes[0] + notes[1]) / 2) * 1000) / 1000 : notes[0];
+    const F = n28Field(), rank = 1 + F.filter((x) => (done ? x.n : x.r1) > fin).length, medal = done && rank <= 3 ? 4 - rank : 0;
+    const prev = S.n28 || null;
+    let better = false;
+    if (done && (!prev || fin > prev.best)) { S.n28 = { best: fin, medal: Math.max(medal, prev ? prev.medal : 0), at: todayStr() }; better = true; save(); }
+    entry.mission = { done, stars: done ? medal : null, partial: 0, best: (S.n28 || {}).best || 0, n28: { fin, rank, medal, better } };
+  }
+  function n28Rows(done, me, fin) {
+    const F = n28Field().map((x) => ({ c: x.c, d: done ? [x.d1, x.d2] : [x.d1], f: done ? [x.f1, x.f2] : [x.f1], n: done ? x.n : x.r1, me: false }));
+    F.push({ c: S.nation || "", d: me.map((x) => x.dist), f: me.map((x) => x.kind === "fall"), n: fin, me: true, name: S.name || "DU" });
+    F.sort((a, b) => b.n - a.n || (a.me ? 1 : -1));
+    const i = F.findIndex((x) => x.me);
+    const pick = new Set([0, 1, 2, i, i < 3 ? 3 : i + 1].filter((k) => k >= 0 && k < F.length));
+    let h = "", last = -1;
+    for (const k of [...pick].sort((a, b) => a - b)) {
+      if (last >= 0 && k > last + 1) h += `<div class="n28-gap">…</div>`;
+      const x = F[k], dd = x.d.map((d, j) => `${fmt1(d)}${x.f[j] ? "*" : ""}`).join(" / ");
+      h += `<div class="st-row n28-row${x.me ? " me" : ""}"><span class="sr-r">${k + 1}</span><span class="sr-n">${x.me ? flagSpan(x.c) : flag28(x.c)}${esc(x.me ? x.name : N28_LAND[x.c] || x.c)}</span>` +
+        `<span class="sr-d">${dd} m</span><span class="sr-p">${fmtNote(x.n)}</span></div>`;
+      last = k;
+    }
+    return h;
+  }
+  function n28ResultHtml(r) {
+    const mm = r.mission, c = mm.n28, done = mm.done;
+    const line = (x, i) => `<div class="msr-line cup-line got"><span class="st">${i + 1}.</span><span>${i === 0 ? "Verkürzt" : x.upright ? "Aufrecht" : "Volle Hocke"} <small>${fmt1(x.dist)} m · ${x.kind === "telemark" ? "Telemark" : x.kind === "fall" ? "Sturz" : "ohne Telemark"}</small></span><span class="ok">${fmtNote(x.note || 0)}</span></div>`;
+    let h = `<div class="ms-res n28-res">${ms.res.map(line).join("")}`;
+    h += `<div class="cup-sum n28-sum">${done ? medalHtml(c.medal) : ""}<b>${done ? (c.medal ? `${MEDAL_NAME[c.medal]} 1928` : `Platz ${c.rank} von 39`) : `Zwischenstand: Platz ${c.rank}`}</b><span>${done ? `Note ${fmtNote(c.fin)}${c.better ? " · Bestwert" : ""}` : ""}</span></div>`;
+    h += n28Rows(done, ms.res, c.fin);
+    h += `<p class="msr-goal">Feld und Noten wie 1928 · * Sturz${done ? "" : " · Zwischenstand aus den Weiten berechnet"}</p>`;
+    return h + "</div>";
+  }
+  // Stummfilm-Zwischentitel: schwarze Tafel mit Rahmen; tippen geht weiter (sonst nach ein paar Sekunden). Mit Knöpfen: Wahl.
+  let tcQ = null;
+  function titleCards(cards, done) { if (tcQ) clearTimeout(tcQ.t); tcQ = { cards: cards.slice(), done }; nextCard(); }
+  function nextCard() {
+    const q = tcQ;
+    if (!q) return;
+    clearTimeout(q.t);
+    const c = q.cards.shift();
+    if (!c) { tcQ = null; vis($("tcard"), false); document.body.classList.remove("tc-on"); if (q.done) q.done(); return; }
+    q.cur = c;
+    txt($("tcText"), c.text); txt($("tcSub"), c.sub || ""); vis($("tcSub"), !!c.sub);
+    $("tcBtns").innerHTML = (c.btns || []).map((b, i) => `<button type="button" class="tc-btn" data-i="${i}"><b>${esc(b.label)}</b><small>${esc(b.sub || "")}</small></button>`).join("");
+    vis($("tcBtns"), !!c.btns);
+    const el2 = $("tcard"); vis(el2, true); el2.classList.remove("in"); void el2.offsetWidth; el2.classList.add("in");
+    document.body.classList.add("tc-on");
+    if (Snd.projector) Snd.projector(c.btns ? 1.2 : (c.dur || 3.2));
+    if (!c.btns) q.t = setTimeout(nextCard, (c.dur || 3.2) * 1000);
+  }
+  function cardTap(e) {
+    const q = tcQ;
+    if (!q || !q.cur) return;
+    if (q.cur.btns) {
+      const b = e && e.target.closest("[data-i]");
+      if (!b) return;
+      const go = q.cur.btns[+b.dataset.i].go;
+      tcQ = null; vis($("tcard"), false); document.body.classList.remove("tc-on"); go();
+      return;
+    }
+    nextCard();
+  }
   const missionIndex = (m) => MISSIONS.indexOf(m) + 1;
   const tierOpen = (t) => starTotal() >= TIERS[t].need;
   function nextMission(m) {
@@ -11844,6 +12400,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   }
   function missionTarget(m, Hh) {
     if (m.cup) { const dz = cupDisc(); return dz.target(Hh, ms); }
+    if (m.n28) return { d: Hh.K, label: `K-PUNKT ${Hh.K} m` };
     const g = m.goal, t = typeof g.t === "function" ? g.t(Hh) : g.t;
     if (g.type === "dist" || g.type === "tele") return { d: t[2], label: `★★★ ${fmt1(t[2])} m` };
     if (g.type === "window") { const c = g.c(Hh); return { d: c, label: `ZIEL ${fmt1(c)} m` }; }
@@ -11894,7 +12451,15 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       if (g) { txt(el.goalKicker, g[0]); txt(el.goalTitle, g[1]); txt(el.goalText, g[2]); txt(el.goalStars, ""); }
       return;
     }
-    if (ctxMode === "mission" && ms.m.cup) {
+    if (ctxMode === "mission" && ms.m.n28) {
+      const i = ms.res.length;
+      txt(el.goalKicker, `WINTERSPIELE 1928 · ${i + 1}. DURCHGANG`);
+      txt(el.goalTitle, i === 0 ? "Verkürzter Anlauf" : ms.upright ? "Aufrecht abfahren" : "Volle Hocke");
+      txt(el.goalText, i === 0 ? "Eis im Anlauf: Alle starten weiter unten. Bis zum K-Punkt zählt jeder Meter, dazu die Haltung. Ohne Telemark gibt es kaum eine gute Note."
+        : ms.upright ? "Langsamer vom Turm: Mit einem guten Absprung reicht es bis zum K-Punkt, und die Landung bleibt weich."
+        : "Volles Tempo vom Turm: Über 70 m wird die Landung hart. Über den K-Punkt hinaus gibt es keine Extrapunkte.");
+      txt(el.goalStars, `${i ? `Nach dem 1. Durchgang Note ${fmtNote(ms.res[0].note || 0)} · ` : ""}Gold 1928: ${fmtNote(N28[0][3])} · Silber ${fmtNote(N28[1][3])} · Bronze ${fmtNote(N28[2][3])}`);
+    } else if (ctxMode === "mission" && ms.m.cup) {
       const i = ms.res.length, dz = CUP[i], sum = cupTotal(ms.res);
       txt(el.goalKicker, `SCHANZEN-CHALLENGE · DISZIPLIN ${i + 1}/4`);
       txt(el.goalTitle, dz.name); txt(el.goalText, dz.text(H, ms));
@@ -11926,6 +12491,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   }
   function missionRecord(entry) {
     if (ms.m.cup) { cupRecord(entry); return; }
+    if (ms.m.n28) { n28Record(entry); return; }
     const m = ms.m;
     ms.res.push(Object.assign({}, entry, { hill: H }));
     const done = ms.res.length >= missionJumps(m);
@@ -11937,6 +12503,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   }
   function missionResultHtml(r) {
     if (ms.m.cup) return cupResultHtml(r);
+    if (ms.m.n28) return n28ResultHtml(r);
     const m = ms.m, mm = r.mission, steps = goalSteps(m, ms.res[0].hill || H);
     const got = mm.done ? mm.stars : mm.partial;
     let h = `<div class="ms-res"><div class="msr-top"><div class="msr-stars">${"<i>★</i>".repeat(got)}${"★".repeat(3 - got)}</div><p class="msr-goal">${esc(m.text)}</p></div>`;
@@ -11949,6 +12516,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     return h + "</div>";
   }
   function leaveArcadeJump() {
+    if (H && H.era) applyColor(null);
     ms = null; dc = null;
     if (H && H.key !== S.hill) H = Hill.getHill(S.hill);
     renderer.setTheme(todFor(H));
@@ -12931,7 +13499,11 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     $("btnDyShare").disabled = !st.tries.length;
     const tot = starTotal(), max = MISSIONS.length * 3, mc = medalCounts();
     txt($("msStars"), `${tot} / ${max} ★`);
-    let h = `<div class="ms-tier"><span>SCHANZEN-CHALLENGE</span><small class="cup-count">${medalHtml(3)} ${mc[3]} ${medalHtml(2)} ${mc[2]} ${medalHtml(1)} ${mc[1]}</small></div>`;
+    const nb = S.n28;
+    let h = `<div class="ms-tier"><span>NOSTALGIE</span><small>St. Moritz, 18. Februar 1928</small></div>` +
+      `<button type="button" class="ms-row n28-pick" data-n28="1"><span class="ms-n">${medalHtml(nb ? nb.medal : 0)}</span><span class="ms-t"><b>Winterspiele 1928</b>` +
+      `<small>Olympiaschanze K66 · zwei Durchgänge wie damals</small></span><span class="ms-s">${nb ? `Note ${fmtNote(nb.best)}` : "neu"}</span></button>`;
+    h += `<div class="ms-tier"><span>SCHANZEN-CHALLENGE</span><small class="cup-count">${medalHtml(3)} ${mc[3]} ${medalHtml(2)} ${mc[2]} ${medalHtml(1)} ${mc[1]}</small></div>`;
     for (const key of cupKeys()) {
       const Hc = Hill.getHill(key), b = S.cup[key];
       h += `<button type="button" class="ms-row cup-row" data-cup="${key}"><span class="ms-n">${medalHtml(b ? b.medal : 0)}</span>` +
@@ -13905,9 +14477,11 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   on("btnDyGo", () => startDaily());
   on("btnDyShare", () => shareDaily());
   $("msList").addEventListener("click", (e) => {
+    if (e.target.closest("button[data-n28]")) { startN28(); return; }
     const c = e.target.closest("button[data-cup]"); if (c) { startCup(c.dataset.cup); return; }
     const b = e.target.closest("button[data-id]"); if (b && !b.disabled) startMission(b.dataset.id);
   });
+  $("tcard").addEventListener("click", cardTap);
   on("btnHot", () => { if (S.party && !S.party.done) { party = S.party; champ = null; openChampHub(); } else openSetup("hot"); });
   on("btnArChal", () => openChal(null, !chal));
   on("btnDuel", () => openChal(null, !chal || !!chal.grp));
@@ -14194,6 +14768,12 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   stage.addEventListener("pointercancel", endDrag);
   window.addEventListener("keydown", (e) => {
     if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "SELECT")) return;
+    // Zwischentitel (1928): Leertaste/Enter blättert weiter, Escape bricht ab (zurück zu den Challenges)
+    if (tcQ) {
+      if ((e.key === " " || e.key === "Enter") && !(tcQ.cur && tcQ.cur.btns)) { e.preventDefault(); nextCard(); }
+      else if (e.key === "Escape") { clearTimeout(tcQ.t); tcQ = null; vis($("tcard"), false); document.body.classList.remove("tc-on"); if (mode !== "arcade") openArcade(); }
+      return;
+    }
     if (e.key === "Escape" || e.key === "p" || e.key === "P") {
       if (overlay === "settings") closeSettings(); else if (overlay === "jumper") closeJumper(); else if (overlay === "pause" || overlay === "records" || overlay === "hill") setOverlay(null); else if (overlay === "info") closeInfo(); else if (overlay === "pic") setOverlay(null); else if (mode === "arcade" || mode === "chal" || mode === "multi" || mode === "tour") goTitle(); else pause();
       return;
@@ -14251,8 +14831,26 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       else if (!errShown) { errShown = true; softNotice("Kurzer Fehler, das Spiel läuft weiter."); }
     }
   }
+  // Winterspiele 1928: Wochenschau-Ebene an, solange man auf der alten Schanze springt oder die Tafel davon sieht
+  let filmOn = false;
+  function setFilm(on) {
+    filmOn = on;
+    const fx = $("filmFx");
+    if (on && !fx.dataset.grain) {
+      const g = document.createElement("canvas"); g.width = g.height = 160;
+      const c = g.getContext("2d"), im = c.createImageData(160, 160);
+      for (let i = 0; i < im.data.length; i += 4) { const v = Math.random() < 0.5 ? 20 : 245; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = Math.random() < 0.16 ? 70 + Math.random() * 120 : 0; }
+      c.putImageData(im, 0, 0);
+      fx.querySelector(".fx-grain").style.backgroundImage = `url(${g.toDataURL("image/png")})`;
+      fx.dataset.grain = "1";
+    }
+    vis(fx, on);
+    document.body.classList.toggle("era28", on);   // HUD im Stummfilm-Look
+  }
   function frameBody(now) {
     const dtReal = Math.min(0.1, (now - last) / 1000); last = now; tAnim += dtReal;
+    const film = !!(H && H.era) && (mode === "jump" || mode === "result" || mode === "replay");
+    if (film !== filmOn) setFilm(film);
     let st = null, good = false, best = null, jv = null, ghost = null, ghosts = null;
     if (bd && bd.armMenu > 0) { bd.armMenu -= dtReal; if (bd.armMenu <= 0 && mode === "board") renderBoard(); }
     qualityTick(dtReal);
@@ -14299,6 +14897,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     } else if (mode === "result" && J) {
       if (J.phase === "outrun" || J.phase === "crash") { resAcc += dtReal; let n = 0; while (resAcc >= STEP && n < 60) { J.step(STEP); resAcc -= STEP; n++; } J.events.length = 0; }
       st = snapLive(J, resAcc); jv = jumperVisual(st, J.landing && J.landing.kind !== "fall" && J.landing.dist >= H.K - 5, { mood: jc && jc.mood });
+      if (jc && jc.cap28) stepCap28(dtReal);
       updateCam(camTarget(st), dtReal, false);
       stepParticles(dtReal);
     } else {
@@ -14325,7 +14924,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       ideal: mode === "jump" && jc && jc.ideal && J && J.phase !== "gate" ? jc.ideal : null,
       particles, flags: true, windNow: wNow, snow, focus, screen: screenText(st),
       speedLines: st && st.phase === "inrun" ? { a: clamp((st.v - 3) / 20, 0, 1) * 0.85, ang: st.ang } : null,
-      dim });
+      cap: (mode === "jump" || mode === "result") && jc && jc.cap28 ? jc.cap28 : null, dim });
     if (overlay === "jumper") drawJumperPreview(tAnim);
   }
 
