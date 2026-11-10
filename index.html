@@ -3260,6 +3260,15 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     rect(G.xo - 1.4, yc - G.w - 3.2, 2.8, 3.4, stD);
     rect(G.fx0 - 0.8, G.fy0 - 2, G.fx1 - G.fx0 + 1.6, 2.2, P.roofSnow);
   }
+  // Über dem Zug: die Öffnung wird von der Einfahrt zur Mitte hin schwarz, damit er in der Dunkelheit verschwindet
+  function portalDark(G) {
+    const xe = G.xo - G.d * G.w, xd = G.xo - G.d * G.w * 0.1, dk = hx(tone(mix(I.tinte, I.tief, 0.2)));
+    ctx.save(); ctx.beginPath(); archPath(G); ctx.clip();
+    const gr = ctx.createLinearGradient(xe, 0, xd, 0);
+    gr.addColorStop(0, `rgba(${dk[0]},${dk[1]},${dk[2]},0)`); gr.addColorStop(1, `rgba(${dk[0]},${dk[1]},${dk[2]},1)`);
+    ctx.fillStyle = gr; ctx.fillRect(G.xo - G.w - 1, G.y - G.hh - 2, 2 * G.w + 2, G.hh + 4);
+    ctx.restore();
+  }
   function tunnel(x, y, d) {
     const G = portalGeo(x, y, d), W = 132;
     // Oberkante der Schulter: über dem Portal, steigt zur Kuppe und läuft flach ins Tal aus (u = 0 am Portal, 1 am Ende)
@@ -3632,7 +3641,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     let TR = M.train && (M.viaduct ? M.train : Object.assign({}, M.train, { x0: Math.min(M.train.x0, X0 - 20), x1: Math.max(M.train.x1, X1 + 20) }));
     if (TR && tg.length) {
       const L = tg.find((G) => G.d < 0), R = tg.find((G) => G.d > 0);
-      TR = Object.assign({}, TR, { x0: L ? L.xo - L.w : TR.x0, x1: R ? R.xo + R.w : TR.x1 });
+      TR = Object.assign({}, TR, { x0: L ? L.xo : TR.x0, x1: R ? R.xo : TR.x1 });
     }
     if (TR) line([[TR.x0, TR.y + 0.6], [TR.x1, TR.y + 0.6]], P.line, 1.2);
     for (const [x, d] of (M.tunnels || [])) tunnel(x, (M.train || M.viaduct).y, d);
@@ -3649,7 +3658,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     for (const it of (N.items || [])) NEAR_ITEM[it[0]](it, live);
     for (const [x, y, sc, ph] of chim) ANIM(live, 1, smokeAnim(x, y, sc, ph), x - 50 * sc, x + 6);
     if (TR) ANIM(live, 1, trainAnim(TR), TR.x0, TR.x1);
-    if (tg.length) ANIM(live, 1, () => { for (const G of tg) portalFace(G); }, Math.min(...tg.map((G) => G.fx0)), Math.max(...tg.map((G) => G.fx1)));
+    if (tg.length) ANIM(live, 1, () => { for (const G of tg) { portalDark(G); portalFace(G); } }, Math.min(...tg.map((G) => G.fx0)), Math.max(...tg.map((G) => G.fx1)));
     for (const f of (O.flags || [])) ANIM(live, 1, flagAnim(f[0], f[1], f[2], f[3], f[4], f[5] || FLAG_OF[O.id] || "at", f[0] * 0.013), f[0] - 2, f[0] + f[3] + 2);
     if (M.sleigh) { const S = M.sleigh; for (const d of [-1.4, 1.4]) line([[S.x0, S.y + d * 0.5 + 0.8], [S.x1, S.y + d * 0.5 + 0.8]], P.valleyShade, 0.6); ANIM(live, 1, sleighAnim(S), S.x0, S.x1); }
     if (M.glider) ANIM(live, 1, gliderAnim(M.glider), M.glider.cx - M.glider.rx - 20, M.glider.cx + M.glider.rx + 20);
@@ -3757,18 +3766,30 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     return (t) => { line([[x, yb], [x, yb - pole]], I.tinte, 1.8); flagShape(x, yb - pole + 1, w, h, kind, (u) => Math.sin(t * 3.4 + ph - u * 5) * h * 0.13 * u); };
   }
   // Zug im Tal: zwei Wagen und Lok mit Dampf, läuft über die Strecke x0 … x1 (dort abgeschnitten)
-  function trainAt(x, yb, t) {
+  function trainBody(x, yb) {
     for (let i = 0; i < 2; i++) { const cx = x + i * 37; rect(cx, yb - 12, 34, 10, P.roof); rect(cx - 1, yb - 14, 36, 2.4, P.roofSnow); for (let k = 0; k < 5; k++) rect(cx + 3 + k * 6.2, yb - 9.5, 3.4, 3.6, P.winHi); }
     const lx = x + 76;
     rect(lx, yb - 15, 11, 13, P.loco); rect(lx - 0.5, yb - 16.5, 12, 2, P.roofSnow); rect(lx + 11, yb - 11, 24, 9, P.loco); rect(lx + 29, yb - 17, 3.4, 6, P.loco); rect(lx + 33, yb - 5, 3, 3, I.rot);
     dots([x + 6, x + 28, x + 43, x + 65, lx + 4, lx + 16, lx + 26].map((wx) => [wx, yb - 1.4, 2.1]), P.line);
-    const sx = lx + 30.7, sy = yb - 18, d = [], l = [];
-    for (let i = 9; i >= 0; i--) { const u = (i + (t * 2.2) % 1) / 10, px = sx - u * 86, py = sy - u * 30 + u * u * 10, rr = 2.6 + u * 9; d.push([px + 0.8, py + rr * 0.3, rr]); l.push([px, py - rr * 0.08, rr * 0.92]); }
-    dots(d, P.smokeD); dots(l, P.smoke);
   }
+  // Zug mit Dampffahne. Der Dampf bleibt dort, wo die Lok ihn ausgestoßen hat, steigt auf und vergeht; im Tunnel (außerhalb x0 … x1)
+  // stößt sie keinen sichtbaren Dampf aus. So zieht keine Dampffahne mit dem Zug durch den Berg.
   function trainAnim(T) {
-    const L = (T.x1 - T.x0) + 260;
-    return (t) => { const x = T.x0 - 130 + ((t * T.speed) % L); ctx.save(); ctx.beginPath(); ctx.rect(T.x0, T.y - 60, T.x1 - T.x0, 80); ctx.clip(); trainAt(x, T.y, t); ctx.restore(); };
+    const L = (T.x1 - T.x0) + 260, xAt = (t) => T.x0 - 130 + ((t * T.speed) % L), life = 2.4, N = 11;
+    return (t) => {
+      ctx.save(); ctx.beginPath(); ctx.rect(T.x0, T.y - 70, T.x1 - T.x0, 90); ctx.clip();
+      trainBody(xAt(t), T.y);
+      const sy = T.y - 18, d = [], l = [];
+      for (let i = 0; i < N; i++) {
+        const a = ((t / life) + i / N) % 1, xc = xAt(t - a * life) + 106.7;
+        if (xc < T.x0 + 3 || xc > T.x1 - 3 || xc > xAt(t) + 107) continue;
+        const px = xc - a * 18, py = sy - a * 30 + a * a * 9, rr = (2.6 + a * 9) * (a > 0.72 ? 0.35 + 0.65 * (1 - a) / 0.28 : 1);
+        d.push([px + 0.8, py + rr * 0.3, rr]); l.push([px, py - rr * 0.08, rr * 0.92]);
+      }
+      d.sort((p, q) => q[2] - p[2]); l.sort((p, q) => q[2] - p[2]);
+      dots(d, P.smokeD); dots(l, P.smoke);
+      ctx.restore();
+    };
   }
   // Seilbahn: zwei Kabinen pendeln gegenläufig zwischen Tal- und Bergstation (Periode per s)
   function cabinAnim(c) {
@@ -8207,7 +8228,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.37";
+  const VERSION = "0.38";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
