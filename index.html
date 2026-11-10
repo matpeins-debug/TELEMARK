@@ -3639,7 +3639,14 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     }
     dot(x, hy, hr, skin());
     const hc = tone(o.hatC || I.rot);
-    if (o.hat === "tuch") {
+    if (o.hat === "alpino") {
+      // Alpinihut: grauer Filz mit schräger Krempe, an der linken Seite die lange schwarze Rabenfeder nach hinten oben
+      ctx.beginPath(); ctx.ellipse(x, hy - hr * 0.6, hr * 0.92, hr * 0.85, 0, Math.PI, 0); ctx.closePath(); ctx.fillStyle = hc; ctx.fill();
+      fill([[x - hr * 1.7, hy - hr * 0.95], [x + hr * 1.6, hy - hr * 0.5], [x + hr * 1.5, hy - hr * 0.25], [x - hr * 1.7, hy - hr * 0.68]], hc);
+      rect(x - hr * 0.85, hy - hr * 0.86, hr * 1.7, hr * 0.26, tone(I.tinte));
+      ctx.lineCap = "round"; ctx.strokeStyle = tone(I.tinte); ctx.lineWidth = hr * 0.22;
+      ctx.beginPath(); ctx.moveTo(x - hr * 0.6, hy - hr * 1.05); ctx.quadraticCurveTo(x - hr * 1.5, hy - hr * 2.2, x - hr * 2.6, hy - hr * 3.2); ctx.stroke(); ctx.lineCap = "butt";
+    } else if (o.hat === "tuch") {
       // helles Kopftuch, unter dem Kinn gebunden
       ctx.beginPath(); ctx.ellipse(x, hy - hr * 0.1, hr * 1.15, hr * 1.12, 0, Math.PI * 0.92, Math.PI * 2.08); ctx.closePath(); ctx.fillStyle = hc; ctx.fill();
       fill([[x - hr * 0.3, hy + hr * 0.9], [x + hr * 0.3, hy + hr * 0.9], [x + hr * 0.15, hy + hr * 1.4], [x - hr * 0.2, hy + hr * 1.5]], hc);
@@ -4016,7 +4023,10 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   function loipe(Lp, live) {
     const a = X0 - 40, b = X1 + 40;
     for (const dy of [0, 6]) line([[a, Lp.y + dy + 0.5], [b, Lp.y + dy + 0.5]], mix(P.valleyShade, P.valley, 0.3), 0.9);
-    const G = [
+    const G = Lp.marcia ? [
+      { dy: 0, dir: 1, off: 0, f: 0.85, list: [I.rot, I.navy, I.ocker, I.gruen, I.himmel, I.rot, I.dach, I.navy, I.ocker].map((c, i) => [-i * 21 - (i % 3) * 4, 20, c, i * 1.3]) },
+      { dy: 6, dir: 1, off: 0.5, f: 0.8, list: [I.gruen, I.rot, I.navy, I.ocker, I.rot].map((c, i) => [-i * 23, 21, c, i * 0.9 + 0.5]) },
+    ] : [
       { dy: 0, dir: 1, off: 0, f: 0.72, list: [[0, 22, I.rot, 0], [-34, 22, I.navy, 1.9]] },
       { dy: 6, dir: -1, off: 0.5, f: 0.8, list: [[0, 23, I.gruen, 0.6], [24, 15, I.ocker, 2.4]] },
     ];
@@ -4683,6 +4693,112 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       }
     };
   }
+  // Bischofshofen (Dreikönigsspringen): Sternsinger, drei Kinder als Könige mit goldener Krone und Umhang; das erste trägt den Stern an
+  // der Stange (er funkelt und dreht sich), das dritte ein Kästchen. Sie singen.
+  function sternsinger(x, yb, h, live) {
+    const capes = [I.rot, I.gruen, I.navy], gold = tone(mix(I.ocker, I.papier, 0.12)), goldD = mix(gold, I.dach, 0.3);
+    let px = 0, ptop = 0;
+    for (let i = 0; i < 3; i++) {
+      const xi = x + i * h * 0.78, kid = { coat: capes[i], kid: true, hat: "ohne", legs: mix(I.tinte, I.dach, 0.2) };
+      if (i === 0) { px = xi + h * 0.32; ptop = yb - h * 1.75; kid.hands = [[xi - h * 0.18, yb - h * 0.42], [px - 0.4, yb - h * 0.62]]; }
+      else if (i === 2) kid.hands = [[xi - h * 0.06, yb - h * 0.5], [xi + h * 0.08, yb - h * 0.5]];
+      else kid.arms = [0.25, 0.25];
+      const pr = person(xi, yb, h, kid);
+      // Umhang mit Goldsaum, Krone
+      const sw = h * 0.165;
+      line([[xi - sw * 1.05, yb - h * 0.37], [xi + sw * 1.05, yb - h * 0.37]], gold, h * 0.035);
+      const hy = pr.hy, hr = pr.hr;
+      fill([[xi - hr * 0.95, hy - hr * 0.62], [xi - hr * 0.95, hy - hr * 1.6], [xi - hr * 0.48, hy - hr * 1.1], [xi, hy - hr * 1.8], [xi + hr * 0.48, hy - hr * 1.1], [xi + hr * 0.95, hy - hr * 1.6], [xi + hr * 0.95, hy - hr * 0.62]], gold);
+      dot(xi, hy - hr * 1.05, hr * 0.16, tone(I.rot));
+      if (i === 2) { rect(xi - h * 0.06, yb - h * 0.56, h * 0.14, h * 0.1, gold); rect(xi - h * 0.06, yb - h * 0.6, h * 0.14, h * 0.04, goldD); }
+    }
+    line([[px, yb - h * 0.02], [px, ptop]], tone(mix(P.wood, I.dach, 0.3)), Math.max(0.8, h * 0.035));
+    ANIM(live, LI, (t) => {
+      const sx = px, sy = ptop - h * 0.12, rr = h * 0.2, rot = t * 0.6, star = [];
+      for (let i = 0; i < 16; i++) { const a = rot + (i * Math.PI) / 8, rad = i % 2 ? rr * 0.42 : rr; star.push([sx + Math.cos(a) * rad, sy + Math.sin(a) * rad]); }
+      fill([[sx - rr * 0.3, sy + rr * 0.2], [sx - rr * 2.6, sy + rr * 1.3], [sx - rr * 2.2, sy + rr * 0.6]], tone(mix(I.ocker, I.papier, 0.5)));
+      fill(star, gold);
+      dot(sx, sy, rr * 0.3, tone(mix(I.ocker, I.papier, 0.55)));
+      const g = (Math.sin(t * 2.4) + 1) / 2;
+      if (g > 0.8) { const a = (g - 0.8) / 0.2; ctx.globalAlpha *= a; glint(sx + rr * 0.2, sy - rr * 0.2, rr * 0.9); ctx.globalAlpha /= a; }
+    }, px - h * 0.8, px + h * 0.4);
+    ANIM(live, LI, notesAnim(x + h * 0.78, yb - h * 1.05, x * 0.021), x + h * 0.5, x + h * 1.4);
+  }
+  // Pongauer Tafelperchten (Perchtenlauf zu Dreikönig): auf dem Kopf die große Tafel mit rotem Samt, Goldrand, Spiegeln und Blumen,
+  // oben weiße Federn; weißes Hemd, rote Schärpe, Kniebundhose, weiße Strümpfe, Schellen am Gürtel. Sie hüpfen im Takt, die Tafel
+  // wiegt sich, die Spiegel blitzen.
+  function perchtenAnim(xs, yb, h) {
+    return (t) => {
+      const red = tone(I.rot), redD = mix(red, I.tinte, 0.3), gold = tone(mix(I.ocker, I.papier, 0.15)), mirror = tone(mix(I.dunst, I.papier, 0.4));
+      xs.forEach((x, i) => {
+        const ph = t * 3.2 + i * 1.7, hop = Math.abs(Math.sin(ph)) * h * 0.05, sway = Math.sin(ph) * 0.07, y = yb - hop;
+        const pr = person(x, y, h, { coat: mix(I.papier, I.schatten, 0.38), vest: I.rot, legs: mix(I.tinte, I.dach, 0.25), stockings: I.papier, hat: "ohne", arms: [0.35 + Math.sin(ph) * 0.15, 0.35 - Math.sin(ph) * 0.15] });
+        for (let k = -2; k <= 2; k++) dot(x + k * h * 0.045, y - h * 0.46, h * 0.018, gold);
+        const tw = h * 0.9, th = h * 1.15, top = pr.hy - pr.hr * 0.9;
+        ctx.save(); ctx.translate(x, top); ctx.rotate(sway);
+        line([[-tw * 0.1, 0], [-tw * 0.2, -th * 0.12]], tone(I.tinte), h * 0.02); line([[tw * 0.1, 0], [tw * 0.2, -th * 0.12]], tone(I.tinte), h * 0.02);
+        const yb2 = -th * 0.1;
+        ctx.beginPath(); ctx.moveTo(-tw / 2, yb2); ctx.lineTo(-tw / 2, yb2 - th * 0.62); ctx.arc(0, yb2 - th * 0.62, tw / 2, Math.PI, 0); ctx.lineTo(tw / 2, yb2); ctx.closePath();
+        ctx.fillStyle = red; ctx.fill(); ctx.strokeStyle = gold; ctx.lineWidth = h * 0.035; ctx.stroke();
+        fill([[-tw * 0.06, yb2], [tw * 0.06, yb2], [tw * 0.06, yb2 - th * 0.9], [-tw * 0.06, yb2 - th * 0.9]], redD);
+        for (let r_ = 0; r_ < 3; r_++) for (let c = -1; c <= 1; c++) { const mx = c * tw * 0.28, my = yb2 - th * (0.16 + r_ * 0.24); dot(mx, my, h * 0.045, mirror); dot(mx, my, h * 0.02, gold); }
+        for (const [fx, fy, fc] of [[-tw * 0.3, yb2 - th * 0.86, I.ocker], [tw * 0.3, yb2 - th * 0.86, I.gruen], [0, yb2 - th * 1.02, I.papier]]) dot(fx, fy, h * 0.05, tone(fc));
+        for (let k = -2; k <= 2; k++) line([[k * tw * 0.1, yb2 - th * 1.1], [k * tw * 0.16, yb2 - th * 1.32]], tone(mix(I.papier, P.wall, 0.1)), h * 0.04);
+        const gl = (Math.sin(t * 1.9 + i * 2) + 1) / 2;
+        if (!P.abend && gl > 0.85) { const a = (gl - 0.85) / 0.15; ctx.globalAlpha *= a; glint(tw * 0.28, yb2 - th * 0.4, h * 0.12); ctx.globalAlpha /= a; }
+        ctx.restore();
+      });
+    };
+  }
+  function perchten(x, yb, h, n, live) {
+    const xs = []; for (let i = 0; i < n; i++) xs.push(x + i * h * 1.05);
+    for (const xx of xs) shade([[xx - h * 0.16, yb + 0.6], [xx + h * 0.3, yb + 0.2], [xx + h * 0.24, yb + 2.4], [xx - h * 0.12, yb + 2.4]], P.valleyShade);
+    ANIM(live, LI, perchtenAnim(xs, yb, h), x - h * 0.6, x + n * h * 1.05 + h * 0.2);
+  }
+  // Moderner Zug (Westbahn an der Salzach): rote Lok und drei rot-graue Wagen mit Fensterband, Stromabnehmer, ohne Dampf
+  function trainModern(x, yb) {
+    const red = tone(I.rot), grey = tone(mix(P.wall, I.schatten, 0.35)), win = P.abend ? P.winHi : mix(I.tief, I.tinte, 0.3);
+    for (let i = 0; i < 3; i++) {
+      const cx = x + i * 34;
+      rect(cx, yb - 11, 32, 9, grey); rect(cx, yb - 5, 32, 2.6, red); rect(cx + 2, yb - 9.6, 28, 2.8, win); rect(cx - 0.5, yb - 12.2, 33, 1.6, P.roofSnow);
+    }
+    const lx = x + 102;
+    fill([[lx, yb - 2.2], [lx, yb - 11.6], [lx + 14, yb - 11.6], [lx + 19, yb - 6], [lx + 19, yb - 2.2]], red);
+    rect(lx + 9, yb - 10.4, 5, 3, win); rect(lx - 0.5, yb - 12.8, 15, 1.6, P.roofSnow);
+    line([[lx + 4, yb - 12.4], [lx + 7, yb - 16], [lx + 10, yb - 12.4]], P.line, 0.6);
+    dots([x + 5, x + 27, x + 39, x + 61, x + 73, x + 95, lx + 4, lx + 15].map((wx) => [wx, yb - 1.3, 1.7]), P.line);
+  }
+  // Predazzo: Coro alpino, Alpini mit dem Federhut singen; der erste gibt mit der Hand den Takt, Noten steigen auf
+  function alpini(x, yb, h, n, live) {
+    const coat = mix(mix(I.gruen, P.wall, 0.35), I.tinte, 0.25), hat = mix(I.gruen, P.wall, 0.45), xs = [], shs = [];
+    for (let i = 0; i < n; i++) {
+      const xi = x + i * h * 0.6, pr = person(xi, yb, h, { coat, legs: mix(I.tinte, I.gruen, 0.3), hat: "alpino", hatC: hat, scarf: i === 0 ? null : I.rot, arms: i === 0 ? [0.15, null] : [0.08, 0.08] });
+      xs.push(xi); shs.push(pr.sh);
+    }
+    ANIM(live, LI, (t) => {
+      const b = Math.sin(t * 4.2), [, rs] = shs[0];
+      limb(rs[0], rs[1], rs[0] + h * 0.16, rs[1] - h * 0.06 - b * h * 0.08, h * 0.08, tone(coat), skin());
+    }, xs[0] - h * 0.2, xs[0] + h * 0.4);
+    ANIM(live, LI, notesAnim(xs[1] + h * 0.05, yb - h * 1.05, x * 0.015), xs[1], xs[1] + h * 0.8);
+    if (n > 3) ANIM(live, LI, notesAnim(xs[3] + h * 0.05, yb - h * 1.05, x * 0.019 + 0.5), xs[3], xs[3] + h * 0.8);
+  }
+  // Kleiner italienischer Wagen, eingeschneit: runde Form, Schneehaube auf dem Dach, zwei Paar Ski auf dem Dachträger
+  function auto(x, yb, k) {
+    ctx.save(); ctx.translate(x, yb); ctx.scale(k, k);
+    const body = tone(mix(I.himmel, I.papier, 0.35)), bodyD = mix(body, I.tinte, 0.25), win = P.abend ? mix(P.winHi, I.tinte, 0.3) : mix(I.tief, I.tinte, 0.2), tyre = tone(I.tinte);
+    shade([[-16, 0.6], [22, 0.6], [19, 3], [-14, 3]], P.valleyShade);
+    fill([[-16, -2], [-16, -8], [-12, -11], [12, -11], [17, -8.5], [18, -2]], body);
+    fill([[-9, -11], [-5, -18], [8, -18], [12, -11]], body);
+    fill([[-7, -11.4], [-4.2, -16.8], [1, -16.8], [1, -11.4]], win); fill([[2.2, -11.4], [2.2, -16.8], [7.2, -16.8], [10, -11.4]], win);
+    line([[-16, -4.4], [18, -4.4]], bodyD, 0.6);
+    for (const wx of [-9.5, 11]) { dot(wx, -2, 3.2, tyre); dot(wx, -2, 1.3, tone(mix(P.wall, I.schatten, 0.3))); }
+    dot(16.6, -7, 1.1, tone(I.papier));
+    ctx.beginPath(); ctx.ellipse(1.5, -18.4, 7.4, 2.4, 0, Math.PI, 0); ctx.fillStyle = P.roofSnow; ctx.fill();
+    rect(-6, -19.4, 15, 0.8, tone(I.tinte));
+    for (const [d, c] of [[-0.9, I.rot], [0.9, I.ocker]]) { line([[-10, -20.2 + d], [13, -20.2 + d]], tone(c), 0.9); line([[13, -20.2 + d], [14.6, -21.6 + d]], tone(c), 0.9); }
+    fill([[-16.4, -8], [-12, -11.6], [-8, -11.2], [-14, -8.6]], P.roofSnow);
+    ctx.restore();
+  }
   // Straßenbahn (rot-cremefarben, zwei Wagenteile, Stromabnehmer); fährt nach rechts, x = Heck
   function tramAt(x, yb) {
     const H = 11.5, cream = tone(mix(I.papier, I.ocker, 0.14)), red = tone(I.rot), win = P.abend ? P.win : mix(I.tief, I.himmel, 0.35);
@@ -4730,6 +4846,11 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     christbaum: (it, live) => christbaum(it[1], it[2], it[3], live),
     stall: (it, live) => stall(it[1], it[2], it[3] || 1, live),
     platter: (it, live) => platter(it[1], it[2], it[3], it[4] || 3, live),
+    sternsinger: (it, live) => sternsinger(it[1], it[2], it[3], live),
+    perchten: (it, live) => perchten(it[1], it[2], it[3], it[4] || 2, live),
+    alpini: (it, live) => alpini(it[1], it[2], it[3], it[4] || 4, live),
+    auto: (it) => auto(it[1], it[2], it[3] || 1),
+    larch: (it) => { for (const [x, yb, h] of it[1]) { shade([[x, yb + 1], [x + h * 0.6, yb], [x + h * 0.5, yb + 3], [x, yb + 3]], P.valleyShade); larch(x, yb, h); } },
     eisstock: (it, live) => eisstock(it[1], it[2], it[3], live),
     bienenhaus: (it) => bienenhaus(it[1], it[2], it[3] || 1),
     herde: (it, live) => { heuraufe(it[1] + 84 * it[3], it[2] + 1.5 * it[3], it[3] * 1.15); ANIM(live, LI, herdeAnim([it[1], it[2], it[3]]), it[1] - 10, it[1] + 120 * it[3]); },
@@ -4932,7 +5053,10 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   const FLAGS = {
     de: (q) => { q(0, 1, 0, 1 / 3, I.tinte); q(0, 1, 1 / 3, 2 / 3, I.rot); q(0, 1, 2 / 3, 1, I.ocker); },
     ch: (q) => { q(0, 1, 0, 1, I.rot); q(0.2, 0.8, 0.4, 0.6, I.papier); q(0.4, 0.6, 0.2, 0.8, I.papier); },
-    it: (q) => { q(0, 1 / 3, 0, 1, I.gruen); q(1 / 3, 2 / 3, 0, 1, I.papier); q(2 / 3, 1, 0, 1, I.rot); },
+    it: (q, pt) => {
+      q(0, 1 / 3, 0, 1, I.gruen); q(1 / 3, 2 / 3, 0, 1, mix(I.papier, I.schatten, 0.2)); q(2 / 3, 1, 0, 1, I.rot);
+      for (const v of [0, 1]) line([pt(1 / 3, v), pt(0.5, v), pt(2 / 3, v)], mix(I.schatten, I.tinte, 0.35), 0.5);
+    },
     no: (q) => { q(0, 1, 0, 1, I.rot); q(0.27, 0.45, 0, 1, I.papier); q(0, 1, 0.36, 0.64, I.papier); q(0.31, 0.41, 0, 1, I.navy); q(0, 1, 0.43, 0.57, I.navy); },
     at: (q) => { q(0, 1, 0, 1, I.rot); q(0, 1, 1 / 3, 2 / 3, I.papier); },
     pl: (q) => { q(0, 1, 0, 0.5, I.papier); q(0, 1, 0.5, 1, I.rot); },
@@ -4950,6 +5074,17 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       for (const st of S([[-0.36, -0.62], [0.36, -0.62], [0, -0.4]])) dot(st[0], st[1], 0.55, I.ocker);
     },
     by: (q) => { for (let i = 0; i < 5; i++) for (let j = 0; j < 3; j++) q(i / 5, (i + 1) / 5, j / 3, (j + 1) / 3, (i + j) % 2 ? I.papier : I.himmel); },
+    // Salzburg: Rot-Weiß mit dem Landeswappen (gespalten: links ein schwarzer Löwe auf Gold, rechts Rot-Weiß-Rot)
+    sbg: (q, pt) => {
+      const wt = mix(I.papier, I.schatten, 0.2);
+      q(0, 1, 0, 0.5, I.rot); q(0, 1, 0.5, 1, wt);
+      const S = (pts) => pts.map(([a, b]) => pt(0.5 + a * 0.15, 0.5 + b * 0.32));
+      const sh = S([[-1, -1], [1, -1], [1, 0.3], [0.52, 0.86], [0, 1.04], [-0.52, 0.86], [-1, 0.3]]);
+      fill(sh, I.ocker);
+      fill(S([[0, -1], [1, -1], [1, -0.33], [0, -0.33]]), I.rot); fill(S([[0, -0.33], [1, -0.33], [1, 0.3], [0, 0.33]]), I.papier); fill(S([[0, 0.33], [1, 0.3], [0.52, 0.86], [0, 1.04]]), I.rot);
+      fill(S([[-0.78, 0.66], [-0.62, 0.12], [-0.8, -0.24], [-0.56, -0.74], [-0.32, -0.62], [-0.36, -0.28], [-0.14, -0.4], [-0.14, 0.04], [-0.32, 0.28], [-0.2, 0.7], [-0.42, 0.56]]), I.tinte);
+      line(sh.concat([sh[0]]), mix(I.tinte, I.rot, 0.3), 0.5);
+    },
     // Tirol: weiß-rot, in der Mitte der Wappenschild mit dem roten Tiroler Adler und goldener Krone (ohne ihn wäre es die polnische Fahne)
     tirol: (q, pt) => {
       const wt = mix(I.papier, I.schatten, 0.22);
@@ -4999,6 +5134,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     const L = (T.x1 - T.x0) + 260, xAt = (t) => T.x0 - 130 + ((t * T.speed) % L), life = 2.4, N = 11;
     return (t) => {
       ctx.save(); ctx.beginPath(); ctx.rect(T.x0, T.y - 70, T.x1 - T.x0, 90); ctx.clip();
+      if (T.modern) { trainModern(xAt(t), T.y); ctx.restore(); return; }
       trainBody(xAt(t), T.y);
       const sy = T.y - 18, d = [], l = [];
       for (let i = 0; i < N; i++) {
@@ -5972,11 +6108,49 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
       moon: 0.64,
       far: { col: "#192D3E", snow: 0.36, base: 14, jag: 0.1, peaks: [[-440, 110, 130, 1.3], [-190, 160, 200, 7], [-40, 150, 64, 1.0], [150, 118, 120, 1.2], [330, 132, 120, 1.1], [520, 110, 150, 1.4]] },
       town: { kind: "village", v0: 18, v1: 62, dens: 0.85, church: { c: 120, type: "spire", h: 52 } },
+      // Plakat (Schritt 4): der Hochkönig mit Felsgürtel und Gletscherplateau, die Salzach mit der Westbahn (moderner roter Zug), der Ort
+      // mit hohem Kirchturm. Daten wie in telemark-orte.js, verlängert.
+      // Details zu Dreikönig (Finale der Tournee): Sternsinger mit funkelndem Stern, Pongauer Tafelperchten, Österreich- und Salzburg-Fahne.
+      plakat: {
+        id: "bischofshofen", moon: [986, 178],
+        ranges: [{ style: "alpin", rough: 0.12, tree: 486, wall: [190, 700, 22, 62], rocky: 0.8, ctrl: [[-720, 470], [-600, 446, "S"], [-480, 464, "V"], [-360, 432, "S"], [-240, 456, "V"], [-130, 440, "S"],
+          [-40, 452], [60, 402], [140, 354], [200, 318], [250, 298], [300, 288, "S"], [410, 281, "V"], [520, 272, "S"], [600, 282], [662, 302, "V"], [722, 318], [792, 342], [862, 330, "S"], [942, 362, "V"],
+          [1042, 348, "S"], [1142, 382, "V"], [1222, 372, "S"], [1330, 404], [1460, 392, "S"], [1600, 414, "V"], [1760, 398, "S"], [1990, 420]] }],
+        far: { drift: [[520, 272, 0.9]] },
+        mid: { train: { y: 668, x0: 640, x1: 1300, speed: 40, modern: true }, river: { y: 676, h: 9, x0: 640 } },
+        town: [{ house: "chalet", cx: 1060, w: 420, y0: 596, y1: 648, churches: [{ x: 1060, yb: 622, t: "spire", h: 96 }], skip: [[1030, 1110, 1]] }],
+        flags: [[1010, 736, 66, 38, 26, "at"], [1056, 728, 60, 38, 26, "sbg"]],
+        near: { items: [
+          ["drift", 800, 906, 789, 6], ["sternsinger", 826, 786, 27],
+          ["drift", 1100, 1218, 789, 6], ["perchten", 1126, 786, 34, 2],
+          ["drift", 1222, 1334, 778, 8], ["spruce", [[1248, 772, 116, 1], [1294, 768, 96, 0]]],
+        ] },
+      },
     },
     predazzo: {
       moon: 0.66,
       far: { col: "#2B2849", snow: 0.3, base: 16, jag: 0.24, peaks: [[-540, 120, 120, 1.2], [-375, 146, 52, 0.75], [-330, 162, 46, 0.7], [-288, 152, 44, 0.75], [-246, 140, 50, 0.75], [-200, 128, 56, 0.8], [40, 118, 120, 1.1], [232, 150, 56, 0.75], [280, 164, 50, 0.7], [330, 150, 58, 0.8], [500, 124, 140, 1.3]] },
       town: { kind: "village", v0: 18, v1: 62, dens: 0.8, church: { c: -20, type: "campanile", h: 56 } },
+      // Plakat (Schritt 4): links der Latemar (Dolomitfels, abends Enrosadira), dahinter der Lagorai, rechts bewaldete Kämme; Predazzo mit
+      // Campanile. Daten wie in telemark-orte.js, verlängert. Details: die Marcialonga, eine lange Reihe Langläufer durchs Fleimstal,
+      // ein Coro alpino (Alpini mit Federhut singen), ein kleiner eingeschneiter Wagen mit Ski auf dem Dach, Fichten (Fleimstal: der Geigenwald), eine Trikolore.
+      plakat: {
+        id: "predazzo", moon: [986, 178],
+        ranges: [
+          { style: "alpin", far: true, rough: 0.2, tree: 500, ctrl: [[-720, 480], [-560, 452, "S"], [-400, 474, "V"], [-240, 440, "S"], [-40, 470], [120, 420, "S"], [260, 446, "V"], [380, 404, "S"], [520, 436, "V"], [700, 548]] },
+          { style: "dolomit", rough: 0.1, cliff: 1.1, tree: 492, ctrl: [[-40, 486], [30, 450], [80, 392], [118, 340], [142, 300, "S"], [160, 336, "V"], [186, 286, "S"], [208, 322, "V"], [236, 262, "S"], [258, 300, "V"], [292, 276, "S"], [326, 318, "V"], [366, 294, "S"], [400, 340], [448, 400], [520, 460], [600, 548]] },
+          { style: "alpin", rough: 0.16, tree: 448, ctrl: [[560, 548], [660, 460], [760, 414, "S"], [870, 440, "V"], [990, 398, "S"], [1100, 424, "V"], [1210, 404, "S"], [1330, 436], [1480, 418, "S"], [1640, 440, "V"], [1800, 420, "S"], [1990, 438]] },
+        ],
+        far: { drift: [[236, 262, 0.7]] },
+        mid: { loipe: { y: 690, speed: 24, marcia: true } },
+        town: [{ house: "italien", cx: 1010, w: 420, y0: 598, y1: 652, churches: [{ x: 1000, yb: 624, t: "campanile", h: 92 }], skip: [[950, 1045, 1]] }],
+        flags: [[1012, 736, 66, 40, 26, "it"]],
+        near: { items: [
+          ["drift", 800, 912, 789, 6], ["alpini", 822, 786, 35, 4],
+          ["drift", 1098, 1170, 789, 6], ["auto", 1120, 787, 1.35],
+          ["drift", 1214, 1334, 778, 8], ["spruce", [[1240, 774, 112, 1], [1282, 782, 138, 0], [1320, 770, 96, 2]]],
+        ] },
+      },
     },
     // Tatra links mit dem Giewont (Gipfelkreuz), rechts der flache Rücken der Gubałówka mit Standseilbahn; Holzhäuser mit steilen Dächern
     zakopane: {
@@ -9605,7 +9779,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.46";
+  const VERSION = "0.47";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
