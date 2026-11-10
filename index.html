@@ -3319,8 +3319,10 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   }
 
   // ------------------------------------------------------------------ Liebevolle Details je Ort (statt Hang und Werbetafel)
-  // Kleine Szenen, die es nur an einem Ort gibt: Leute, Buden, Musikanten, Gefährte. Jede Gruppe steht auf einer eigenen flachen
-  // Schneewehe; in der Nahebene ziehen sie beim Flug als Gruppe vorbei. Abends sind alle Farben ins Violett gezogen (tone).
+  // Kleine Szenen, die es nur an einem Ort gibt: Leute, Buden, Musikanten, Gefährte. Sie stehen vorn im Talgrund (mittlere Ebene)
+  // und bewegen sich mit dem Tal, nichts zieht schnell durchs Bild. Jede Gruppe steht auf einer flachen Schneewehe.
+  // Abends sind alle Farben ins Violett gezogen (tone). LI: Ebene, in der ihre Bewegungen laufen (1 = Tal).
+  let LI = 1;
   const tone = (c) => (P.abend ? mix(c, I.violett, 0.3) : c);
   const skin = () => tone(mix(I.gluehen, I.papier, 0.4));
   // Schneewehe: flache Linse in Schneefarbe, Schattenband unter der Oberkante, das zu den Enden hin ausläuft
@@ -3418,7 +3420,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     rect(px, py - 10, 2.6, 10, P.line); rect(px - 0.6, py - 11, 3.8, 1.6, P.line);
     ctx.restore();
     const sx = x + (px + 1.3 - x) * k, sy = yb + (py - 11 - yb) * k;
-    ANIM(live, 2, smokeAnim(sx, sy, 0.75 * k, 0.3), sx - 40 * k, sx + 6);
+    ANIM(live, LI, smokeAnim(sx, sy, 0.75 * k, 0.3), sx - 40 * k, sx + 6);
   }
   // Schneemann mit Topf als Hut, Karottennase, Besen und Schal
   function schneemann(x, yb, h, scarf) {
@@ -3503,7 +3505,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   }
   function fan(x, yb, h, coat, live, ph) {
     const pr = person(x, yb, h, { coat, hatC: I.rot, bob: I.papier, scarf: [I.rot, I.papier], cross: true, arms: [0.3, null] });
-    ANIM(live, 2, bellAnim(x, pr.sh[1][0], pr.sh[1][1], h, coat, ph), x - 16, x + 22);
+    ANIM(live, LI, bellAnim(x, pr.sh[1][0], pr.sh[1][1], h, coat, ph), x - 16, x + 22);
   }
   const NEAR_ITEM = {
     drift: (it) => drift(it[1], it[2], it[3], it[4]),
@@ -3513,17 +3515,16 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     bude: (it, live) => bude(it[1], it[2], live, it[3]),
     schneemann: (it) => schneemann(it[1], it[2], it[3], it[4]),
     rodelkind: (it) => { const pr = person(it[1], it[2], it[3], { kid: true, coat: it[4] || I.gruen, hatC: I.ocker, arms: [0.15, 0.55] }); rodel(it[1] + 6, it[2] + 1, pr.hands[1]); },
-    alphorn: (it, live) => { const b = alphorn(it[1], it[2], it[3], it[4]); ANIM(live, 2, notesAnim(b[0], b[1], it[1] * 0.017), b[0] - 4, b[0] + 30); },
+    alphorn: (it, live) => { const b = alphorn(it[1], it[2], it[3], it[4]); ANIM(live, LI, notesAnim(b[0], b[1], it[1] * 0.017), b[0] - 4, b[0] + 30); },
     fan: (it, live) => fan(it[1], it[2], it[3], it[4] || I.rot, live, it[1] * 0.031),
   };
-  // Nahebene: je Ort eigene Szenen auf Schneewehen (O.near.items, von hinten nach vorn); Fahnen am Boden (y ≥ 650) wehen hier
+  // Nahebene: wird für die Plakat-Orte nicht mehr gebaut (nichts soll beim Flug durchs Bild ziehen); bleibt für Bäume und Stadel
   function nearSide(O, live) {
     const N = O.near || {};
-    for (const it of (N.items || [])) NEAR_ITEM[it[0]](it, live);
+    LI = 2;
     if (N.stadel) stadel(N.stadel[0], N.stadel[1], N.stadel[2]);
     for (const [x, yb, h] of (N.larch || [])) { shade([[x, yb + 1], [x + h * 0.7, yb], [x + h * 0.5, yb + 5], [x, yb + 4]], P.valleyShade); larch(x, yb, h); }
     for (const [x, yb, h] of (N.birch || [])) { shade([[x, yb + 1], [x + h * 0.7, yb], [x + h * 0.5, yb + 5], [x, yb + 4]], P.valleyShade); birch(x, yb, h); }
-    for (const f of (O.flags || [])) if (f[1] >= 650) ANIM(live, 2, flagAnim(f[0], f[1], f[2], f[3], f[4], f[5] || FLAG_OF[O.id] || "at", f[0] * 0.013), f[0] - 2, f[0] + f[3] + 2);
   }
   // Vordergrund (vierte Ebene, Tiefenfaktor 1,15): angeschnittene Fichtenzweige oben rechts, wo der Wald nah ist (O.near.zweig).
   // Liegt vor dem Hang, hinter dem HUD. Orte ohne Zweige haben keinen Vordergrund.
@@ -3601,9 +3602,13 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     for (const T of (O.town || [])) town(T, chim);
     if (M.city) city(M.city);
     if (M.funicular) { const f = M.funicular; line([[f[0], f[1]], [f[2], f[3]]], P.line, 1.6); station(f[0], f[1]); station(f[2], f[3]); }
+    // Details des Ortes vorn im Talgrund (früher Nahebene): von hinten nach vorn in der Reihenfolge der Daten
+    const N = O.near || {};
+    LI = 1;
+    for (const it of (N.items || [])) NEAR_ITEM[it[0]](it, live);
     for (const [x, y, sc, ph] of chim) ANIM(live, 1, smokeAnim(x, y, sc, ph), x - 50 * sc, x + 6);
     if (TR) ANIM(live, 1, trainAnim(TR), TR.x0, TR.x1);
-    for (const f of (O.flags || [])) if (f[1] < 650) ANIM(live, 1, flagAnim(f[0], f[1], f[2], f[3], f[4], f[5] || FLAG_OF[O.id] || "at", f[0] * 0.013), f[0] - 2, f[0] + f[3] + 2);
+    for (const f of (O.flags || [])) ANIM(live, 1, flagAnim(f[0], f[1], f[2], f[3], f[4], f[5] || FLAG_OF[O.id] || "at", f[0] * 0.013), f[0] - 2, f[0] + f[3] + 2);
     if (M.sleigh) { const S = M.sleigh; for (const d of [-1.4, 1.4]) line([[S.x0, S.y + d * 0.5 + 0.8], [S.x1, S.y + d * 0.5 + 0.8]], P.valleyShade, 0.6); ANIM(live, 1, sleighAnim(S), S.x0, S.x1); }
     if (M.glider) ANIM(live, 1, gliderAnim(M.glider), M.glider.cx - M.glider.rx - 20, M.glider.cx + M.glider.rx + 20);
     if (O.mist) ANIM(live, 1, mistAnim(O.fjord ? 568 : 662, 12, 11, hash(O.id) ^ 9), -1e4, 1e4);
@@ -4686,9 +4691,11 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     const sky = PK.buildSky(W, Hs, dpr, TH.name, pk ? pk.moon[0] : PK.skyX(sc.moon, W, Hs));
     const out = { key, W, H: Hs, res, dpr, theme: TH.name, peak, sky, layers: [], live: { blink: [], cable: null, cables: [], ferry: null, moonX: sc.moon }, sc };
     for (const L0 of LAYERS) {
-      // Vordergrund nur, wo Zweige hineinragen (O.near.zweig)
-      if (L0.id === "front" && !(pk && pk.near && pk.near.zweig)) continue;
-      const L = L0;
+      // Plakat-Orte: keine Nah- und Vordergrundebene mehr. Was dort stand, zog beim Flug quer durchs Bild; die Details des Ortes
+      // stehen jetzt vorn im Talgrund (mittlere Ebene, unten bis v = 150).
+      if (pk && (L0.id === "near" || L0.id === "front")) continue;
+      if (!pk && L0.id === "front") continue;
+      const L = pk && L0.id === "mid" ? Object.assign({}, L0, { bot: 150 }) : L0;
       const wl0 = Math.ceil(wv + 470 * L.par + 60);
       // feste Ebenen (Plakat): nur der gezeichnete Teil rechts; sonst die volle Breite, Mitte in der Mitte
       const A = pk ? ANCHOR[L.id] : null;
@@ -8158,7 +8165,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.35";
+  const VERSION = "0.36";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
