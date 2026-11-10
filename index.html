@@ -1160,6 +1160,15 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 .sh-lline { display: flex; justify-content: space-between; gap: 8px; padding: 2px 0; border-bottom: 1px solid var(--line); font-family: var(--font-body); font-size: 12.5px; line-height: 16px; color: var(--text-2); }
 .sh-lline b { font-family: var(--font-display); color: var(--text); white-space: nowrap; }
 
+/* Ergebnistafel links eingepasst (fitResLeft): erst ohne Richter-Erklärung, dann enger, zuletzt ohne Lukenzeile */
+.res-left.fit1 .res-why { display: none; }
+.res-left.fit2 { gap: 3px; padding-top: 10px; padding-bottom: 10px; }
+.res-left.fit2 .res-dist { font-size: 44px; line-height: 46px; }
+.res-left.fit2 .res-row { min-height: 22px; }
+.res-left.fit2 .res-sep { margin: 1px 0; }
+.res-left.fit3 #rsGateRow { display: none; }
+
+
 </style>
 </head>
 <body>
@@ -10374,7 +10383,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.53";
+  const VERSION = "0.53.1";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -10834,7 +10843,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     ui.style.width = sw / uiS + "px"; ui.style.height = sh / uiS + "px"; ui.style.transform = `scale(${uiS})`;
     ui.classList.toggle("narrow", sw / uiS < 820);   // schmale Bildschirme (z. B. iPhone SE): kleinerer Schriftzug, damit nichts überlappt
     turnHint(rotated);
-    setTimeout(() => { if (mode === "result" && rsTab === "ana") drawAnaChart(lastResult); fitLogo(); }, 30);   // nach dem Start: erst wenn alles da ist
+    setTimeout(() => { if (mode === "result" && rsTab === "ana") drawAnaChart(lastResult); fitLogo(); fitResLeft(); }, 30);   // nach dem Start: erst wenn alles da ist
   }
   // Hochformat: Das Spiel dreht sich mit, ein kurzer Hinweis sagt, dass man das Handy quer halten soll
   let turnEl = null, turnT = 0;
@@ -12118,20 +12127,26 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
         sub = rk === 1 ? `${fmt1(me.total - others[0].total)} Punkte vor ${others[0].name}` : `${fmt1(hs[0].total - me.total)} Punkte hinter ${hs[0].name}`;
       }
     }
-    const tme = ctxMode === "chal" && chal && chal.tour && tour && r.grpState === "ok" ? tour.tot.find((x) => x.me) : null;
+    // Gruppe: deutlich sagen, ob dieser Sprung zählt (es zählt der beste nach Punkten; ein Sturz nie)
+    const grpMe = ctxMode === "chal" && chal && chal.grp ? chal.board.find((x) => x.me) : null;
+    const notCounted = grpMe && (r.kind === "fall" || (r.grpState === "ok" && chalPts(r.total) < grpMe.p));
+    const why = !notCounted ? "" : r.kind === "fall" ? `Sturz zählt nicht · dein bester: ${fmt1(grpMe.p)}` : r.dist > grpMe.d ? "Mehr Weite, weniger Punkte: zählt nicht" : `Zählt nicht · dein bester: ${fmt1(grpMe.p)}`;
+    const newBest = !notCounted && r.grpState === "ok" && r.grpPrev != null && chalPts(r.total) > r.grpPrev;
+    const tme = ctxMode === "chal" && chal && chal.tour && tour && (r.grpState === "ok" || notCounted) ? tour.tot.find((x) => x.me) : null;
     if (tme) {
-      const T = tour.tot, lm = chal.board.find((x) => x.me), sec = T.find((x) => !x.me && x.r >= tme.r), lead = T[0];
+      const T = tour.tot, sec = T.find((x) => !x.me && x.r >= tme.r), lead = T[0];
       rk = tme.r;
       head = rk === 1 ? "Du führst die Tournee" : `Tournee: Platz ${rk} von ${tour.total}`;
-      sub = (lm ? `Hier Platz ${lm.r} · ` : "") + (rk === 1 ? (sec ? `${fmt1(tme.p - sec.p)} Punkte vor ${sec.n}` : "als Erster dabei") : `${fmt1(lead.p - tme.p)} Punkte hinter ${lead.n}`);
-    } else if (ctxMode === "chal" && chal && chal.grp && r.grpState === "ok") {
-      const b = chal.board, me = b.find((x) => x.me);
+      sub = notCounted ? why
+        : (newBest ? "Neue Bestleistung · " : grpMe ? `Hier Platz ${grpMe.r} · ` : "") + (rk === 1 ? (sec ? `${fmt1(tme.p - sec.p)} Punkte vor ${sec.n}` : "als Erster dabei") : `${fmt1(lead.p - tme.p)} Punkte hinter ${lead.n}`);
+    } else if (ctxMode === "chal" && chal && chal.grp && (r.grpState === "ok" || notCounted)) {
+      const b = chal.board, me = grpMe;
       if (me) {
         rk = me.r;
         head = rk === 1 ? "Du führst die Gruppe" : `Platz ${rk} von ${chal.total}`;
         const sec = b.find((x) => x.r === 2), lead = b[0];
-        sub = rk === 1 ? (sec ? `${fmt1(me.p - sec.p)} Punkte vor ${sec.n}` : "als Erster in der Gruppe") : `${fmt1(lead.p - me.p)} Punkte hinter ${lead.n}`;
-        if (chalPts(r.total) < me.p) sub += ` · es zählt dein bester (${fmt1(me.p)})`;
+        sub = notCounted ? why
+          : (newBest ? "Neue Bestleistung · " : "") + (rk === 1 ? (sec ? `${fmt1(me.p - sec.p)} Punkte vor ${sec.n}` : "als Erster in der Gruppe") : `${fmt1(lead.p - me.p)} Punkte hinter ${lead.n}`);
       }
     }
     rsRankOn = !!rk;
@@ -12354,6 +12369,20 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     txt($("btnNext").querySelector("span"), next);
     Snd.results(resultSound(r));
     setTimeout(() => { if (mode === "result") $("btnNext").focus({ preventScroll: true }); }, 50);
+    fitResLeft(); setTimeout(fitResLeft, 400);   // noch einmal, falls die Schrift erst jetzt geladen ist
+  }
+  // Ergebnistafel links: „Gesamt“ muss immer ganz zu sehen sein (Schrift auf manchen Geräten höher). Sonst erst die Zeile mit der
+  // Richter-Erklärung weglassen, dann enger setzen, zuletzt die Lukenzeile, wenn sie nichts ändert.
+  function fitResLeft() {
+    const box = document.querySelector(".res-left"), tot = $("rsTotal");
+    if (!box || !tot || mode !== "result") return;
+    box.classList.remove("fit1", "fit2", "fit3");
+    const over = () => tot.getBoundingClientRect().bottom > box.getBoundingClientRect().bottom - 8 * uiS;
+    for (const c of ["fit1", "fit2", "fit3"]) {
+      if (!over()) break;
+      if (c === "fit3" && lastResult && Math.abs(lastResult.gatePts || 0) >= 0.05) break;
+      box.classList.add(c);
+    }
   }
 
   function resultNext() {
@@ -13380,6 +13409,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     let gh = null;
     try { gh = ghostPack2(entry.path); } catch (e) { gh = null; }
     const p = { g, d: entry.dist, p: chalPts(entry.total), k: entry.kind, gh: typeof gh === "string" && gh.length <= 4000 ? gh : null };
+    const was = chal.board.find((x) => x.me);
+    entry.grpPrev = was ? +was.p : null;   // bisher bester: zeigt danach „neue Bestleistung“ oder „zählt nicht“
     entry.grpState = "send";
     try {
       if (chal.tour) {
@@ -13436,8 +13467,13 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     if (me && !rows.includes(me)) rows = rows.slice(0, 5).concat([me]);
     let h = rows.map((x) => standRow({ rank: x.r, nation: x.c, name: x.n, dist: x.d, total: x.p }, { me: x.me, helm: x.me ? lookFor(S.look) : x.l ? lookFor(x.l) : natLook(x.c) })).join("");
     if (!me && r.kind !== "fall") h += standRow({ rank: null, nation: S.nation, name: meName(), dist: r.dist, total: chalPts(r.total) }, { me: true, helm: lookFor(S.look) });
-    const note = r.grpState === "send" ? "Wird an die Gruppe gesendet …"
+    // zählt er oder nicht? Es zählt der beste Sprung nach Punkten (Weite, Haltung, Wind), ein Sturz nie
+    const pts = chalPts(r.total), bestTxt = me ? `Dein bester Sprung bleibt ${fmt1(me.d)} m mit ${fmt1(me.p)} Punkten.` : "";
+    const note = r.kind === "fall" ? `Sturz: Dieser Sprung zählt nicht. ${bestTxt || "Es zählt nur ein gestandener Sprung."}`
+      : r.grpState === "send" ? "Wird an die Gruppe gesendet …"
       : r.grpState === "fail" ? (r.grpQueued ? "Keine Verbindung: Der Sprung wird nachgesendet." : "Dieser Sprung wurde nicht gesendet.")
+      : r.grpState === "ok" && me && pts < me.p ? `Dieser Sprung zählt nicht: ${fmt1(pts)} Punkte${r.dist > me.d ? `, trotz ${fmt1(r.dist)} m` : ""}. ${bestTxt}${r.dist > me.d ? " Es zählen die Punkte, nicht die Weite." : ""}`
+      : r.grpState === "ok" && r.grpPrev != null && pts > r.grpPrev ? `Neue Bestleistung: Dieser Sprung zählt jetzt (vorher ${fmt1(r.grpPrev)} Punkte).${chal.tour && tour ? " " + tourNote() : ""}`
       : chal.tour && tour ? tourNote()
       : chal.tries > 1 ? `Es zählt dein bester Sprung · ${chal.tries} Versuche` : "Es zählt dein bester Sprung. Die Rangliste sehen alle live.";
     return h + `<p class="msr-goal">${esc(note)}</p>`;
@@ -13810,18 +13846,34 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     if (w) { vis(el.windPanel, true); w.back(); return; }
     showResult(lastResult);
   }
-  // Den Sprung eines anderen ansehen: aus seiner Flugbahn (Geist) eine Wiederholung ab dem Absprung, im Auslauf bis zum Abschwingen
+  // Den Sprung eines anderen ansehen: aus seiner Flugbahn (Geist) eine Wiederholung ab dem Absprung, im Auslauf bis zum Abschwingen.
+  // Der Geist hat nur 5 Bilder je Sekunde, die Landung liegt fast immer zwischen zweien. Sie wird genau auf die angesagte Weite gelegt
+  // (sonst dorthin, wo die Flugbahn den Hang schneidet). Vorher lag der Springer bis zum nächsten Bild auf dem Hang, blieb kurz
+  // stehen und sprang dann ein paar Meter weiter in die Landung.
   function watchRec(g) {
     const P = g.path, rec = [];
-    let tT = null;
-    for (let i = 0; i < P.length; i++) {
-      const a = P[Math.max(0, i - 1)], b = P[Math.min(P.length - 1, i + 1)], dt = (b[0] - a[0]) || 0.2;
-      const [t, x, y, p, pf] = P[i], gr = Hill.groundAt(H, x), vx = (b[1] - a[1]) / dt, vy = (b[2] - a[2]) / dt;
-      if (tT == null && i > 2 && y - gr.y < 0.08) tT = t;
-      rec.push(tT == null ? { t, phase: "flight", x, y, tf: t, p, prepF: pf, crashF: 0, r: 0, tookTap: true, vx, vy, v: Math.hypot(vx, vy) }
+    const hAt = (q) => q[2] - Hill.groundAt(H, q[1]).y;
+    let i1 = -1;
+    for (let i = 3; i < P.length; i++) if (hAt(P[i]) < 0.08) { i1 = i; break; }
+    if (i1 < 0) return null;
+    const Z = P[i1 - 2], A = P[i1 - 1], B = P[i1];
+    // Schätzung aus der Sinkgeschwindigkeit zum Hang (er nähert sich fast tangential, die Höhe nimmt nicht gleichmäßig ab) …
+    const h0 = hAt(A), rate = Math.max(0.5, (hAt(Z) - h0) / ((A[0] - Z[0]) || 0.2));
+    const dA = Hill.groundAt(H, A[1]).d, dB = Hill.groundAt(H, B[1]).d;
+    let dL = lerp(dA, dB, clamp(h0 / rate / ((B[0] - A[0]) || 0.2), 0, 1));
+    // … und auf die angesagte Weite gelegt (sie ist auf halbe Meter abgerundet)
+    if (g.d > 0) { const lo = Math.max(g.d, dA), hi = Math.min(g.d + 0.49, dB); if (lo <= hi) dL = clamp(dL, lo, hi); }
+    const u = clamp((dL - dA) / ((dB - dA) || 1), 0, 1);
+    const tT = lerp(A[0], B[0], u), xT = lerp(A[1], B[1], u);
+    const T = [tT, xT, Hill.groundAt(H, xT).y, lerp(A[3], B[3], u), lerp(A[4], B[4], u)];
+    // Flug bis genau zur Landung, dann derselbe Punkt als Beginn des Auslaufs (sonst stünde er beim Wechsel einen Moment still)
+    const Q = P.filter((q) => q[0] < tT - 0.01).concat([T, [tT + 0.001, ...T.slice(1)]], P.filter((q) => q[0] > tT + 0.01));
+    for (let i = 0; i < Q.length; i++) {
+      const a = Q[Math.max(0, i - 1)], b = Q[Math.min(Q.length - 1, i + 1)], dt = (b[0] - a[0]) || 0.2;
+      const [t, x, y, p, pf] = Q[i], gr = Hill.groundAt(H, x), vx = (b[1] - a[1]) / dt, vy = (b[2] - a[2]) / dt;
+      rec.push(t <= tT ? { t, phase: "flight", x, y: Math.max(y, gr.y), tf: t, tau: tT - t, p, prepF: pf, crashF: 0, r: 0, tookTap: true, vx, vy, v: Math.hypot(vx, vy) }
         : { t, phase: "outrun", kind: g.k, tLand: t - tT, x, y: gr.y, beta: gr.beta, vx, vy: 0, v: Math.hypot(vx, vy) });
     }
-    if (tT == null) return null;
     let { t, x } = rec[rec.length - 1], v = clamp(rec[rec.length - 1].vx, 8, 32);
     while (t < tT + 3.3) {
       t += 0.1; v = Math.max(3, v - 2.8 * 0.1); x += v * 0.1;
@@ -15620,7 +15672,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 
   // für Tests
   window.__tm = { get J() { return J; }, get mode() { return mode; }, get comp() { return comp; }, get hot() { return hot; }, get bd() { return bd; },
-    onAction, newJump, get H() { return H; }, S, finishJump, get drag() { return drag; }, padScale: () => padK() * uiS, get chal() { return chal; }, get tour() { return tour; }, openTourCode, get lastResult() { return lastResult; }, chalUrl, chalDecode, Hap, setHill, openGroup, get online() { return { on: !!ON, oc: S.oc, osave: S.osave, groups: S.groups, tours: S.tours, opend: S.opend }; }, cloudNow, get cam() { return cam; }, get st() { return lastSt; }, get Q() { return Q; }, get jc() { return jc; }, renderer, Snd };
+    onAction, newJump, get H() { return H; }, S, finishJump, get drag() { return drag; }, padScale: () => padK() * uiS, get chal() { return chal; }, get tour() { return tour; }, openTourCode, get lastResult() { return lastResult; }, chalUrl, chalDecode, Hap, setHill, openGroup, get online() { return { on: !!ON, oc: S.oc, osave: S.osave, groups: S.groups, tours: S.tours, opend: S.opend }; }, cloudNow, get cam() { return cam; }, get st() { return lastSt; }, get Q() { return Q; }, get jc() { return jc; }, renderer, Snd, startWatch, ghostPack2, ghostUnpack2, get rp() { return rp; } };
 })();
 
 </script>
