@@ -5670,12 +5670,16 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     }
 
     // Baumreihe hinter der Kante (abgewandte Flanke) über die ganze Länge, auch hinter dem Anlauf; fern, darum begrenzt groß
+    // Bäume hinter der Hangkante (abgewandte Flanke): klein wie in der Ferne, der Fuß steht auf der Kante und verschwindet hinter dem
+    // Hang (der danach gezeichnet wird). Früher standen sie gut zwei Baumhöhen über der Kante und schwebten vor Tal und Ort.
     backTrees(G, cam, k, xMin, xMax) {
       const bp = Math.min(cam.ppm, 11 * k), B = this.batch();
       for (const t of G.back) {
         if (t.x < xMin - 10 || t.x > xMax + 10) continue;
-        const sx = cam.ax + (t.x - cam.cx) * cam.ppm, sy = cam.ay - (t.y - 2.2 - cam.cy) * cam.ppm - 2.2 * bp;
-        this.spruce(sx, sy, Math.max(2, t.h * bp), t.v, false, B);
+        if (t.e == null) { t.e = edgeAt(G, t.x); t.sink = 0.16 + 0.3 * Math.max(0, Math.min(1, (t.y - t.e - 2.2) / 0.8)); }
+        const hp = Math.max(2, t.h * bp);
+        const sx = cam.ax + (t.x - cam.cx) * cam.ppm, sy = cam.ay - (t.e - cam.cy) * cam.ppm + hp * t.sink;
+        this.spruce(sx, sy, hp, t.v, false, B);
       }
       this.flush(B);
     }
@@ -7754,7 +7758,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.30";
+  const VERSION = "0.31";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -8903,9 +8907,11 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
   // Windfahne im HUD: das Tuch weht wie die Fahnen am Hang. Aufwind kommt von vorn (Tuch nach links, grün),
   // Rückenwind von hinten (nach rechts, orange); je stärker, desto waagrechter und unruhiger. Windstille: hängt grau herab.
   let hudWind = 0;
+  let flagT = -1;
   function drawWindFlag(w, t) {
     const cv = el.windFlag;
-    if (!cv) return;
+    if (!cv || (t - flagT < 0.03 && t >= flagT)) return;   // eigene kleine Leinwand: 30 Bilder je Sekunde reichen
+    flagT = t;
     const dpr = Math.min(3, window.devicePixelRatio || 1), Wc = 44, Hc = 46;
     if (cv.width !== Math.round(Wc * dpr)) { cv.width = Math.round(Wc * dpr); cv.height = Math.round(Hc * dpr); }
     const c = cv.getContext("2d");
@@ -9058,7 +9064,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
     // Flughöhe über dem Hang (senkrecht), solange man in der Luft ist
     const dh = $("distH"), hAb = inFlight && st.x > 0 ? st.y - Hill.groundAt(H, st.x).y : 0;
     vis(dh, inFlight && hAb > 0.3);
-    if (inFlight && hAb > 0.3) txt(dh, `${fmt1(Math.round(hAb * 10) / 10)} m über dem Hang · ${Math.round(st.v * 3.6)} km/h`);   // Höhe und Tempo live, wie im Fernsehen
+    if (inFlight && hAb > 0.3 && !(tAnim - (jc.dhT || 0) < 0.12 && tAnim >= jc.dhT)) { jc.dhT = tAnim; txt(dh, `${fmt1(Math.round(hAb * 10) / 10)} m über dem Hang · ${Math.round(st.v * 3.6)} km/h`); }   // Höhe und Tempo live, wie im Fernsehen
     const lz = live && assist && inFlight && J.inLandingZone();
     vis(el.landBox, lz && jc.practice);   // danach zeigt der Ring am Springer die Landung
     if (lz) el.landMark.style.left = (clamp((1.15 - J.tau) / 1.15, 0, 1) * 100).toFixed(1) + "%";
