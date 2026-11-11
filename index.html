@@ -864,14 +864,6 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 .chb-more { font-size: 12px; color: var(--muted); }
 
 /* ---------- Online: Gruppe mit Live-Rangliste, Gruppenliste, Online-Fenster, Rückfrage ---------- */
-.chal.grp { width: 780px; }
-.chal.grp .ch-have { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.9fr); column-gap: 18px; row-gap: 8px; align-items: start; }
-.chal.grp .ch-target { padding: 6px 12px; gap: 12px; }
-.chal.grp .ch-target .ch-lbl, .chal.grp .ch-dist { white-space: nowrap; }
-.chal.grp .ch-dist { font-size: 30px; line-height: 32px; }
-.chal.grp .ch-have > * { grid-column: 1; }
-.chal.grp #chBoard { grid-column: 2; grid-row: 1 / span 5; margin: 0; padding: 8px 10px; border-radius: 4px; background: var(--row); align-self: stretch; }
-.chal.grp .ch-big { font-size: 36px; line-height: 40px; }
 .ch-live { color: var(--hi); }
 .ch-live::before { content: ""; display: inline-block; width: 7px; height: 7px; margin-right: 4px; border-radius: 50%; background: currentColor; vertical-align: 1px; animation: livePulse 1.6s ease-in-out infinite; }
 @keyframes livePulse { 50% { opacity: 0.25; } }
@@ -948,26 +940,9 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 /* Mehrspieler: drei Karten nebeneinander, die erste hervorgehoben */
 .multi { width: 760px; max-width: calc(100% - 24px); max-height: calc(100% - 16px); overflow: auto; gap: 10px; padding: 14px 18px 16px; touch-action: pan-y; }
 .mu-cards { display: grid; grid-template-columns: 1.35fr 1fr; gap: 10px; }
-.mu-seg { width: 100%; }
-.mu-seg button { flex: 1; }
-.mu-tour .mu-hill-n { white-space: normal; font-size: 13px; line-height: 16px; padding: 4px 0 4px 8px; text-align: left; }
 .mu-side .mu-more { margin-top: auto; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .mu-side .mu-more .btn { margin-top: 0; }
 .mu-paste { font-size: 13px; }
-.tour { width: 720px; max-width: calc(100% - 24px); max-height: calc(100% - 16px); overflow: auto; gap: 8px; padding: 14px 18px 14px; touch-action: pan-y; }
-.to-body { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: start; }
-.to-legs { display: flex; flex-direction: column; gap: 4px; }
-.to-leg { display: grid; grid-template-columns: 22px 1fr auto 16px; grid-template-rows: auto auto; column-gap: 8px; align-items: center; text-align: left; padding: 6px 8px; border-radius: 6px; background: var(--row); border: 0; color: inherit; font: inherit; cursor: pointer; }
-.to-leg b { grid-row: span 2; font-family: var(--font-display); font-size: 18px; color: var(--hi); text-align: center; }
-.to-leg .to-h { font-family: var(--font-display); font-weight: 700; font-size: 14px; line-height: 17px; }
-.to-leg .to-h small { margin-left: 6px; font-weight: 500; font-size: 11px; color: var(--muted); }
-.to-leg .to-me { font-family: var(--font-display); font-weight: 700; font-size: 13px; text-align: right; }
-.to-leg .to-lead { grid-column: 2 / 4; font-size: 12px; line-height: 15px; color: var(--muted); }
-.to-leg > .ico, .to-leg > svg { grid-row: span 2; grid-column: 4; grid-row-start: 1; }
-.to-leg.done { box-shadow: inset 3px 0 0 var(--hi); }
-.to-leg.next { background: rgba(221, 164, 59, 0.22); box-shadow: inset 0 0 0 2px rgba(221, 164, 59, 0.55); }
-.to-board .chb-k { font-size: 11px; color: var(--muted); text-align: right; }
-.narrow .to-body { grid-template-columns: 1fr; }
 .mu-card { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px 12px; border-radius: 6px; background: var(--row); min-width: 0; }
 .mu-card .btn { margin-top: auto; justify-content: center; }
 .mu-main { background: rgba(221, 164, 59, 0.2); box-shadow: inset 0 0 0 2px rgba(221, 164, 59, 0.55); }
@@ -1170,21 +1145,10 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 
 
 /* ================================================================ Gruppe: Sprünge mit Reaktionen, Gespräch, Sprungkarte, Ansehen mit Zeitleiste */
-.chal.grp { width: 790px; max-width: calc(100% - 24px); height: min(370px, calc(100% - 16px)); gap: 8px; padding: 14px 18px; }
-.ch-grp { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); gap: 14px; flex: 1 1 auto; min-height: 0; }
-.ch-grp[hidden] { display: none; }
-.cg-main { display: flex; flex-direction: column; gap: 4px; min-height: 0; }
-.cg-main > .ch-lbl { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cg-rows { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 3px; touch-action: pan-y; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding-right: 2px; }
-.cg-side { display: flex; flex-direction: column; gap: 5px; min-height: 0; padding: 8px 10px; border-radius: 4px; background: var(--row); }
-.cg-hill { display: flex; flex-direction: column; gap: 1px; padding-bottom: 6px; margin-bottom: 2px; border-bottom: 1px dotted var(--line); }
-.cg-hill b { font-family: var(--font-display); font-weight: 700; font-size: 16px; line-height: 19px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.cg-hill span { font-size: 12px; line-height: 15px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cg-feed { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; touch-action: pan-y; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
 .cg-empty { margin: 4px 0; font-size: 13px; line-height: 17px; color: var(--text-2); }
 .ch-add { padding: 0 14px 0 10px; gap: 4px; }
-.chal.grp .hd-btns { margin-top: 0; }
-.chal.grp .ch-other { margin-left: auto; }
 
 /* Sprung als Zeile: oben Springer, Weite, Punkte; darunter Reaktionen und der letzte Kommentar; rechts ▶ */
 .gj { display: grid; grid-template-columns: minmax(0, 1fr) 42px; gap: 5px; flex: none; }
@@ -1310,13 +1274,86 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 #rsAna2 { margin: auto 0 0; }
 .rs-tkl { margin: 6px 0 0 2px; }
 
-/* Tournee mit bis zu acht Schanzen: Listen scrollen, Knöpfe bleiben stehen */
-.tour { height: min(370px, calc(100% - 16px)); overflow: hidden; }
-.to-body { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
-.to-legs, .to-board { max-height: 100%; overflow-y: auto; touch-action: pan-y; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
-.tour .hd-btns .ch-add { margin-left: auto; }
 .ad-hill { margin: 2px 0; }
 .ad-hill .mu-hill-n { font-size: 17px; }
+.ad-name { height: 44px; font-size: 17px; }
+.addlg { width: 500px; }
+.addlg .hd-btns .btn { height: 44px; font-size: 19px; gap: 8px; padding: 0 16px; }
+.addlg .hd-btns .btn-wide { flex: 0 1 auto; min-width: 0; }
+
+/* ================================================================ Mehrspieler: deine Gruppen (Helme, Name, Schanze, Platz, was neu ist) */
+.mu-cards { flex: 0 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+.mu-card { min-height: 0; }
+.mc-list { flex: 0 1 auto; min-height: 0; overflow-y: auto; gap: 5px; padding: 1px 2px 1px 0; touch-action: pan-y; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.mc-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto 16px; align-items: center; gap: 8px; flex: none; min-height: 46px; padding: 4px 8px 4px 10px;
+  border: 1px solid var(--line-2); border-radius: 4px; background: rgba(251, 244, 228, 0.6); color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+.mc-row:active { background: var(--row-2); }
+.mc-row > svg { color: var(--hi); }
+.mc-mem { display: flex; align-items: center; padding-left: 6px; }
+.mc-mem:empty { display: none; }
+.mc-mem .hm { margin-left: -6px; width: 22px; height: 18px; }
+.mc-t { display: flex; flex-direction: column; min-width: 0; }
+.mc-t b { font-family: var(--font-display); font-weight: 800; font-size: 15px; line-height: 18px; letter-spacing: 0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mc-t small { font-size: 12px; line-height: 15px; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mc-new { flex: none; height: 19px; padding: 0 6px; border-radius: 3px; background: var(--hi); color: var(--hi-ink); font-family: var(--font-display); font-weight: 700;
+  font-size: 11.5px; line-height: 19px; letter-spacing: 0.04em; white-space: nowrap; }
+.mu-clubs .btn { flex: none; }
+.mu-hint { color: var(--text-2); font-size: 12.5px; line-height: 16px; }
+
+/* Gruppe: Kopf mit Name und Mitgliedern, links Runde oder Gesamt, rechts Gespräch oder Mitglieder */
+.club { width: 800px; max-width: calc(100% - 24px); height: min(372px, calc(100% - 16px)); gap: 6px; padding: 12px 18px 14px; }
+.cl-head { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.cl-titles { display: flex; flex-direction: column; gap: 1px; flex: 1 1 auto; min-width: 0; }
+.cl-titles .kicker { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cl-name { display: flex; align-items: center; gap: 6px; min-width: 0; margin: 0; font-size: 26px; line-height: 30px; }
+#clName { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cl-edit { flex: none; width: 30px; height: 30px; }
+.cl-mem { display: flex; align-items: center; flex: none; height: 34px; padding: 0 9px 0 14px; border: 1px solid var(--line); border-radius: 17px; background: var(--row); color: var(--text); font: inherit; cursor: pointer; }
+.cl-mem:active { background: var(--row-2); }
+.cm-h { display: grid; place-items: center; width: 26px; height: 26px; margin-left: -7px; border-radius: 50%; background: var(--paper); box-shadow: 0 0 0 1.5px var(--line-2); }
+.cm-h.me { box-shadow: 0 0 0 2px var(--hi); }
+.cm-h .hm { width: 19px; height: 16px; }
+.cm-more { margin-left: 5px; font-family: var(--font-display); font-weight: 700; font-size: 13px; color: var(--text-2); }
+.cl-head > .btn-plain { flex: none; }
+.cl-body { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); gap: 14px; flex: 1 1 auto; min-height: 0; }
+.cl-main { display: flex; flex-direction: column; gap: 4px; min-height: 0; }
+.cl-bar { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.cl-bar:not(:has(> :not([hidden]))) { display: none; }
+.cl-round { display: flex; align-items: center; gap: 2px; flex: 1 1 auto; min-width: 0; }
+.cl-round .ghost-btn { width: 30px; height: 28px; }
+.cl-round-n { flex: 1; min-width: 0; text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cl-sub { margin: 0; font-size: 12.5px; line-height: 16px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cl-side { display: flex; flex-direction: column; gap: 6px; min-height: 0; padding: 7px 8px 6px; border-radius: 4px; background: var(--row); }
+.cl-tabs { flex: none; }
+.cl-tabs button { flex: 1; }
+.club .hd-btns { justify-content: flex-start; margin-top: 0; }
+.club #btnClGo { margin-left: auto; flex: 0 1 auto; min-width: 0; }
+.club #btnClGo.long { font-size: 17px; letter-spacing: 0.03em; }
+#clGoTxt { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.cl-tip { margin-top: 8px; color: var(--muted); font-size: 12.5px; line-height: 17px; }
+.cl-note { margin: 0; font-size: 12px; line-height: 16px; user-select: all; -webkit-user-select: all; overflow-wrap: anywhere; }
+/* Gesamtwertung: eine Zeile je Springer, darunter die Runden einzeln */
+.gj.tot { grid-template-columns: minmax(0, 1fr); }
+.gj.tot .gj-main { cursor: default; }
+.gj.tot .gj-d { color: var(--muted); font-size: 13px; }
+.gj.tot .gj-p { color: var(--text); font-size: 15px; }
+/* Gespräch der Gruppe: Sprünge, Reaktionen, Kommentare, neue Runden und wer dazukam, mit Zeit */
+.tlk-h .hm { margin-right: 4px; }
+.tlk-h i, .ev-sys i { flex: none; margin-left: auto; padding-left: 8px; font-style: normal; font-size: 10.5px; color: var(--muted); }
+.ev-j .tlk-to { color: var(--text); font-family: var(--font-display); font-weight: 700; font-size: 12.5px; }
+.ev-m { font-size: 11.5px; line-height: 15px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ev-sys { display: flex; align-items: baseline; flex: none; gap: 0; padding: 3px 6px; font-size: 11.5px; line-height: 15px; color: var(--text-2); border-left: 2px solid var(--line); }
+.ev-sys span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ev-sys b { color: var(--text); }
+/* Mitglieder */
+.cm-row { display: flex; flex-direction: column; gap: 0; flex: none; padding: 4px 6px; border-bottom: 1px dotted var(--line); }
+.cm-row.me { background: var(--hi-soft); border-radius: 3px; }
+.cm-who { display: flex; align-items: center; gap: 5px; min-width: 0; font-size: 13.5px; line-height: 18px; white-space: nowrap; }
+.cm-who b { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.cm-who .flag, .cm-who .you, .cm-who .hm { flex: none; }
+.cm-s { font-size: 11.5px; line-height: 15px; color: var(--muted); }
+.cl-leave { align-self: flex-start; flex: none; height: 32px; margin: 8px 0 2px; padding: 0 10px; font-size: 12.5px; }
+.cl-leave.warn { border-color: var(--warn); color: var(--warn); }
 
 </style>
 </head>
@@ -1591,28 +1628,16 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       <p id="chCond" class="ch-cond"></p>
       <p id="chNote" class="hd-text"></p>
     </div>
-    <div id="chGrp" class="ch-grp" hidden>
-      <div class="cg-main">
-        <span class="ch-lbl">SPRÜNGE · <span class="ch-live">LIVE</span> · <span id="cgN">0 SPRINGER</span></span>
-        <div id="cgRows" class="cg-rows"></div>
-      </div>
-      <div class="cg-side">
-        <div class="cg-hill"><b id="cgHill"></b><span id="cgSub"></span><span id="cgCond"></span></div>
-        <span class="ch-lbl">GESPRÄCH</span>
-        <div id="cgFeed" class="cg-feed"></div>
-      </div>
-    </div>
     <div id="chPaste" class="ch-have" hidden>
       <h2 class="h1 ch-title">Link einfügen</h2>
       <p class="hd-text">Kopiere den Link aus WhatsApp und füge ihn hier ein.</p>
       <input id="chIn" class="ch-in" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Link der Herausforderung" aria-label="Link der Herausforderung">
-      <p class="hd-text ch-new">Selbst eine Gruppe starten: unter <b>Mehrspieler → Gruppe starten</b>. <button type="button" id="btnChTrain" class="btn-plain">Zu Mehrspieler</button></p>
+      <p class="hd-text ch-new">Selbst eine Gruppe anlegen: unter <b>Mehrspieler → Neue Gruppe</b>. <button type="button" id="btnChTrain" class="btn-plain">Zu Mehrspieler</button></p>
       <div id="chGroups" class="ch-groups" hidden></div>
     </div>
     <div class="hd-btns">
       <button type="button" id="btnChBack" class="btn btn-secondary btn-s"><span>Später</span></button>
       <button type="button" id="btnChOther" class="btn-plain ch-other">Anderer Link</button>
-      <button type="button" id="btnChAdd" class="btn btn-secondary btn-s ch-add" hidden><span class="ico" data-icon="plus" data-size="18"></span><span>Schanze</span></button>
       <button type="button" id="btnChGo" class="btn btn-primary btn-wide"><span id="chGoTxt">Annehmen</span><span class="ico" data-icon="arrow-right"></span></button>
     </div>
   </div>
@@ -1623,18 +1648,22 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   <div class="dialog multi panel-strong" role="dialog" aria-labelledby="muTitle">
     <div class="set-head"><div class="su-titles"><span class="kicker">MIT FREUNDEN SPRINGEN</span><h2 id="muTitle" class="h1">Mehrspieler</h2></div><div class="set-head-btns"><button type="button" id="btnMuBack" class="btn-plain">Zurück</button></div></div>
     <div class="mu-cards">
-      <div class="mu-card mu-main">
-        <span class="mu-k"><span class="ico" data-icon="share" data-size="18"></span><span id="muNewKick">ONLINE · JEDER AM EIGENEN HANDY</span></span>
-        <div id="segMuKind" class="seg mu-seg" role="radiogroup" aria-label="Eine Schanze oder Mini-Tournee"><button type="button" data-v="one">Eine Schanze</button><button type="button" data-v="tour">Mini-Tournee</button></div>
+      <div id="muClubs" class="mu-card mu-main mu-clubs">
+        <span class="mu-k"><span class="ico" data-icon="users" data-size="18"></span>DEINE GRUPPEN</span>
+        <div id="muGroups" class="mu-groups mc-list"></div>
+        <p id="muNoGroups" class="mu-p">Noch keine Gruppe. Leg eine an und schick den Link in eure WhatsApp-Gruppe: Alle springen mit demselben Wind, die Rangliste ist live.</p>
+        <p id="muHint" class="mu-p mu-hint" hidden>Wer euren Link antippt, ist dabei. In jeder Gruppe kann jeder eine neue Runde auf einer anderen Schanze starten.</p>
+        <button type="button" id="btnMuNew" class="btn btn-primary btn-s"><span class="ico" data-icon="plus" data-size="20"></span><span id="muNewTxt">Neue Gruppe</span></button>
+      </div>
+      <div id="muDuel" class="mu-card mu-main" hidden>
+        <span class="mu-k"><span class="ico" data-icon="share" data-size="18"></span>PER LINK · JEDER AM EIGENEN HANDY</span>
         <div id="muOne" class="mu-hill"><button type="button" id="muPrev" class="ghost-btn" aria-label="Vorherige Schanze"><span class="ico" data-icon="chev-left" data-size="18"></span></button><span id="muHill" class="mu-hill-n"></span><button type="button" id="muNext" class="ghost-btn" aria-label="Nächste Schanze"><span class="ico" data-icon="chev-right" data-size="18"></span></button></div>
-        <div id="muTour" class="mu-hill mu-tour" hidden><span id="muTourHills" class="mu-hill-n"></span><button type="button" id="muShuffle" class="ghost-btn" aria-label="Andere Schanzen"><span class="ico" data-icon="dice" data-size="18"></span></button></div>
-        <ol class="mu-steps"><li id="muStep1">Starten</li><li id="muStep2">Link per WhatsApp schicken</li><li id="muStep3">Alle springen mit demselben Wind, die Rangliste ist live</li></ol>
-        <button type="button" id="btnMuNew" class="btn btn-primary btn-s"><span id="muNewTxt">Starten</span><span class="ico" data-icon="arrow-right" data-size="20"></span></button>
+        <ol class="mu-steps"><li>Einmal springen</li><li>Link per WhatsApp schicken</li><li>Dein Freund springt mit demselben Wind und schickt den Link zurück</li></ol>
+        <button type="button" id="btnMuDuel" class="btn btn-primary btn-s"><span>Duell starten</span><span class="ico" data-icon="arrow-right" data-size="20"></span></button>
       </div>
       <div class="mu-card mu-side">
-        <span class="mu-k"><span class="ico" data-icon="link" data-size="18"></span>DEINE GRUPPEN</span>
-        <div id="muGroups" class="mu-groups"></div>
-        <p id="muNoGroups" class="mu-p">Noch keine. Bekommst du einen Link, tipp ihn in WhatsApp einfach an, dann bist du gleich dabei.</p>
+        <span class="mu-k"><span class="ico" data-icon="link" data-size="18"></span>AUF EINEM HANDY</span>
+        <p class="mu-p">Abwechselnd springen, mit Wertung und auf Wunsch als Tournee über mehrere Schanzen.</p>
         <div class="mu-more">
           <button type="button" id="btnHot" class="btn btn-secondary btn-s" aria-label="Partymodus: mehrere Spieler, ein Handy"><span class="btn-two"><span>Ein Handy für alle</span><span id="ptBadge" class="btn-badge" hidden></span></span></button>
           <button type="button" id="btnDuel" class="btn-plain mu-paste" aria-label="Link aus WhatsApp einfügen">Link einfügen</button>
@@ -1644,19 +1673,36 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   </div>
 </section>
 
-<!-- ============ Online-Tournee ============ -->
-<section id="scrTour" class="screen screen-dim center" hidden>
-  <div class="dialog tour panel-strong" role="dialog" aria-labelledby="toTitle">
-    <div class="set-head"><div class="su-titles"><span class="kicker">ONLINE-TOURNEE · <span class="ch-live">LIVE</span></span><h2 id="toTitle" class="h1">Mini-Tournee</h2></div><div class="set-head-btns"><button type="button" id="btnToBack" class="btn-plain">Zurück</button></div></div>
-    <div class="to-body">
-      <div id="toLegs" class="to-legs"></div>
-      <div id="toBoard" class="ch-board to-board"></div>
+<!-- ============ Gruppe: Runden, Gesamtwertung, Gespräch, Mitglieder ============ -->
+<section id="scrClub" class="screen screen-dim center" hidden>
+  <div class="dialog club panel-strong" role="dialog" aria-labelledby="clName">
+    <div class="cl-head">
+      <div class="cl-titles">
+        <span class="kicker">GRUPPE · <span class="ch-live">LIVE</span> · <span id="clKick">1 MITGLIED</span></span>
+        <h2 class="h1 cl-name"><span id="clName">Gruppe</span><button type="button" id="btnClName" class="ghost-btn cl-edit" aria-label="Gruppe umbenennen" hidden><span class="ico" data-icon="pencil" data-size="17"></span></button></h2>
+      </div>
+      <button type="button" id="clMem" class="cl-mem" aria-label="Mitglieder zeigen"></button>
+      <button type="button" id="btnClBack" class="btn-plain">Zurück</button>
     </div>
-    <p id="toNote" class="hd-text"></p>
+    <div class="cl-body">
+      <div class="cl-main">
+        <div class="cl-bar">
+          <div id="segClView" class="seg seg-xs" role="radiogroup" aria-label="Runde oder Gesamtwertung" hidden><button type="button" data-v="round">Runde</button><button type="button" data-v="tot">Gesamt</button></div>
+          <div id="clRound" class="cl-round" hidden><button type="button" id="clPrev" class="ghost-btn" aria-label="Vorherige Runde"><span class="ico" data-icon="chev-left" data-size="16"></span></button><span id="clRoundN" class="cl-round-n"></span><button type="button" id="clNext" class="ghost-btn" aria-label="Nächste Runde"><span class="ico" data-icon="chev-right" data-size="16"></span></button></div>
+        </div>
+        <p id="clSub" class="cl-sub"></p>
+        <div id="clRows" class="cg-rows cl-rows"></div>
+      </div>
+      <div class="cl-side">
+        <div id="segClSide" class="seg seg-xs cl-tabs" role="radiogroup" aria-label="Gespräch oder Mitglieder"><button type="button" data-v="talk">Gespräch</button><button type="button" data-v="mem">Mitglieder</button></div>
+        <div id="clFeed" class="cg-feed cl-feed"></div>
+      </div>
+    </div>
+    <p id="clNote" class="hd-text cl-note" hidden></p>
     <div class="hd-btns">
-      <button type="button" id="btnToShare" class="btn btn-secondary btn-s"><span>Link teilen</span></button>
-      <button type="button" id="btnToAdd" class="btn btn-secondary btn-s ch-add"><span class="ico" data-icon="plus" data-size="18"></span><span>Schanze</span></button>
-      <button type="button" id="btnToGo" class="btn btn-primary btn-wide"><span id="toGoTxt">Springen</span><span class="ico" data-icon="arrow-right"></span></button>
+      <button type="button" id="btnClShare" class="btn btn-secondary btn-s ch-add" aria-label="Link der Gruppe teilen"><span class="ico" data-icon="share" data-size="18"></span><span>Teilen</span></button>
+      <button type="button" id="btnClRound" class="btn btn-secondary btn-s ch-add" aria-label="Neue Runde auf einer anderen Schanze"><span class="ico" data-icon="plus" data-size="18"></span><span>Runde</span></button>
+      <button type="button" id="btnClGo" class="btn btn-primary btn-wide"><span id="clGoTxt">Springen</span><span class="ico" data-icon="arrow-right"></span></button>
     </div>
   </div>
 </section>
@@ -1981,14 +2027,15 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   </div>
 </section>
 
-<!-- ============ Gruppe um eine Schanze erweitern ============ -->
+<!-- ============ Neue Gruppe, neue Runde, Gruppe umbenennen ============ -->
 <section id="scrAdd" class="screen screen-dim3 center" hidden>
-  <div class="dialog askdlg panel-strong" role="dialog" aria-labelledby="adTitle">
-    <span class="kicker">GRUPPE ERWEITERN</span>
-    <h2 id="adTitle" class="h1">Noch eine Schanze</h2>
-    <div class="mu-hill ad-hill"><button type="button" id="adPrev" class="ghost-btn" aria-label="Vorherige Schanze"><span class="ico" data-icon="chev-left" data-size="18"></span></button><span id="adHill" class="mu-hill-n"></span><button type="button" id="adNext" class="ghost-btn" aria-label="Nächste Schanze"><span class="ico" data-icon="chev-right" data-size="18"></span></button></div>
+  <div class="dialog askdlg addlg panel-strong" role="dialog" aria-labelledby="adTitle">
+    <span id="adKick" class="kicker">MEHRSPIELER</span>
+    <h2 id="adTitle" class="h1">Neue Gruppe</h2>
+    <input id="adName" class="ch-in ad-name" type="text" maxlength="24" autocomplete="off" enterkeyhint="done" placeholder="Name, z. B. Stammtisch" aria-label="Name der Gruppe">
+    <div id="adHillRow" class="mu-hill ad-hill"><button type="button" id="adPrev" class="ghost-btn" aria-label="Vorherige Schanze"><span class="ico" data-icon="chev-left" data-size="18"></span></button><span id="adHill" class="mu-hill-n"></span><button type="button" id="adNext" class="ghost-btn" aria-label="Nächste Schanze"><span class="ico" data-icon="chev-right" data-size="18"></span></button></div>
     <p id="adTxt" class="hd-text"></p>
-    <div class="hd-btns"><button type="button" id="btnAdNo" class="btn btn-secondary btn-s"><span>Abbrechen</span></button><button type="button" id="btnAdYes" class="btn btn-primary btn-wide"><span id="adGoTxt">Dazunehmen</span><span class="ico" data-icon="arrow-right"></span></button></div>
+    <div class="hd-btns"><button type="button" id="btnAdNo" class="btn btn-secondary btn-s"><span>Abbrechen</span></button><button type="button" id="btnAdYes" class="btn btn-primary btn-wide"><span id="adGoTxt">Anlegen und teilen</span><span class="ico" data-icon="arrow-right"></span></button></div>
   </div>
 </section>
 
@@ -10584,7 +10631,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.54";
+  const VERSION = "0.55";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -10656,6 +10703,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     play: '<path d="M8 5.5v13l10-6.5z" fill="currentColor"/>',
     chat: '<path d="M4.5 5.5h15a1.5 1.5 0 0 1 1.5 1.5v8.5a1.5 1.5 0 0 1-1.5 1.5H10l-4.5 3.5v-3.5h-1A1.5 1.5 0 0 1 3 15.5V7a1.5 1.5 0 0 1 1.5-1.5z"/>',
     plus: '<path d="M12 5v14"/><path d="M5 12h14"/>',
+    users: '<circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19.5a5.5 5.5 0 0 1 11 0"/><circle cx="16.8" cy="9.6" r="2.5"/><path d="M15.6 14.4a4.6 4.6 0 0 1 5.4 4.6"/>',
     x: '<path d="M6 6l12 12"/><path d="M18 6L6 18"/>',
     "arrow-right": '<path d="M5 12h14"/><path d="M13 6l6 6-6 6"/>',
     home: '<path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/><path d="M10 20v-5h4v5"/>',
@@ -10732,7 +10780,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     chFmt: "tour", chLevel: "mid", chWind: "var", champ: null, party: null, champBest: {},
     gaugeLeft: false, gaugeSide: "off", flv: 4, hand: "right", sens: 1, ghosts: {}, tops: {}, tod: "auto", missions: {}, daily: null, look: null, expert: false, beginner: false,
     oc: null, osave: false, oat: "", groups: [], tours: [], opend: [], noOnline: false, onlineAsked: false, qdpr: 0, fps: false, n28: null,
-    taler: 0, gear: { ski: 0, suit: 0, bind: 0 }, waxes: [], wax: "u", svc: false, paid: {}, tlog: [], eco: 0, tseen: {} };
+    taler: 0, gear: { ski: 0, suit: 0, bind: 0 }, waxes: [], wax: "u", svc: false, paid: {}, tlog: [], eco: 0, tseen: {}, clubs: [], cseen: {} };
   let S = JSON.parse(JSON.stringify(DEF));
   try {
     const raw = localStorage.getItem(KEY);
@@ -10820,6 +10868,12 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const tOk = (x) => isObj(x) && /^[A-HJ-NP-Z2-9]{7}$/.test(x.t) && Array.isArray(x.hs) && x.hs.length >= 2 && x.hs.every(hillOk);
     if (!o.tours.every(tOk)) { o.tours = o.tours.filter(tOk); fixed++; }
     if (o.tours.length > 8) o.tours.length = 8;
+    // Gruppen (seit 0.55): Code, Schanze der neuesten Runde, Zahlen; zuletzt gesehen je Gruppe [Nummer im Gespräch, Zeit des neuesten Sprungs]
+    const cOk = (x) => isObj(x) && /^[A-HJ-NP-Z2-9]{7}$/.test(x.c) && hillOk(x.h) && (x.name == null || typeof x.name === "string") && Array.isArray(x.mem);
+    if (!o.clubs.every(cOk)) { o.clubs = o.clubs.filter(cOk); fixed++; }
+    for (const x of o.clubs) { if (!hillOk(x.h1)) x.h1 = x.h; for (const k of ["k", "nm", "rk", "nr", "rt", "nt", "nw", "at"]) if (!num(x[k])) x[k] = 0; x.mem = x.mem.filter(isObj).slice(0, 6); }
+    if (o.clubs.length > 16) o.clubs.length = 16;
+    keep(o.cseen, (v) => Array.isArray(v) && v.length === 2 && num(v[0]) && num(v[1]));
     if (o.n28 != null && !(isObj(o.n28) && num(o.n28.best) && num(o.n28.medal))) { o.n28 = null; fixed++; }
     // Preisgeld und Material: Kontostand, Stufen 0–2, eigene Wachse, letzte Einnahmen
     if (!(o.taler >= 0)) { o.taler = 0; fixed++; } else o.taler = Math.round(o.taler);
@@ -10842,6 +10896,15 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     if (repaired) { const raw = localStorage.getItem(KEY); if (raw) localStorage.setItem(KEY + ".backup", raw); S.repaired = repaired; }
   } catch (e) { S = JSON.parse(JSON.stringify(DEF)); }
   if (!S.missions || typeof S.missions !== "object") S.missions = {};
+  // 0.55: aus Gruppen und Tourneen werden Gruppen mit Runden; die zuletzt geöffneten kommen unter „Deine Gruppen“
+  if (S.groups.length || S.tours.length) {
+    const add = (c, h, at) => { if (!S.clubs.some((x) => x.c === c)) S.clubs.push({ c, name: null, h, h1: h, k: 1, nm: 0, rk: 0, nr: 0, rt: 0, nt: 0, own: false, nw: 0, at: +at || 0, mem: [] }); };
+    for (const x of S.groups) add(x.g, x.h, x.at);
+    for (const x of S.tours) add(x.t, x.hs[x.hs.length - 1], x.at);
+    for (const x of S.tours) { const e = S.clubs.find((y) => y.c === x.t); if (e) { e.h1 = x.hs[0]; e.k = x.hs.length; } }
+    S.clubs.sort((a, b) => (b.at || 0) - (a.at || 0)); if (S.clubs.length > 16) S.clubs.length = 16;
+    S.groups = []; S.tours = [];
+  }
   // Sterne aus den Missionen schalten die Flugschanze frei
   const FLY_STARS = 12;
   const starTotal = () => Object.values(S.missions).reduce((a, b) => a + (b || 0), 0);
@@ -10965,11 +11028,11 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     "startBox", "goalBox", "goalKicker", "goalTitle", "goalText", "goalStars", "lightR", "lightG", "startTitle", "startSub", "gateBox", "gateVal", "gateMinus", "gatePlus", "speedBox", "speedVal", "speedLbl", "tachoFill",
     "timingBox", "timingLbl", "timingMark", "landBox", "landMark", "gauge", "flTop", "flL", "flR", "flTarget", "flTrail", "flDot", "pad", "padDot", "padGoal", "tapPill", "tapPillText", "hint", "hintIcon", "hintText",
     "hintSub", "toast", "toastTitle", "toastSub", "replayBadge", "replayHint", "btnPause", "hillStats", "tjFlag", "tjName"].forEach((id) => { el[id] = $(id); });
-  const SCREENS = { title: "scrTitle", tutorial: "scrTutorial", result: "scrResult", setup: "scrSetup", board: "scrBoard", hand: "scrHand", final: "scrFinal", arcade: "scrArcade", chal: "scrChal", champ: "scrChamp", multi: "scrMulti", tour: "scrTour" };
+  const SCREENS = { title: "scrTitle", tutorial: "scrTutorial", result: "scrResult", setup: "scrSetup", board: "scrBoard", hand: "scrHand", final: "scrFinal", arcade: "scrArcade", chal: "scrChal", champ: "scrChamp", multi: "scrMulti", club: "scrClub" };
   const vis = (e, on) => { if (e.hidden === on) e.hidden = !on; };
   // Zahl und Einheit (75 %, 148,5 m, 142,4 P.) und Wort und Zahl (HS 140, Luke 12, Platz 3) nie trennen: geschütztes Leerzeichen
-  const NB_U = /(\d) (?=(?:%|°C|°|Taler|km\/h|m\/s|min|ms|m|s|P\.|Pkt\.?|Punkte?|PUNKTE?|Springer|SPRINGER|Schanzen|SCHANZEN|Sprünge|Versuche|Sterne)(?![A-Za-zÄÖÜäöüß]))/g;
-  const NB_W = /(^|[^A-Za-zÄÖÜäöüß])(HS|K|Luke|LUKE|Platz|PLATZ|Rang|Durchgang|DURCHGANG|Sprung|SPRUNG|Versuch|VERSUCH|Schanze|SCHANZE|Tournee|TOURNEE|Nr\.|Aufwind|Rückenwind|Wind|Standard|Sieg|Bronze|Silber|Gold|Böen|fehlen) (?=[\d−+])/g;
+  const NB_U = /(\d) (?=(?:%|°C|°|Taler|km\/h|m\/s|min|ms|m|s|P\.|Pkt\.?|Punkte?|PUNKTE?|Springer|SPRINGER|Schanzen|SCHANZEN|Sprünge|Versuche|Sterne|Min\.|Std\.|Runden|RUNDEN|Mitglieder|MITGLIEDER|MITGLIED|Mitglied|neu)(?![A-Za-zÄÖÜäöüß]))/g;
+  const NB_W = /(^|[^A-Za-zÄÖÜäöüß])(HS|K|Luke|LUKE|Platz|PLATZ|Rang|Durchgang|DURCHGANG|Sprung|SPRUNG|Versuch|VERSUCH|Schanze|SCHANZE|Tournee|TOURNEE|Runde|RUNDE|Nr\.|Aufwind|Rückenwind|Wind|Standard|Sieg|Bronze|Silber|Gold|Böen|fehlen) (?=[\d−+])/g;
   // dazu: Ordnungszahl und Wort (1. Durchgang, 18. Februar) und Bezeichnung vor einem Messwert mit Einheit (Landung 94,9 km/h, Vorlage 96 %)
   const NB_O = /(\d\.) (?=[A-ZÄÖÜ])/g;
   const NB_L = /([A-Za-zÄÖÜäöüß]{2,}) (?=[−+]?\d[\d,.]*[ \u00a0](?:%|°|km\/h|m\/s|ms|m|s|P\.|Pkt|Punkte)(?![A-Za-zÄÖÜäöüß]))/g;
@@ -11921,7 +11984,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     if (ctxMode === "comp") return `${comp.round === 1 ? "1. Durchgang" : "Finale"} · Nr. ${comp.idx + 1} · Luke ${st.gate}`;
     if (ctxMode === "hot" && party) return `Tournee ${party.station + 1}/${party.hills.length} · Durchgang ${hot.round}/${hot.rounds} · Luke ${st.gate}`;
     if (ctxMode === "hot") return `Durchgang ${hot.round}/${hot.rounds} · Luke ${st.gate}`;
-    if (ctxMode === "chal") return chal.tour ? `Online-Tournee · Schanze ${chal.tour.leg}/${chal.tour.n} · Luke ${st.gate}` : chal.grp ? `Online-Gruppe · ${chal.total} Springer · Luke ${st.gate}` : `Herausforderung von ${chal.n} · Luke ${st.gate}`;
+    if (ctxMode === "chal") return chal.club ? `${club && club.c === chal.club.c ? clubName(club) : "Gruppe"}${chal.club.n > 1 ? ` · Runde ${chal.club.leg}` : ""} · ${chal.total} Springer · Luke ${st.gate}` : chal.grp ? `Online-Gruppe · ${chal.total} Springer · Luke ${st.gate}` : `Herausforderung von ${chal.n} · Luke ${st.gate}`;
     if (ctxMode === "mission" && ms.m.cup) return `Challenge · ${cupDisc().name} ${ms.res.length + 1}/4 · Luke ${st.gate}`;
     if (ctxMode === "mission" && ms.m.n28) return `Winterspiele 1928 · ${Math.min(2, ms.res.length + (jc && jc.finished ? 0 : 1))}. Durchgang`;
     if (ctxMode === "mission") return `${ms.m.title}${ms.m.n || ms.m.hills ? ` · Sprung ${ms.res.length + 1}/${missionJumps(ms.m)}` : ""} · Luke ${st.gate}`;
@@ -12169,11 +12232,11 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       v: J.vTakeoff * 3.6, ft: J.tf, maxH: J.stats.maxH, path: jc.ghostRec, hillKey: H.key, ctx: ctxMode,
       vIn: J.stats.vMaxIn * 3.6, vFl: J.stats.vMaxFl * 3.6, vLand: J.stats.vLand * 3.6, dtL: J.landing.dtL, expert: !!jc.expert,
       inOk: J.stats.inT > 0.5 ? Math.round(100 * J.stats.inOk / J.stats.inT) : null, vLoss: J.stats.vLoss * 3.6 }, sc);
-    // Preisgeld: neue Bestweite (nicht im Übungssprung), erster Sprung in einer Online-Gruppe oder auf einer Schanze der Online-Tournee
+    // Preisgeld: neue Bestweite (nicht im Übungssprung), erster Sprung in jeder Runde einer Online-Gruppe
     if (mine && newBest && !jc.practice) credit(100, `Neue Bestweite ${hillShort(H.key)}`, entry);
     if (ctxMode === "chal" && chal && chal.grp) {
-      const key = chal.tour ? `t${chal.tour.t}.${chal.tour.leg}` : `g${chal.grp}`, pg = S.paid.g || (S.paid.g = []);
-      if (!pg.includes(key)) { pg.unshift(key); if (pg.length > 60) pg.length = 60; credit(50, chal.tour ? "Online-Tournee: Schanze gesprungen" : "Online-Gruppe: mitgesprungen", entry); }
+      const key = `g${chal.grp}`, pg = S.paid.g || (S.paid.g = []);
+      if (!pg.includes(key)) { pg.unshift(key); if (pg.length > 60) pg.length = 60; credit(50, chal.club && chal.club.leg > 1 ? `Gruppe: Runde ${chal.club.leg} gesprungen` : "Online-Gruppe: mitgesprungen", entry); }
     }
     if (ctxMode === "training" && !jc.practice) { try { entry.ana = analyseJump(entry); } catch (e) { entry.ana = null; } }
     if (mine && !jc.practice && !jc.beginner) {
@@ -12341,19 +12404,15 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const grpMe = ctxMode === "chal" && chal && chal.grp ? chal.board.find((x) => x.me) : null;
     const notCounted = grpMe && (r.kind === "fall" || (r.grpState === "ok" && chalPts(r.total) < grpMe.p));
     const newBest = !notCounted && r.grpState === "ok" && r.grpPrev != null && chalPts(r.total) > r.grpPrev;
-    const tme = ctxMode === "chal" && chal && chal.tour && tour && (r.grpState === "ok" || notCounted) ? tour.tot.find((x) => x.me) : null;
-    if (tme) {
-      const T = tour.tot, sec = T.find((x) => !x.me && x.r >= tme.r), lead = T[0];
-      rk = tme.r;
-      head = rk === 1 ? "Du führst die Tournee" : `Tournee: Platz ${rk} von ${tour.total}`;
-      sub = (newBest ? "Neue Bestleistung · " : grpMe ? `Hier Platz ${grpMe.r} · ` : "") + (rk === 1 ? (sec ? `${fmt1(tme.p - sec.p)} Punkte vor ${sec.n}` : "als Erster dabei") : `${fmt1(lead.p - tme.p)} Punkte hinter ${lead.n}`);
-    } else if (ctxMode === "chal" && chal && chal.grp && (r.grpState === "ok" || notCounted)) {
-      const b = chal.board, me = grpMe;
+    if (ctxMode === "chal" && chal && chal.grp && (r.grpState === "ok" || notCounted)) {
+      const b = chal.board, me = grpMe, many = !!(chal.club && chal.club.n > 1), leg = many ? chal.club.leg : 0;
+      const tme = many && club && club.c === chal.club.c ? club.tot.find((x) => x.me) : null;
       if (me) {
         rk = me.r;
-        head = rk === 1 ? "Du führst die Gruppe" : `Platz ${rk} von ${chal.total}`;
+        head = rk === 1 ? (many ? `Du führst Runde ${leg}` : "Du führst die Gruppe") : many ? `Runde ${leg}: Platz ${rk} von ${chal.total}` : `Platz ${rk} von ${chal.total}`;
         const sec = b.find((x) => x.r === 2), lead = b[0];
-        sub = (newBest ? "Neue Bestleistung · " : "") + (rk === 1 ? (sec ? `${fmt1(me.p - sec.p)} Punkte vor ${sec.n}` : "als Erster in der Gruppe") : `${fmt1(lead.p - me.p)} Punkte hinter ${lead.n}`);
+        sub = (newBest ? "Neue Bestleistung · " : "") + (rk === 1 ? (sec ? `${fmt1(me.p - sec.p)} Punkte vor ${sec.n}` : many ? "als Erster in dieser Runde" : "als Erster in der Gruppe") : `${fmt1(lead.p - me.p)} Punkte hinter ${lead.n}`) +
+          (tme ? ` · gesamt Platz ${tme.r}` : "");
       }
     }
     rsRankOn = !!rk;
@@ -12495,7 +12554,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       txt($("rsSession"), `${dateDE(dc.date)} · ${H.name}`);
       list.innerHTML = dailyTriesHtml(true);
     } else if (ctxMode === "chal" && chal && chal.grp) {
-      txt($("rsListTitle"), chal && chal.tour ? `Schanze ${chal.tour.leg}` : "Gruppe");
+      txt($("rsListTitle"), chal.club && chal.club.n > 1 ? `Runde ${chal.club.leg}` : "Gruppe");
       txt($("rsSession"), `${H.name} · Luke ${chal.g} · ${chal.total} Springer`);
       list.classList.add("scroll"); list.classList.remove("fit");
       head.innerHTML = '<span>#</span><span>SPRINGER</span><span class="ta-r">WEITE</span><span class="ta-r">PUNKTE</span>';
@@ -12554,7 +12613,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     vis($("rsTabs").querySelector('[data-v="champ"]'), inCh);
     $("rsAnaBox").innerHTML = anaHtml(r);
     vis($("rsTabs").querySelector('[data-v="ana"]'), !!r.ana);
-    txt($("rsTabs").querySelector('[data-v="list"]'), { comp: "Stand", hot: "Wertung", training: "Sprünge", mission: ctxMode === "mission" && ms && ms.m.n28 ? "1928" : ctxMode === "mission" && ms && ms.m.cup ? "Challenge" : "Mission", daily: "Versuche", chal: grpMode ? (chal && chal.tour ? "Schanze" : "Gruppe") : "Duell" }[ctxMode] || "Stand");
+    txt($("rsTabs").querySelector('[data-v="list"]'), { comp: "Stand", hot: "Wertung", training: "Sprünge", mission: ctxMode === "mission" && ms && ms.m.n28 ? "1928" : ctxMode === "mission" && ms && ms.m.cup ? "Challenge" : "Mission", daily: "Versuche", chal: grpMode ? (chal && chal.club && chal.club.n > 1 ? "Runde" : "Gruppe") : "Duell" }[ctxMode] || "Stand");
     if (inCh) champPane();
     // Stand, Wertung und Sprünge: der Reiter ist die Überschrift (Mission, Tageschallenge und Duell behalten ihren Titel)
     vis($("rsListTitle"), !["comp", "hot", "training", "daily", "chal"].includes(ctxMode) && $("rsListTitle").textContent.length <= 12);
@@ -12563,7 +12622,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     // Freund herausfordern: nach gestandenen Trainingssprüngen und nach jedem Versuch einer Herausforderung
     const inGrp = ctxMode === "chal" && !!chal && !!chal.grp;
     const canChal = !!r.chal || inGrp;
-    txt($("btnMenu").querySelector("span:last-child"), inGrp ? (chal.tour ? "Tournee" : "Gruppe") : "Menü");
+    txt($("btnMenu").querySelector("span:last-child"), inGrp ? "Gruppe" : "Menü");
     const canPic = ["training", "chal", "daily", "mission"].includes(ctxMode) && !r.practice && !!r.path && r.path.length > 4;
     vis($("rsChal"), canChal); vis($("btnPic"), canPic); vis($("chalShareTxt"), false);
     if (canChal) txt($("chalBtnTxt"), inGrp ? "Link teilen" : ctxMode === "chal" ? (r.chalWin > 0 ? "Zurückfordern" : "Nochmal fordern") : r.grpChal ? "Gruppe teilen" : "Herausfordern");
@@ -12573,7 +12632,6 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     if (ctxMode === "training" && practiceLeft > 0) next = `Übungssprung ${3 - practiceLeft + 1}/3`;
     if (ctxMode === "training" && practiceLeft === 0 && chalPending) next = "Zur Herausforderung";
     if (ctxMode === "chal") next = "Nochmal";
-    if (ctxMode === "chal" && chal && chal.tour && tour) { const nx = tourNextLeg(chal.tour.leg - 1); next = nx >= 0 ? `Weiter: ${hillShort(tour.legs[nx].h)}` : "Gesamtwertung"; }
     if (ctxMode === "comp") next = "Weiter";
     if (ctxMode === "hot") next = hot.roundOver() ? (hot.round < hot.rounds ? `Durchgang ${hot.round + 1}` : "Endergebnis") : `Weiter: ${hot.current().name}`;
     if (ctxMode === "mission" && ms.m.n28) next = !r.mission.done ? "2. Durchgang" : "Nochmal";
@@ -12602,13 +12660,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 
   function resultNext() {
     const r = lastResult;
-    if (ctxMode === "chal" && chal && chal.tour && tour) {
-      const nx = tourNextLeg(chal.tour.leg - 1);
-      if (nx >= 0) tourJump(nx); else openTour(tour);
-      return;
-    }
     if (r && r.grpNew && r.chal && !r.grpSent) { grpSend(r); return; }
-    if (r && r.grpNew && r.grpSent && r.grpChal) { openChal(r.grpChal); return; }
+    if (r && r.grpNew && r.grpSent && r.grpChal) { openClub(r.grpChal.grp); return; }
     if (r && r.grpNew && !r.chal) grpNewPending = true;   // Sturz: nochmal, die Gruppe startet mit dem nächsten Sprung
     if (ctxMode === "comp") { openBoard(); return; }
     if (ctxMode === "hot") { afterHotJump(); return; }
@@ -12918,10 +12971,11 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       return lead(others[0].name, others[0].total - hot.res[cur.id].total);
     }
     if (ctxMode === "chal" && chal) {
-      if (chal.grp && !chal.board.length) return [chal.tour ? `TOURNEE · SCHANZE ${chal.tour.leg}/${chal.tour.n}` : "NEUE GRUPPE", "Du springst als Erster", "Dein Sprung legt vor, die anderen springen mit demselben Wind."];
-      const where = chal.tour ? `AUF SCHANZE ${chal.tour.leg}/${chal.tour.n}` : "IN DER GRUPPE";
+      const many = !!(chal.club && chal.club.n > 1);
+      if (chal.grp && !chal.board.length) return [many ? `RUNDE ${chal.club.leg} · ${hillShort(chal.h).toUpperCase()}` : "NEUE GRUPPE", "Du springst als Erster", "Dein Sprung legt vor, die anderen springen mit demselben Wind."];
+      const where = many ? `IN RUNDE ${chal.club.leg}` : "IN DER GRUPPE";
       if (chal.grp && chal.board[0] && chal.board[0].me) return [`DEIN BESTER ${where}`, `${fmt1(chal.p)} Punkte`, `${fmt1(chal.d)} m. Gleicher Wind wie damals, schaffst du mehr?`];
-      return [chal.grp ? (chal.tour ? `${chal.n} FÜHRT ${where}` : `${chal.n} FÜHRT DIE GRUPPE`) : `${chal.n} FORDERT DICH HERAUS`, `Über ${fmt1(chal.p)} Punkte`, `${chal.n} sprang ${fmt1(chal.d)} m. Gleicher Wind: Mit guten Haltungsnoten reicht etwas mehr.`];
+      return [chal.grp ? (many ? `${chal.n} FÜHRT ${where}` : `${chal.n} FÜHRT DIE GRUPPE`) : `${chal.n} FORDERT DICH HERAUS`, `Über ${fmt1(chal.p)} Punkte`, `${chal.n} sprang ${fmt1(chal.d)} m. Gleicher Wind: Mit guten Haltungsnoten reicht etwas mehr.`];
     }
     if (ctxMode === "training") {
       if (jc.grpNew) return ["GRUPPE STARTEN", "Dein Sprung legt die Gruppe an", "Danach schickst du den Link. Alle springen mit demselben Wind wie du."];
@@ -13243,8 +13297,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   async function shareChal() {
     const r = lastResult;
     // in einer Online-Gruppe: weitere Freunde einladen
-    if (ctxMode === "chal" && chal && chal.tour && tour) { await shareLink(tourText(tour)); return; }
-    if (ctxMode === "chal" && chal && chal.grp) { await shareLink(groupText(chal)); return; }
+    if (ctxMode === "chal" && chal && chal.grp) { await shareLink(chal.club && club && club.c === chal.club.c ? clubText(club) : groupText(chal)); return; }
     const c = r && r.chal;
     if (!c) return;
     // nach dem Training: Online-Gruppe anlegen (beim ersten Mal kurz erklären), sonst wie bisher der Link mit dem Sprung
@@ -13270,76 +13323,33 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     // Rückfall: Text zum manuellen Kopieren anzeigen
     const ta = $("chalShareTxt"); ta.value = text; vis(ta, true); ta.focus(); ta.select();
   }
-  // ------------------------------------------------------------------ Mehrspieler: ein Weg (online: eine Schanze oder Mini-Tournee),
-  // daneben die eigenen Gruppen, der Partymodus (ein Handy) und „Link einfügen“
-  let grpNewPending = false, muKind = "one", muTour = null;
-  // drei Schanzen an verschiedenen Orten, keine Flug- und keine Normalschanze
-  function muTourPick() {
-    const pool = HILL_ORDER.filter((k) => !FLY_KEYS.includes(k) && !/-nh$/.test(k)).sort(() => Math.random() - 0.5), out = [], seen = new Set();
-    for (const k of pool) { const pl = k.split("-")[0]; if (seen.has(pl)) continue; seen.add(pl); out.push(k); if (out.length === 3) break; }
-    return out;
-  }
-  const muOnline = () => onlineReady() || (!!ON && !S.onlineAsked);
+  // ------------------------------------------------------------------ Mehrspieler: deine Gruppen (online) mit „Neue Gruppe“, daneben der Partymodus
+  // (ein Handy für alle) und „Link einfügen“. Ohne Online (Artefakt): das Duell per Link.
+  let grpNewPending = false;
   function openMulti() {
     goTitle();
     mode = "multi"; showScreen("multi");
-    const on = muOnline();
-    if (!on) muKind = "one";
-    if (!muTour) muTour = muTourPick();
-    vis($("segMuKind"), on); segSet("segMuKind", muKind);
-    txt($("muNewKick"), on ? "ONLINE · JEDER AM EIGENEN HANDY" : "PER LINK · JEDER AM EIGENEN HANDY");
-    fillMultiHill();
-    const L = ON ? S.groups.map((x) => Object.assign({ kind: "g" }, x)).concat((S.tours || []).map((x) => Object.assign({ kind: "t" }, x))).sort((a, b) => (b.at || 0) - (a.at || 0)).slice(0, 4) : [];
-    $("muGroups").innerHTML = L.map((x) => {
-      if (x.kind === "t") return `<button type="button" class="chg-row" data-t="${x.t}"><span class="chg-h">Tournee: ${esc(x.hs.map(hillShort).join(", "))}</span><span class="chg-s">${x.n} Springer${x.rk ? ` · Platz ${x.rk}` : ""}</span>${icon("arrow-right", 16)}</button>`;
-      const Hh = Hill.getHill(x.h);
-      return `<button type="button" class="chg-row" data-g="${x.g}"><span class="chg-h">${esc(Hh.short || Hh.name)}</span><span class="chg-s">${x.n} Springer${x.rk ? ` · Platz ${x.rk}` : ""}</span>${icon("arrow-right", 16)}</button>`;
-    }).join("");
-    vis($("muNoGroups"), !L.length);
+    fillMulti();
+    loadMyClubs();
   }
-  function fillMultiHill() {
-    const on = muOnline(), tourK = on && muKind === "tour";
-    vis($("muOne"), !tourK); vis($("muTour"), tourK);
-    txt($("muHill"), `${H.short || H.name} · HS${H.HS}`);
-    txt($("muTourHills"), (muTour || []).map(hillShort).join(" · "));
-    txt($("muStep1"), on ? "Starten" : "Einmal springen");
-    txt($("muStep3"), !on ? "Dein Freund springt mit demselben Wind und schickt den Link zurück"
-      : tourK ? "Alle springen dieselben drei Schanzen mit demselben Wind, Gesamtwertung live" : "Alle springen mit demselben Wind, die Rangliste ist live");
-    txt($("muNewTxt"), on ? (tourK ? "Tournee starten" : "Gruppe starten") : "Duell starten");
+  function fillMulti() {
+    const on = !!ON, L = on ? S.clubs.slice(0, 12) : [];
+    vis($("muClubs"), on); vis($("muDuel"), !on);
+    if (!on) fillMultiHill();
+    keepScroll($("muGroups"), L.map(clubRowHtml).join(""));
+    vis($("muNoGroups"), on && !L.length); vis($("muHint"), on && L.length > 0 && L.length < 3);
   }
-  // Starten: online sofort anlegen (ohne ersten Sprung), dann gleich den Link teilen und in die Gruppe oder Tournee
-  async function muStart() {
-    if (!muOnline()) { startGroupJump(); return; }
-    if (ON && !S.onlineAsked) { askOnline(() => muStart()); return; }
-    if (S.noOnline) { startGroupJump(); return; }
-    if (!S.name) { askName(() => muStart()); return; }
-    if (grpMaking) return;
-    grpMaking = true; txt($("muNewTxt"), "Wird angelegt …");
-    const seed = () => 1 + Math.floor(Math.random() * 2147483000);
-    try {
-      if (muKind === "tour") {
-        const hs = (muTour || muTourPick()).slice(), H0 = Hill.getHill(hs[0]);
-        const b = await ON.rpc("tm_tour_new", { p_code: myCode(), p_name: meName(), p_nation: S.nation || "", p_hills: hs, p_gates: hs.map((k) => Hill.getHill(k).refGate),
-          p_wind: "var", p_seeds: hs.map(seed), p_tod: todFor(H0), p_look: lookCode(S.look) });
-        const t = tourFrom(b);
-        if (!t) { const e = new Error("leere Antwort"); e.status = 500; throw e; }
-        rememberTour(t); muTour = null;
-        grpMaking = false;
-        openTour(t);
-        if (!(await shareLink(tourText(t)))) showToastSafeText("TOURNEE IST ANGELEGT", "Tippe auf „Link teilen“ und schick ihn per WhatsApp");
-      } else {
-        const b = await ON.rpc("tm_group_open", { p_code: myCode(), p_name: meName(), p_nation: S.nation || "", p_hill: H.key, p_gate: H.refGate, p_wind: "var",
-          p_seed: seed(), p_tod: todFor(H), p_look: lookCode(S.look) });
-        const gc = groupChal(b);
-        if (!gc) { const e = new Error("leere Antwort"); e.status = 500; throw e; }
-        rememberGroup(gc);
-        grpMaking = false;
-        openChal(gc);
-        if (!(await shareLink(groupText(gc)))) showToastSafeText("GRUPPE IST ANGELEGT", "Tippe auf „Link teilen“ und schick ihn per WhatsApp");
-      }
-    } catch (e) { onlineFail(e, "GEHT GERADE NICHT"); }
-    finally { grpMaking = false; if (mode === "multi") fillMultiHill(); }
+  function fillMultiHill() { txt($("muHill"), `${H.short || H.name} · HS${H.HS}`); }
+  // Zeile unter „Deine Gruppen“: Helme der ersten Mitglieder, Name, Schanze der neuesten Runde, dein Platz und was seit deinem letzten Blick neu ist
+  function clubRowHtml(x) {
+    const mem = (x.mem || []).slice(0, 4).map((m, i) => { const l = lookDecode(m.l); return helm(m.me ? lookFor(S.look) : l ? lookFor(l) : natLook(m.c), i); }).join("");
+    const where = `${hillShort(x.h)}${x.k > 1 ? ` · Runde ${x.k}` : ""}`;
+    const me = x.k > 1 ? (x.rt ? `gesamt Platz ${x.rt} von ${x.nt}` : x.nt ? `${x.nt} gesprungen, du noch nicht` : "noch niemand gesprungen")
+      : x.rk ? `Platz ${x.rk} von ${x.nr}` : x.nr ? `${x.nr} gesprungen, du noch nicht` : "noch niemand gesprungen";
+    return `<button type="button" class="mc-row" data-c="${x.c}"><span class="mc-mem">${mem}</span><span class="mc-t"><b>${esc(clubName(x))}</b><small>${esc(nb(`${where} · ${me}`))}</small></span>` +
+      (x.nw ? `<span class="mc-new">${x.nw > 99 ? "99+" : x.nw} neu</span>` : "") + icon("arrow-right", 16) + `</button>`;
   }
+  // Duell per Link (ohne Online): einmal springen, dann den Link mit dem Sprung schicken
   function startGroupJump() {
     if (ON && !S.onlineAsked) { askOnline(() => startGroupJump()); return; }
     if (!S.name) { askName(() => startGroupJump()); return; }
@@ -13372,7 +13382,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       const ok = await shareLink(groupText(r.grpChal));
       if (!ok) { showToastSafeText("GRUPPE IST ANGELEGT", "Nochmal auf „Link schicken“ tippen"); return; }
       r.grpSent = true;
-      openChal(r.grpChal);   // danach: die Gruppe mit Live-Rangliste
+      openClub(r.grpChal.grp);   // danach: die Gruppe mit Live-Rangliste
       return;
     }
     await shareChal();
@@ -13382,7 +13392,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   // ------------------------------------------------------------------ Online: Gruppen mit Live-Rangliste, Spielstand per Code (Supabase)
   // Eine Gruppe ist eine Herausforderung mit Rangliste auf dem Server: gleiche Schanze, Luke, Wind und Startwert für alle,
   // Ziel und Geist ist der Führende. Jeder darf so oft springen, wie er will, der beste Sprung zählt.
-  let grpBusy = false, grpT = 0, grpMaking = false, pendBusy = false, askCb = null;
+  let grpMaking = false, pendBusy = false, askCb = null;
   const onlineReady = () => !!ON && !S.noOnline;
   const meName = () => String(S.name || "SPRINGER").toUpperCase();
   function myCode() { if (!S.oc) { S.oc = OL.newCode(); saveLocal(); } return S.oc; }
@@ -13394,7 +13404,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     return `${p2(d.getDate())}.${p2(d.getMonth() + 1)}.${d.getFullYear()} ${p2(d.getHours())}:${p2(d.getMinutes())}`;
   };
   function groupFromLocation() {
-    const m = /(?:^|[#&?])g=([A-HJ-NP-Z2-9]{7})(?![A-Za-z0-9])/.exec((location.hash || "") + "&" + (location.search || "").replace(/^\?/, "&"));
+    const m = /(?:^|[#&?])[gt]=([A-HJ-NP-Z2-9]{7})(?![A-Za-z0-9])/.exec((location.hash || "") + "&" + (location.search || "").replace(/^\?/, "&"));
     return m ? m[1] : null;
   }
   const groupUrl = (g) => (gameUrl() || location.href.split("#")[0]) + "#g=" + g;
@@ -13408,7 +13418,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     catch (e) { if (e && e.name === "AbortError") return true; if (e && e.name === "NotAllowedError") return false; }
     try { await navigator.clipboard.writeText(text); showToastSafeText("LINK KOPIERT", "In WhatsApp einfügen und senden"); return true; } catch (e) { /* weiter */ }
     if (mode === "result") { const ta = $("chalShareTxt"); ta.value = text; vis(ta, true); ta.focus(); ta.select(); }
-    else txt($(mode === "tour" ? "toNote" : "chNote"), text);
+    else if (mode === "club") { const e = $("clNote"); txt(e, text); vis(e, true); }
+    else txt($("chNote"), text);
     return true;
   }
   // Antwort des Servers (Gruppe mit Rangliste) prüfen und wie eine Herausforderung aufbauen
@@ -13417,7 +13428,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const Hh = Hill.getHill(b.h), nat = (c) => (NATIONS.some((y) => y[0] === c) ? c : "");
     const board = (Array.isArray(b.b) ? b.b : []).filter((x) => x && typeof x === "object").map((x) => ({
       r: Math.max(1, Math.round(+x.r) || 1), n: String(x.n || "SPRINGER").slice(0, 12), c: nat(x.c), d: clamp(+x.d || 0, 0, 400), p: clamp(+x.p || 0, -100, 500),
-      k: KIND_SHORT[x.k] ? x.k : "twofoot", x: Math.max(1, Math.round(+x.x) || 1), me: x.me === true, l: lookDecode(x.l), id: isRid(x.id) ? x.id : null }));
+      k: KIND_SHORT[x.k] ? x.k : "twofoot", x: Math.max(1, Math.round(+x.x) || 1), me: x.me === true, l: lookDecode(x.l), id: isRid(x.id) ? x.id : null, at: tms(x.at) }));
     const lead = board[0] || { n: "SPRINGER", c: "", d: 0, p: 0, k: "twofoot" };
     let path = null;
     try { path = b.gh ? ghostUnpack2(String(b.gh)) : null; } catch (e) { path = null; }
@@ -13426,223 +13437,370 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       s: Number.isFinite(+b.s) ? Math.abs(Math.round(+b.s)) % 2147483647 : 1, t: TOD_NAME[b.t] ? b.t : "evening",
       n: lead.n, c: lead.c, d: lead.d, p: lead.p, k: lead.k, path, r: [],
       tries: keep ? keep.tries : 0, best: keep ? keep.best : null, ghosts: keep ? keep.ghosts : null, board, total: Math.max(board.length, Math.round(+b.n) || 0),
-      // neuester Eintrag im Gespräch (ändert er sich, wird das Gespräch neu geladen); gehört die Gruppe zu einer Tournee, deren Code
-      tk: b.tk != null && Number.isFinite(+b.tk) ? Math.max(0, Math.round(+b.tk)) : 0, tourCode: OL.groupOk(b.tour) ? b.tour : null,
+      // neuester Eintrag im Gespräch (ändert er sich, wird das Gespräch neu geladen); seit wann es die Runde gibt und wer sie gestartet hat
+      tk: b.tk != null && Number.isFinite(+b.tk) ? Math.max(0, Math.round(+b.tk)) : 0, at: tms(b.at), on: b.on ? String(b.on).slice(0, 12) : "",
     };
-    if (keep && keep.tour) c.tour = keep.tour;   // Schanze einer Tournee bleibt es auch nach dem Nachladen
+    if (keep && keep.club) c.club = keep.club;   // Runde einer Gruppe bleibt es auch nach dem Nachladen
     return c;
-  }
-  function rememberGroup(c) {
-    const me = c.board.find((x) => x.me);
-    const e = { g: c.grp, h: c.h, n: c.total, rk: me ? me.r : 0, at: Date.now() };
-    S.groups = [e].concat(S.groups.filter((x) => x.g !== c.grp)).slice(0, 8);
-    saveLocal();
-  }
-  async function openGroup(code) {
-    if (!ON) { showToastSafeText("NUR AUF DER SPIELSEITE", "Online-Gruppen gehen im Browser auf der Spielseite"); return; }
-    if (S.noOnline) { askOnline(() => { if (!S.noOnline) openGroup(code); }); return; }   // online ausgeschaltet: erst fragen
-    if (grpBusy) return;
-    grpBusy = true;
-    try {
-      const c = groupChal(await ON.rpc("tm_group_get", { p_group: code, p_code: S.oc || null }));
-      if (!c) {
-        S.groups = S.groups.filter((x) => x.g !== code); saveLocal();
-        showToastSafeText("GRUPPE NICHT GEFUNDEN", "Nach 30 Tagen ohne Sprung wird eine Gruppe gelöscht");
-        if (mode === "chal" && chalPaste) fillGroupList();
-        return;
-      }
-      if (c.tourCode) {   // inzwischen ist eine Schanze dazugekommen: aus der Gruppe ist eine Tournee geworden (gleicher Link)
-        S.groups = S.groups.filter((x) => x.g !== code); saveLocal();
-        grpBusy = false; openTourCode(c.tourCode); return;
-      }
-      rememberGroup(c);
-      openChal(c);
-      flushPending();
-      loadGhosts(c.grp);
-      talkSync(c);
-    } catch (e) { onlineFail(e, "GRUPPE NICHT GELADEN"); }
-    finally { grpBusy = false; }
   }
   async function groupNew(r) {
     const c = r.chal;
     const b = await ON.rpc("tm_group_new2", { p_code: myCode(), p_name: meName(), p_nation: S.nation || "", p_hill: c.h, p_gate: c.g, p_wind: c.w, p_seed: c.s, p_tod: c.t,
       p_dist: c.d, p_points: c.p, p_kind: c.k, p_ghost: typeof c.g2 === "string" && c.g2.length <= 4000 ? c.g2 : null, p_look: lookCode(S.look) });
     const gc = groupChal(b);
-    if (!gc) { const e = new Error("leere Antwort"); e.status = 500; throw e; }
-    rememberGroup(gc);
+    if (!gc) throw emptyAnswer();
+    const me = gc.board.find((x) => x.me);   // in „Deine Gruppen“ (alles Weitere beim Öffnen)
+    S.clubs = [{ c: gc.grp, name: null, h: gc.h, h1: gc.h, k: 1, nm: 1, rk: me ? me.r : 0, nr: gc.total, rt: 0, nt: 0, own: true, nw: 0, at: Date.now(), mem: [{ n: meName(), c: S.nation || "", l: lookCode(S.look), me: true }] }]
+      .concat(S.clubs.filter((x) => x.c !== gc.grp)).slice(0, 16);
+    saveLocal();
     return gc;
   }
-  // ------------------------------------------------------------------ Online-Tournee: zwei bis vier Schanzen, jede ist eine Gruppe;
-  // Gesamtwertung = Summe der besten Punkte je Schanze. Link #t=CODE.
-  let tour = null, tourT = 0, tourBusy = false;
-  function tourFromLocation() {
-    const m = /(?:^|[#&?])t=([A-HJ-NP-Z2-9]{7})(?![A-Za-z0-9])/.exec((location.hash || "") + "&" + (location.search || "").replace(/^\?/, "&"));
-    return m ? m[1] : null;
+  // ------------------------------------------------------------------ Gruppen: Name, Mitglieder, Runden auf verschiedenen Schanzen, Gesamtwertung, Gespräch.
+  // Der Link (#g=CODE) bleibt für immer derselbe. Alte Links auf eine Gruppe oder Tournee (#t=) öffnen die Gruppe, zu der sie gehören.
+  // Jede Runde ist eine Gruppe wie bisher (gleiche Schanze, Luke und Wind für alle); die Gesamtwertung zählt je Runde den besten Sprung.
+  let club = null, clubT = 0, clubBusy = false, clubView = "round", clubSide = "talk", leaveArm = 0, addCtx = null, addBusy = false, myBusy = false;
+  const hillKnown = (k) => Hill.HILLS.some((h) => h.key === k);
+  const natOk = (c) => (NATIONS.some((y) => y[0] === c) ? c : "");
+  const lookOk = (s) => (typeof s === "string" && /^[0-9a-v]{6}$/.test(s) ? s : null);
+  const cleanTitle = (s) => (typeof s === "string" ? s.replace(/[\u0000-\u001f<>]/g, "").replace(/\s+/g, " ").trim().slice(0, 24) : "") || null;
+  // Zeit vom Server (ISO mit Mikrosekunden) in ms; auf Millisekunden gekürzt, das verstehen alle Browser
+  const tms = (iso) => { const t = Date.parse(String(iso || "").replace(/(\.\d{3})\d+/, "$1")); return isNaN(t) ? 0 : t; };
+  const clubName = (k) => k.name || `Gruppe ${hillShort(k.h1 || (k.legs ? k.legs[0].h : k.h))}`;
+  const memLook = (m) => (m.me ? lookFor(S.look) : m.l ? lookFor(m.l) : natLook(m.c));
+  const emptyAnswer = () => { const e = new Error("leere Antwort"); e.status = 500; return e; };
+  // Zeit im Gespräch: gerade eben, vor 5 Min., vor 2 Std., gestern, 12.11.
+  function ago(t) {
+    if (!t) return "";
+    const d = (Date.now() - t) / 1000;
+    if (d < 60) return "gerade eben";
+    if (d < 3600) return `vor ${Math.floor(d / 60)} Min.`;
+    const a = new Date(t), day = (x) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime(), dd = Math.round((day(new Date()) - day(a)) / 86400000);
+    if (dd <= 0) return `vor ${Math.floor(d / 3600)} Std.`;
+    if (dd === 1) return "gestern";
+    return `${a.getDate()}.${a.getMonth() + 1}.`;
   }
-  const tourUrl = (t) => (gameUrl() || location.href.split("#")[0]) + "#t=" + t;
-  function tourText(t) {
-    const hs = t.legs.map((c) => hillShort(c.h)).join(", "), top = t.tot.slice(0, 3).map((x) => `${x.r}. ${x.n} ${fmt1(x.p)}`).join(" · ");
-    return `${meName()} lädt dich zur Mini-Tournee ein (Cold Medal): ${hs}. Gleicher Wind für alle, Gesamtwertung live.${top ? ` Stand: ${top}.` : ""} Spring mit:\n${tourUrl(t.t)}`;
+  function clubText(k) {
+    const c = k.legs[k.legs.length - 1], Hh = Hill.getHill(c.h), many = k.legs.length > 1;
+    const top = (many ? k.tot : c.board).slice(0, 3).map((x) => `${x.r}. ${x.n} ${fmt1(x.p)}`).join(" · ");
+    return `${meName()} lädt dich in die Gruppe „${clubName(k)}“ ein (Cold Medal Skispringen): ${many ? `Runde ${k.legs.length} in ` : ""}${Hh.short || Hh.name} (HS${Hh.HS}), ` +
+      `gleicher Wind für alle, Rangliste live.${top ? ` Stand${many ? " gesamt" : ""}: ${top}.` : ""} Spring mit:\n${groupUrl(k.c)}`;
   }
-  function tourFrom(b, keep) {
-    if (!b || typeof b !== "object" || !OL.groupOk(b.t) || !Array.isArray(b.legs)) return null;
+  // Antwort des Servers prüfen: Runden wie eine Gruppe (groupChal), dazu Mitglieder und Gesamtwertung.
+  // keep: die bisherige Ansicht (Geister, eigene Versuche, gewählte Runde bleiben; kommt eine Runde dazu, springt die Ansicht auf sie)
+  function clubFrom(b, keep) {
+    if (!b || typeof b !== "object" || !OL.groupOk(b.c) || !Array.isArray(b.legs)) return null;
     const legs = b.legs.map((x) => groupChal(x)).filter(Boolean);
-    if (legs.length < 2) return null;
-    const nat = (c) => (NATIONS.some((y) => y[0] === c) ? c : "");
-    const tot = (Array.isArray(b.tot) ? b.tot : []).filter((x) => x && typeof x === "object").map((x) => ({
-      r: Math.max(1, Math.round(+x.r) || 1), n: String(x.n || "SPRINGER").slice(0, 12), c: nat(x.c), p: clamp(+x.p || 0, -400, 2000), d: clamp(+x.d || 0, 0, 1600),
-      k: clamp(Math.round(+x.k) || 0, 0, 8), me: x.me === true, l: lookDecode(x.l) }));
+    if (!legs.length) return null;
+    const n = legs.length;
     legs.forEach((c, i) => {
-      c.tour = { t: b.t, leg: i + 1, n: legs.length };
-      const old = keep && keep.legs[i];
+      c.club = { c: b.c, leg: i + 1, n };
+      const old = keep && keep.legs.find((y) => y.grp === c.grp);
       if (old) { c.ghosts = old.ghosts; c.tries = old.tries; c.best = old.best; }
     });
-    return { t: b.t, legs, tot, total: Math.max(tot.length, Math.round(+b.n) || 0) };
+    const num = (v, a, z) => clamp(Math.round(+v) || 0, a, z);
+    const mem = (Array.isArray(b.mem) ? b.mem : []).filter((x) => x && typeof x === "object").map((x) => ({
+      n: String(x.n || "SPRINGER").slice(0, 12), c: natOk(x.c), l: lookDecode(x.l), lc: lookOk(x.l), me: x.me === true, own: x.own === true,
+      j: tms(x.j), k: num(x.k, 0, 24), p: clamp(+x.p || 0, -2400, 12000), r: num(x.r, 0, 9999) }));
+    const tot = (Array.isArray(b.tot) ? b.tot : []).filter((x) => x && typeof x === "object").map((x) => ({
+      r: Math.max(1, num(x.r, 1, 9999)), n: String(x.n || "SPRINGER").slice(0, 12), c: natOk(x.c), l: lookDecode(x.l), p: clamp(+x.p || 0, -2400, 12000),
+      d: clamp(+x.d || 0, 0, 9600), k: num(x.k, 0, 24), me: x.me === true }));
+    const kept = keep && keep.c === b.c;
+    const sel = !kept ? n - 1 : keep.sel >= keep.legs.length - 1 ? n - 1 : clamp(keep.sel, 0, n - 1);
+    return { c: b.c, name: cleanTitle(b.name), own: b.own === true, on: b.on ? String(b.on).slice(0, 12) : "", at: tms(b.at), inn: b.in === true,
+      tk: num(b.tk, 0, 1e12), jt: tms(b.jt), legs, mem, nm: Math.max(mem.length, num(b.nm, 0, 9999)), tot, total: Math.max(tot.length, num(b.n, 0, 9999)), sel };
   }
-  function rememberTour(t) {
-    const me = t.tot.find((x) => x.me);
-    const e = { t: t.t, hs: t.legs.map((c) => c.h), n: t.total, rk: me ? me.r : 0, at: Date.now() };
-    S.tours = [e].concat((S.tours || []).filter((x) => x.t !== t.t)).slice(0, 8);
+  // in „Deine Gruppen“ merken (auch ohne Netz zu sehen)
+  function rememberClub(k) {
+    const cur = k.legs[k.legs.length - 1], meR = cur.board.find((x) => x.me), meT = k.tot.find((x) => x.me);
+    const e = { c: k.c, name: k.name, h: cur.h, h1: k.legs[0].h, k: k.legs.length, nm: k.nm, rk: meR ? meR.r : 0, nr: cur.total, rt: meT ? meT.r : 0, nt: k.total,
+      own: k.own, nw: 0, at: Date.now(), mem: k.mem.slice(0, 6).map((m) => ({ n: m.n, c: m.c, l: m.lc, me: m.me })) };
+    S.clubs = [e].concat(S.clubs.filter((x) => x.c !== k.c)).slice(0, 16);
     saveLocal();
   }
-  async function openTourCode(code) {
-    if (!ON) { showToastSafeText("NUR AUF DER SPIELSEITE", "Online-Tourneen gehen im Browser auf der Spielseite"); return; }
-    if (S.noOnline) { askOnline(() => { if (!S.noOnline) openTourCode(code); }); return; }   // online ausgeschaltet: erst fragen
-    if (tourBusy) return;
-    tourBusy = true;
+  // gesehen: neueste Nummer im Gespräch und Zeit des neuesten Sprungs (für „neu“ unter „Deine Gruppen“)
+  function clubSeen(k) {
+    const prev = S.cseen[k.c], jt = k.jt || 0;
+    if (prev && prev[0] === k.tk && prev[1] === jt) return;
+    S.cseen[k.c] = [k.tk || 0, jt];
+    const ks = Object.keys(S.cseen); if (ks.length > 40) for (const x of ks.slice(0, ks.length - 40)) delete S.cseen[x];
+    const e = S.clubs.find((x) => x.c === k.c); if (e) e.nw = 0;
+    saveLocal();
+  }
+  function clubEntry(x) {
+    if (!x || typeof x !== "object" || !OL.groupOk(x.c) || !hillKnown(x.h)) return null;
+    const num = (v, a, z) => clamp(Math.round(+v) || 0, a, z);
+    return { c: x.c, name: cleanTitle(x.name), h: x.h, h1: hillKnown(x.h1) ? x.h1 : x.h, k: num(x.k, 1, 24), nm: num(x.nm, 0, 9999), rk: num(x.rk, 0, 9999), nr: num(x.nr, 0, 9999),
+      rt: num(x.rt, 0, 9999), nt: num(x.nt, 0, 9999), own: x.own === true, nw: num(x.nw, 0, 99999), at: tms(x.last),
+      mem: (Array.isArray(x.mem) ? x.mem : []).filter((m) => m && typeof m === "object").slice(0, 6).map((m) => ({ n: String(m.n || "SPRINGER").slice(0, 12), c: natOk(m.c), l: lookOk(m.l), me: m.me === true })) };
+  }
+  // Deine Gruppen vom Server (mit dem, was seit deinem letzten Blick neu ist); gemerkte, die dort fehlen (nur angesehen), dahinter
+  async function loadMyClubs() {
+    if (!ON || myBusy || !S.oc || S.noOnline) return;
+    myBusy = true;
     try {
-      const t = tourFrom(await ON.rpc("tm_tour_get", { p_tour: code, p_code: S.oc || null }));
-      if (!t) {
-        S.tours = (S.tours || []).filter((x) => x.t !== code); saveLocal();
-        showToastSafeText("TOURNEE NICHT GEFUNDEN", "Nach 30 Tagen ohne Sprung wird eine Tournee gelöscht");
+      const L = await ON.rpc("tm_my_clubs", { p_code: S.oc, p_seen: S.cseen }, 8000);
+      if (Array.isArray(L)) {
+        const srv = L.map(clubEntry).filter(Boolean);
+        S.clubs = srv.concat(S.clubs.filter((x) => !srv.some((y) => y.c === x.c)).map((x) => Object.assign({}, x, { nw: 0 }))).slice(0, 16);
+        saveLocal();
+        if (mode === "multi") fillMulti();
+      }
+    } catch (e) { /* die gemerkte Liste bleibt */ }
+    finally { myBusy = false; }
+  }
+  // Gruppe öffnen (Link, Liste, eingefügter Link). Wer online mitmacht und einen Namen hat, tritt dabei bei; sonst wird er es mit dem ersten Sprung.
+  async function openClub(code, then) {
+    if (!ON) { showToastSafeText("NUR AUF DER SPIELSEITE", "Online-Gruppen gehen im Browser auf der Spielseite"); return; }
+    if (S.noOnline) { askOnline(() => { if (!S.noOnline) openClub(code, then); }); return; }   // online ausgeschaltet: erst fragen
+    if (clubBusy) return;
+    clubBusy = true;
+    try {
+      let b = await ON.rpc("tm_club_get", { p_group: code, p_code: S.oc || null });
+      if (b && b.in !== true && OL.groupOk(b.c) && S.onlineAsked && S.name) {
+        try { b = (await ON.rpc("tm_club_join", { p_code: myCode(), p_name: meName(), p_nation: S.nation || "", p_group: b.c, p_look: lookCode(S.look) })) || b; }
+        catch (e) { /* ansehen geht auch so */ }
+      }
+      const k = clubFrom(b, club && b && club.c === b.c ? club : null);
+      if (!k) {
+        S.clubs = S.clubs.filter((x) => x.c !== code); saveLocal();
+        showToastSafeText("GRUPPE NICHT GEFUNDEN", "Nach 30 Tagen ohne Sprung wird eine Gruppe gelöscht");
+        if (mode === "multi") fillMulti();
+        if (mode === "chal" && chalPaste) fillGroupList();
         return;
       }
-      rememberTour(t);
-      openTour(t);
+      if (code !== k.c) S.clubs = S.clubs.filter((x) => x.c !== code);   // alter Link auf eine Runde: gemerkt wird die Gruppe
+      rememberClub(k);
+      showClub(k);
+      if (then) then(k);
       flushPending();
-      for (const c of t.legs) if (c.board.length) loadGhosts(c.grp);
-    } catch (e) { onlineFail(e, "TOURNEE NICHT GELADEN"); }
-    finally { tourBusy = false; }
+      loadGhosts(k.legs[k.sel].grp);
+      clubTalkSync(k);
+    } catch (e) { onlineFail(e, "GRUPPE NICHT GELADEN"); }
+    finally { clubBusy = false; }
   }
-  function openTour(t) {
+  function showClub(k) {
     leaveArcadeJump();
-    mode = "tour"; J = null; jc = null; comp = null; hot = null; bd = null; particles = []; ctxMode = "training"; setOverlay(null);
-    if (t) tour = t;
+    mode = "club"; J = null; jc = null; comp = null; hot = null; bd = null; particles = []; ctxMode = "training"; setOverlay(null);
+    if (k && (!club || club.c !== k.c)) { clubView = "round"; clubSide = "talk"; leaveArm = 0; }   // andere Gruppe: Ansicht von vorn
+    if (k) club = k;
+    if (!club) { openMulti(); return; }
     chal = null; chalPaste = false;
-    vis(hud, false); showScreen("tour"); applyColor(); fillTour();
+    vis(hud, false); showScreen("club"); applyColor(); vis($("clNote"), false); fillClub();
     Snd.silence(); Snd.ambience(1);
     demo = null; demoWait = 0.4;
-    tourPoll();
+    clubPoll();
   }
-  // nächste Schanze ohne eigenes Ergebnis nach der aktuellen (die zählt als gesprungen); -1: alle gesprungen
-  function tourNextLeg(cur) {
-    if (!tour) return -1;
-    const n = tour.legs.length;
-    for (let k = 1; k <= n; k++) { const i = ((cur == null ? -1 : cur) + k) % n; if (i !== cur && !tour.legs[i].board.some((x) => x.me)) return i; }
-    return -1;
+  // Kopf (Name, Mitglieder), links Runde oder Gesamt, rechts Gespräch oder Mitglieder, unten Link teilen, neue Runde, springen
+  function fillClub() {
+    const k = club; if (!k || mode !== "club") return;
+    const n = k.legs.length; k.sel = clamp(k.sel, 0, n - 1);
+    const c = k.legs[k.sel], Hh = Hill.getHill(c.h), tot = n > 1 && clubView === "tot";
+    txt($("clName"), clubName(k));
+    vis($("btnClName"), k.own && onlineReady());
+    txt($("clKick"), `${k.nm} ${k.nm === 1 ? "MITGLIED" : "MITGLIEDER"}`);
+    const L = k.mem.slice(0, 6);
+    $("clMem").innerHTML = L.map((m, i) => `<span class="cm-h${m.me ? " me" : ""}">${helm(memLook(m), i)}</span>`).join("") + (k.nm > L.length ? `<span class="cm-more">+${k.nm - L.length}</span>` : "");
+    vis($("segClView"), n > 1); segSet("segClView", tot ? "tot" : "round");
+    vis($("clRound"), n > 1 && !tot);
+    txt($("clRoundN"), `Runde ${k.sel + 1} von ${n}`);
+    $("clPrev").disabled = k.sel <= 0; $("clNext").disabled = k.sel >= n - 1;
+    txt($("clSub"), tot ? `${n} Runden · es zählt je Runde dein bester Sprung`
+      : `${n > 1 ? "" : "Runde 1 · "}${Hh.short || Hh.name} HS${Hh.HS} · Luke ${c.g} · Wind ${WIND_NAME[c.w]} · ${TOD_NAME[c.t]}${S.tutorialDone ? "" : " · zuerst drei kurze Übungssprünge"}`);
+    clubLists();
+    vis($("btnClRound"), onlineReady() && n < 24);
+    const go = `Springen: ${hillShort(k.legs[tot ? n - 1 : k.sel].h)}`;
+    txt($("clGoTxt"), go); $("btnClGo").classList.toggle("long", go.length > 18);
+    clubSeen(k);
   }
-  function fillTour() {
-    const t = tour, n = t.legs.length, nx = tourNextLeg(null);
-    txt($("toTitle"), n > 4 ? "Tournee" : "Mini-Tournee");
-    vis($("btnToAdd"), onlineReady() && n < 8);
-    $("toLegs").innerHTML = `<span class="ch-lbl">SCHANZEN · ANTIPPEN ZUM ÖFFNEN</span>` + t.legs.map((c, i) => {
-      const mine = c.board.find((x) => x.me), lead = c.board[0], Hh = Hill.getHill(c.h);
-      return `<button type="button" class="to-leg${mine ? " done" : ""}${i === nx ? " next" : ""}" data-leg="${i}" aria-label="${esc(Hh.name)} öffnen"><b>${i + 1}</b>` +
-        `<span class="to-h">${esc(Hh.short || Hh.name)}<small>HS${Hh.HS}</small></span><span class="to-me">${mine ? `${fmt1(mine.p)} P.` : "offen"}</span>` +
-        `<span class="to-lead">${lead ? `führt: ${lead.me ? "du" : esc(lead.n)} ${fmt1(lead.p)}` : "noch niemand gesprungen"}</span>${icon("arrow-right", 15)}</button>`;
+  function clubLists() {
+    const k = club; if (!k || mode !== "club") return;
+    const tot = k.legs.length > 1 && clubView === "tot";
+    keepScroll($("clRows"), tot ? totRowsHtml(k) : roundRowsHtml(k.legs[k.sel]));
+    segSet("segClSide", clubSide);
+    keepScroll($("clFeed"), clubSide === "mem" ? memListHtml(k) : clubFeedHtml(k));
+  }
+  function roundRowsHtml(c) {
+    const b = c.board, me = b.find((x) => x.me);
+    let rows = b.slice(0, 40);
+    if (me && !rows.includes(me)) rows = rows.concat([me]);
+    return rows.length ? jumpRowsHtml(c, rows) + (c.total > rows.length ? `<span class="chb-more">und ${c.total - rows.length} weitere</span>` : "")
+        + (rows.length < 3 ? `<p class="cg-empty cl-tip">Schick den Link in eure WhatsApp-Gruppe: Wer ihn antippt, springt mit demselben Wind. Sprung antippen: ansehen, ${TALK_EMO.like} oder ${TALK_EMO.lol} geben, etwas dazuschreiben.</p>` : "")
+      : `<p class="cg-empty">${c.club && c.club.leg > 1 ? "Neue Runde, noch niemand gesprungen. Spring als Erster!" : "Noch niemand gesprungen. Schick den Link und spring als Erster!"}</p>`;
+  }
+  // Gesamtwertung: Summe der besten Punkte je Runde, darunter die Runden einzeln
+  function totRowsHtml(k) {
+    const n = k.legs.length, me = k.tot.find((x) => x.me);
+    let rows = k.tot.slice(0, 40);
+    if (me && !rows.includes(me)) rows = rows.concat([me]);
+    if (!rows.length) return `<p class="cg-empty">Noch niemand gesprungen.</p>`;
+    return rows.map((x) => {
+      const per = k.legs.map((c, i) => { const y = x.me ? c.board.find((z) => z.me) : c.board.find((z) => !z.me && z.n === x.n && z.c === x.c); return y ? `R${i + 1} ${fmt1(y.p)}` : ""; }).filter(Boolean).join(" · ");
+      return `<div class="gj tot${x.me ? " me" : ""}"><div class="gj-main"><span class="gj-r">${x.r}</span><span class="gj-who">${helm(x.me ? lookFor(S.look) : x.l ? lookFor(x.l) : natLook(x.c), x.r)}${x.c ? flagSpan(x.c) : ""}` +
+        `<span class="gj-nm">${esc(x.n)}</span>${x.me ? '<span class="you">DU</span>' : ""}</span><span class="gj-d">${x.k}/${n}</span><span class="gj-p">${fmt1(x.p)}</span>` +
+        `<span class="gj-t"><span class="gj-c dim">${esc(nb(per))}</span></span></div></div>`;
     }).join("");
-    const me = t.tot.find((x) => x.me);
-    let rows = t.tot.slice(0, 7);
-    if (me && !rows.includes(me)) rows = rows.slice(0, 6).concat([me]);
-    $("toBoard").innerHTML = `<span class="ch-lbl">GESAMTWERTUNG · <span class="ch-live">LIVE</span> · ${t.total} SPRINGER</span>` + (rows.length ? rows.map((x) =>
-      `<span class="chb-row${x.me ? " main" : ""}"><b>${x.r}.</b><span class="chb-m">${helm(x.me ? lookFor(S.look) : x.l ? lookFor(x.l) : natLook(x.c), x.r)}${x.c ? flagSpan(x.c) : ""}</span>` +
-      `<span class="chb-n">${esc(x.n)}${x.me ? " · DU" : ""}</span><span class="chb-p">${fmt1(x.p)}<small class="chb-k"> ${x.k}/${n}</small></span><span></span></span>`).join("") +
-      (t.total > rows.length ? `<span class="chb-more">und ${t.total - rows.length} weitere</span>` : "")
-      : `<span class="chb-more">Noch niemand gesprungen. Schick den Link und spring los!</span>`);
-    txt($("toGoTxt"), nx >= 0 ? `Springen: ${hillShort(t.legs[nx].h)}` : "Nochmal springen");
-    txt($("toNote"), "Gleicher Wind für alle, je Schanze zählt dein bester Sprung. Name und Ergebnis sehen alle mit dem Link.");
   }
-  function tourPoll() {
-    clearTimeout(tourT);
-    if (!ON || !tour || mode !== "tour") return;
-    tourT = setTimeout(async () => {
-      if (tour && mode === "tour" && !document.hidden) {
+  // Mitglieder: wer dabei ist (auch wer noch nicht gesprungen ist), wie viele Runden und Punkte; unten „Gruppe verlassen“
+  function memListHtml(k) {
+    const n = k.legs.length;
+    const rows = k.mem.map((m) => {
+      const s = [m.own ? "hat die Gruppe gegründet" : m.j ? `dabei seit ${ago(m.j).replace(/^vor .*|gerade eben/, "heute")}` : "",
+        m.k ? `${n > 1 ? `${m.k} von ${n} Runden, ` : ""}${fmt1(m.p)} Punkte${m.r ? `, Platz ${m.r}` : ""}` : "noch nicht gesprungen"].filter(Boolean).join(" · ");
+      return `<div class="cm-row${m.me ? " me" : ""}"><span class="cm-who">${helm(memLook(m), 0)}${m.c ? flagSpan(m.c) : ""}<b>${esc(m.n)}</b>${m.me ? '<span class="you">DU</span>' : ""}</span>` +
+        `<span class="cm-s">${esc(nb(s))}</span></div>`;
+    }).join("");
+    const more = k.nm > k.mem.length ? `<p class="cg-empty">und ${k.nm - k.mem.length} weitere</p>` : "";
+    const leave = k.inn && onlineReady() ? `<button type="button" class="btn-plain cl-leave${leaveArm && Date.now() - leaveArm < 4000 ? " warn" : ""}" data-leave="1">${leaveArm && Date.now() - leaveArm < 4000 ? "Wirklich verlassen? Nochmal tippen" : "Gruppe verlassen"}</button>` : "";
+    return rows + more + leave;
+  }
+  // Gespräch der Gruppe, Neuestes oben: Sprünge (je Springer und Runde der beste), Reaktionen und Kommentare, neue Runden, wer dazukam
+  function clubFeedHtml(k) {
+    const n = k.legs.length, ev = [];
+    k.legs.forEach((c, i) => {
+      const Hh = Hill.getHill(c.h), rn = n > 1 ? `Runde ${i + 1} · ` : "";
+      if (i > 0 && c.at) ev.push({ t: c.at, h: `<div class="ev-sys"><span><b>${esc(c.on || "Jemand")}</b> startet Runde ${i + 1}: ${esc(Hh.short || Hh.name)} HS${Hh.HS}</span><i>${ago(c.at)}</i></div>` });
+      for (const x of c.board) if (x.at && x.id) {
+        ev.push({ t: x.at, h: `<button type="button" class="tlk-row ev-j${x.me ? " me" : ""}" data-g="${c.grp}" data-card="${x.id}">` +
+          `<span class="tlk-h">${helm(x.me ? lookFor(S.look) : x.l ? lookFor(x.l) : natLook(x.c), x.r)}<b>${esc(x.me ? "DU" : x.n)}</b><span class="tlk-to">${esc(nb(` ${fmt1(x.d)} m · ${fmt1(x.p)} P.`))}</span><i>${ago(x.at)}</i></span>` +
+          `<span class="ev-m">${esc(nb(`${rn}${Hh.short || Hh.name} · jetzt Platz ${x.r}`))}</span></button>` });
+      }
+      const T = talk[c.grp];
+      if (T) for (const y of T.list) {
+        const who = c.board.find((z) => z.id === y.j), tn = who ? (who.me ? "deinem Sprung" : who.n) : "einem Sprung";
+        ev.push({ t: y.at || 0, h: `<button type="button" class="tlk-row${y.old ? " old" : ""}${y.me ? " me" : ""}"${who && !y.old ? ` data-g="${c.grp}" data-card="${y.j}"` : ""}>` +
+          `<span class="tlk-h"><b>${esc(y.me ? "DU" : y.a)}</b><span class="tlk-to"> zu ${esc(tn)}${y.old ? " (früher)" : ""}${n > 1 ? esc(nb(` · Runde ${i + 1}`)) : ""}</span>` +
+          `${y.t != null ? `<span class="tlk-at">${fmt1(y.t)} s</span>` : ""}<i>${ago(y.at)}</i></span>` +
+          (y.k === "c" ? `<span class="tlk-b">${esc(y.b)}</span>` : `<span class="tlk-e">${TALK_EMO[y.k]}</span>`) + `</button>` });
+      }
+    });
+    for (const m of k.mem) if (m.j && !m.own) ev.push({ t: m.j, h: `<div class="ev-sys"><span><b>${esc(m.me ? "Du" : m.n)}</b> ${m.me ? "bist" : "ist"} dabei</span><i>${ago(m.j)}</i></div>` });
+    if (k.at) ev.push({ t: k.at, h: `<div class="ev-sys"><span><b>${esc(k.on || "Jemand")}</b> gründet die Gruppe</span><i>${ago(k.at)}</i></div>` });
+    ev.sort((a, b) => b.t - a.t);
+    const body = ev.slice(0, 60).map((e) => e.h).join("");
+    return (k.legs.some((c) => c.board.length) ? "" : `<p class="cg-empty">Tipp auf einen Sprung: ansehen, ${TALK_EMO.like} oder ${TALK_EMO.lol} geben, etwas dazuschreiben.</p>`) + body;
+  }
+  // Live: solange die Gruppe offen ist, alle 5 Sekunden nachsehen
+  function clubPoll() {
+    clearTimeout(clubT);
+    if (!ON || !club || mode !== "club") return;
+    clubT = setTimeout(async () => {
+      if (club && mode === "club" && !document.hidden) {
         try {
-          const t = tourFrom(await ON.rpc("tm_tour_get", { p_tour: tour.t, p_code: S.oc || null }, 6000), tour);
-          if (t && t.t === tour.t && mode === "tour") {
-            const moved = t.legs.filter((c, i) => !tour.legs[i] || JSON.stringify(c.board) !== JSON.stringify(tour.legs[i].board));
-            const changed = moved.length > 0 || JSON.stringify(t.tot) !== JSON.stringify(tour.tot);
-            tour = t; rememberTour(t);
-            if (changed) fillTour();
-            for (const c of moved) loadGhosts(c.grp);   // neue Plätze: auch die Geister neu holen
+          const k = clubFrom(await ON.rpc("tm_club_get", { p_group: club.c, p_code: S.oc || null }, 6000), club);
+          if (k && club && k.c === club.c && mode === "club") {
+            const moved = k.legs.filter((c) => { const o = club.legs.find((y) => y.grp === c.grp); return !o || JSON.stringify(c.board) !== JSON.stringify(o.board); });
+            const grew = k.legs.length > club.legs.length;
+            const changed = moved.length > 0 || grew || JSON.stringify([k.mem, k.tot, k.name, k.nm, k.own]) !== JSON.stringify([club.mem, club.tot, club.name, club.nm, club.own]);
+            club = k; rememberClub(k);
+            if (changed) fillClub();
+            if (grew) { const c = k.legs[k.legs.length - 1]; showToastSafeText(`NEUE RUNDE: ${hillShort(c.h).toUpperCase()}`, `${c.on || "Jemand"} hat sie gestartet`, 2600); }
+            for (const c of moved) if (c === k.legs[k.sel]) loadGhosts(c.grp);   // neue Plätze: auch die Geister neu holen
+            clubTalkSync(k);
           }
         } catch (e) { /* beim nächsten Mal wieder */ }
       }
-      tourPoll();
+      clubPoll();
     }, 5000);
   }
-  // Gruppe oder Tournee um eine Schanze erweitern: Code und Link bleiben, aus einer Gruppe wird eine Tournee (höchstens 8 Schanzen).
-  // Vorschlag: eine Schanze, die noch nicht dabei ist, möglichst an einem anderen Ort.
-  let addCtx = null, addBusy = false;
-  function openAdd() {
-    const legs = mode === "tour" && tour ? tour.legs : chal && chal.tour && tour ? tour.legs : chal && chal.grp ? [chal] : [];
-    if (!legs.length || !onlineReady()) return;
-    if (legs.length >= 8) { showToastSafeText("HÖCHSTENS 8 SCHANZEN", "Mehr passen in eine Tournee nicht"); return; }
-    const have = legs.map((c) => c.h), places = have.map((k) => k.split("-")[0]);
-    const free = HILL_ORDER.filter((k) => !have.includes(k)), list = free.length ? free : HILL_ORDER.slice();
-    const fresh = list.filter((k) => !places.includes(k.split("-")[0]));
-    const pick = (fresh.length ? fresh : list)[Math.floor(Math.random() * (fresh.length || list.length))];
-    addCtx = { g: legs[0].grp, n: legs.length, list, i: Math.max(0, list.indexOf(pick)), from: mode };
+  function clubTalkSync(k) { for (const c of k.legs) talkSync(c); }
+  // in einer Runde springen (Geist: der Führende und die besten der Runde)
+  function clubJump(i) {
+    if (!club || !club.legs[i]) return;
+    clearTimeout(clubT);
+    chal = club.legs[i]; chalPaste = false;
+    if (!chal.ghosts) loadGhosts(chal.grp);
+    chalGo();
+  }
+  function clubRound(d) {
+    if (!club) return;
+    const s = clamp(club.sel + d, 0, club.legs.length - 1);
+    if (s === club.sel) return;
+    club.sel = s; $("clRows").scrollTop = 0;
+    fillClub();
+    if (!club.legs[s].ghosts) loadGhosts(club.legs[s].grp);
+  }
+  async function clubLeave() {
+    if (!club || !onlineReady()) return;
+    if (!leaveArm || Date.now() - leaveArm > 4000) { leaveArm = Date.now(); clubLists(); setTimeout(() => { if (mode === "club") clubLists(); }, 4100); return; }
+    leaveArm = 0;
+    const c = club.c;
+    try {
+      await ON.rpc("tm_club_leave", { p_code: myCode(), p_group: c });
+      S.clubs = S.clubs.filter((x) => x.c !== c); delete S.cseen[c]; saveLocal();
+      clearTimeout(clubT); club = null;
+      openMulti();
+      showToastSafeText("GRUPPE VERLASSEN", "Mit dem Link kannst du jederzeit wieder dazukommen", 2600);
+    } catch (e) { onlineFail(e, "GEHT GERADE NICHT"); }
+  }
+  // Neue Gruppe (Name, erste Schanze), neue Runde (Schanze), Umbenennen (Name): ein Fenster für alle drei
+  function openNewClub() {
+    if (!ON) return;
+    if (!S.onlineAsked || S.noOnline) { askOnline(() => { if (!S.noOnline) openNewClub(); else startGroupJump(); }); return; }
+    addCtx = { kind: "new", list: HILL_ORDER.slice(), i: Math.max(0, HILL_ORDER.indexOf(H.key)) };
+    $("adName").value = "";
     setOverlay("add");
+  }
+  function openRound() {
+    if (!club || !onlineReady()) return;
+    if (club.legs.length >= 24) { showToastSafeText("HÖCHSTENS 24 RUNDEN", "Mehr passen in eine Gruppe nicht"); return; }
+    // Vorschlag: eine Schanze an einem anderen Ort als zuletzt, möglichst eine, die noch nicht dran war
+    const have = club.legs.map((c) => c.h), last = have[have.length - 1], recent = have.slice(-3).map((k) => k.split("-")[0]);
+    const fresh = HILL_ORDER.filter((k) => !have.includes(k) && !recent.includes(k.split("-")[0])), other = HILL_ORDER.filter((k) => k.split("-")[0] !== last.split("-")[0]);
+    const pool = fresh.length ? fresh : other.length ? other : HILL_ORDER;
+    addCtx = { kind: "round", list: HILL_ORDER.slice(), i: Math.max(0, HILL_ORDER.indexOf(pool[Math.floor(Math.random() * pool.length)])) };
+    setOverlay("add");
+  }
+  function openRename() {
+    if (!club || !club.own || !onlineReady()) return;
+    addCtx = { kind: "name" };
+    $("adName").value = club.name || "";
+    setOverlay("add");
+    setTimeout(() => { const e = $("adName"); e.focus(); e.select(); }, 60);
   }
   function fillAdd() {
     if (!addCtx) return;
-    const Hh = Hill.getHill(addCtx.list[addCtx.i]);
-    txt($("adHill"), `${Hh.short || Hh.name} · HS${Hh.HS}`);
-    txt($("adTitle"), addCtx.n === 1 ? "Noch eine Schanze" : `Schanze ${addCtx.n + 1}`);
-    txt($("adTxt"), (addCtx.n === 1 ? "Aus der Gruppe wird eine Tournee mit Gesamtwertung. " : "") +
-      "Alle in der Gruppe sehen die neue Schanze sofort, der Link bleibt derselbe. Wind wie bisher, bisherige Sprünge bleiben.");
+    const k = addCtx.kind, Hh = addCtx.list ? Hill.getHill(addCtx.list[addCtx.i]) : null;
+    txt($("adKick"), k === "new" ? "MEHRSPIELER" : club ? clubName(club).toUpperCase() : "GRUPPE");
+    txt($("adTitle"), k === "new" ? "Neue Gruppe" : k === "round" ? `Runde ${club ? club.legs.length + 1 : 2}` : "Gruppe umbenennen");
+    vis($("adName"), k !== "round"); vis($("adHillRow"), k !== "name");
+    if (Hh) txt($("adHill"), `${Hh.short || Hh.name} · HS${Hh.HS}`);
+    txt($("adTxt"), k === "new" ? "Danach schickst du den Link, zum Beispiel in eure WhatsApp-Gruppe. Wer ihn antippt, ist dabei. Alle springen mit demselben Wind, später kann jeder eine neue Runde auf einer anderen Schanze starten."
+      : k === "round" ? "Alle in der Gruppe sehen die neue Runde sofort. Frühere Runden bleiben mit ihrer Rangliste, die Gesamtwertung zählt alle Runden."
+        : "Den Namen sehen alle in der Gruppe. Ohne Namen heißt sie nach ihrer ersten Schanze.");
+    txt($("adGoTxt"), addBusy ? (k === "name" ? "Wird gespeichert …" : "Wird angelegt …") : k === "new" ? "Anlegen und teilen" : k === "round" ? "Runde starten" : "Speichern");
   }
-  function cycleAdd(d) { if (!addCtx) return; addCtx.i = (addCtx.i + d + addCtx.list.length) % addCtx.list.length; fillAdd(); }
+  function cycleAdd(d) { if (!addCtx || !addCtx.list) return; addCtx.i = (addCtx.i + d + addCtx.list.length) % addCtx.list.length; fillAdd(); }
   async function addGo() {
     if (!addCtx || addBusy) return;
-    if (!S.name) { askName(() => { setOverlay("add"); addGo(); }); return; }
-    const k = addCtx.list[addCtx.i], Hh = Hill.getHill(k);
-    addBusy = true; txt($("adGoTxt"), "Wird angelegt …");
+    if (!S.name) { const a = addCtx; askName(() => { addCtx = a; setOverlay("add"); addGo(); }); return; }
+    const kind = addCtx.kind, key = addCtx.list ? addCtx.list[addCtx.i] : null, Hh = key ? Hill.getHill(key) : null, title = $("adName").value;
+    const seed = 1 + Math.floor(Math.random() * 2147483000);
+    addBusy = true; fillAdd();
     try {
-      const t = tourFrom(await ON.rpc("tm_group_extend", { p_code: myCode(), p_name: meName(), p_nation: S.nation || "", p_group: addCtx.g, p_hills: [k],
-        p_gates: [Hh.refGate], p_seeds: [1 + Math.floor(Math.random() * 2147483000)], p_look: lookCode(S.look) }), tour && tour.t === addCtx.g ? tour : null);
-      if (!t) { const e = new Error("leere Antwort"); e.status = 500; throw e; }
-      S.groups = S.groups.filter((x) => !t.legs.some((c) => c.grp === x.g)); saveLocal();
-      rememberTour(t);
-      addCtx = null; setOverlay(null);
-      openTour(t);
-      for (const c of t.legs) if (c.board.length) loadGhosts(c.grp);
-      showToastSafeText("SCHANZE IST DABEI", `${Hh.short || Hh.name}: alle sehen sie sofort, der Link bleibt gleich`, 2600);
-    } catch (e) { onlineFail(e, "GEHT GERADE NICHT"); }
-    finally { addBusy = false; txt($("adGoTxt"), "Dazunehmen"); }
-  }
-  // Schanze der Tournee öffnen: ihre Sprünge (ansehen, reagieren), von dort springen
-  function tourLeg(i) {
-    if (!tour || !tour.legs[i]) return;
-    clearTimeout(tourT);
-    openChal(tour.legs[i]);
-    loadGhosts(chal.grp); talkSync(chal);
-  }
-  function tourJump(i) {
-    if (!tour || !tour.legs[i]) return;
-    clearTimeout(tourT);
-    chal = tour.legs[i]; chalPaste = false;
-    loadGhosts(chal.grp);
-    chalGo();
+      let b;
+      if (kind === "new") b = await ON.rpc("tm_club_new", { p_code: myCode(), p_name: meName(), p_nation: S.nation || "", p_title: title, p_hill: key, p_gate: Hh.refGate,
+        p_wind: "var", p_seed: seed, p_tod: todFor(Hh), p_look: lookCode(S.look) });
+      else if (kind === "round") b = await ON.rpc("tm_club_round", { p_code: myCode(), p_name: meName(), p_nation: S.nation || "", p_group: club.c, p_hill: key,
+        p_gate: Hh.refGate, p_seed: seed, p_tod: todFor(Hh), p_look: lookCode(S.look) });
+      else b = await ON.rpc("tm_club_rename", { p_code: myCode(), p_group: club.c, p_title: title });
+      const k = clubFrom(b, kind === "new" ? null : club);
+      if (!k) throw emptyAnswer();
+      if (kind === "round") { k.sel = k.legs.length - 1; clubView = "round"; }
+      addCtx = null; addBusy = false;
+      rememberClub(k);
+      showClub(k);
+      if (kind === "new") { if (!(await shareLink(clubText(k)))) showToastSafeText("GRUPPE IST ANGELEGT", "Tippe auf „Link teilen“ und schick ihn per WhatsApp"); }
+      else if (kind === "round") showToastSafeText(`RUNDE ${k.legs.length}: ${hillShort(key).toUpperCase()}`, "Alle in der Gruppe sehen sie sofort", 2600);
+    } catch (e) { onlineFail(e, kind === "name" ? "NICHT GESPEICHERT" : "GEHT GERADE NICHT"); }
+    finally { addBusy = false; if (addCtx) fillAdd(); }
   }
   // Geister der Gruppe: die besten Sprünge mit Flugbahn (Namen, Nationfarben); der eigene heißt „DU“
   async function loadGhosts(g) {
     if (!ON) return;
     try {
       const L = await ON.rpc("tm_group_ghosts", { p_group: g, p_code: S.oc || null }, 8000);
-      // für die offene Gruppe und für die Schanze einer Tournee (auch wenn sie gerade nicht offen ist)
-      const T = [chal, ...(tour ? tour.legs : [])].filter((c, i, a) => c && c.grp === g && a.indexOf(c) === i);
+      // für die offene Herausforderung und jede Runde der offenen Gruppe (auch wenn sie gerade nicht gewählt ist)
+      const T = [chal, ...(club ? club.legs : [])].filter((c, i, a) => c && c.grp === g && a.indexOf(c) === i);
       if (!Array.isArray(L) || !T.length) return;
       const gs = L.filter((x) => x && typeof x.gh === "string").map((x) => {
         let path = null;
@@ -13654,7 +13812,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       for (const c of T) c.ghosts = gs;
       // der Sprung wartet noch oben an der Luke: die Geister fliegen gleich mit
       if (mode === "jump" && jc && J && J.phase === "gate" && ctxMode === "chal" && chal && chal.grp === g && !(jc.ghosts && jc.ghosts.length) && gs.length) { jc.ghost = null; jc.ghosts = gs.slice(0, 6); }
-      if (mode === "chal" && !chalPaste && chal && chal.grp === g) renderGroup();
+      if (mode === "club" && club && club.legs[club.sel] && club.legs[club.sel].grp === g) clubLists();
       if (mode === "result" && ctxMode === "chal" && chal && chal.grp === g && lastResult && rsTab === "list" && rsFill) rsFill();
       if (overlay === "jcard" && jcOpen && jcOpen.g === g) fillJcard();
     } catch (e) { /* ohne Geister weiter */ }
@@ -13673,12 +13831,12 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     return (Array.isArray(L) ? L : []).filter((x) => x && typeof x === "object" && isRid(x.j) && (TALK_EMO[x.k] || x.k === "c")).map((x) => ({
       i: Math.max(0, Math.round(+x.i) || 0), j: x.j, k: x.k, b: x.k === "c" ? String(x.b || "").slice(0, 80) : "",
       t: x.t == null || !Number.isFinite(+x.t) ? null : clamp(+x.t, 0, 60), a: String(x.a || "SPRINGER").slice(0, 12), c: nat(x.c),
-      me: x.me === true, old: x.old === true })).filter((x) => x.k !== "c" || x.b.trim());
+      me: x.me === true, old: x.old === true, at: tms(x.at) })).filter((x) => x.k !== "c" || x.b.trim());
   }
-  // Gruppe zu einem Code: die offene oder eine Schanze der Tournee
+  // Runde zu einem Code: die gerade gesprungene oder eine Runde der offenen Gruppe
   function grpByCode(g) {
     if (chal && chal.grp === g) return chal;
-    return (tour && tour.legs.find((c) => c.grp === g)) || null;
+    return (club && club.legs.find((c) => c.grp === g)) || null;
   }
   const talkOf = (g, id) => ((talk[g] && talk[g].list) || []).filter((x) => x.j === id && !x.old);
   function talkSum(g, id) {
@@ -13719,7 +13877,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   }
   // alles, was gerade zu sehen ist, neu zeichnen
   function talkShow(g) {
-    if (mode === "chal" && !chalPaste && chal && chal.grp === g) renderGroup();
+    if (mode === "club" && club && club.legs.some((c) => c.grp === g)) clubLists();
     if (overlay === "jcard" && jcOpen && jcOpen.g === g) fillJcard();
     if (mode === "result" && ctxMode === "chal" && chal && chal.grp === g && lastResult && rsTab === "list" && rsFill) rsFill();
     if (mode === "replay" && rp && rp.watch && rp.watch.g === g) wtMarks();
@@ -13729,7 +13887,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const T = talk[g] || (talk[g] = { tk: 0, list: [] });
     const i = T.list.findIndex((x) => x.j === id && x.k === k && x.me && !x.old);
     if (i >= 0) T.list.splice(i, 1);
-    else T.list.push({ i: 0, j: id, k, b: "", t: t == null ? null : t, a: meName(), c: S.nation || "", me: true, old: false });
+    else T.list.push({ i: 0, j: id, k, b: "", t: t == null ? null : t, a: meName(), c: S.nation || "", me: true, old: false, at: Date.now() });
     talkShow(g);
   }
   async function talkPost(g, id, k, body, t) {
@@ -13919,30 +14077,6 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     wtPop({ k: "c", t, me: true, a: meName(), b: v });
     talkPost(w.g, w.id, "c", v, t);
   }
-  // Live: solange die Gruppe offen ist, alle 5 Sekunden nachsehen
-  function groupPoll() {
-    clearTimeout(grpT);
-    if (!ON || !chal || !chal.grp || mode !== "chal" || chalPaste) return;
-    grpT = setTimeout(async () => {
-      if (chal && chal.grp && mode === "chal" && !chalPaste && !document.hidden) {
-        try {
-          const c = groupChal(await ON.rpc("tm_group_get", { p_group: chal.grp, p_code: S.oc || null }, 6000), chal);
-          if (c && c.grp === chal.grp && mode === "chal" && !chalPaste) {
-            if (c.tourCode && !chal.tour) {   // jemand hat eine Schanze dazugenommen
-              S.groups = S.groups.filter((x) => x.g !== c.grp); saveLocal();
-              openTourCode(c.tourCode); showToastSafeText("NEUE SCHANZE DABEI", "Aus der Gruppe ist eine Tournee geworden", 2600);
-              return;
-            }
-            const changed = JSON.stringify(c.board) !== JSON.stringify(chal.board);
-            chal = c; if (!c.tour) rememberGroup(c);
-            if (changed) { renderGroup(); loadGhosts(c.grp); }   // neue Plätze: auch die Geister neu holen
-            talkSync(c);
-          }
-        } catch (e) { /* beim nächsten Mal wieder */ }
-      }
-      groupPoll();
-    }, 5000);
-  }
   // Gruppensprung senden; ohne Verbindung merken und später nachsenden
   async function postGroup(entry) {
     const g = chal && chal.grp;
@@ -13954,16 +14088,18 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     entry.grpPrev = was ? +was.p : null;   // bisher bester: zeigt danach „neue Bestleistung“ oder „zählt nicht“
     entry.grpState = "send";
     try {
-      if (chal.tour) {
-        const tr = chal.tour, t = tourFrom(await ON.rpc("tm_tour_post", { p_code: myCode(), p_name: meName(), p_nation: S.nation || "", p_tour: tr.t, p_leg: tr.leg, p_dist: p.d, p_points: p.p, p_kind: p.k, p_ghost: p.gh, p_look: lookCode(S.look) }), tour);
-        if (t && chal && chal.grp === g) {
-          tour = t; rememberTour(t);
-          const c = t.legs[tr.leg - 1];
-          if (c) { c.ghosts = chal.ghosts; c.tries = chal.tries; c.best = chal.best; chal = c; loadGhosts(g); talkSync(c); }
+      if (chal.club) {
+        const k = clubFrom(await ON.rpc("tm_club_post", { p_code: myCode(), p_name: meName(), p_nation: S.nation || "", p_group: g, p_dist: p.d, p_points: p.p, p_kind: p.k, p_ghost: p.gh, p_look: lookCode(S.look) }),
+          club && club.c === chal.club.c ? club : null);
+        const c = k && k.legs.find((y) => y.grp === g);
+        if (c && chal && chal.grp === g) {
+          c.ghosts = chal.ghosts; c.tries = chal.tries; c.best = chal.best;
+          k.sel = k.legs.indexOf(c); club = k; rememberClub(k);
+          chal = c; loadGhosts(g); talkSync(c);
         }
       } else {
         const c = groupChal(await ON.rpc("tm_group_post2", { p_code: myCode(), p_name: meName(), p_nation: S.nation || "", p_group: g, p_dist: p.d, p_points: p.p, p_kind: p.k, p_ghost: p.gh, p_look: lookCode(S.look) }), chal);
-        if (c && chal && chal.grp === g) { chal = c; rememberGroup(c); loadGhosts(g); talkSync(c); }
+        if (c && chal && chal.grp === g) { chal = c; loadGhosts(g); talkSync(c); }
       }
       entry.grpState = "ok";
     } catch (e) {
@@ -14020,7 +14156,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     if (r.grpState === "fail") return ["no", r.grpQueued ? "Keine Verbindung: wird nachgesendet" : "Nicht gesendet"];
     if (r.grpState !== "ok") return ["dim", "Es zählt dein bester Sprung"];
     if (me && pts < me.p) return ["no", r.dist > me.d ? `Zählt nicht: mehr Weite, aber weniger Punkte als dein bester (${fmt1(me.p)})` : `Zählt nicht · dein bester bleibt ${fmt1(me.d)} m, ${fmt1(me.p)} Punkte`];
-    if (r.grpPrev == null) return ["ok", chal.tour ? "Zählt · dein erster Sprung auf dieser Schanze" : "Zählt · dein erster Sprung in der Gruppe"];
+    if (r.grpPrev == null) return ["ok", chal.club && chal.club.n > 1 ? "Zählt · dein erster Sprung in dieser Runde" : "Zählt · dein erster Sprung in der Gruppe"];
     if (pts > r.grpPrev) return ["ok", `Neue Bestleistung · zählt (vorher ${fmt1(r.grpPrev)} Punkte)`];
     return ["ok", "Zählt · so gut wie dein bester"];
   }
@@ -14028,46 +14164,24 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const [c, t] = grpStatus(r), e = $("rsCount");
     e.className = `rs-count ${c}`; txt(e, t);
   }
-  function tourNote() {
-    const me = tour.tot.find((x) => x.me), n = tour.legs.length, left = tour.legs.filter((c) => !c.board.some((x) => x.me)).length;
-    return (me ? `Gesamtwertung: Platz ${me.r} von ${tour.total} nach ${me.k} von ${n} Schanzen. ` : "") + (left ? `Noch ${left} ${left === 1 ? "Schanze" : "Schanzen"} offen.` : "Alle Schanzen gesprungen. Je Schanze zählt dein bester Sprung.");
-  }
   function grpRefresh(r) {
     grpChip(r, $("rsChip"));
     grpCountLine(r);
-    txt($("rsSession"), chal.tour ? `Tournee ${chal.tour.leg}/${chal.tour.n} · ${H.name} · Luke ${chal.g}` : `${H.name} · Luke ${chal.g} · ${chal.total} Springer`);
+    txt($("rsSession"), chal.club && chal.club.n > 1 ? `Runde ${chal.club.leg} · ${H.name} · Luke ${chal.g}` : `${H.name} · Luke ${chal.g} · ${chal.total} Springer`);
     rankHeader(r);
     if (rsTab !== "list") vis($("rsRank"), false);
     else if (rsFill) rsFill();
   }
-  // Gruppe: links die Sprünge (antippen = Sprungkarte, ▶ = ansehen, darunter Reaktionen), rechts Schanze, Bedingungen und das Gespräch
-  function fillGroup() { renderGroup(); groupPoll(); }
-  function renderGroup() {
-    if (!chal || !chal.grp) return;
-    const Hh = Hill.getHill(chal.h), b = chal.board, me = b.find((x) => x.me);
-    txt($("chKicker"), chal.tour ? `TOURNEE · SCHANZE ${chal.tour.leg} VON ${chal.tour.n}` : "ONLINE-GRUPPE");
-    txt($("cgN"), `${chal.total} SPRINGER`);
-    txt($("cgHill"), Hh.name); txt($("cgSub"), hillSub(Hh));
-    txt($("cgCond"), `Luke ${chal.g} · Wind ${WIND_NAME[chal.w]} · ${TOD_NAME[chal.t]}` + (S.tutorialDone ? "" : " · zuerst drei kurze Übungssprünge"));
-    let rows = b.slice(0, 40);
-    if (me && !rows.includes(me)) rows = rows.concat([me]);
-    keepScroll($("cgRows"), rows.length ? jumpRowsHtml(chal, rows) + (chal.total > rows.length ? `<span class="chb-more">und ${chal.total - rows.length} weitere</span>` : "")
-      : `<p class="cg-empty">Noch niemand gesprungen. Schick den Link und spring als Erster!</p>`);
-    keepScroll($("cgFeed"), talkFeedHtml(chal, 20));
-    vis($("btnChAdd"), onlineReady() && !(chal.tour && chal.tour.n >= 8));
-  }
   function fillGroupList() {
-    const el = $("chGroups"), L = ON ? S.groups.slice(0, 3) : [];
+    const el = $("chGroups"), L = ON ? S.clubs.slice(0, 3) : [];
     vis(el, L.length > 0);
-    el.innerHTML = L.length ? `<span class="ch-lbl">DEINE GRUPPEN</span>` + L.map((x) => {
-      const Hh = Hill.getHill(x.h);
-      return `<button type="button" class="chg-row" data-g="${x.g}"><span class="chg-h">${esc(Hh.short || Hh.name)}</span><span class="chg-s">${x.n} Springer${x.rk ? ` · Platz ${x.rk}` : ""}</span>${icon("arrow-right", 18)}</button>`;
-    }).join("") : "";
+    el.innerHTML = L.length ? `<span class="ch-lbl">DEINE GRUPPEN</span>` + L.map((x) =>
+      `<button type="button" class="chg-row" data-c="${x.c}"><span class="chg-h">${esc(clubName(x))}</span><span class="chg-s">${esc(nb(`${hillShort(x.h)}${x.k > 1 ? ` · Runde ${x.k}` : ""}`))}</span>${icon("arrow-right", 18)}</button>`).join("") : "";
   }
   // Beim ersten Mal kurz erklären, was online passiert
   function askOnline(cb) {
     askCb = cb;
-    txt($("akTxt"), "Alle springen mit demselben Wind, die Rangliste sehen alle live, egal wie viele mitmachen. Dafür speichern wir Name, Nation, Farben, Sprünge und eure Reaktionen und Kommentare bei Supabase (Server in Frankfurt), sichtbar für alle mit dem Link und 30 Tage nach dem letzten Sprung gelöscht. Ändern unter Info → Online.");
+    txt($("akTxt"), "Alle springen mit demselben Wind, die Rangliste sehen alle live, egal wie viele mitmachen. Dafür speichern wir Name, Nation, Farben, Sprünge, eure Reaktionen und Kommentare und wer in der Gruppe ist bei Supabase (Server in Frankfurt), sichtbar für alle mit dem Link und 30 Tage nach dem letzten Sprung gelöscht. Ändern unter Info → Online.");
     setOverlay("ask");
   }
   // Spielstand online: ohne Geister (groß, auf jedem Gerät neu) und ohne die Online-Angaben dieses Geräts
@@ -14215,6 +14329,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   // Herausforderungs-Bildschirm: geladen (Annehmen) oder leer (Link einfügen)
   let chalPaste = false;
   function openChal(c, paste) {
+    if (c && c.grp && !paste) { if (c.club && club && club.c === c.club.c) showClub(); else openClub(c.club ? c.club.c : c.grp); return; }
     leaveArcadeJump();
     mode = "chal"; J = null; jc = null; comp = null; hot = null; bd = null; particles = []; ctxMode = "training"; setOverlay(null);
     if (c) chal = c;
@@ -14224,18 +14339,14 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     demo = null; demoWait = 0.4;
   }
   function fillChal() {
-    const grp = !chalPaste && !!chal && !!chal.grp;
-    $("scrChal").querySelector(".dialog").classList.toggle("grp", grp);
-    txt($("chKicker"), grp ? "ONLINE-GRUPPE" : chalPaste ? "DUELL" : "HERAUSFORDERUNG");
-    vis($("chHave"), !chalPaste && !grp); vis($("chGrp"), grp); vis($("chPaste"), chalPaste); vis($("btnChOther"), !chalPaste);
-    if (!grp) vis($("btnChAdd"), false);
-    txt($("btnChOther"), grp ? "Link teilen" : "Anderer Link");
-    txt($("chGoTxt"), chalPaste ? "Öffnen" : grp ? "Springen" : "Annehmen");
-    txt($("btnChBack").querySelector("span"), chalPaste || grp ? "Zurück" : "Später");
-    txt($("chTgtLbl"), grp ? "FÜHRT MIT" : "ZU SCHLAGEN");
+    txt($("chKicker"), chalPaste ? "DUELL" : "HERAUSFORDERUNG");
+    vis($("chHave"), !chalPaste); vis($("chPaste"), chalPaste); vis($("btnChOther"), !chalPaste);
+    txt($("btnChOther"), "Anderer Link");
+    txt($("chGoTxt"), chalPaste ? "Öffnen" : "Annehmen");
+    txt($("btnChBack").querySelector("span"), chalPaste ? "Zurück" : "Später");
+    txt($("chTgtLbl"), "ZU SCHLAGEN");
     if (chalPaste) { $("chIn").value = ""; fillGroupList(); return; }
-    if (!grp) vis($("scrChal").querySelector(".ch-target"), true);
-    if (grp) { fillGroup(); return; }
+    vis($("scrChal").querySelector(".ch-target"), true);
     const Hh = Hill.getHill(chal.h);
     $("chFlag").innerHTML = chal.c ? flag(chal.c) : ""; vis($("chFlag"), !!chal.c);
     txt($("chName"), chal.n);
@@ -14254,10 +14365,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   }
   function chalGo() {
     if (chalPaste) {
-      const tm_ = /(?:^|[#&?\s])t=([A-HJ-NP-Z2-9]{7})(?![A-Za-z0-9])/.exec($("chIn").value);
-      if (tm_) { openTourCode(tm_[1]); return; }
-      const gm = /(?:^|[#&?\s])g=([A-HJ-NP-Z2-9]{7})(?![A-Za-z0-9])/.exec($("chIn").value);
-      if (gm) { openGroup(gm[1]); return; }
+      const gm = /(?:^|[#&?\s])[gt]=([A-HJ-NP-Z2-9]{7})(?![A-Za-z0-9])/.exec($("chIn").value);   // Gruppe (auch alter Tournee-Link)
+      if (gm) { openClub(gm[1]); return; }
       const code = chalCode($("chIn").value), c = code ? chalDecode(code) : null;
       if (!c) { showToastSafeText("KEIN GÜLTIGER LINK", "Den ganzen Link aus WhatsApp einfügen"); return; }
       chal = c; chalPaste = false; fillChal(); return;
@@ -14427,7 +14536,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const mood = big ? (tele ? "great" : "good") : g.d >= H.K - 4 ? (tele ? "good" : "ok") : g.d >= H.K - 16 ? "ok" : "bad";
     rp = { rec: w.rec, t: 0, t1: w.rec[w.rec.length - 1].t, i: 0, tL: w.tT, mood, watch: { name: g.me ? "DEIN SPRUNG" : g.n, d: g.d, back, g: grp || null, id: isRid(g.id) ? g.id : null } };
     txt($("rpTxt"), `${rp.watch.name} · ${fmt1(g.d)} m`);
-    clearTimeout(grpT);
+    clearTimeout(clubT);
     mode = "replay"; showScreen(null); vis(hud, true);
     for (const e of [el.playerPanel, el.startBox, el.gateBox, el.speedBox, el.timingBox, el.landBox, el.gauge, el.tapPill, el.hint, el.toast, el.distChip, el.goalBox]) vis(e, false);
     vis(el.replayBadge, true); vis(el.replayHint, true); vis(el.distBox, true); txt(el.distVal, "–"); vis(el.btnPause, false);
@@ -14444,7 +14553,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     H = Hill.getHill(c.h); renderer.setTheme(c.t);
     startWatch(g, back, c.grp);
   }
-  function watchGroupRow(i) { const c = chal; watchGhost(c, i, () => openChal(c)); }
+  function watchGroupRow(i) { const c = chal; if (c) watchGhost(c, i, () => openChal(c)); }
 
   // ------------------------------------------------------------------ Demo-Sprung im Startbildschirm
   function stepDemo(dt) {
@@ -15248,7 +15357,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const L = [["Wettkampf", "Sieg 1.000 · 2. Platz 800 · 3. Platz 600 … 30. Platz 10, Einsteiger ×0,5, Profi ×1,6"],
       ["Meisterschaft", "jede Station wie ein Wettkampf, am Ende eine Gesamtprämie (Sieg 400 je Station)"],
       ["Missionen", "100 je neuem Stern"], ["Challenge", "Bronze 200 · Silber 300 · Gold 500 je Schanze"], ["1928", "Bronze 500 · Silber 1.000 · Gold 2.000"],
-      ["Bestweite", "100 für jede neue Bestweite"], ["Tageschallenge", "100 am Tag"], ["Online", "50 je Gruppe und Tournee-Schanze"]];
+      ["Bestweite", "100 für jede neue Bestweite"], ["Tageschallenge", "100 am Tag"], ["Online", "50 je Runde in einer Gruppe"]];
     let h = `<div class="sh-money"><div class="sh-how"><span class="kicker">SO GIBT ES TALER</span>${L.map(([k, v]) => `<div class="sh-mline"><b>${k}</b><span>${v}</span></div>`).join("")}` +
       `<p class="sh-foot">Mit Anfängerhilfen gibt es im Wettkampf das halbe Preisgeld.</p></div><div class="sh-log"><span class="kicker">ZULETZT</span>`;
     h += S.tlog.length ? S.tlog.map((x) => `<div class="sh-lline"><span>${esc(x.w)}</span><b>+${fmtT(x.n)}</b></div>`).join("") : `<p class="sh-foot">Noch nichts verdient: Spring einen Wettkampf!</p>`;
@@ -15551,15 +15660,30 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   on("btnDuel", () => openChal(null, !chal || !!chal.grp));
   on("btnMulti", () => openMulti());
   on("btnMuBack", () => goTitle());
-  on("btnToBack", () => { clearTimeout(tourT); openMulti(); });
-  on("btnToShare", async () => { if (tour) await shareLink(tourText(tour)); });
-  on("btnToGo", () => { if (!tour) return; const nx = tourNextLeg(null); tourJump(nx >= 0 ? nx : 0); });
-  $("toLegs").addEventListener("click", (e) => { const b = e.target.closest("[data-leg]"); if (b) tourLeg(+b.dataset.leg); });
-  on("btnMuNew", () => muStart());
-  on("muShuffle", () => { muTour = muTourPick(); fillMultiHill(); });
+  // Gruppe: Zurück, Name ändern (wer sie gegründet hat), Runde oder Gesamt, Runde wählen, Gespräch oder Mitglieder, teilen, neue Runde, springen
+  on("btnClBack", () => { clearTimeout(clubT); openMulti(); });
+  on("btnClName", () => openRename());
+  on("clPrev", () => clubRound(-1));
+  on("clNext", () => clubRound(1));
+  $("clMem").addEventListener("click", () => { if (!club) return; clubSide = "mem"; $("clFeed").scrollTop = 0; clubLists(); });
+  $("clRows").addEventListener("click", (e) => {
+    if (!club) return;
+    const c = club.legs[club.sel];
+    const w = e.target.closest("[data-watch]"); if (w && c) { watchGhost(c, +w.dataset.watch, () => showClub()); return; }
+    const d = e.target.closest("[data-card]"); if (d && c) openJcard(c.grp, d.dataset.card);
+  });
+  $("clFeed").addEventListener("click", (e) => {
+    if (e.target.closest("[data-leave]")) { clubLeave(); return; }
+    const d = e.target.closest("[data-card]"); if (d && d.dataset.g) openJcard(d.dataset.g, d.dataset.card);
+  });
+  on("btnClShare", async () => { if (club) await shareLink(clubText(club)); });
+  on("btnClRound", () => openRound());
+  on("btnClGo", () => { if (club) clubJump(club.legs.length > 1 && clubView === "tot" ? club.legs.length - 1 : club.sel); });
+  on("btnMuNew", () => openNewClub());
+  on("btnMuDuel", () => startGroupJump());
   on("muPrev", () => { const i = HILL_ORDER.indexOf(H.key); setHill(HILL_ORDER[(i - 1 + HILL_ORDER.length) % HILL_ORDER.length]); fillMultiHill(); });
   on("muNext", () => { const i = HILL_ORDER.indexOf(H.key); setHill(HILL_ORDER[(i + 1) % HILL_ORDER.length]); fillMultiHill(); });
-  $("muGroups").addEventListener("click", (e) => { const t = e.target.closest("[data-t]"); if (t) { openTourCode(t.dataset.t); return; } const b = e.target.closest("[data-g]"); if (b) openGroup(b.dataset.g); });
+  $("muGroups").addEventListener("click", (e) => { const b = e.target.closest("[data-c]"); if (b) openClub(b.dataset.c); });
   on("btnChTrain", () => { chalPaste = false; openMulti(); });
   on("btnChal", () => shareChal());
   on("btnPic", () => sharePic());
@@ -15570,29 +15694,19 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     offerFile($("picDl").getAttribute("download") || "telemark.png", picBlob).then((done) => { if (!done) softNotice("Herunterladen geht hier nicht: Bild lange drücken"); });
   });
   on("btnChGo", () => chalGo());
-  on("btnChBack", () => { if (chalPaste && chal && !chal.grp) { chalPaste = false; fillChal(); } else if (chal && chal.tour && tour) openTour(tour); else openMulti(); });
-  // in der Gruppe: Link teilen; bei einer Herausforderung: anderen Link einfügen
-  on("btnChOther", async () => {
-    if (!chalPaste && chal && chal.grp) { await shareLink(chal.tour && tour ? tourText(tour) : groupText(chal)); return; }
-    chalPaste = true; fillChal(); $("chIn").focus();
-  });
-  // Gruppe: Sprünge antippen (Karte), ▶ (ansehen), Gespräch antippen (Karte), Schanze dazunehmen
-  $("cgRows").addEventListener("click", (e) => {
-    const w = e.target.closest("[data-watch]"); if (w) { watchGroupRow(+w.dataset.watch); return; }
-    const c = e.target.closest("[data-card]"); if (c && chal) openJcard(chal.grp, c.dataset.card);
-  });
-  $("cgFeed").addEventListener("click", (e) => { const c = e.target.closest("[data-card]"); if (c && chal) openJcard(chal.grp, c.dataset.card); });
+  on("btnChBack", () => { if (chalPaste && chal && !chal.grp) { chalPaste = false; fillChal(); } else openMulti(); });
+  // bei einer Herausforderung: anderen Link einfügen
+  on("btnChOther", () => { chalPaste = true; fillChal(); $("chIn").focus(); });
   $("rsList").addEventListener("click", (e) => {
     if (!(ctxMode === "chal" && chal && chal.grp)) return;
     const w = e.target.closest("[data-watch]"); if (w) { const c = chal; watchGhost(c, +w.dataset.watch, () => backToResult()); return; }
     const c = e.target.closest("[data-card]"); if (c) openJcard(chal.grp, c.dataset.card);
   });
-  on("btnChAdd", () => openAdd());
-  on("btnToAdd", () => openAdd());
   on("adPrev", () => cycleAdd(-1));
   on("adNext", () => cycleAdd(1));
   on("btnAdNo", () => { addCtx = null; setOverlay(null); });
   on("btnAdYes", () => addGo());
+  $("adName").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addGo(); } e.stopPropagation(); });
   // Sprungkarte
   on("btnJcBack", () => closeJcard());
   on("btnJcWatch", () => jcWatch());
@@ -15618,6 +15732,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   on("hotMinus", () => { readHotNames(); S.hot.n = clamp(S.hot.n - 1, 2, 8); save(); fillHotNames(); });
   on("hotPlus", () => { readHotNames(); S.hot.n = clamp(S.hot.n + 1, 2, 8); save(); fillHotNames(); });
   const seg = (id, f) => $(id).addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; f(b.dataset.v); });
+  seg("segClView", (v) => { clubView = v === "tot" ? "tot" : "round"; $("clRows").scrollTop = 0; fillClub(); });
+  seg("segClSide", (v) => { clubSide = v === "mem" ? "mem" : "talk"; leaveArm = 0; $("clFeed").scrollTop = 0; clubLists(); });
   // Shop und Wachs am Start
   on("btnShop", () => openShop());
   on("btnShDone", closeShop);
@@ -15629,7 +15745,6 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const w = e.target.closest("[data-wax]");
     if (w) { S.wax = w.dataset.wax; save(); fillShop(); }
   });
-  seg("segMuKind", (v) => { muKind = v === "tour" ? "tour" : "one"; segSet("segMuKind", muKind); fillMultiHill(); });
   seg("segLevel", (v) => { S.level = v; save(); segSet("segLevel", v); setupHint("suCompHint", S.level, S.compWind); });
   seg("segCompWind", (v) => { S.compWind = v; save(); segSet("segCompWind", v); setupHint("suCompHint", S.level, S.compWind); });
   seg("segRounds", (v) => { S.hot.rounds = +v; save(); segSet("segRounds", v); });
@@ -15670,12 +15785,11 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     else showToastSafe();
   });
   on("btnPauseSettings", () => openSettings("pause"));
-  on("btnQuit", () => { if (ctxMode === "mission" || ctxMode === "daily") { setOverlay(null); openArcade(); } else if (ctxMode === "chal" && chal && chal.tour && tour) { setOverlay(null); openTour(tour); } else if (ctxMode === "chal" && chal && chal.grp) { setOverlay(null); openChal(chal); } else goTitle(); });
+  on("btnQuit", () => { if (ctxMode === "mission" || ctxMode === "daily") { setOverlay(null); openArcade(); } else if (ctxMode === "chal" && chal && chal.grp) { setOverlay(null); openChal(chal); } else goTitle(); });
   on("btnNext", () => resultNext());
   on("btnReplay", () => startReplay());
   on("btnMenu", () => {
-    if (ctxMode === "chal" && chal && chal.tour && tour) { openTour(tour); return; }
-    if (ctxMode === "chal" && chal && chal.grp) { openChal(chal); return; }
+    if (ctxMode === "chal" && chal && chal.grp) { openChal(chal); return; }   // zurück in die Gruppe
     if (ctxMode === "training" || ctxMode === "chal") { goTitle(); return; }
     if (ctxMode === "mission" || ctxMode === "daily") { openArcade(); return; }
     const b = $("btnMenu").querySelector("span:last-child");
@@ -15886,7 +16000,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       return;
     }
     if (e.key === "Escape" || e.key === "p" || e.key === "P") {
-      if (overlay === "jcard") closeJcard(); else if (overlay === "add") { addCtx = null; setOverlay(null); } else if (overlay === "settings") closeSettings(); else if (overlay === "shop") closeShop(); else if (overlay === "jumper") closeJumper(); else if (overlay === "pause" || overlay === "records" || overlay === "hill") setOverlay(null); else if (overlay === "info") closeInfo(); else if (overlay === "pic") setOverlay(null); else if (mode === "arcade" || mode === "chal" || mode === "multi" || mode === "tour") goTitle(); else pause();
+      if (overlay === "jcard") closeJcard(); else if (overlay === "add") { addCtx = null; setOverlay(null); } else if (overlay === "settings") closeSettings(); else if (overlay === "shop") closeShop(); else if (overlay === "jumper") closeJumper(); else if (overlay === "pause" || overlay === "records" || overlay === "hill") setOverlay(null); else if (overlay === "info") closeInfo(); else if (overlay === "pic") setOverlay(null); else if (mode === "club") { clearTimeout(clubT); openMulti(); } else if (mode === "arcade" || mode === "chal" || mode === "multi") goTitle(); else pause();
       return;
     }
     if (overlay) return;
@@ -16025,7 +16139,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     }
     const wNow = J ? (J.wind.mode === "off" ? 0 : J.wind.display(J.t)) : 0.6;
     snow.update(cam, dtReal, W, Hs, wNow);
-    const dim = mode === "tutorial" ? 0.55 : (mode === "result" || mode === "final") ? 0.25 : (mode === "board" || mode === "hand" || mode === "setup" || mode === "arcade" || mode === "chal" || mode === "champ" || mode === "multi" || mode === "tour") ? 0.35 : 0;
+    const dim = mode === "tutorial" ? 0.55 : (mode === "result" || mode === "final") ? 0.25 : (mode === "board" || mode === "hand" || mode === "setup" || mode === "arcade" || mode === "chal" || mode === "champ" || mode === "multi" || mode === "club") ? 0.35 : 0;
     const focus = st ? { x: st.x, landed: (st.phase === "outrun" || st.phase === "done") && st.kind !== "fall" } : null;
     // Menüs und Tafeln zeichnen jetzt auch mit voller Bildrate: Kulisse und ruhender Hang sind zwischengespeichert, und die bewegten
     // Details (Zug, Seilbahn, Nebel, Probesprung) liefen mit 30 Bildern je Sekunde sichtbar ruckig. Nur hinter deckenden Tafeln halb.
@@ -16136,7 +16250,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     vis($("btnOlSave"), !saved && !off); vis($("btnOlNow"), saved && !off); vis($("btnOlStop"), saved);
     vis($("olLoadBox"), !!olLoad);
     $("tgOnline").setAttribute("aria-checked", String(!S.noOnline));
-    txt($("olPriv"), "Freiwillig und nur, wenn du es nutzt: Für Gruppen speichern wir Name, Nation, Farben, Sprünge sowie Reaktionen und Kommentare zu Sprüngen, sichtbar für alle mit dem Gruppen-Link, für den Online-Spielstand deinen Spielstand. Gespeichert bei Supabase Inc. auf Servern in Frankfurt (Art. 6 Abs. 1 lit. b DSGVO). Gruppen und Tourneen werden 30 Tage nach dem letzten Sprung gelöscht, dein Eintrag mit Namen ebenso, mit Online-Spielstand erst nach 13 Monaten ohne Nutzung. Deinen Code speichern wir nur als Prüfwert.");
+    txt($("olPriv"), "Freiwillig und nur, wenn du es nutzt: Für Gruppen speichern wir Name, Nation, Farben, Sprünge sowie Reaktionen und Kommentare zu Sprüngen, sichtbar für alle mit dem Gruppen-Link, dazu wer in welcher Gruppe ist, für den Online-Spielstand deinen Spielstand. Gespeichert bei Supabase Inc. auf Servern in Frankfurt (Art. 6 Abs. 1 lit. b DSGVO). Gruppen werden 30 Tage nach dem letzten Sprung, Beitritt oder Kommentar gelöscht, dein Eintrag mit Namen ebenso, mit Online-Spielstand erst nach 13 Monaten ohne Nutzung. Deinen Code speichern wir nur als Prüfwert.");
   }
   on("btnOnline", () => openOnline(overlay === "info" ? "info" : null));
   on("btnOlDone", () => closeOnline());
@@ -16182,13 +16296,13 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     olDelArm = 0; txt(sp, "Meine Online-Daten löschen"); b.classList.remove("warn");
     try {
       await ON.rpc("tm_forget", { p_code: S.oc });
-      S.oc = null; S.osave = false; S.oat = ""; S.groups = []; S.tours = []; S.opend = []; saveLocal(); fillOnline();
+      S.oc = null; S.osave = false; S.oat = ""; S.clubs = []; S.cseen = {}; S.opend = []; saveLocal(); fillOnline();
       showToastSafeText("GELÖSCHT", "Spielstand und Gruppen-Ergebnisse sind online gelöscht");
     } catch (e) { onlineFail(e, "NICHT GELÖSCHT"); }
   });
   on("btnAkYes", () => { S.onlineAsked = true; S.noOnline = false; saveLocal(); setOverlay(null); const f = askCb; askCb = null; if (f) f(); });
   on("btnAkNo", () => { S.onlineAsked = true; S.noOnline = true; saveLocal(); setOverlay(null); const f = askCb; askCb = null; if (f) f(); });
-  $("chGroups").addEventListener("click", (e) => { const b = e.target.closest("[data-g]"); if (b) openGroup(b.dataset.g); });
+  $("chGroups").addEventListener("click", (e) => { const b = e.target.closest("[data-c]"); if (b) openClub(b.dataset.c); });
   // Rangliste der Gruppe: Zeile antippen = diesen Sprung ansehen
   $("chBoard").addEventListener("click", (e) => { const b = e.target.closest(".chb-row.can"); if (b) watchGroupRow(+b.dataset.i); });
   // Browser dürfen den Spielstand dann nicht still wegräumen (wo unterstützt; ohne Rückfrage)
@@ -16231,13 +16345,11 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   txt($("verTxt"), "Version " + VERSION);
   if (S.repaired) { softNotice("Der Spielstand war teilweise beschädigt und wurde repariert."); delete S.repaired; save(); }
   // Herausforderung aus dem Link (#c=…); auch wenn der Link in einem schon offenen Tab landet
-  const tour0 = tourFromLocation(), grp0 = tour0 ? null : groupFromLocation(), chal0 = tour0 || grp0 ? null : chalFromLocation();
-  if (tour0) openTourCode(tour0); else if (grp0) openGroup(grp0); else if (chal0) openChal(chal0);
+  const grp0 = groupFromLocation(), chal0 = grp0 ? null : chalFromLocation();
+  if (grp0) openClub(grp0); else if (chal0) openChal(chal0);
   window.addEventListener("hashchange", () => {
-    const tc = tourFromLocation();
-    if (tc) { if (mode !== "jump") openTourCode(tc); return; }
     const g = groupFromLocation();
-    if (g) { if (mode !== "jump") openGroup(g); return; }
+    if (g) { if (mode !== "jump") openClub(g); return; }
     const c = chalFromLocation(); if (c && mode !== "jump") openChal(c);
   });
   // Online: liegengebliebene Gruppensprünge nachsenden, Spielstand abgleichen
@@ -16246,7 +16358,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 
   // für Tests
   window.__tm = { get J() { return J; }, get mode() { return mode; }, get comp() { return comp; }, get hot() { return hot; }, get bd() { return bd; },
-    onAction, newJump, get H() { return H; }, S, finishJump, get drag() { return drag; }, padScale: () => padK() * uiS, get chal() { return chal; }, get tour() { return tour; }, openTourCode, get lastResult() { return lastResult; }, chalUrl, chalDecode, Hap, setHill, openGroup, get online() { return { on: !!ON, oc: S.oc, osave: S.osave, groups: S.groups, tours: S.tours, opend: S.opend }; }, cloudNow, get cam() { return cam; }, get st() { return lastSt; }, get Q() { return Q; }, get jc() { return jc; }, renderer, Snd, startWatch, ghostPack2, ghostUnpack2, get rp() { return rp; } };
+    onAction, newJump, get H() { return H; }, S, finishJump, get drag() { return drag; }, padScale: () => padK() * uiS, get chal() { return chal; }, get club() { return club; }, openClub, openGroup: openClub, get lastResult() { return lastResult; }, chalUrl, chalDecode, Hap, setHill, get online() { return { on: !!ON, oc: S.oc, osave: S.osave, clubs: S.clubs, cseen: S.cseen, opend: S.opend }; }, cloudNow, get cam() { return cam; }, get st() { return lastSt; }, get Q() { return Q; }, get jc() { return jc; }, renderer, Snd, startWatch, ghostPack2, ghostUnpack2, get rp() { return rp; }, talkPost };
 })();
 
 </script>
