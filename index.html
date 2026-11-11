@@ -362,7 +362,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .help-opt[aria-checked="true"] i { border-color: var(--hi); background: radial-gradient(circle, var(--hi) 0 3.5px, transparent 4px); }
 
 /* Springer: Name, Nation, Aussehen mit Vorschau */
-.jumper { width: 760px; max-width: calc(100% - 32px); max-height: calc(100% - 20px); overflow: auto; gap: 10px; padding: 14px 20px 16px; touch-action: pan-y; }
+.jumper { width: 760px; max-width: calc(100% - 32px); max-height: calc(100% - 20px); overflow: auto; gap: 7px; padding: 14px 20px 16px; touch-action: pan-y; }
 .jumper .h1 { font-size: 32px; line-height: 34px; }
 .jumper, .settings { background: rgba(var(--shade-rgb), 0.96); }
 .jp-grid { display: grid; grid-template-columns: 268px minmax(0, 1fr); gap: 20px; align-items: start; }
@@ -371,10 +371,18 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .jp-stage canvas { display: block; width: 100%; height: 100%; }
 .jp-pose button { flex: 1; }
 .jp-opts { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.jp-opts .set-row { min-height: 36px; justify-content: flex-start; }
+.jp-opts .set-row { min-height: 32px; justify-content: flex-start; }
 .jp-opts .set-row .lbl { min-width: 92px; }
 .jp-id { gap: 10px; }
 .jp-id input { width: auto; flex: 1; min-width: 0; }
+.jp-head { gap: 10px; }
+.jp-head select { width: auto; flex: 1; min-width: 0; }
+/* Person (Kopf) und Ausrüstung als zwei Reiter; vier Haltungen in der Vorschau */
+.jp-tab { align-self: flex-start; margin: 0 0 2px; }
+.jp-tabbox { display: flex; flex-direction: column; gap: 2px; }
+.jp-tabbox[hidden] { display: none; }
+.jp-hint { margin: 6px 0 0; font-family: var(--font-body); font-size: 12.5px; line-height: 17px; color: var(--muted); max-width: 400px; }
+.seg.jp-pose button { padding: 0 4px; font-size: 14px; letter-spacing: 0.02em; }
 .jp-id select { width: 150px; flex: none; }
 .swatches.sm { gap: 7px; }
 .swatches.sm .swatch { width: 26px; height: 26px; border-radius: 13px; flex: none; }
@@ -1869,24 +1877,33 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   </div>
 </section>
 
-<!-- ============ Springer: Name, Nation, Anzug, Helm, Brille, Ski ============ -->
+<!-- ============ Springer: Name, Nation, Kopf (Frisur, Bart, Haare, Haut), Anzug, Helm, Brille, Ski ============ -->
 <section id="scrJumper" class="screen screen-dim2 center" hidden>
   <div class="dialog jumper panel-strong" role="dialog" aria-labelledby="jpTitle">
     <div class="set-head"><h2 id="jpTitle" class="h1">Dein Springer</h2><div class="set-head-btns"><button type="button" id="btnJpRandom" class="btn btn-secondary btn-s"><span class="ico" data-icon="dice"></span><span>Zufall</span></button><button type="button" id="btnJpDone" class="btn btn-primary btn-s"><span>Fertig</span></button></div></div>
     <div class="jp-grid">
       <div class="jp-left">
         <div class="jp-stage"><canvas id="jpCanvas" aria-label="Vorschau deines Springers" role="img"></canvas></div>
-        <div id="segJpPose" class="seg jp-pose" role="radiogroup" aria-label="Haltung in der Vorschau"><button type="button" data-v="sit">Start</button><button type="button" data-v="flight">Flug</button><button type="button" data-v="telemark">Landung</button></div>
+        <div id="segJpPose" class="seg jp-pose" role="radiogroup" aria-label="Haltung in der Vorschau"><button type="button" data-v="sit">Start</button><button type="button" data-v="flight">Flug</button><button type="button" data-v="telemark">Landung</button><button type="button" data-v="pod">Podest</button></div>
       </div>
       <div class="jp-opts">
         <div class="set-row jp-id"><input id="inName" type="text" maxlength="12" autocomplete="off" spellcheck="false" aria-label="Name" placeholder="Dein Name"><select id="inNation" aria-label="Nation"></select></div>
         <div id="jpAsk" class="jp-ask-row" hidden><span id="jpAskTxt">Dein Name steht auf den Tafeln und in Duellen.</span><button type="button" id="btnJpGuest" class="btn-plain">Als Gast spielen</button></div>
+        <div id="segJpTab" class="seg seg-s jp-tab" role="radiogroup" aria-label="Was du gestaltest"><button type="button" data-v="person">Person</button><button type="button" data-v="kit">Ausrüstung</button></div>
+        <div id="jpPerson" class="jp-tabbox">
+        <div class="set-row jp-head"><span class="lbl">Frisur</span><select id="selHair" aria-label="Frisur"></select><select id="selBeard" aria-label="Bart"></select></div>
+        <div class="set-row"><span class="lbl">Haare</span><div id="swHairC" class="swatches sm" role="radiogroup" aria-label="Haarfarbe"></div></div>
+        <div class="set-row"><span class="lbl">Haut</span><div id="swSkin" class="swatches sm" role="radiogroup" aria-label="Hautton"></div></div>
+        <p class="jp-hint">Auf dem Podest nimmst du den Helm ab. Alle sind gleich gebaut; Frisur und Bart wählst du frei.</p>
+        </div>
+        <div id="jpKit" class="jp-tabbox" hidden>
         <div class="set-row"><span class="lbl">Anzug</span><div id="swSuit" class="swatches sm" role="radiogroup" aria-label="Anzugfarbe"></div></div>
         <div class="set-row"><span class="lbl">Muster</span><div id="segPattern" class="seg" role="radiogroup" aria-label="Muster des Anzugs"><button type="button" data-v="uni">Uni</button><button type="button" data-v="stripe">Streifen</button><button type="button" data-v="split">Zweifarbig</button></div></div>
         <div class="set-row"><span class="lbl">Zweitfarbe</span><div id="swAccent" class="swatches sm" role="radiogroup" aria-label="Zweitfarbe des Anzugs"></div></div>
         <div class="set-row"><span class="lbl">Helm</span><div id="swHelmet" class="swatches sm" role="radiogroup" aria-label="Helmfarbe"></div></div>
         <div class="set-row"><span class="lbl">Brille</span><div id="swVisor" class="swatches sm" role="radiogroup" aria-label="Farbe der Brille"></div></div>
         <div class="set-row"><span class="lbl">Ski</span><div id="swSki" class="swatches sm" role="radiogroup" aria-label="Skifarbe"></div></div>
+        </div>
       </div>
     </div>
   </div>
@@ -6092,12 +6109,12 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     hangPlan, drawWith, OVT, FLAG_OF };
 })(typeof window !== "undefined" ? window : globalThis);
 
-/* TELEMARK – Kulisse: Zuschauer, Banden und Objekte an der Schanze, Panorama je Schanze (Nacht, flacher Vektorstil).
- * Welt in Metern (wie render.js), Panorama in Grundeinheiten (Bildschirmhöhe 390) relativ zum Horizont.
+/* COLD MEDAL GAMES – Kulisse, Basis: Hilfen, Schrift in der Welt, Tageszeiten (Lichtstimmung, Lichter, D()).
+ * Gemeinsam für alle Spiele der Reihe, am 11.11.2026 aus skispringen/src/scene.js herausgelöst. Global: CMKulisse.basis.
+ * Braucht plakat.js (TMPlakat) davor.
  */
 (function (root) {
   "use strict";
-  const Hill = root.TMHill;
   const COND = "'Barlow Condensed', 'Avenir Next Condensed', 'HelveticaNeue-CondensedBold', 'Bahnschrift Condensed', 'Roboto Condensed', 'Arial Narrow', sans-serif";
   // Schrift in der Welt (Banden, Transparente, Anzeigetafel): eine feste Schriftgröße, gezoomt wird mit der Transformation. Sonst
   // entstünde beim Zoomen in jedem Bild eine neue Schrift samt Messen, was auf dem Handy merklich Zeit kostet. Breiten werden gemerkt.
@@ -6178,80 +6195,25 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   }
   // Licht an? Deterministisch je Ort, damit Fenster nicht flackern
   function lit(x, y) { if (TH.lights >= 1) return true; if (TH.lights <= 0) return false; const h = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453; return h - Math.floor(h) < TH.lights; }
-  function setTheme(name) { TH = THEMES[name] || THEMES.evening; return TH.name; }
+  const thL = [];   // wer die aktuelle Tageszeit braucht (orte, stadion, panorama, Spiel), hört hier mit
+  function setTheme(name) { TH = THEMES[name] || THEMES.evening; for (const f of thL) f(TH); return TH.name; }
   function themeName() { return TH.name; }
+  function onTheme(f) { thL.push(f); f(TH); }
 
-  // ------------------------------------------------------------------ Flaggen
-  // h = waagrechte Streifen, v = senkrechte, x = skandinavisches Kreuz, c = Schweizer Kreuz, d = Scheibe, t = Dreieck, u = Sterne und Streifen
-  const FLAGS = {
-    NOR: ["x", "#BA0C2F", "#FFFFFF", "#00205B"], FIN: ["x", "#FFFFFF", "#FFFFFF", "#003580"],
-    AUT: ["h", "#C8102E", "#FFFFFF", "#C8102E"], GER: ["h", "#151515", "#DD0000", "#FFCE00"],
-    POL: ["h", "#FFFFFF", "#DC143C"], SLO: ["s", "#FFFFFF", "#0051BA", "#ED1C24"],
-    ITA: ["v", "#009246", "#FFFFFF", "#CE2B37"], SUI: ["c", "#DA291C", "#FFFFFF"],
-    JPN: ["d", "#FFFFFF", "#BC002D"], CZE: ["t", "#FFFFFF", "#D7141A", "#11457E"], USA: ["u", "#B22234", "#FFFFFF", "#3C3B6E"],
-  };
-  function drawFlag(ctx, code, w, h) {
-    const f = FLAGS[code] || FLAGS.AUT, t = f[0];
-    if (t === "s") {
-      // Slowenien: Streifen mit Wappen (blauer Schild, weißer Triglav)
-      for (let i = 0; i < 3; i++) { ctx.fillStyle = f[i + 1]; ctx.fillRect(0, i * h / 3, w, h / 3 + 0.4); }
-      const sx = w * 0.2, sy = h * 0.14, sw = w * 0.2, sh = h * 0.5;
-      ctx.fillStyle = "#0051BA"; ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + sw, sy); ctx.lineTo(sx + sw, sy + sh * 0.6); ctx.quadraticCurveTo(sx + sw / 2, sy + sh * 1.05, sx, sy + sh * 0.6); ctx.closePath(); ctx.fill();
-      ctx.strokeStyle = "#ED1C24"; ctx.lineWidth = Math.max(0.5, w * 0.025); ctx.stroke();
-      ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.moveTo(sx + sw * 0.12, sy + sh * 0.62); ctx.lineTo(sx + sw * 0.5, sy + sh * 0.22); ctx.lineTo(sx + sw * 0.88, sy + sh * 0.62); ctx.closePath(); ctx.fill();
-      return;
-    }
-    if (t === "h" || t === "v") {
-      const n = f.length - 1;
-      for (let i = 0; i < n; i++) {
-        ctx.fillStyle = f[i + 1];
-        if (t === "h") ctx.fillRect(0, i * h / n, w, h / n + 0.4); else ctx.fillRect(i * w / n, 0, w / n + 0.4, h);
-      }
-    } else if (t === "x") {
-      ctx.fillStyle = f[1]; ctx.fillRect(0, 0, w, h);
-      ctx.fillStyle = f[2]; ctx.fillRect(w * 0.27, 0, w * 0.2, h); ctx.fillRect(0, h * 0.38, w, h * 0.24);
-      ctx.fillStyle = f[3]; ctx.fillRect(w * 0.31, 0, w * 0.12, h); ctx.fillRect(0, h * 0.44, w, h * 0.12);
-    } else if (t === "c") {
-      ctx.fillStyle = f[1]; ctx.fillRect(0, 0, w, h);
-      ctx.fillStyle = f[2]; ctx.fillRect(w * 0.42, h * 0.2, w * 0.16, h * 0.6); ctx.fillRect(w * 0.29, h * 0.42, w * 0.42, h * 0.16);
-    } else if (t === "d") {
-      ctx.fillStyle = f[1]; ctx.fillRect(0, 0, w, h);
-      ctx.fillStyle = f[2]; ctx.beginPath(); ctx.arc(w / 2, h / 2, h * 0.3, 0, TAU); ctx.fill();
-    } else if (t === "t") {
-      ctx.fillStyle = f[1]; ctx.fillRect(0, 0, w, h / 2); ctx.fillStyle = f[2]; ctx.fillRect(0, h / 2, w, h / 2);
-      ctx.fillStyle = f[3]; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(w * 0.45, h / 2); ctx.lineTo(0, h); ctx.closePath(); ctx.fill();
-    } else {
-      for (let i = 0; i < 7; i++) { ctx.fillStyle = i % 2 ? f[2] : f[1]; ctx.fillRect(0, i * h / 7, w, h / 7 + 0.4); }
-      ctx.fillStyle = f[3]; ctx.fillRect(0, 0, w * 0.42, h * 4 / 7);
-    }
-  }
-  // wehende Flagge am Mastkopf (px, py), w/h in px, Fahne nach rechts
-  function wavingFlag(ctx, code, px, py, w, h, t, ph, speed) {
-    const a = Math.sin(t * (speed || 2.6) + ph);
-    ctx.save();
-    ctx.translate(px, py);
-    ctx.transform(1, a * 0.13, 0, 1, 0, 0);
-    drawFlag(ctx, code, w * (0.93 + 0.07 * Math.cos(t * 2.1 + ph)), h);
-    ctx.restore();
-  }
+  const K = root.CMKulisse || (root.CMKulisse = {});
+  K.basis = { COND, TPX, wtWidth, wtFill, TAU, rng, hash, hex, mix, pick, clamp, noise, hasRR, PK, INK, PS, PG, THEMES, D, lit, setTheme, themeName, onTheme };
+})(typeof window !== "undefined" ? window : globalThis);
 
-  // ------------------------------------------------------------------ Farben der Zuschauer: Druckfarben des Plakats (Mantel und Hut)
-  const PI0 = root.TMPlakat.INK, pm = root.TMPlakat.mix;
-  const JACKET = [PI0.tinte, PI0.dach, PI0.navy, PI0.gruen, pm(PI0.tinte, PI0.dach, 0.4), pm(PI0.navy, PI0.tief, 0.35), pm(PI0.gruen, PI0.tinte, 0.3), pm(PI0.rot, PI0.dach, 0.55),
-    pm(PI0.tief, PI0.tinte, 0.45), pm(PI0.violett, PI0.tinte, 0.3), pm(PI0.dach, PI0.tinte, 0.3), pm(PI0.fichte, PI0.navy, 0.4)];
-  const JACKET_HI = [PI0.rot, PI0.ocker, PI0.himmel, pm(PI0.papier, PI0.dunst, 0.3), pm(PI0.gruen, PI0.papier, 0.2)];
-  const SKIN = ["#E2BC9E", "#C9966F", "#8E5F43"];
-  const HAT = [PI0.rot, PI0.papier, PI0.navy, PI0.ocker, PI0.himmel, PI0.gruen, PI0.tinte, pm(PI0.rot, PI0.violett, 0.4), PI0.tinte];
-  const SHADE = PI0.tinte;
+/* COLD MEDAL GAMES – Kulisse, Orte: Panorama-Daten je Ort (SCENES), Gastgeberland, Banden in den Farben des Orts.
+ * Ein Ort für alle Sportarten, die dort stattfinden; Schlüssel wie im Skispringen (holmenkollen, oberstdorf-fh …,
+ * der Teil vor dem Bindestrich ist der Ort). Am 11.11.2026 aus skispringen/src/scene.js herausgelöst. Global: CMKulisse.orte.
+ */
+(function (root) {
+  "use strict";
+  // Gastgeberland je Ort (Zuschauer, Fahnen)
   const HOME = { holmenkollen: "NOR", "holmenkollen-nh": "NOR", oberstdorf: "GER", "oberstdorf-fh": "GER", garmisch: "GER", innsbruck: "AUT", bischofshofen: "AUT", "predazzo-lh": "ITA", "predazzo-nh": "ITA",
     zakopane: "POL", "zakopane-nh": "POL", willingen: "GER", engelberg: "SUI", planica: "SLO", "planica-lh": "SLO", stmoritz: "SUI" };
-  const GUEST = ["POL", "SLO", "AUT", "GER", "NOR", "JPN", "SUI", "FIN", "CZE", "ITA", "USA"];
-  const CHEER = {
-    NOR: ["HEIA NORGE", "HEIA!"], GER: ["AUF GEHT'S!", "HOPP!"], AUT: ["HOPP AUSTRIA", "AUF GEHT'S!"], ITA: ["FORZA!", "FORZA AZZURRI"],
-    POL: ["POLSKA!", "POLSKA GOLA!"], SLO: ["SLOVENIJA!"], JPN: ["GANBARE!"], SUI: ["HOPP SCHWIIZ"], FIN: ["SUOMI!"], CZE: ["DO TOHO!"], USA: ["GO USA!"],
-  };
 
-  // ------------------------------------------------------------------ Welt an der Schanze aufbauen
   // Banden je Schanze in ihren Farben (frei nachempfunden): Hintergründe, Schrift/Muster, ein Wort für die Schriftbanden.
   // Nur Orts- und Landschaftsnamen, keine Veranstaltungs- oder Markennamen.
   const BOARDS = {
@@ -6267,433 +6229,6 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     planica: { bg: ["#1E8A4C", "#F1EEE6", "#1F3563"], fg: ["#F1EEE6", "#1E8A4C", "#C8202F"], word: "PLANICA" },
     stmoritz: { bg: ["#D52B1E", "#F1EEE6", "#2B3442"], fg: ["#F1EEE6", "#D52B1E", "#2B3442"], word: "ST. MORITZ 1928" },
   };
-  function buildWorld(H) {
-    const r = rng(hash(H.key) ^ 0x5eed);
-    const home = HOME[H.key] || "AUT";
-    const nat = () => (r() < 0.5 ? home : pick(r, GUEST));
-    const sAt = (d) => d - H.K + H.sK;
-    const at = (s) => Hill.landAtS(H, s);
-    const W = { people: [], banners: [], boards: [], objs: [], seats: [], terr: [], home, name: H.name.toUpperCase() };
-    const sScreen = H.sU + 22, sLeader = H.sU + 37, sCam2 = H.sU + 51, sFlags = H.sU + 60, sStand = H.sU + 77;
-    const sEnd = H.sEnd;
-    W.leader = { s: sLeader, p: at(sLeader) };
-    const guests = GUEST.filter((g) => g !== home).sort(() => r() - 0.5);
-    const flagRow = [home].concat(guests.slice(0, 6));
-    W.objs.push({ t: "judges", s: sAt(H.K + 10) });
-    W.objs.push({ t: "cam", s: sAt(H.K - 26), h: 6.5 });
-    W.objs.push({ t: "screen", s: sScreen });
-    W.objs.push({ t: "cam", s: sCam2, h: 4.8 });
-    W.objs.push({ t: "flags", s: sFlags, nat: flagRow, ph: flagRow.map(() => r() * TAU) });
-    W.objs.push({ t: "stand", s: sStand, s1: sEnd - 3 });
-    for (const o of W.objs) o.p = at(o.s);
-
-    // Zuschauer in unregelmäßigen Gruppen: Dichte und Reihen je Zone
-    const zones = [
-      { a: sAt(16), b: sAt(28), dens: 1, rows: 1, lift: 0.3, coach: true },
-      { a: H.sK - 26, b: H.sL - 1, dens: 0.3, rows: 2, lift: 0 },
-      { a: H.sL - 1, b: H.sU, dens: 0.6, rows: 3, lift: 0 },
-      { a: H.sU, b: sLeader - 1.8, dens: 0.92, rows: 3, lift: 0 },
-      { a: sLeader + 1.8, b: sStand - 1.2, dens: 0.8, rows: 3, lift: 0 },
-    ];
-    for (const z of zones) {
-      if (z.coach) W.coach = { a: z.a, b: z.b, lift: z.lift };
-      let s = z.a + r() * 1.5;
-      while (s < z.b) {
-        const len = z.coach ? z.b - z.a : (1.5 + r() * 9) * (0.6 + z.dens);
-        const end = Math.min(z.b, s + len);
-        const rows = z.coach ? 1 : Math.max(1, Math.min(z.rows, Math.round(z.rows * (0.45 + 0.6 * r()))));
-        W.terr.push({ a: s - 0.3, b: end + 0.3, rows, lift: z.lift });
-        for (let row = rows - 1; row >= 0; row--) {
-          let x = s + r() * 0.5 + row * 0.2;
-          while (x < end) {
-            if (r() < 0.93) {
-              const p = at(x);
-              const hi = r() < 0.12;
-              let body = hi ? pick(r, JACKET_HI) : pick(r, JACKET);
-              if (row) body = mix(body, SHADE, row * 0.16);
-              W.people.push({
-                s: x, x: p.x + row * 0.12, y: p.y + z.lift - 0.35 + row * 0.45, row, h: (1.55 + r() * 0.32) * 0.88, w: (0.42 + r() * 0.1) * 0.9, body,
-                skin: pick(r, SKIN), hat: r() < 0.72 ? (row ? mix(pick(r, HAT), SHADE, row * 0.16) : pick(r, HAT)) : null, ht: r() < 0.55 ? 1 : 2,
-                flag: r() < (z.coach ? 0.06 : 0.05) ? nat() : null, ph: r() * TAU, ch: r(),
-              });
-            }
-            x += 0.44 + r() * 0.42;
-          }
-        }
-        // Transparent vor der ersten Reihe
-        if (!z.coach && rows >= 2 && end - s > 3 && r() < 0.16) {
-          const n = nat(), a = s + 0.4 + r() * 0.6, b = Math.min(end - 0.2, a + 2.4 + r() * 1.8);
-          const pal = pick(r, [["#E3E7EE", "#9E2B2B"], ["#9E2B2B", "#F1F3F6"], ["#1F3A63", "#F1F3F6"], ["#C99A3A", "#14233B"], ["#F1F3F6", "#1F3A63"]]);
-          const pa = at(a), pb = at(b);
-          W.banners.push({ a, b, x0: pa.x, y0: pa.y, x1: pb.x, y1: pb.y, bg: pal[0], fg: pal[1], text: pick(r, CHEER[n] || ["HOPP!"]) });
-        }
-        s = end + (1 - z.dens) * (2 + r() * 10) + 0.4 + r() * 1.4;
-      }
-    }
-    W.people.sort((p, q) => p.x - q.x);
-
-    // Banden in den Farben der Schanze (Garmisch mit weiß-blauen Rauten); Schrift nur selten und reihum
-    const HB = BOARDS[H.key] || BOARDS[H.key.split("-")[0]];
-    const BG = HB ? HB.bg : ["#14233B", "#1F3550", "#2A1E2E", "#3A2326", "#1E3A3A", "#2E3440", "#263D2E", "#3B3320", "#1B2B45", "#33263F", "#24313F", "#3A2B22"];
-    const FG = HB ? HB.fg : ["#2FAFBE", "#B98E36", "#A9443A", "#6AAE82", "#8EA4C6", "#BCC4CF", "#C67A44"];
-    const texts = HB ? [W.name, HB.word || W.name, "HS " + H.HS, W.name, "K " + H.K, HB.word || "SKISPRINGEN"] : [W.name, "TELEMARK", "SKI JUMPING", "HS " + H.HS, "K " + H.K, "WINTER", W.name, "SKISPRINGEN"];
-    let ti = Math.floor(r() * texts.length), sinceText = 3, lastBg = "";
-    let s = H.sL - 3;
-    while (s < sEnd - 2) {
-      const w = 2.4 + r() * 3.6;
-      if (s < sLeader + 1.6 && s + w > sLeader - 1.6) { s = sLeader + 1.6; continue; }
-      let bg = pick(r, BG); if (bg === lastBg) bg = pick(r, BG); lastBg = bg;
-      let fg = pick(r, FG); for (let i = 0; i < 4 && fg === bg; i++) fg = pick(r, FG);
-      let kind = pick(r, HB && HB.rauten ? ["rauten", "rauten", "stripe", "plain", "two"] : ["stripe", "stripe", "band", "dots", "plain", "two"]), text = null;
-      if (sinceText >= 3 && r() < 0.32 && w > 3.4) { kind = "text"; text = texts[ti++ % texts.length]; sinceText = 0; } else sinceText++;
-      const pa = at(s), pb = at(s + w);
-      let fg2 = pick(r, BG); for (let i = 0; i < 4 && fg2 === bg; i++) fg2 = pick(r, BG);
-      W.boards.push({ a: s, b: s + w, x0: pa.x, y0: pa.y, x1: pb.x, y1: pb.y, bg, fg, k: kind, text, fg2 });
-      s += w + (r() < 0.1 ? 0.8 + r() * 2 : 0.06);
-    }
-    W.fence = { a: H.sK - 30, b: H.sL - 3 };
-
-    // Tribüne: sitzende Zuschauer in Reihen
-    const st = W.objs.find((o) => o.t === "stand");
-    st.x0 = at(st.s).x; st.x1 = st.x0 + (st.s1 - st.s); st.y = at(st.s).y; st.rows = 6;
-    // Treppen alle 10–13 m, leere Bereiche in Gruppen
-    st.aisles = [];
-    for (let x = st.x0 + 6 + r() * 4; x < st.x1 - 3; x += 10 + r() * 3) st.aisles.push(x);
-    const emptyAt = noise(r, 5);
-    for (let row = st.rows - 1; row >= 0; row--) {
-      for (let x = st.x0 + 0.7 + r() * 0.3; x < st.x1 - 0.6; x += 0.52 + r() * 0.16) {
-        if (st.aisles.some((a) => Math.abs(x - a) < 0.75)) continue;
-        if (r() < 0.08 || emptyAt(x + row * 13) > 0.45) continue;
-        const hi = r() < 0.1;
-        W.seats.push({ x, row, c: mix(hi ? pick(r, JACKET_HI) : pick(r, JACKET), SHADE, 0.08 + row * 0.035), skin: pick(r, SKIN), hat: r() < 0.6 ? mix(pick(r, HAT), SHADE, row * 0.035) : null, ph: r() * TAU, ch: r() });
-      }
-    }
-    // Häuser hinter dem Auslauf
-    W.houses = [];
-    const endP = at(sEnd);
-    for (let x = endP.x + 34; x < endP.x + 190; x += 16 + r() * 26) W.houses.push({ x, w: 7 + r() * 5, h: 4.5 + r() * 3, win: r() });
-    return W;
-  }
-
-  // ------------------------------------------------------------------ Welt zeichnen
-  function rrect(path, x, y, w, h, rad) {
-    if (hasRR) path.roundRect(x, y, w, h, rad); else path.rect(x, y, w, h);
-  }
-  function addTo(map, key) { let p = map.get(key); if (!p) { p = new Path2D(); map.set(key, p); } return p; }
-  function fillMap(ctx, map) { for (const [c, p] of map) { ctx.fillStyle = c; ctx.fill(p); } }
-
-  // view: { W, H, t, focus: { x, landed }, screen: [Zeile1, Zeile2] }
-  function drawWorld(ctx, H, Wd, cam, view, terrainY) {
-    const ppm = cam.ppm, t = view.t || 0;
-    const X = (x) => cam.ax + (x - cam.cx) * ppm, Y = (y) => cam.ay - (y - cam.cy) * ppm;
-    const xMin = cam.cx - (cam.ax + 60) / ppm, xMax = cam.cx + (view.W - cam.ax + 60) / ppm;
-    const yMin = cam.cy - (view.H - cam.ay + 40) / ppm, yMax = cam.cy + (cam.ay + 60) / ppm;
-    const inX = (a, b) => b > xMin && a < xMax;
-    const at = (s) => Hill.landAtS(H, s);
-
-    // Häuser hinter dem Auslauf (auf dem Gelände rechts)
-    if (Wd.houses && terrainY) for (const h of Wd.houses) {
-      if (!inX(h.x - h.w, h.x + h.w)) continue;
-      const gy = terrainY(h.x);
-      const x0 = X(h.x - h.w / 2), x1 = X(h.x + h.w / 2), yb = Y(gy - 1), yt = Y(gy + h.h), yr = Y(gy + h.h + h.w * 0.32);
-      ctx.fillStyle = TH.night ? "#162338" : TH.house[0]; ctx.fillRect(x0, yt, x1 - x0, yb - yt);
-      ctx.fillStyle = TH.night ? "#2B3E5C" : TH.roof; ctx.beginPath(); ctx.moveTo(x0 - 0.4 * ppm, yt); ctx.lineTo((x0 + x1) / 2, yr); ctx.lineTo(x1 + 0.4 * ppm, yt); ctx.closePath(); ctx.fill();
-      if (ppm > 1.5) {
-        ctx.fillStyle = lit(h.x, h.h) ? "rgba(246,200,112,0.85)" : TH.glass;
-        const n = Math.max(2, Math.round(h.w / 2.6));
-        for (let i = 0; i < n; i++) {
-          if ((h.win * 7 + i * 3.7) % 1 < 0.35) continue;
-          const wx = x0 + (i + 0.3) * (x1 - x0) / n, ww = 0.4 * (x1 - x0) / n;
-          ctx.fillRect(wx, Y(gy + h.h * 0.62), ww, 0.9 * ppm);
-        }
-      }
-    }
-
-    // Objekte hinter den Zuschauern
-    for (const o of Wd.objs) {
-      if (o.t === "stand") { if (inX(o.x0 - 2, o.x1 + 2)) drawStand(ctx, Wd, o, X, Y, ppm, t, xMin, xMax, view); continue; }
-      const p = o.p;
-      if (!inX(p.x - 8, p.x + 8)) continue;
-      if (o.t === "judges") drawJudges(ctx, H, p, X, Y, ppm);
-      else if (o.t === "cam") drawCamTower(ctx, p, o.h, X, Y, ppm, t);
-      else if (o.t === "screen") drawScreen(ctx, Wd, p, X, Y, ppm, view);
-      else if (o.t === "flags") {
-        for (let i = 0; i < o.nat.length; i++) {
-          const fx = p.x + i * 2.3, top = p.y + 7.6;
-          ctx.strokeStyle = "#6E7D93"; ctx.lineWidth = Math.max(1, 0.08 * ppm);
-          ctx.beginPath(); ctx.moveTo(X(fx), Y(p.y)); ctx.lineTo(X(fx), Y(top)); ctx.stroke();
-          if (ppm > 1.2) wavingFlag(ctx, o.nat[i], X(fx), Y(top - 0.05), 1.7 * ppm, 1.1 * ppm, t, o.ph[i], 2.2);
-        }
-      }
-    }
-
-    // Trainerpodest
-    if (Wd.coach && inX(at(Wd.coach.a).x - 2, at(Wd.coach.b).x + 2)) {
-      const c = Wd.coach;
-      ctx.fillStyle = D("#1A2638"); ctx.beginPath();
-      const N = 6, top = [];
-      for (let i = 0; i <= N; i++) { const p = at(c.a - 0.6 + (c.b - c.a + 1.2) * i / N); top.push([X(p.x), Y(p.y + c.lift)]); }
-      ctx.moveTo(top[0][0], top[0][1]); for (const q of top) ctx.lineTo(q[0], q[1]);
-      for (let i = N; i >= 0; i--) { const p = at(c.a - 0.6 + (c.b - c.a + 1.2) * i / N); ctx.lineTo(X(p.x), Y(p.y - 1)); }
-      ctx.closePath(); ctx.fill();
-      ctx.strokeStyle = D("#4A5B74"); ctx.lineWidth = Math.max(1, 0.07 * ppm);
-      ctx.beginPath(); top.forEach((q, i) => (i ? ctx.lineTo(q[0], q[1] - 1.05 * ppm) : ctx.moveTo(q[0], q[1] - 1.05 * ppm))); ctx.stroke();
-    }
-
-    // Stehplätze (dunkler Grund hinter den Gruppen)
-    ctx.fillStyle = D("#0D192A");
-    for (const g of Wd.terr) {
-      const pa = at(g.a), pb = at(g.b);
-      if (!inX(pa.x, pb.x)) continue;
-      const hgt = g.lift + 0.35 + g.rows * 0.55;
-      const n = Math.max(1, Math.ceil((g.b - g.a) / 3));
-      ctx.beginPath();
-      for (let i = 0; i <= n; i++) { const p = at(g.a + (g.b - g.a) * i / n); const xx = X(p.x), yy = Y(p.y + hgt); i ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy); }
-      for (let i = n; i >= 0; i--) { const p = at(g.a + (g.b - g.a) * i / n); ctx.lineTo(X(p.x), Y(p.y - 0.5)); }
-      ctx.closePath(); ctx.fill();
-    }
-
-    drawPeople(ctx, Wd, X, Y, ppm, t, xMin, xMax, view);
-
-    // Transparente
-    for (const b of Wd.banners) {
-      if (!inX(b.x0, b.x1)) continue;
-      const lo = 1.02, hi = 1.62;
-      const ax = X(b.x0), ay0 = Y(b.y0 + lo), ay1 = Y(b.y0 + hi), bx = X(b.x1), by0 = Y(b.y1 + lo), by1 = Y(b.y1 + hi);
-      const wob = Math.sin(t * 1.7 + b.a) * 0.04 * ppm;
-      ctx.fillStyle = b.bg; ctx.beginPath(); ctx.moveTo(ax, ay1 + wob); ctx.lineTo(bx, by1 - wob); ctx.lineTo(bx, by0 - wob); ctx.lineTo(ax, ay0 + wob); ctx.closePath(); ctx.fill();
-      if (ppm > 7) {
-        const len = Math.hypot(bx - ax, by1 - ay1);
-        ctx.save(); ctx.translate((ax + bx) / 2, (ay0 + ay1 + by0 + by1) / 4); ctx.rotate(Math.atan2(by1 - ay1, bx - ax));
-        ctx.fillStyle = b.fg; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-        let fs = 0.44 * ppm; const tw = wtWidth(ctx, "800", b.text) * fs;
-        if (tw > len * 0.9) fs *= len * 0.9 / tw;
-        wtFill(ctx, "800", b.text, fs, 0, fs * 0.05);
-        ctx.restore();
-      }
-    }
-
-    // Zaun am Aufsprunghang
-    const f = Wd.fence;
-    if (f && ppm > 1.2) {
-      ctx.strokeStyle = D("#33435C"); ctx.lineWidth = Math.max(1, 0.06 * ppm);
-      for (const hh of [0.5, 1.0]) {
-        ctx.beginPath();
-        let first = true;
-        for (let s = f.a; s <= f.b; s += 2) { const p = at(s); if (p.x < xMin - 4 || p.x > xMax + 4) { first = true; continue; } const xx = X(p.x), yy = Y(p.y + hh); first ? ctx.moveTo(xx, yy) : ctx.lineTo(xx, yy); first = false; }
-        ctx.stroke();
-      }
-      if (ppm > 4) {
-        ctx.beginPath();
-        for (let s = f.a; s <= f.b; s += 2.5) { const p = at(s); if (p.x < xMin || p.x > xMax) continue; ctx.moveTo(X(p.x), Y(p.y)); ctx.lineTo(X(p.x), Y(p.y + 1.05)); }
-        ctx.stroke();
-      }
-    }
-
-    // Banden
-    for (const b of Wd.boards) {
-      if (!inX(b.x0, b.x1)) continue;
-      const x0 = X(b.x0), x1 = X(b.x1), y0 = Y(b.y0), y1 = Y(b.y1), hb = 1.0 * ppm;
-      // kräftige Schanzenfarben bei Nacht etwas gedämpft
-      if (b.night !== TH.night) { b.night = TH.night; const dm = (c) => TH.night ? mix(c, "#101826", 0.32) : c; b.cBg = dm(b.bg); b.cFg = dm(b.fg); b.cFg2 = dm(b.fg2); }
-      ctx.fillStyle = b.cBg; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.lineTo(x1, y1 - hb); ctx.lineTo(x0, y0 - hb); ctx.closePath(); ctx.fill();
-      if (ppm < 3) continue;
-      const ang = Math.atan2(y1 - y0, x1 - x0), len = Math.hypot(x1 - x0, y1 - y0);
-      ctx.save(); ctx.translate(x0, y0 - hb); ctx.rotate(ang);
-      ctx.fillStyle = b.cFg;
-      if (b.k === "rauten") {
-        // weiß-blaue Rauten (Bayern): schräges Gitter aus Rhomben
-        ctx.fillStyle = TH.night ? mix("#F1EEE6", "#101826", 0.32) : "#F1EEE6"; ctx.fillRect(0, 0, len, hb);
-        ctx.fillStyle = TH.night ? mix("#2F64A8", "#101826", 0.32) : "#2F64A8";
-        const dw = hb * 0.62;
-        for (let row = 0; row < 2; row++) for (let x = (row ? dw / 2 : 0) - dw; x < len + dw; x += dw) {
-          const cy = row ? hb * 0.75 : hb * 0.25;
-          ctx.beginPath(); ctx.moveTo(x, cy); ctx.lineTo(x + dw / 2, cy - hb * 0.25); ctx.lineTo(x + dw, cy); ctx.lineTo(x + dw / 2, cy + hb * 0.25); ctx.closePath(); ctx.fill();
-        }
-      }
-      else if (b.k === "stripe") ctx.fillRect(0, hb * 0.12, len, hb * 0.12);
-      else if (b.k === "band") { ctx.beginPath(); ctx.moveTo(len * 0.18, hb); ctx.lineTo(len * 0.34, 0); ctx.lineTo(len * 0.5, 0); ctx.lineTo(len * 0.34, hb); ctx.closePath(); ctx.fill(); }
-      else if (b.k === "dots") { for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.arc(len * (0.25 + i * 0.25), hb * 0.5, hb * 0.2, 0, TAU); ctx.fill(); } }
-      else if (b.k === "two") { ctx.fillStyle = b.cFg2; ctx.fillRect(len * 0.55, 0, len * 0.45, hb); ctx.fillStyle = b.cFg; ctx.fillRect(len * 0.55, hb * 0.78, len * 0.45, hb * 0.1); }
-      else if (b.k === "text" && ppm > 6) {
-        let fs = hb * 0.62; const tw = wtWidth(ctx, "800", b.text) * fs;
-        if (tw > len * 0.86) fs *= len * 0.86 / tw;
-        ctx.textAlign = "center"; ctx.textBaseline = "middle"; wtFill(ctx, "800", b.text, fs, len / 2, hb * 0.54);
-      }
-      ctx.restore();
-      ctx.fillStyle = "rgba(0,0,0,0.25)"; ctx.fillRect(x1 - 1, Math.min(y1, y1 - hb), Math.max(1, 0.05 * ppm), hb);
-    }
-
-    // Leader-Box
-    const L = Wd.leader;
-    if (L && inX(L.p.x - 3, L.p.x + 3)) drawLeader(ctx, L.p, X, Y, ppm, t, view);
-  }
-
-  function drawPeople(ctx, Wd, X, Y, ppm, t, xMin, xMax, view) {
-    const P = Wd.people;
-    let lo = 0, hi = P.length;
-    while (lo < hi) { const m = (lo + hi) >> 1; if (P[m].x < xMin - 2) lo = m + 1; else hi = m; }
-    const focus = view.focus;
-    const flags = [];
-    if (ppm < 2.6) {
-      // Übersicht: ein Fleck je Person, Farbe der Jacke
-      const map = new Map();
-      for (let i = lo; i < P.length && P[i].x <= xMax + 2; i++) {
-        const p = P[i];
-        addTo(map, p.body).rect(X(p.x) - 0.6, Y(p.y + p.h * 0.95), 1.2, Math.max(1.2, p.h * 0.8 * ppm));
-        if (p.flag) flags.push(p);
-      }
-      fillMap(ctx, map);
-    } else {
-      const detail = ppm > 6;
-      for (let row = 2; row >= 0; row--) {
-        const bodies = new Map(), heads = new Map(), hats = new Map(), arms = new Map();
-        for (let i = lo; i < P.length && P[i].x <= xMax + 2; i++) {
-          const p = P[i];
-          if (p.row !== row) continue;
-          const cheer = focus && focus.landed && p.ch < 0.42 && Math.abs(p.x - focus.x) < 22;
-          const jumpY = cheer ? Math.abs(Math.sin(t * 7 + p.ph)) * 0.13 : 0;
-          const cx = X(p.x), yb = Y(p.y + jumpY), w = p.w * ppm, sh = p.h * 0.8 * ppm;
-          rrect(addTo(bodies, p.body), cx - w / 2, yb - sh, w, sh, [w * 0.38, w * 0.38, 0, 0]);
-          const hr = 0.115 * ppm, hy = yb - sh - hr * 0.95;
-          const hp = addTo(heads, p.skin); hp.moveTo(cx + hr, hy); hp.arc(cx, hy, hr, 0, TAU);
-          if (detail && p.hat) {
-            const q = addTo(hats, p.hat);
-            q.moveTo(cx + hr * 1.05, hy - hr * 0.1); q.arc(cx, hy - hr * 0.1, hr * 1.05, Math.PI, TAU); q.closePath();
-            if (p.ht === 2) { q.moveTo(cx + hr * 0.42, hy - hr * 1.18); q.arc(cx, hy - hr * 1.18, hr * 0.42, 0, TAU); }
-          }
-          if (detail && (cheer || (p.flag && p.ch < 0.4))) {
-            const a = addTo(arms, p.body), wave = cheer ? Math.sin(t * 9 + p.ph) * 0.08 * ppm : 0;
-            a.moveTo(cx - w * 0.42, yb - sh + 0.08 * ppm); a.lineTo(cx - 0.3 * ppm + wave, yb - sh - 0.36 * ppm);
-            a.moveTo(cx + w * 0.42, yb - sh + 0.08 * ppm); a.lineTo(cx + 0.3 * ppm - wave, yb - sh - 0.36 * ppm);
-          }
-          if (p.flag) flags.push(p);
-        }
-        fillMap(ctx, bodies);
-        if (arms.size) { ctx.lineWidth = Math.max(1, 0.11 * ppm); ctx.lineCap = "round"; for (const [c, pa] of arms) { ctx.strokeStyle = c; ctx.stroke(pa); } }
-        fillMap(ctx, heads);
-        fillMap(ctx, hats);
-      }
-    }
-    // Fahnen der Fans
-    if (ppm > 1.4) {
-      ctx.strokeStyle = "#8C97A8"; ctx.lineWidth = Math.max(0.8, 0.045 * ppm);
-      for (const p of flags) {
-        const cheer = focus && focus.landed && Math.abs(p.x - focus.x) < 26;
-        const px = X(p.x + 0.22), top = Y(p.y + p.h + 0.55 + (cheer ? Math.abs(Math.sin(t * 6 + p.ph)) * 0.25 : 0));
-        ctx.beginPath(); ctx.moveTo(px, Y(p.y + p.h * 0.55)); ctx.lineTo(px, top); ctx.stroke();
-        wavingFlag(ctx, p.flag, px, top, Math.max(2.2, 0.82 * ppm), Math.max(1.5, 0.54 * ppm), t, p.ph, cheer ? 5 : 2.6);
-      }
-    }
-  }
-
-  // Richterturm hinter der Kante wie auf dem Plakat (plakat.js): Kabine mit Fensterband und zwei Landesfahnen, Holz auf Gitterstützen
-  // oder verputzter Pfeiler je Ort. Eine Einheit des Entwurfs = 0,152 m (Kabine rund 7 m breit, Turm rund 15 m hoch).
-  function drawJudges(ctx, H, p, X, Y, ppm) {
-    const s = 0.152 * ppm;
-    if (s * 46 < 3) return;
-    ctx.save(); ctx.translate(X(p.x), Y(p.y) + 2 * s); ctx.scale(s, s); ctx.lineJoin = "round"; ctx.lineCap = "butt";
-    PK.drawWith(ctx, TH.name, "judge", H.key.split("-")[0], 0, 0);
-    ctx.restore();
-  }
-
-  function drawCamTower(ctx, p, h, X, Y, ppm, t) {
-    const x = p.x, b = p.y - 1, top = p.y + h;
-    ctx.strokeStyle = D("#4A5B74"); ctx.lineWidth = Math.max(1, 0.1 * ppm);
-    ctx.beginPath();
-    ctx.moveTo(X(x - 0.8), Y(b)); ctx.lineTo(X(x - 0.8), Y(top)); ctx.moveTo(X(x + 0.8), Y(b)); ctx.lineTo(X(x + 0.8), Y(top));
-    if (ppm > 3) for (let y = b + 0.5; y < top - 1; y += 1.6) { ctx.moveTo(X(x - 0.8), Y(y)); ctx.lineTo(X(x + 0.8), Y(y + 1.6)); }
-    ctx.stroke();
-    ctx.fillStyle = D("#2B3A52"); ctx.fillRect(X(x - 1.2), Y(top), 2.4 * ppm, 0.22 * ppm);
-    // Kameramann und Kamera (schaut hangaufwärts)
-    ctx.fillStyle = "#1E2733"; ctx.fillRect(X(x + 0.05), Y(top + 1.35), 0.45 * ppm, 1.35 * ppm);
-    ctx.fillStyle = "#C9966F"; ctx.beginPath(); ctx.arc(X(x + 0.27), Y(top + 1.5), 0.12 * ppm, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#11161E"; ctx.fillRect(X(x - 0.75), Y(top + 1.55), 0.75 * ppm, 0.42 * ppm); ctx.fillRect(X(x - 1.0), Y(top + 1.48), 0.28 * ppm, 0.26 * ppm);
-    ctx.strokeStyle = "#11161E"; ctx.beginPath(); ctx.moveTo(X(x - 0.4), Y(top + 1.13)); ctx.lineTo(X(x - 0.4), Y(top)); ctx.stroke();
-    if (ppm > 2) { ctx.fillStyle = Math.sin(t * 2) > -0.6 ? "#E5484D" : "#5A2228"; ctx.beginPath(); ctx.arc(X(x - 0.15), Y(top + 1.62), Math.max(1, 0.05 * ppm), 0, TAU); ctx.fill(); }
-  }
-
-  function drawScreen(ctx, Wd, p, X, Y, ppm, view) {
-    const x0 = p.x - 3.2, x1 = p.x + 3.2, b = p.y + 2.7, top = b + 3.5;
-    ctx.fillStyle = D("#26324A");
-    ctx.fillRect(X(p.x - 2.2) - 0.1 * ppm, Y(b), 0.2 * ppm, (b - p.y + 1) * ppm);
-    ctx.fillRect(X(p.x + 2.2) - 0.1 * ppm, Y(b), 0.2 * ppm, (b - p.y + 1) * ppm);
-    ctx.fillStyle = "rgba(120,200,255,0.05)"; ctx.fillRect(X(x0 - 0.8), Y(top + 0.8), (x1 - x0 + 1.6) * ppm, (top - b + 1.6) * ppm);
-    ctx.fillStyle = D("#1E2A3E"); ctx.fillRect(X(x0 - 0.3), Y(top + 0.3), (x1 - x0 + 0.6) * ppm, (top - b + 0.6) * ppm);
-    ctx.fillStyle = "#07101D"; ctx.fillRect(X(x0), Y(top), (x1 - x0) * ppm, (top - b) * ppm);
-    if (ppm < 2.5) return;
-    const lines = view.screen || [Wd.name, ""];
-    ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
-    ctx.fillStyle = "#36D6E7"; wtFill(ctx, "700", lines[0] || "", 0.58 * ppm, X(p.x), Y(top - 0.95));
-    ctx.fillStyle = "rgba(255,255,255,0.9)"; wtFill(ctx, "italic 800", lines[1] || "", 1.4 * ppm, X(p.x), Y(b + 0.7));
-  }
-
-  function drawLeader(ctx, p, X, Y, ppm, t, view) {
-    const x0 = p.x - 1.2, x1 = p.x + 1.2, b = p.y, top = p.y + 2.5;
-    ctx.fillStyle = D("#1C2A40"); ctx.fillRect(X(x0 - 0.1), Y(top + 0.3), (x1 - x0 + 0.2) * ppm, (top - b + 0.3) * ppm);
-    ctx.fillStyle = "rgba(150,205,235,0.22)"; ctx.fillRect(X(x0), Y(top - 0.15), (x1 - x0) * ppm, (top - b - 0.15) * ppm);
-    // sitzender Führender
-    ctx.fillStyle = "#3E78B8"; ctx.fillRect(X(p.x - 0.25), Y(b + 1.45), 0.5 * ppm, 0.85 * ppm);
-    ctx.fillStyle = "#E2BC9E"; ctx.beginPath(); ctx.arc(X(p.x), Y(b + 1.62), 0.13 * ppm, 0, TAU); ctx.fill();
-    ctx.fillStyle = D("#26324A"); ctx.fillRect(X(x0 + 0.3), Y(b + 0.62), 1.8 * ppm, 0.12 * ppm);
-    // grünes Licht
-    const g = 0.75 + 0.25 * Math.sin(t * 3);
-    ctx.fillStyle = `rgba(127,212,155,${0.18 * g})`; ctx.beginPath(); ctx.arc(X(p.x), Y(top + 0.45), 0.9 * ppm, 0, TAU); ctx.fill();
-    ctx.fillStyle = "#7FD49B"; ctx.beginPath(); ctx.arc(X(p.x), Y(top + 0.45), Math.max(1.4, 0.2 * ppm), 0, TAU); ctx.fill();
-    if (ppm > 7) {
-      ctx.fillStyle = "#7FD49B"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-      wtFill(ctx, "800", "LEADER", 0.36 * ppm, X(p.x), Y(top + 0.1));
-    }
-  }
-
-  function drawStand(ctx, Wd, o, X, Y, ppm, t, xMin, xMax, view) {
-    const rowH = 1.0, b = o.y, front = b + 2.5, top = front + o.rows * rowH + 0.9;
-    const xa = Math.max(o.x0, xMin - 2), xb = Math.min(o.x1, xMax + 2);
-    ctx.fillStyle = D("#121D2E"); ctx.fillRect(X(xa), Y(top), (xb - xa) * ppm, (top - b + 1) * ppm);
-    // Dach und Lampen
-    ctx.fillStyle = D("#26354D"); ctx.fillRect(X(xa), Y(top + 1.4), (xb - xa) * ppm, 0.45 * ppm);
-    ctx.strokeStyle = D("#26354D"); ctx.lineWidth = Math.max(1, 0.12 * ppm); ctx.beginPath();
-    for (let x = Math.ceil(xa / 9) * 9; x < xb; x += 9) { ctx.moveTo(X(x), Y(top + 1.4)); ctx.lineTo(X(x), Y(b)); }
-    ctx.stroke();
-    if (ppm > 2) {
-      ctx.fillStyle = TH.night ? "#FFE7B0" : "rgba(222,228,236,0.85)";
-      for (let x = Math.ceil(xa / 4.5) * 4.5; x < xb; x += 4.5) { ctx.beginPath(); ctx.arc(X(x), Y(top + 0.92), Math.max(1, 0.12 * ppm), 0, TAU); ctx.fill(); }
-    }
-    // Sitzreihen und Treppen
-    ctx.fillStyle = D("#1C2A40");
-    for (let i = 0; i < o.rows; i++) ctx.fillRect(X(xa), Y(front + i * rowH + 0.12), (xb - xa) * ppm, Math.max(1, 0.12 * ppm));
-    ctx.fillStyle = D("#1A2638");
-    for (const a of o.aisles) if (a > xa - 1 && a < xb + 1) ctx.fillRect(X(a - 0.55), Y(top - 0.6), 1.1 * ppm, (top - 0.6 - front) * ppm);
-    const S = Wd.seats;
-    if (ppm < 2.6) {
-      const map = new Map();
-      for (const s of S) { if (s.x < xa || s.x > xb) continue; addTo(map, s.c).rect(X(s.x) - 0.6, Y(front + s.row * rowH + 0.75), 1.2, Math.max(1, 0.6 * ppm)); }
-      fillMap(ctx, map);
-    } else {
-      const focus = view.focus;
-      for (let row = o.rows - 1; row >= 0; row--) {
-        const bodies = new Map(), heads = new Map(), hats = new Map();
-        const yb = front + row * rowH + 0.12;
-        for (const s of S) {
-          if (s.row !== row || s.x < xa - 1 || s.x > xb + 1) continue;
-          const up = focus && focus.landed && s.ch < 0.5 && Math.abs(s.x - focus.x) < 30 ? 0.35 + Math.abs(Math.sin(t * 6 + s.ph)) * 0.1 : 0;
-          const cx = X(s.x), w = 0.42 * ppm, hh = (0.62 + up) * ppm, yy = Y(yb);
-          rrect(addTo(bodies, s.c), cx - w / 2, yy - hh, w, hh, [w * 0.38, w * 0.38, 0, 0]);
-          const hr = 0.11 * ppm, hy = yy - hh - hr;
-          const hp = addTo(heads, s.skin); hp.moveTo(cx + hr, hy); hp.arc(cx, hy, hr, 0, TAU);
-          if (s.hat && ppm > 6) { const q = addTo(hats, s.hat); q.moveTo(cx + hr * 1.05, hy - hr * 0.1); q.arc(cx, hy - hr * 0.1, hr * 1.05, Math.PI, TAU); q.closePath(); }
-        }
-        fillMap(ctx, bodies); fillMap(ctx, heads); fillMap(ctx, hats);
-      }
-    }
-    // Front mit Schanzenname
-    ctx.fillStyle = D("#1A2638"); ctx.fillRect(X(xa), Y(front), (xb - xa) * ppm, (front - b + 0.5) * ppm);
-    if (ppm > 4) {
-      ctx.fillStyle = "rgba(221,227,235,0.55)"; ctx.textAlign = "left"; ctx.textBaseline = "middle";
-      const step = 36;
-      for (let x = o.x0 + 4; x < o.x1 - 10; x += step) if (x > xMin - 20 && x < xMax) wtFill(ctx, "800", Wd.name, ppm, X(x), Y(b + 1.75));
-    }
-  }
 
   // ------------------------------------------------------------------ Panorama je Schanze
   // Gipfel: [Lage c, Höhe, Halbbreite, Form p] – p < 1 spitz, 1 Pyramide, > 1 rund, groß = Plateau
@@ -7024,6 +6559,265 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     },
   };
   const sceneFor = (key) => SCENES[key] || SCENES[key.split("-")[0]] || SCENES.oberstdorf;
+
+  const K = root.CMKulisse || (root.CMKulisse = {});
+  K.orte = { SCENES, sceneFor, HOME, BOARDS };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* COLD MEDAL GAMES – Kulisse, Stadion: Flaggen, Zuschauer, Tribünen, Kameraturm, Anzeigetafel, Leaderbox.
+ * Gezeichnet in Weltmetern über X(), Y() und ppm des Spiels; wo was steht, legt jedes Spiel fest.
+ * Am 11.11.2026 aus skispringen/src/scene.js herausgelöst. Global: CMKulisse.stadion. Braucht basis.js.
+ */
+(function (root) {
+  "use strict";
+  const KB = root.CMKulisse.basis;
+  const { TAU, wtFill, wtWidth, D, lit, PK, mix, hasRR, rng, hash } = KB;
+  let TH; KB.onTheme((t) => { TH = t; });   // aktuelle Tageszeit, wie früher die Variable in scene.js
+
+  // ------------------------------------------------------------------ Flaggen
+  // h = waagrechte Streifen, v = senkrechte, x = skandinavisches Kreuz, c = Schweizer Kreuz, d = Scheibe, t = Dreieck, u = Sterne und Streifen
+  const FLAGS = {
+    NOR: ["x", "#BA0C2F", "#FFFFFF", "#00205B"], FIN: ["x", "#FFFFFF", "#FFFFFF", "#003580"],
+    AUT: ["h", "#C8102E", "#FFFFFF", "#C8102E"], GER: ["h", "#151515", "#DD0000", "#FFCE00"],
+    POL: ["h", "#FFFFFF", "#DC143C"], SLO: ["s", "#FFFFFF", "#0051BA", "#ED1C24"],
+    ITA: ["v", "#009246", "#FFFFFF", "#CE2B37"], SUI: ["c", "#DA291C", "#FFFFFF"],
+    JPN: ["d", "#FFFFFF", "#BC002D"], CZE: ["t", "#FFFFFF", "#D7141A", "#11457E"], USA: ["u", "#B22234", "#FFFFFF", "#3C3B6E"],
+  };
+  function drawFlag(ctx, code, w, h) {
+    const f = FLAGS[code] || FLAGS.AUT, t = f[0];
+    if (t === "s") {
+      // Slowenien: Streifen mit Wappen (blauer Schild, weißer Triglav)
+      for (let i = 0; i < 3; i++) { ctx.fillStyle = f[i + 1]; ctx.fillRect(0, i * h / 3, w, h / 3 + 0.4); }
+      const sx = w * 0.2, sy = h * 0.14, sw = w * 0.2, sh = h * 0.5;
+      ctx.fillStyle = "#0051BA"; ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + sw, sy); ctx.lineTo(sx + sw, sy + sh * 0.6); ctx.quadraticCurveTo(sx + sw / 2, sy + sh * 1.05, sx, sy + sh * 0.6); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = "#ED1C24"; ctx.lineWidth = Math.max(0.5, w * 0.025); ctx.stroke();
+      ctx.fillStyle = "#FFFFFF"; ctx.beginPath(); ctx.moveTo(sx + sw * 0.12, sy + sh * 0.62); ctx.lineTo(sx + sw * 0.5, sy + sh * 0.22); ctx.lineTo(sx + sw * 0.88, sy + sh * 0.62); ctx.closePath(); ctx.fill();
+      return;
+    }
+    if (t === "h" || t === "v") {
+      const n = f.length - 1;
+      for (let i = 0; i < n; i++) {
+        ctx.fillStyle = f[i + 1];
+        if (t === "h") ctx.fillRect(0, i * h / n, w, h / n + 0.4); else ctx.fillRect(i * w / n, 0, w / n + 0.4, h);
+      }
+    } else if (t === "x") {
+      ctx.fillStyle = f[1]; ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = f[2]; ctx.fillRect(w * 0.27, 0, w * 0.2, h); ctx.fillRect(0, h * 0.38, w, h * 0.24);
+      ctx.fillStyle = f[3]; ctx.fillRect(w * 0.31, 0, w * 0.12, h); ctx.fillRect(0, h * 0.44, w, h * 0.12);
+    } else if (t === "c") {
+      ctx.fillStyle = f[1]; ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = f[2]; ctx.fillRect(w * 0.42, h * 0.2, w * 0.16, h * 0.6); ctx.fillRect(w * 0.29, h * 0.42, w * 0.42, h * 0.16);
+    } else if (t === "d") {
+      ctx.fillStyle = f[1]; ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = f[2]; ctx.beginPath(); ctx.arc(w / 2, h / 2, h * 0.3, 0, TAU); ctx.fill();
+    } else if (t === "t") {
+      ctx.fillStyle = f[1]; ctx.fillRect(0, 0, w, h / 2); ctx.fillStyle = f[2]; ctx.fillRect(0, h / 2, w, h / 2);
+      ctx.fillStyle = f[3]; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(w * 0.45, h / 2); ctx.lineTo(0, h); ctx.closePath(); ctx.fill();
+    } else {
+      for (let i = 0; i < 7; i++) { ctx.fillStyle = i % 2 ? f[2] : f[1]; ctx.fillRect(0, i * h / 7, w, h / 7 + 0.4); }
+      ctx.fillStyle = f[3]; ctx.fillRect(0, 0, w * 0.42, h * 4 / 7);
+    }
+  }
+  // wehende Flagge am Mastkopf (px, py), w/h in px, Fahne nach rechts
+  function wavingFlag(ctx, code, px, py, w, h, t, ph, speed) {
+    const a = Math.sin(t * (speed || 2.6) + ph);
+    ctx.save();
+    ctx.translate(px, py);
+    ctx.transform(1, a * 0.13, 0, 1, 0, 0);
+    drawFlag(ctx, code, w * (0.93 + 0.07 * Math.cos(t * 2.1 + ph)), h);
+    ctx.restore();
+  }
+
+  // ------------------------------------------------------------------ Farben der Zuschauer: Druckfarben des Plakats (Mantel und Hut)
+  const PI0 = root.TMPlakat.INK, pm = root.TMPlakat.mix;
+  const JACKET = [PI0.tinte, PI0.dach, PI0.navy, PI0.gruen, pm(PI0.tinte, PI0.dach, 0.4), pm(PI0.navy, PI0.tief, 0.35), pm(PI0.gruen, PI0.tinte, 0.3), pm(PI0.rot, PI0.dach, 0.55),
+    pm(PI0.tief, PI0.tinte, 0.45), pm(PI0.violett, PI0.tinte, 0.3), pm(PI0.dach, PI0.tinte, 0.3), pm(PI0.fichte, PI0.navy, 0.4)];
+  const JACKET_HI = [PI0.rot, PI0.ocker, PI0.himmel, pm(PI0.papier, PI0.dunst, 0.3), pm(PI0.gruen, PI0.papier, 0.2)];
+  const SKIN = ["#E2BC9E", "#C9966F", "#8E5F43"];
+  const HAT = [PI0.rot, PI0.papier, PI0.navy, PI0.ocker, PI0.himmel, PI0.gruen, PI0.tinte, pm(PI0.rot, PI0.violett, 0.4), PI0.tinte];
+  const SHADE = PI0.tinte;
+  const GUEST = ["POL", "SLO", "AUT", "GER", "NOR", "JPN", "SUI", "FIN", "CZE", "ITA", "USA"];
+  const CHEER = {
+    NOR: ["HEIA NORGE", "HEIA!"], GER: ["AUF GEHT'S!", "HOPP!"], AUT: ["HOPP AUSTRIA", "AUF GEHT'S!"], ITA: ["FORZA!", "FORZA AZZURRI"],
+    POL: ["POLSKA!", "POLSKA GOLA!"], SLO: ["SLOVENIJA!"], JPN: ["GANBARE!"], SUI: ["HOPP SCHWIIZ"], FIN: ["SUOMI!"], CZE: ["DO TOHO!"], USA: ["GO USA!"],
+  };
+
+  function rrect(path, x, y, w, h, rad) {
+    if (hasRR) path.roundRect(x, y, w, h, rad); else path.rect(x, y, w, h);
+  }
+  function addTo(map, key) { let p = map.get(key); if (!p) { p = new Path2D(); map.set(key, p); } return p; }
+  function fillMap(ctx, map) { for (const [c, p] of map) { ctx.fillStyle = c; ctx.fill(p); } }
+
+  function drawPeople(ctx, Wd, X, Y, ppm, t, xMin, xMax, view) {
+    const P = Wd.people;
+    let lo = 0, hi = P.length;
+    while (lo < hi) { const m = (lo + hi) >> 1; if (P[m].x < xMin - 2) lo = m + 1; else hi = m; }
+    const focus = view.focus;
+    const flags = [];
+    if (ppm < 2.6) {
+      // Übersicht: ein Fleck je Person, Farbe der Jacke
+      const map = new Map();
+      for (let i = lo; i < P.length && P[i].x <= xMax + 2; i++) {
+        const p = P[i];
+        addTo(map, p.body).rect(X(p.x) - 0.6, Y(p.y + p.h * 0.95), 1.2, Math.max(1.2, p.h * 0.8 * ppm));
+        if (p.flag) flags.push(p);
+      }
+      fillMap(ctx, map);
+    } else {
+      const detail = ppm > 6;
+      for (let row = 2; row >= 0; row--) {
+        const bodies = new Map(), heads = new Map(), hats = new Map(), arms = new Map();
+        for (let i = lo; i < P.length && P[i].x <= xMax + 2; i++) {
+          const p = P[i];
+          if (p.row !== row) continue;
+          const cheer = focus && focus.landed && p.ch < 0.42 && Math.abs(p.x - focus.x) < 22;
+          const jumpY = cheer ? Math.abs(Math.sin(t * 7 + p.ph)) * 0.13 : 0;
+          const cx = X(p.x), yb = Y(p.y + jumpY), w = p.w * ppm, sh = p.h * 0.8 * ppm;
+          rrect(addTo(bodies, p.body), cx - w / 2, yb - sh, w, sh, [w * 0.38, w * 0.38, 0, 0]);
+          const hr = 0.115 * ppm, hy = yb - sh - hr * 0.95;
+          const hp = addTo(heads, p.skin); hp.moveTo(cx + hr, hy); hp.arc(cx, hy, hr, 0, TAU);
+          if (detail && p.hat) {
+            const q = addTo(hats, p.hat);
+            q.moveTo(cx + hr * 1.05, hy - hr * 0.1); q.arc(cx, hy - hr * 0.1, hr * 1.05, Math.PI, TAU); q.closePath();
+            if (p.ht === 2) { q.moveTo(cx + hr * 0.42, hy - hr * 1.18); q.arc(cx, hy - hr * 1.18, hr * 0.42, 0, TAU); }
+          }
+          if (detail && (cheer || (p.flag && p.ch < 0.4))) {
+            const a = addTo(arms, p.body), wave = cheer ? Math.sin(t * 9 + p.ph) * 0.08 * ppm : 0;
+            a.moveTo(cx - w * 0.42, yb - sh + 0.08 * ppm); a.lineTo(cx - 0.3 * ppm + wave, yb - sh - 0.36 * ppm);
+            a.moveTo(cx + w * 0.42, yb - sh + 0.08 * ppm); a.lineTo(cx + 0.3 * ppm - wave, yb - sh - 0.36 * ppm);
+          }
+          if (p.flag) flags.push(p);
+        }
+        fillMap(ctx, bodies);
+        if (arms.size) { ctx.lineWidth = Math.max(1, 0.11 * ppm); ctx.lineCap = "round"; for (const [c, pa] of arms) { ctx.strokeStyle = c; ctx.stroke(pa); } }
+        fillMap(ctx, heads);
+        fillMap(ctx, hats);
+      }
+    }
+    // Fahnen der Fans
+    if (ppm > 1.4) {
+      ctx.strokeStyle = "#8C97A8"; ctx.lineWidth = Math.max(0.8, 0.045 * ppm);
+      for (const p of flags) {
+        const cheer = focus && focus.landed && Math.abs(p.x - focus.x) < 26;
+        const px = X(p.x + 0.22), top = Y(p.y + p.h + 0.55 + (cheer ? Math.abs(Math.sin(t * 6 + p.ph)) * 0.25 : 0));
+        ctx.beginPath(); ctx.moveTo(px, Y(p.y + p.h * 0.55)); ctx.lineTo(px, top); ctx.stroke();
+        wavingFlag(ctx, p.flag, px, top, Math.max(2.2, 0.82 * ppm), Math.max(1.5, 0.54 * ppm), t, p.ph, cheer ? 5 : 2.6);
+      }
+    }
+  }
+
+  function drawCamTower(ctx, p, h, X, Y, ppm, t) {
+    const x = p.x, b = p.y - 1, top = p.y + h;
+    ctx.strokeStyle = D("#4A5B74"); ctx.lineWidth = Math.max(1, 0.1 * ppm);
+    ctx.beginPath();
+    ctx.moveTo(X(x - 0.8), Y(b)); ctx.lineTo(X(x - 0.8), Y(top)); ctx.moveTo(X(x + 0.8), Y(b)); ctx.lineTo(X(x + 0.8), Y(top));
+    if (ppm > 3) for (let y = b + 0.5; y < top - 1; y += 1.6) { ctx.moveTo(X(x - 0.8), Y(y)); ctx.lineTo(X(x + 0.8), Y(y + 1.6)); }
+    ctx.stroke();
+    ctx.fillStyle = D("#2B3A52"); ctx.fillRect(X(x - 1.2), Y(top), 2.4 * ppm, 0.22 * ppm);
+    // Kameramann und Kamera (schaut hangaufwärts)
+    ctx.fillStyle = "#1E2733"; ctx.fillRect(X(x + 0.05), Y(top + 1.35), 0.45 * ppm, 1.35 * ppm);
+    ctx.fillStyle = "#C9966F"; ctx.beginPath(); ctx.arc(X(x + 0.27), Y(top + 1.5), 0.12 * ppm, 0, TAU); ctx.fill();
+    ctx.fillStyle = "#11161E"; ctx.fillRect(X(x - 0.75), Y(top + 1.55), 0.75 * ppm, 0.42 * ppm); ctx.fillRect(X(x - 1.0), Y(top + 1.48), 0.28 * ppm, 0.26 * ppm);
+    ctx.strokeStyle = "#11161E"; ctx.beginPath(); ctx.moveTo(X(x - 0.4), Y(top + 1.13)); ctx.lineTo(X(x - 0.4), Y(top)); ctx.stroke();
+    if (ppm > 2) { ctx.fillStyle = Math.sin(t * 2) > -0.6 ? "#E5484D" : "#5A2228"; ctx.beginPath(); ctx.arc(X(x - 0.15), Y(top + 1.62), Math.max(1, 0.05 * ppm), 0, TAU); ctx.fill(); }
+  }
+
+  function drawScreen(ctx, Wd, p, X, Y, ppm, view) {
+    const x0 = p.x - 3.2, x1 = p.x + 3.2, b = p.y + 2.7, top = b + 3.5;
+    ctx.fillStyle = D("#26324A");
+    ctx.fillRect(X(p.x - 2.2) - 0.1 * ppm, Y(b), 0.2 * ppm, (b - p.y + 1) * ppm);
+    ctx.fillRect(X(p.x + 2.2) - 0.1 * ppm, Y(b), 0.2 * ppm, (b - p.y + 1) * ppm);
+    ctx.fillStyle = "rgba(120,200,255,0.05)"; ctx.fillRect(X(x0 - 0.8), Y(top + 0.8), (x1 - x0 + 1.6) * ppm, (top - b + 1.6) * ppm);
+    ctx.fillStyle = D("#1E2A3E"); ctx.fillRect(X(x0 - 0.3), Y(top + 0.3), (x1 - x0 + 0.6) * ppm, (top - b + 0.6) * ppm);
+    ctx.fillStyle = "#07101D"; ctx.fillRect(X(x0), Y(top), (x1 - x0) * ppm, (top - b) * ppm);
+    if (ppm < 2.5) return;
+    const lines = view.screen || [Wd.name, ""];
+    ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+    ctx.fillStyle = "#36D6E7"; wtFill(ctx, "700", lines[0] || "", 0.58 * ppm, X(p.x), Y(top - 0.95));
+    ctx.fillStyle = "rgba(255,255,255,0.9)"; wtFill(ctx, "italic 800", lines[1] || "", 1.4 * ppm, X(p.x), Y(b + 0.7));
+  }
+
+  function drawLeader(ctx, p, X, Y, ppm, t, view) {
+    const x0 = p.x - 1.2, x1 = p.x + 1.2, b = p.y, top = p.y + 2.5;
+    ctx.fillStyle = D("#1C2A40"); ctx.fillRect(X(x0 - 0.1), Y(top + 0.3), (x1 - x0 + 0.2) * ppm, (top - b + 0.3) * ppm);
+    ctx.fillStyle = "rgba(150,205,235,0.22)"; ctx.fillRect(X(x0), Y(top - 0.15), (x1 - x0) * ppm, (top - b - 0.15) * ppm);
+    // sitzender Führender
+    ctx.fillStyle = "#3E78B8"; ctx.fillRect(X(p.x - 0.25), Y(b + 1.45), 0.5 * ppm, 0.85 * ppm);
+    ctx.fillStyle = "#E2BC9E"; ctx.beginPath(); ctx.arc(X(p.x), Y(b + 1.62), 0.13 * ppm, 0, TAU); ctx.fill();
+    ctx.fillStyle = D("#26324A"); ctx.fillRect(X(x0 + 0.3), Y(b + 0.62), 1.8 * ppm, 0.12 * ppm);
+    // grünes Licht
+    const g = 0.75 + 0.25 * Math.sin(t * 3);
+    ctx.fillStyle = `rgba(127,212,155,${0.18 * g})`; ctx.beginPath(); ctx.arc(X(p.x), Y(top + 0.45), 0.9 * ppm, 0, TAU); ctx.fill();
+    ctx.fillStyle = "#7FD49B"; ctx.beginPath(); ctx.arc(X(p.x), Y(top + 0.45), Math.max(1.4, 0.2 * ppm), 0, TAU); ctx.fill();
+    if (ppm > 7) {
+      ctx.fillStyle = "#7FD49B"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      wtFill(ctx, "800", "LEADER", 0.36 * ppm, X(p.x), Y(top + 0.1));
+    }
+  }
+
+  function drawStand(ctx, Wd, o, X, Y, ppm, t, xMin, xMax, view) {
+    const rowH = 1.0, b = o.y, front = b + 2.5, top = front + o.rows * rowH + 0.9;
+    const xa = Math.max(o.x0, xMin - 2), xb = Math.min(o.x1, xMax + 2);
+    ctx.fillStyle = D("#121D2E"); ctx.fillRect(X(xa), Y(top), (xb - xa) * ppm, (top - b + 1) * ppm);
+    // Dach und Lampen
+    ctx.fillStyle = D("#26354D"); ctx.fillRect(X(xa), Y(top + 1.4), (xb - xa) * ppm, 0.45 * ppm);
+    ctx.strokeStyle = D("#26354D"); ctx.lineWidth = Math.max(1, 0.12 * ppm); ctx.beginPath();
+    for (let x = Math.ceil(xa / 9) * 9; x < xb; x += 9) { ctx.moveTo(X(x), Y(top + 1.4)); ctx.lineTo(X(x), Y(b)); }
+    ctx.stroke();
+    if (ppm > 2) {
+      ctx.fillStyle = TH.night ? "#FFE7B0" : "rgba(222,228,236,0.85)";
+      for (let x = Math.ceil(xa / 4.5) * 4.5; x < xb; x += 4.5) { ctx.beginPath(); ctx.arc(X(x), Y(top + 0.92), Math.max(1, 0.12 * ppm), 0, TAU); ctx.fill(); }
+    }
+    // Sitzreihen und Treppen
+    ctx.fillStyle = D("#1C2A40");
+    for (let i = 0; i < o.rows; i++) ctx.fillRect(X(xa), Y(front + i * rowH + 0.12), (xb - xa) * ppm, Math.max(1, 0.12 * ppm));
+    ctx.fillStyle = D("#1A2638");
+    for (const a of o.aisles) if (a > xa - 1 && a < xb + 1) ctx.fillRect(X(a - 0.55), Y(top - 0.6), 1.1 * ppm, (top - 0.6 - front) * ppm);
+    const S = Wd.seats;
+    if (ppm < 2.6) {
+      const map = new Map();
+      for (const s of S) { if (s.x < xa || s.x > xb) continue; addTo(map, s.c).rect(X(s.x) - 0.6, Y(front + s.row * rowH + 0.75), 1.2, Math.max(1, 0.6 * ppm)); }
+      fillMap(ctx, map);
+    } else {
+      const focus = view.focus;
+      for (let row = o.rows - 1; row >= 0; row--) {
+        const bodies = new Map(), heads = new Map(), hats = new Map();
+        const yb = front + row * rowH + 0.12;
+        for (const s of S) {
+          if (s.row !== row || s.x < xa - 1 || s.x > xb + 1) continue;
+          const up = focus && focus.landed && s.ch < 0.5 && Math.abs(s.x - focus.x) < 30 ? 0.35 + Math.abs(Math.sin(t * 6 + s.ph)) * 0.1 : 0;
+          const cx = X(s.x), w = 0.42 * ppm, hh = (0.62 + up) * ppm, yy = Y(yb);
+          rrect(addTo(bodies, s.c), cx - w / 2, yy - hh, w, hh, [w * 0.38, w * 0.38, 0, 0]);
+          const hr = 0.11 * ppm, hy = yy - hh - hr;
+          const hp = addTo(heads, s.skin); hp.moveTo(cx + hr, hy); hp.arc(cx, hy, hr, 0, TAU);
+          if (s.hat && ppm > 6) { const q = addTo(hats, s.hat); q.moveTo(cx + hr * 1.05, hy - hr * 0.1); q.arc(cx, hy - hr * 0.1, hr * 1.05, Math.PI, TAU); q.closePath(); }
+        }
+        fillMap(ctx, bodies); fillMap(ctx, heads); fillMap(ctx, hats);
+      }
+    }
+    // Front mit Schanzenname
+    ctx.fillStyle = D("#1A2638"); ctx.fillRect(X(xa), Y(front), (xb - xa) * ppm, (front - b + 0.5) * ppm);
+    if (ppm > 4) {
+      ctx.fillStyle = "rgba(221,227,235,0.55)"; ctx.textAlign = "left"; ctx.textBaseline = "middle";
+      const step = 36;
+      for (let x = o.x0 + 4; x < o.x1 - 10; x += step) if (x > xMin - 20 && x < xMax) wtFill(ctx, "800", Wd.name, ppm, X(x), Y(b + 1.75));
+    }
+  }
+
+  const K = root.CMKulisse;
+  K.stadion = { FLAGS, drawFlag, wavingFlag, JACKET, JACKET_HI, SKIN, HAT, SHADE, GUEST, CHEER, rrect, addTo, fillMap, drawPeople, drawCamTower, drawScreen, drawLeader, drawStand };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* COLD MEDAL GAMES – Kulisse, Panorama: Ebenen (fern, mittel, nah, vorn) je Ort und Tageszeit, vorgerendert, mit Parallaxe;
+ * Himmel und Spiegelung. Am 11.11.2026 aus skispringen/src/scene.js herausgelöst. Global: CMKulisse.panorama.
+ * Braucht basis.js und orte.js.
+ */
+(function (root) {
+  "use strict";
+  const KB = root.CMKulisse.basis;
+  const { TAU, clamp, hash, hex, mix, noise, rng, D, lit, PK, INK } = KB;
+  let TH; KB.onTheme((t) => { TH = t; });   // aktuelle Tageszeit, wie früher die Variable in scene.js
+  const sceneFor = root.CMKulisse.orte.sceneFor;
 
   // mid.bot 100 statt 78: Mulden und Fichtengruppen im Talboden der Plakat-Orte reichen bis v ≈ 95; near.top 40: nahe Fichten ragen höher.
   // front: vierte Ebene der Plakat-Orte (Bande, Zweige), vor dem Hang gezeichnet (drawFront); ohne Zweige nur der untere Streifen.
@@ -7713,7 +7507,916 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     }
   }
 
-  root.TMScene = { buildWorld, drawWorld, buildPanorama, drawPanorama, drawFront, drawSky, drawReflection, drawLive, mountPanorama, placePanorama, drawFlag, FLAGS, setTheme, themeName, D, THEMES, wtFill, wtWidth };
+  const K = root.CMKulisse;
+  K.panorama = { LAYERS, buildPanorama, drawPanorama, drawFront, drawSky, drawReflection, drawLive, mountPanorama, placePanorama };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* TELEMARK – Kulisse an der Schanze: Zuschauer, Banden, Richterturm und Objekte entlang des Hangs.
+ * Orte, Panorama, Stadion-Teile und Tageszeiten liegen gemeinsam in ../kulisse/ (basis, orte, stadion, panorama).
+ * Welt in Metern (wie render.js). Die Schnittstelle TMScene bleibt wie vorher.
+ */
+(function (root) {
+  "use strict";
+  const Hill = root.TMHill;
+  const KB = root.CMKulisse.basis;
+  const { COND, TPX, wtWidth, wtFill, TAU, rng, hash, mix, pick, clamp, noise, D, lit, PK, INK, setTheme, themeName, THEMES } = KB;
+  let TH; KB.onTheme((t) => { TH = t; });   // aktuelle Tageszeit, wie früher die Variable in scene.js
+  const { HOME, BOARDS } = root.CMKulisse.orte;
+  const { wavingFlag, drawFlag, FLAGS, JACKET, JACKET_HI, SKIN, HAT, SHADE, GUEST, CHEER, drawPeople, drawCamTower, drawScreen, drawLeader, drawStand } = root.CMKulisse.stadion;
+  const PAN = root.CMKulisse.panorama;
+
+  // ------------------------------------------------------------------ Welt an der Schanze aufbauen
+  function buildWorld(H) {
+    const r = rng(hash(H.key) ^ 0x5eed);
+    const home = HOME[H.key] || "AUT";
+    const nat = () => (r() < 0.5 ? home : pick(r, GUEST));
+    const sAt = (d) => d - H.K + H.sK;
+    const at = (s) => Hill.landAtS(H, s);
+    const W = { people: [], banners: [], boards: [], objs: [], seats: [], terr: [], home, name: H.name.toUpperCase() };
+    const sScreen = H.sU + 22, sLeader = H.sU + 37, sCam2 = H.sU + 51, sFlags = H.sU + 60, sStand = H.sU + 77;
+    const sEnd = H.sEnd;
+    W.leader = { s: sLeader, p: at(sLeader) };
+    const guests = GUEST.filter((g) => g !== home).sort(() => r() - 0.5);
+    const flagRow = [home].concat(guests.slice(0, 6));
+    W.objs.push({ t: "judges", s: sAt(H.K + 10) });
+    W.objs.push({ t: "cam", s: sAt(H.K - 26), h: 6.5 });
+    W.objs.push({ t: "screen", s: sScreen });
+    W.objs.push({ t: "cam", s: sCam2, h: 4.8 });
+    W.objs.push({ t: "flags", s: sFlags, nat: flagRow, ph: flagRow.map(() => r() * TAU) });
+    W.objs.push({ t: "stand", s: sStand, s1: sEnd - 3 });
+    for (const o of W.objs) o.p = at(o.s);
+
+    // Zuschauer in unregelmäßigen Gruppen: Dichte und Reihen je Zone
+    const zones = [
+      { a: sAt(16), b: sAt(28), dens: 1, rows: 1, lift: 0.3, coach: true },
+      { a: H.sK - 26, b: H.sL - 1, dens: 0.3, rows: 2, lift: 0 },
+      { a: H.sL - 1, b: H.sU, dens: 0.6, rows: 3, lift: 0 },
+      { a: H.sU, b: sLeader - 1.8, dens: 0.92, rows: 3, lift: 0 },
+      { a: sLeader + 1.8, b: sStand - 1.2, dens: 0.8, rows: 3, lift: 0 },
+    ];
+    for (const z of zones) {
+      if (z.coach) W.coach = { a: z.a, b: z.b, lift: z.lift };
+      let s = z.a + r() * 1.5;
+      while (s < z.b) {
+        const len = z.coach ? z.b - z.a : (1.5 + r() * 9) * (0.6 + z.dens);
+        const end = Math.min(z.b, s + len);
+        const rows = z.coach ? 1 : Math.max(1, Math.min(z.rows, Math.round(z.rows * (0.45 + 0.6 * r()))));
+        W.terr.push({ a: s - 0.3, b: end + 0.3, rows, lift: z.lift });
+        for (let row = rows - 1; row >= 0; row--) {
+          let x = s + r() * 0.5 + row * 0.2;
+          while (x < end) {
+            if (r() < 0.93) {
+              const p = at(x);
+              const hi = r() < 0.12;
+              let body = hi ? pick(r, JACKET_HI) : pick(r, JACKET);
+              if (row) body = mix(body, SHADE, row * 0.16);
+              W.people.push({
+                s: x, x: p.x + row * 0.12, y: p.y + z.lift - 0.35 + row * 0.45, row, h: (1.55 + r() * 0.32) * 0.88, w: (0.42 + r() * 0.1) * 0.9, body,
+                skin: pick(r, SKIN), hat: r() < 0.72 ? (row ? mix(pick(r, HAT), SHADE, row * 0.16) : pick(r, HAT)) : null, ht: r() < 0.55 ? 1 : 2,
+                flag: r() < (z.coach ? 0.06 : 0.05) ? nat() : null, ph: r() * TAU, ch: r(),
+              });
+            }
+            x += 0.44 + r() * 0.42;
+          }
+        }
+        // Transparent vor der ersten Reihe
+        if (!z.coach && rows >= 2 && end - s > 3 && r() < 0.16) {
+          const n = nat(), a = s + 0.4 + r() * 0.6, b = Math.min(end - 0.2, a + 2.4 + r() * 1.8);
+          const pal = pick(r, [["#E3E7EE", "#9E2B2B"], ["#9E2B2B", "#F1F3F6"], ["#1F3A63", "#F1F3F6"], ["#C99A3A", "#14233B"], ["#F1F3F6", "#1F3A63"]]);
+          const pa = at(a), pb = at(b);
+          W.banners.push({ a, b, x0: pa.x, y0: pa.y, x1: pb.x, y1: pb.y, bg: pal[0], fg: pal[1], text: pick(r, CHEER[n] || ["HOPP!"]) });
+        }
+        s = end + (1 - z.dens) * (2 + r() * 10) + 0.4 + r() * 1.4;
+      }
+    }
+    W.people.sort((p, q) => p.x - q.x);
+
+    // Banden in den Farben der Schanze (Garmisch mit weiß-blauen Rauten); Schrift nur selten und reihum
+    const HB = BOARDS[H.key] || BOARDS[H.key.split("-")[0]];
+    const BG = HB ? HB.bg : ["#14233B", "#1F3550", "#2A1E2E", "#3A2326", "#1E3A3A", "#2E3440", "#263D2E", "#3B3320", "#1B2B45", "#33263F", "#24313F", "#3A2B22"];
+    const FG = HB ? HB.fg : ["#2FAFBE", "#B98E36", "#A9443A", "#6AAE82", "#8EA4C6", "#BCC4CF", "#C67A44"];
+    const texts = HB ? [W.name, HB.word || W.name, "HS " + H.HS, W.name, "K " + H.K, HB.word || "SKISPRINGEN"] : [W.name, "TELEMARK", "SKI JUMPING", "HS " + H.HS, "K " + H.K, "WINTER", W.name, "SKISPRINGEN"];
+    let ti = Math.floor(r() * texts.length), sinceText = 3, lastBg = "";
+    let s = H.sL - 3;
+    while (s < sEnd - 2) {
+      const w = 2.4 + r() * 3.6;
+      if (s < sLeader + 1.6 && s + w > sLeader - 1.6) { s = sLeader + 1.6; continue; }
+      let bg = pick(r, BG); if (bg === lastBg) bg = pick(r, BG); lastBg = bg;
+      let fg = pick(r, FG); for (let i = 0; i < 4 && fg === bg; i++) fg = pick(r, FG);
+      let kind = pick(r, HB && HB.rauten ? ["rauten", "rauten", "stripe", "plain", "two"] : ["stripe", "stripe", "band", "dots", "plain", "two"]), text = null;
+      if (sinceText >= 3 && r() < 0.32 && w > 3.4) { kind = "text"; text = texts[ti++ % texts.length]; sinceText = 0; } else sinceText++;
+      const pa = at(s), pb = at(s + w);
+      let fg2 = pick(r, BG); for (let i = 0; i < 4 && fg2 === bg; i++) fg2 = pick(r, BG);
+      W.boards.push({ a: s, b: s + w, x0: pa.x, y0: pa.y, x1: pb.x, y1: pb.y, bg, fg, k: kind, text, fg2 });
+      s += w + (r() < 0.1 ? 0.8 + r() * 2 : 0.06);
+    }
+    W.fence = { a: H.sK - 30, b: H.sL - 3 };
+
+    // Tribüne: sitzende Zuschauer in Reihen
+    const st = W.objs.find((o) => o.t === "stand");
+    st.x0 = at(st.s).x; st.x1 = st.x0 + (st.s1 - st.s); st.y = at(st.s).y; st.rows = 6;
+    // Treppen alle 10–13 m, leere Bereiche in Gruppen
+    st.aisles = [];
+    for (let x = st.x0 + 6 + r() * 4; x < st.x1 - 3; x += 10 + r() * 3) st.aisles.push(x);
+    const emptyAt = noise(r, 5);
+    for (let row = st.rows - 1; row >= 0; row--) {
+      for (let x = st.x0 + 0.7 + r() * 0.3; x < st.x1 - 0.6; x += 0.52 + r() * 0.16) {
+        if (st.aisles.some((a) => Math.abs(x - a) < 0.75)) continue;
+        if (r() < 0.08 || emptyAt(x + row * 13) > 0.45) continue;
+        const hi = r() < 0.1;
+        W.seats.push({ x, row, c: mix(hi ? pick(r, JACKET_HI) : pick(r, JACKET), SHADE, 0.08 + row * 0.035), skin: pick(r, SKIN), hat: r() < 0.6 ? mix(pick(r, HAT), SHADE, row * 0.035) : null, ph: r() * TAU, ch: r() });
+      }
+    }
+    // Häuser hinter dem Auslauf
+    W.houses = [];
+    const endP = at(sEnd);
+    for (let x = endP.x + 34; x < endP.x + 190; x += 16 + r() * 26) W.houses.push({ x, w: 7 + r() * 5, h: 4.5 + r() * 3, win: r() });
+    return W;
+  }
+
+  // ------------------------------------------------------------------ Welt zeichnen
+  // view: { W, H, t, focus: { x, landed }, screen: [Zeile1, Zeile2] }
+  function drawWorld(ctx, H, Wd, cam, view, terrainY) {
+    const ppm = cam.ppm, t = view.t || 0;
+    const X = (x) => cam.ax + (x - cam.cx) * ppm, Y = (y) => cam.ay - (y - cam.cy) * ppm;
+    const xMin = cam.cx - (cam.ax + 60) / ppm, xMax = cam.cx + (view.W - cam.ax + 60) / ppm;
+    const yMin = cam.cy - (view.H - cam.ay + 40) / ppm, yMax = cam.cy + (cam.ay + 60) / ppm;
+    const inX = (a, b) => b > xMin && a < xMax;
+    const at = (s) => Hill.landAtS(H, s);
+
+    // Häuser hinter dem Auslauf (auf dem Gelände rechts)
+    if (Wd.houses && terrainY) for (const h of Wd.houses) {
+      if (!inX(h.x - h.w, h.x + h.w)) continue;
+      const gy = terrainY(h.x);
+      const x0 = X(h.x - h.w / 2), x1 = X(h.x + h.w / 2), yb = Y(gy - 1), yt = Y(gy + h.h), yr = Y(gy + h.h + h.w * 0.32);
+      ctx.fillStyle = TH.night ? "#162338" : TH.house[0]; ctx.fillRect(x0, yt, x1 - x0, yb - yt);
+      ctx.fillStyle = TH.night ? "#2B3E5C" : TH.roof; ctx.beginPath(); ctx.moveTo(x0 - 0.4 * ppm, yt); ctx.lineTo((x0 + x1) / 2, yr); ctx.lineTo(x1 + 0.4 * ppm, yt); ctx.closePath(); ctx.fill();
+      if (ppm > 1.5) {
+        ctx.fillStyle = lit(h.x, h.h) ? "rgba(246,200,112,0.85)" : TH.glass;
+        const n = Math.max(2, Math.round(h.w / 2.6));
+        for (let i = 0; i < n; i++) {
+          if ((h.win * 7 + i * 3.7) % 1 < 0.35) continue;
+          const wx = x0 + (i + 0.3) * (x1 - x0) / n, ww = 0.4 * (x1 - x0) / n;
+          ctx.fillRect(wx, Y(gy + h.h * 0.62), ww, 0.9 * ppm);
+        }
+      }
+    }
+
+    // Objekte hinter den Zuschauern
+    for (const o of Wd.objs) {
+      if (o.t === "stand") { if (inX(o.x0 - 2, o.x1 + 2)) drawStand(ctx, Wd, o, X, Y, ppm, t, xMin, xMax, view); continue; }
+      const p = o.p;
+      if (!inX(p.x - 8, p.x + 8)) continue;
+      if (o.t === "judges") drawJudges(ctx, H, p, X, Y, ppm);
+      else if (o.t === "cam") drawCamTower(ctx, p, o.h, X, Y, ppm, t);
+      else if (o.t === "screen") drawScreen(ctx, Wd, p, X, Y, ppm, view);
+      else if (o.t === "flags") {
+        for (let i = 0; i < o.nat.length; i++) {
+          const fx = p.x + i * 2.3, top = p.y + 7.6;
+          ctx.strokeStyle = "#6E7D93"; ctx.lineWidth = Math.max(1, 0.08 * ppm);
+          ctx.beginPath(); ctx.moveTo(X(fx), Y(p.y)); ctx.lineTo(X(fx), Y(top)); ctx.stroke();
+          if (ppm > 1.2) wavingFlag(ctx, o.nat[i], X(fx), Y(top - 0.05), 1.7 * ppm, 1.1 * ppm, t, o.ph[i], 2.2);
+        }
+      }
+    }
+
+    // Trainerpodest
+    if (Wd.coach && inX(at(Wd.coach.a).x - 2, at(Wd.coach.b).x + 2)) {
+      const c = Wd.coach;
+      ctx.fillStyle = D("#1A2638"); ctx.beginPath();
+      const N = 6, top = [];
+      for (let i = 0; i <= N; i++) { const p = at(c.a - 0.6 + (c.b - c.a + 1.2) * i / N); top.push([X(p.x), Y(p.y + c.lift)]); }
+      ctx.moveTo(top[0][0], top[0][1]); for (const q of top) ctx.lineTo(q[0], q[1]);
+      for (let i = N; i >= 0; i--) { const p = at(c.a - 0.6 + (c.b - c.a + 1.2) * i / N); ctx.lineTo(X(p.x), Y(p.y - 1)); }
+      ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = D("#4A5B74"); ctx.lineWidth = Math.max(1, 0.07 * ppm);
+      ctx.beginPath(); top.forEach((q, i) => (i ? ctx.lineTo(q[0], q[1] - 1.05 * ppm) : ctx.moveTo(q[0], q[1] - 1.05 * ppm))); ctx.stroke();
+    }
+
+    // Stehplätze (dunkler Grund hinter den Gruppen)
+    ctx.fillStyle = D("#0D192A");
+    for (const g of Wd.terr) {
+      const pa = at(g.a), pb = at(g.b);
+      if (!inX(pa.x, pb.x)) continue;
+      const hgt = g.lift + 0.35 + g.rows * 0.55;
+      const n = Math.max(1, Math.ceil((g.b - g.a) / 3));
+      ctx.beginPath();
+      for (let i = 0; i <= n; i++) { const p = at(g.a + (g.b - g.a) * i / n); const xx = X(p.x), yy = Y(p.y + hgt); i ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy); }
+      for (let i = n; i >= 0; i--) { const p = at(g.a + (g.b - g.a) * i / n); ctx.lineTo(X(p.x), Y(p.y - 0.5)); }
+      ctx.closePath(); ctx.fill();
+    }
+
+    drawPeople(ctx, Wd, X, Y, ppm, t, xMin, xMax, view);
+
+    // Transparente
+    for (const b of Wd.banners) {
+      if (!inX(b.x0, b.x1)) continue;
+      const lo = 1.02, hi = 1.62;
+      const ax = X(b.x0), ay0 = Y(b.y0 + lo), ay1 = Y(b.y0 + hi), bx = X(b.x1), by0 = Y(b.y1 + lo), by1 = Y(b.y1 + hi);
+      const wob = Math.sin(t * 1.7 + b.a) * 0.04 * ppm;
+      ctx.fillStyle = b.bg; ctx.beginPath(); ctx.moveTo(ax, ay1 + wob); ctx.lineTo(bx, by1 - wob); ctx.lineTo(bx, by0 - wob); ctx.lineTo(ax, ay0 + wob); ctx.closePath(); ctx.fill();
+      if (ppm > 7) {
+        const len = Math.hypot(bx - ax, by1 - ay1);
+        ctx.save(); ctx.translate((ax + bx) / 2, (ay0 + ay1 + by0 + by1) / 4); ctx.rotate(Math.atan2(by1 - ay1, bx - ax));
+        ctx.fillStyle = b.fg; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        let fs = 0.44 * ppm; const tw = wtWidth(ctx, "800", b.text) * fs;
+        if (tw > len * 0.9) fs *= len * 0.9 / tw;
+        wtFill(ctx, "800", b.text, fs, 0, fs * 0.05);
+        ctx.restore();
+      }
+    }
+
+    // Zaun am Aufsprunghang
+    const f = Wd.fence;
+    if (f && ppm > 1.2) {
+      ctx.strokeStyle = D("#33435C"); ctx.lineWidth = Math.max(1, 0.06 * ppm);
+      for (const hh of [0.5, 1.0]) {
+        ctx.beginPath();
+        let first = true;
+        for (let s = f.a; s <= f.b; s += 2) { const p = at(s); if (p.x < xMin - 4 || p.x > xMax + 4) { first = true; continue; } const xx = X(p.x), yy = Y(p.y + hh); first ? ctx.moveTo(xx, yy) : ctx.lineTo(xx, yy); first = false; }
+        ctx.stroke();
+      }
+      if (ppm > 4) {
+        ctx.beginPath();
+        for (let s = f.a; s <= f.b; s += 2.5) { const p = at(s); if (p.x < xMin || p.x > xMax) continue; ctx.moveTo(X(p.x), Y(p.y)); ctx.lineTo(X(p.x), Y(p.y + 1.05)); }
+        ctx.stroke();
+      }
+    }
+
+    // Banden
+    for (const b of Wd.boards) {
+      if (!inX(b.x0, b.x1)) continue;
+      const x0 = X(b.x0), x1 = X(b.x1), y0 = Y(b.y0), y1 = Y(b.y1), hb = 1.0 * ppm;
+      // kräftige Schanzenfarben bei Nacht etwas gedämpft
+      if (b.night !== TH.night) { b.night = TH.night; const dm = (c) => TH.night ? mix(c, "#101826", 0.32) : c; b.cBg = dm(b.bg); b.cFg = dm(b.fg); b.cFg2 = dm(b.fg2); }
+      ctx.fillStyle = b.cBg; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.lineTo(x1, y1 - hb); ctx.lineTo(x0, y0 - hb); ctx.closePath(); ctx.fill();
+      if (ppm < 3) continue;
+      const ang = Math.atan2(y1 - y0, x1 - x0), len = Math.hypot(x1 - x0, y1 - y0);
+      ctx.save(); ctx.translate(x0, y0 - hb); ctx.rotate(ang);
+      ctx.fillStyle = b.cFg;
+      if (b.k === "rauten") {
+        // weiß-blaue Rauten (Bayern): schräges Gitter aus Rhomben
+        ctx.fillStyle = TH.night ? mix("#F1EEE6", "#101826", 0.32) : "#F1EEE6"; ctx.fillRect(0, 0, len, hb);
+        ctx.fillStyle = TH.night ? mix("#2F64A8", "#101826", 0.32) : "#2F64A8";
+        const dw = hb * 0.62;
+        for (let row = 0; row < 2; row++) for (let x = (row ? dw / 2 : 0) - dw; x < len + dw; x += dw) {
+          const cy = row ? hb * 0.75 : hb * 0.25;
+          ctx.beginPath(); ctx.moveTo(x, cy); ctx.lineTo(x + dw / 2, cy - hb * 0.25); ctx.lineTo(x + dw, cy); ctx.lineTo(x + dw / 2, cy + hb * 0.25); ctx.closePath(); ctx.fill();
+        }
+      }
+      else if (b.k === "stripe") ctx.fillRect(0, hb * 0.12, len, hb * 0.12);
+      else if (b.k === "band") { ctx.beginPath(); ctx.moveTo(len * 0.18, hb); ctx.lineTo(len * 0.34, 0); ctx.lineTo(len * 0.5, 0); ctx.lineTo(len * 0.34, hb); ctx.closePath(); ctx.fill(); }
+      else if (b.k === "dots") { for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.arc(len * (0.25 + i * 0.25), hb * 0.5, hb * 0.2, 0, TAU); ctx.fill(); } }
+      else if (b.k === "two") { ctx.fillStyle = b.cFg2; ctx.fillRect(len * 0.55, 0, len * 0.45, hb); ctx.fillStyle = b.cFg; ctx.fillRect(len * 0.55, hb * 0.78, len * 0.45, hb * 0.1); }
+      else if (b.k === "text" && ppm > 6) {
+        let fs = hb * 0.62; const tw = wtWidth(ctx, "800", b.text) * fs;
+        if (tw > len * 0.86) fs *= len * 0.86 / tw;
+        ctx.textAlign = "center"; ctx.textBaseline = "middle"; wtFill(ctx, "800", b.text, fs, len / 2, hb * 0.54);
+      }
+      ctx.restore();
+      ctx.fillStyle = "rgba(0,0,0,0.25)"; ctx.fillRect(x1 - 1, Math.min(y1, y1 - hb), Math.max(1, 0.05 * ppm), hb);
+    }
+
+    // Leader-Box
+    const L = Wd.leader;
+    if (L && inX(L.p.x - 3, L.p.x + 3)) drawLeader(ctx, L.p, X, Y, ppm, t, view);
+  }
+
+  // Richterturm hinter der Kante wie auf dem Plakat (plakat.js): Kabine mit Fensterband und zwei Landesfahnen, Holz auf Gitterstützen
+  // oder verputzter Pfeiler je Ort. Eine Einheit des Entwurfs = 0,152 m (Kabine rund 7 m breit, Turm rund 15 m hoch).
+  function drawJudges(ctx, H, p, X, Y, ppm) {
+    const s = 0.152 * ppm;
+    if (s * 46 < 3) return;
+    ctx.save(); ctx.translate(X(p.x), Y(p.y) + 2 * s); ctx.scale(s, s); ctx.lineJoin = "round"; ctx.lineCap = "butt";
+    PK.drawWith(ctx, TH.name, "judge", H.key.split("-")[0], 0, 0);
+    ctx.restore();
+  }
+
+  root.TMScene = { buildWorld, drawWorld, buildPanorama: PAN.buildPanorama, drawPanorama: PAN.drawPanorama, drawFront: PAN.drawFront, drawSky: PAN.drawSky,
+    drawReflection: PAN.drawReflection, drawLive: PAN.drawLive, mountPanorama: PAN.mountPanorama, placePanorama: PAN.placePanorama, drawFlag, FLAGS, setTheme, themeName, D, THEMES, wtFill, wtWidth };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Cold Medal Games · gemeinsame Figur (figur/figur.js, global CMFigur)
+ *
+ * Ein Körper für alle Spiele der Reihe, im Plakatstil: gleicher Körperbau und gleiche Posen für alle, erkennbar nur an Frisur,
+ * Hautton und Farben aus dem Pass (Gesamtkonzept; kein Rock als Zeichen für „Frau“). Grundlage ist die Figur des Eiskunstlaufs
+ * (eiskunstlauf/src/figure.js, Stand 0.2.3), von Mat am 11.11.2026 als gemeinsame Figur gewählt; die Arme hat Mat danach
+ * überarbeiten lassen (länger nach menschlichen Maßen, kräftiger, runde Schulter unter dem Hals, größere Hände). Jede Sportart bringt nur ihre
+ * Kleidung und Ausrüstung (KITS) und ihre eigenen Posen und Abläufe mit.
+ *
+ * Pose: Winkel in Grad ab senkrecht nach unten, + = nach vorn (Blickrichtung). sL Standbein, fL Spielbein [Hüfte, Knie],
+ * aF/aB Arm vorn/hinten [Schulter, Ellbogen], lean Rumpfneigung, hd Kopf gegen den Rumpf (− = Kopf hoch), crouch frei fürs Spiel.
+ * Der Knöchel des Standbeins liegt im Ursprung; die Figur ist aufrecht rund 80 Einheiten hoch (Knöchel bis Scheitel).
+ * Braucht nichts außer Canvas 2D.
+ */
+(function (root) {
+  "use strict";
+  const INK = "#141B25", PAPER = "#F1E7D2";
+  const SKIN = ["#F2D3B8", "#E2B48F", "#C98E66", "#9C6644", "#6B4430"];
+  const HAIRC = ["#3A2A1E", "#7A4A22", "#C9A060", "#1A1A1A", "#B0A79A"];
+  const SUIT = ["#C23B2A", "#23466B", "#3F6B55", "#DDA43B", "#6B3F7A", "#1E2734"];
+  // Frisuren und Bart: ohne Körperunterschied lässt sich damit alles zwischen männlich und weiblich darstellen (Mat, 11.11.2026)
+  const HAIRS = ["Dutt", "Kurz", "Zopf", "Locken", "Bubikopf", "Lang", "Scheitel", "Stoppeln", "Afro"];
+  const BEARDS = ["ohne", "Schnurrbart", "Vollbart", "Dreitagebart"];
+  const PATTERNS = ["uni", "stripe", "split"];   // einfarbig, Längsstreifen, Beine in der Zweitfarbe
+  const DEF_LOOK = { hair: 0, hairC: 0, beard: 0, skin: 1, suit: 0, accent: 3, pattern: "uni" };
+  const GLOVE = "#2B3442", VISOR = "#4FC3F7", BOOT = "#1E2734", WOOD = "#8E5A34";
+  const POLE = 56, GROUND = 4.7;   // Stocklänge; Boden unter dem Knöchel des Standbeins (Unterkante Langlaufski)
+
+  // Kleidung und Ausrüstung je Sportart. head: hair | helmet | cap; feet: skates | jumpSki | xcSki | woodSki | shoes | skiBoots
+  // (Skischuhe ohne Ski, z. B. Ski in der Hand); torso: sash (Schrägstreifen) | bib (Startnummer) | sweater (Pullover mit Bordüre) | plain;
+  // legs: knickers (Kniebundhose und Wollstrümpfe); back: rifle; hands: poles; glove: Handschuhe statt Haut ("suit" = Fäustlinge in der Anzugfarbe);
+  // bootC Farbe der Schuhe; pants Hose [nah, fern]
+  const KITS = {
+    eiskunstlauf: { head: "hair", feet: "skates", torso: "sash" },
+    skispringen: { head: "helmet", feet: "jumpSki", torso: "plain", glove: true },
+    biathlon: { head: "cap", feet: "xcSki", torso: "bib", back: "rifle", hands: "poles", glove: true },
+    plain: { head: "hair", feet: "shoes", torso: "plain" },   // Siegerehrung, Pass, Menü
+    // wie 1928 (Nostalgie): Strickmütze, Pullover mit Bordüre, Kniebundhose, Wollstrümpfe, Lederschuhe, Holzski
+    skispringen1928: { head: "cap", feet: "woodSki", torso: "sweater", legs: "knickers", glove: "suit", bootC: "#4A2F1F", pants: ["#4D4237", "#3A3129"] },
+  };
+  // Ski in Einheiten der Figur: hinter und vor dem Knöchel, Breite, Spitze (Länge, Höhe), Farbe nah und fern, Kante
+  const SKI = {
+    jumpSki: { back: 46, front: 60, w: 2.6, tipL: 8, tipH: 4.5, col: "#E4EAF2", colF: "#A9B5C6" },
+    xcSki: { back: 36, front: 44, w: 1.5, tipL: 5, tipH: 2.6, col: "#2B3442", colF: "#4A5568" },
+    woodSki: { back: 44, front: 56, w: 3.0, tipL: 10, tipH: 6.5, col: "#A8763F", colF: "#7C5430", edge: "#3A2A1C" },
+  };
+  const SOCK = ["#E7DECB", "#C9BEA6"];
+
+  // Farben im Aussehen: Nummer in der Liste des Passes oder eigene Farbe #rrggbb (Spiele mit eigener Farbauswahl)
+  const isHex = (v) => typeof v === "string" && /^#[0-9a-f]{6}$/i.test(v);
+  const pal = (v, list, d) => (isHex(v) ? v : list[v] || list[d]);
+  const HEXKEYS = ["suitD", "accentD", "helmet", "visor", "ski", "skiFar", "cap", "pom", "bib"];
+  function shade(hex, f) {
+    const n = parseInt(hex.slice(1), 16), c = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => Math.round(Math.max(0, Math.min(255, v * f))));
+    return "#" + c.map((v) => v.toString(16).padStart(2, "0")).join("");
+  }
+  function cleanLook(o) {
+    const L = Object.assign({}, DEF_LOOK);
+    if (o && typeof o === "object") {
+      const pick = (k, n) => { if (Number.isInteger(o[k]) && o[k] >= 0 && o[k] < n) L[k] = o[k]; };
+      pick("hair", HAIRS.length); pick("hairC", HAIRC.length); pick("beard", BEARDS.length); pick("skin", SKIN.length); pick("suit", SUIT.length); pick("accent", SUIT.length);
+      for (const k of ["skin", "hairC", "suit", "accent"]) if (isHex(o[k])) L[k] = o[k];
+      for (const k of HEXKEYS) if (isHex(o[k])) L[k] = o[k];
+      if (PATTERNS.includes(o.pattern)) L.pattern = o.pattern;
+    }
+    return L;
+  }
+
+  // ------------------------------------------------------------------ Posen und Abläufe
+  // Gemeinsame Posen aller Spiele; die Posen der Sportarten liegen im Spiel.
+  const POSES = {
+    stand: { lean: 2, crouch: 0, sL: [2, 3], fL: [-3, 3], aF: [8, -10], aB: [-6, -8], hd: 0 },
+    cheer: { lean: -4, crouch: 0, sL: [2, 3], fL: [-4, 3], aF: [164, 10], aB: [-164, -10], hd: -10, mood: "froh" },   // Jubel: Arme hoch
+    bow: { lean: 48, crouch: 0, sL: [0, 2], fL: [-6, 2], aF: [6, -6], aB: [-2, -6], hd: 12 },          // Verbeugung
+    wave: { lean: 2, crouch: 0, sL: [2, 3], fL: [-3, 3], aF: [120, 48], aB: [-6, -8], hd: -4 },        // Winken
+  };
+  // Abläufe als Schlüsselbilder [Zeitpunkt 0 … 1, Pose]; seq() mischt weich dazwischen
+  const ABLAEUFE = {
+    jubel: [[0, POSES.stand], [0.35, POSES.cheer], [0.6, { lean: -2, crouch: 0, sL: [6, 14], fL: [0, 14], aF: [150, 26], aB: [-150, -26], hd: -14 }], [1, POSES.cheer]],
+    winken: [[0, POSES.wave], [0.5, Object.assign({}, POSES.wave, { aF: [112, 66] })], [1, POSES.wave]],
+  };
+  const KEYS = ["lean", "crouch", "hd"], PAIRS = ["sL", "fL", "aF", "aB"];
+  const val = (o, k) => (o[k] == null ? 0 : o[k]);
+  function mix(a, b, t) {
+    const o = {};
+    for (const k of KEYS) o[k] = val(a, k) + (val(b, k) - val(a, k)) * t;
+    for (const k of PAIRS) o[k] = [a[k][0] + (b[k][0] - a[k][0]) * t, a[k][1] + (b[k][1] - a[k][1]) * t];
+    return o;
+  }
+  // Posen als Zahlenreihe (für weiche Kurven durch Schlüsselbilder); lift = Höhe über dem Boden (Sprung)
+  const CH = 12;
+  const toVec = (p, lift) => [val(p, "lean"), val(p, "crouch"), val(p, "hd"), p.sL[0], p.sL[1], p.fL[0], p.fL[1], p.aF[0], p.aF[1], p.aB[0], p.aB[1], lift || 0];
+  const toPose = (v) => ({ lean: v[0], crouch: v[1], hd: v[2], sL: [v[3], v[4]], fL: [v[5], v[6]], aF: [v[7], v[8]], aB: [v[9], v[10]] });
+  // Weiche Kurve durch Schlüsselbilder K = [[t, Zahlenreihe], …]: Geschwindigkeit ohne Sprung (Hermite-Kurve), aber kein
+  // Überschwingen: an Umkehrpunkten und Haltepunkten steht die Bewegung kurz (Steigung 0). loop: zyklisch, letztes = erstes Bild.
+  function spline(K, t, loop) {
+    const n = K.length, D = K[n - 1][0] - K[0][0];
+    t = loop ? K[0][0] + ((((t - K[0][0]) % D) + D) % D) : Math.max(K[0][0], Math.min(K[n - 1][0], t));
+    let i = 0; while (i < n - 2 && t > K[i + 1][0]) i++;
+    const nb = (j, d) => {
+      let k = j + d, off = 0;
+      if (k < 0 || k > n - 1) { if (!loop) return null; if (k < 0) { k = n - 2; off = -D; } else { k = 1; off = D; } }
+      return [K[k][0] + off, K[k][1]];
+    };
+    const tan = (j) => {
+      const a = nb(j, -1), b = nb(j, 1), c = K[j][1];
+      return c.map((v, ch) => {
+        if (!a || !b) return 0;
+        const d1 = v - a[1][ch], d2 = b[1][ch] - v;
+        return d1 * d2 <= 0 ? 0 : (b[1][ch] - a[1][ch]) / (b[0] - a[0]);
+      });
+    };
+    const [ta, A] = K[i], [tb, B] = K[i + 1], h = tb - ta || 1e-9, u = Math.max(0, Math.min(1, (t - ta) / h));
+    const mA = tan(i), mB = tan(i + 1), u2 = u * u, u3 = u2 * u;
+    const h00 = 2 * u3 - 3 * u2 + 1, h10 = u3 - 2 * u2 + u, h01 = -2 * u3 + 3 * u2, h11 = u3 - u2;
+    return A.map((x, ch) => h00 * x + h10 * h * mA[ch] + h01 * B[ch] + h11 * h * mB[ch]);
+  }
+  // Schlüsselbild-Ablauf abtasten: keys [[t, pose], …] aufsteigend, u in 0 … 1 (loop: zyklisch, Ende = Anfang); weich wie spline()
+  function seq(keys, u, loop) {
+    const K = keys._v || (keys._v = keys.map(([t, q]) => [t, toVec(q)]));
+    return toPose(spline(K, u, loop));
+  }
+
+  // Gesten für Sieg, knappe Ergebnisse, Niederlage und Warten: gleich in allen Spielen, eine davon wählt man im Pass als Jubel.
+  // keys: [Sekunde, Pose, { lift, mood }]; mood steuert das Gesicht (froh, traurig, ruhig, staunen), lift die Höhe beim Sprung.
+  const S0 = POSES.stand, g = (o) => Object.assign({}, S0, o);
+  const UP = g({ lean: -2, sL: [8, 18], fL: [2, 18], aF: [150, 26], aB: [-150, -26], hd: -14 });
+  const HIGH = g({ lean: -5, sL: [2, 3], fL: [-4, 3], aF: [168, 6], aB: [-168, -6], hd: -12 });
+  const PULL = g({ lean: 12, sL: [14, 30], fL: [6, 30], aF: [-22, 128], aB: [-14, -24], hd: -2 });
+  const FIST = g({ lean: 1, sL: [4, 8], fL: [-4, 8], aF: [80, 100], aB: [-10, -20], hd: -6 });
+  const HEAD = g({ lean: -5, sL: [2, 4], fL: [-4, 4], aF: [150, 120], aB: [-150, -120], hd: -10 });
+  const SAD = g({ lean: 16, sL: [8, 14], fL: [0, 14], aF: [2, -4], aB: [-4, -4], hd: 24 });
+  const FACE = g({ lean: 24, sL: [12, 24], fL: [6, 24], aF: [90, 103], aB: [86, 106], hd: 22 });
+  const HIPS = g({ lean: 4, sL: [2, 4], fL: [-8, 4], aF: [-26, 96], aB: [-30, 100], hd: 14 });
+  const KNEES = g({ lean: 58, sL: [28, 46], fL: [22, 44], aF: [10, 8], aB: [6, 8], hd: 8 });
+  const CLAP_A = g({ aF: [40, 62], aB: [54, 56] }), CLAP_B = g({ aF: [46, 66], aB: [44, 66] });
+  const F = (m) => ({ mood: m });
+  const GESTEN = {
+    jubel: { name: "Arme hoch", art: "sieg", dauer: 2.4, keys: [[0, S0, F("ruhig")], [0.35, POSES.cheer, F("froh")], [0.7, UP, F("froh")], [1.05, HIGH, F("froh")], [1.4, UP, F("froh")], [1.8, POSES.cheer, F("froh")], [2.4, POSES.cheer, F("froh")]] },
+    faust: { name: "Faust", art: "sieg", dauer: 1.8, keys: [[0, S0, F("ruhig")], [0.3, FIST, F("froh")], [0.55, PULL, F("froh")], [0.85, FIST, F("froh")], [1.1, PULL, F("froh")], [1.8, g({ lean: 4, sL: [3, 5], fL: [-3, 5], aF: [24, 80], aB: [-6, -10], hd: -6 }), F("froh")]] },
+    sprung: { name: "Freudensprung", art: "sieg", dauer: 1.6, keys: [[0, S0, { lift: 0, mood: "froh" }],
+      [0.3, g({ lean: 20, sL: [44, 88], fL: [40, 88], aF: [-34, 24], aB: [-40, 24], hd: -10 }), { lift: 0, mood: "froh" }],
+      [0.55, g({ lean: -6, sL: [-2, 8], fL: [-14, 36], aF: [170, 6], aB: [-170, -6], hd: -14 }), { lift: 16, mood: "froh" }],
+      [0.8, g({ lean: -2, sL: [4, 18], fL: [-20, 50], aF: [160, 12], aB: [-160, -12], hd: -12 }), { lift: 9, mood: "froh" }],
+      [1.0, g({ lean: 12, sL: [34, 66], fL: [28, 64], aF: [120, 30], aB: [-120, -30], hd: -6 }), { lift: 0, mood: "froh" }],
+      [1.6, POSES.cheer, { lift: 0, mood: "froh" }]] },
+    siegerpose: { name: "Siegerpose", art: "sieg", dauer: 1.8, keys: [[0, S0, F("ruhig")], [0.5, g({ lean: -8, fL: [-10, 4], aF: [132, -12], aB: [-132, 12], hd: -18 }), F("froh")], [1.8, g({ lean: -9, fL: [-10, 4], aF: [136, -10], aB: [-136, 10], hd: -20 }), F("froh")]] },
+    zeigen: { name: "Nach oben zeigen", art: "sieg", dauer: 1.6, keys: [[0, S0, F("ruhig")], [0.45, g({ lean: -4, aF: [172, -2], aB: [-24, 60], hd: -16 }), F("froh")], [1.6, g({ lean: -5, aF: [176, -2], aB: [-24, 60], hd: -18 }), F("froh")]] },
+    winken: { name: "Winken", art: "sieg", dauer: 1.6, loop: true, keys: [[0, POSES.wave, F("froh")], [0.4, g({ lean: 2, aF: [112, 66], hd: -4 }), F("froh")], [0.8, POSES.wave, F("froh")], [1.2, g({ lean: 2, aF: [112, 66], hd: -4 }), F("froh")], [1.6, POSES.wave, F("froh")]] },
+    verbeugung: { name: "Verbeugung", art: "sieg", dauer: 2.2, keys: [[0, S0, F("froh")], [0.6, POSES.bow, F("froh")], [1.3, POSES.bow, F("froh")], [2.2, S0, F("froh")]] },
+    erleichtert: { name: "Hände an den Kopf", art: "knapp", dauer: 2.6, keys: [[0, S0, F("staunen")], [0.45, HEAD, F("staunen")], [1.4, g({ lean: -4, sL: [2, 4], fL: [-4, 4], aF: [152, 118], aB: [-152, -118], hd: -12 }), F("staunen")],
+      [1.9, g({ lean: 12, sL: [6, 12], fL: [0, 12], aF: [8, -6], aB: [-2, -6], hd: 8 }), F("froh")], [2.6, S0, F("froh")]] },
+    nicken: { name: "Nicken", art: "knapp", dauer: 1.4, keys: [[0, S0, F("froh")], [0.25, g({ hd: 14 }), F("froh")], [0.5, g({ hd: -4 }), F("froh")], [0.75, g({ hd: 12 }), F("froh")], [1.0, g({ hd: -2 }), F("froh")], [1.4, S0, F("froh")]] },
+    enttaeuscht: { name: "Kopf hängen", art: "niederlage", dauer: 2.4, keys: [[0, S0, F("ruhig")], [0.7, SAD, F("traurig")], [1.5, g({ lean: 18, sL: [8, 16], fL: [0, 16], aF: [0, -4], aB: [-6, -4], hd: 26 }), F("traurig")], [2.4, g({ lean: 14, sL: [8, 14], fL: [0, 14], aF: [2, -4], aB: [-4, -4], hd: 22 }), F("traurig")]] },
+    gesicht: { name: "Hände vors Gesicht", art: "niederlage", dauer: 2.6, keys: [[0, S0, F("ruhig")], [0.5, FACE, F("traurig")], [1.8, g({ lean: 28, sL: [14, 28], fL: [8, 28], aF: [92, 102], aB: [88, 104], hd: 26 }), F("traurig")], [2.6, g({ lean: 20, sL: [10, 20], fL: [4, 20], aF: [30, 70], aB: [34, 60], hd: 18 }), F("traurig")]] },
+    abwinken: { name: "Abwinken", art: "niederlage", dauer: 1.6, keys: [[0, S0, F("ruhig")], [0.35, g({ lean: 4, aF: [56, 84], hd: 6 }), F("traurig")], [0.6, g({ lean: 8, aF: [20, -14], hd: 16 }), F("traurig")], [1.6, g({ lean: 10, sL: [6, 10], fL: [0, 10], aF: [6, -8], aB: [-4, -6], hd: 18 }), F("traurig")]] },
+    hueften: { name: "Hände in die Hüften", art: "niederlage", dauer: 2.2, keys: [[0, S0, F("ruhig")], [0.6, HIPS, F("traurig")], [1.4, g({ lean: 2, sL: [2, 4], fL: [-8, 4], aF: [-24, 94], aB: [-28, 98], hd: 8 }), F("traurig")], [2.2, HIPS, F("traurig")]] },
+    knie: { name: "Hände auf die Knie", art: "niederlage", dauer: 2.4, keys: [[0, S0, F("ruhig")], [0.8, KNEES, F("traurig")], [1.6, g({ lean: 62, sL: [30, 50], fL: [24, 48], aF: [8, 8], aB: [4, 8], hd: 14 }), F("traurig")], [2.4, KNEES, F("traurig")]] },
+    warten: { name: "Warten", art: "neutral", dauer: 4, loop: true, keys: [[0, S0, F("ruhig")], [1, g({ lean: 3, sL: [4, 6], fL: [-6, 10], aF: [10, -12], aB: [-8, -10] }), F("ruhig")], [2, g({ lean: 1, sL: [1, 2], fL: [-2, 4], aF: [6, -8], aB: [-4, -6] }), F("ruhig")], [3, g({ lean: 2, sL: [3, 5], fL: [-5, 8], aF: [9, -10], aB: [-7, -9] }), F("ruhig")], [4, S0, F("ruhig")]] },
+    applaus: { name: "Applaus", art: "neutral", dauer: 0.8, loop: true, keys: [[0, CLAP_A, F("froh")], [0.2, CLAP_B, F("froh")], [0.4, CLAP_A, F("froh")], [0.6, CLAP_B, F("froh")], [0.8, CLAP_A, F("froh")]] },
+    daumen: { name: "Daumen hoch", art: "neutral", dauer: 1.4, keys: [[0, S0, F("ruhig")], [0.45, g({ lean: 0, aF: [96, 76], hd: -6 }), F("froh")], [1.4, g({ lean: 0, aF: [98, 74], hd: -6 }), F("froh")]] },
+  };
+  // Tänze im Stil der 1920er und 30er Jahre, passend zu den Plakaten der Reihe: eigene kurze Choreografien nach den alten
+  // Grundschritten, keine Kopien heutiger Trend-Tänze. takt = Sekunden je Schlag (für Musik oder Klatschen im Spiel).
+  const CH_DOWN = g({ lean: 5, sL: [8, 18], fL: [-2, 18], aF: [16, -8], aB: [-18, -8], hd: -4 });
+  const CH_FWD = g({ lean: -4, sL: [3, 6], fL: [58, 10], aF: [54, -10], aB: [-46, -10], hd: -8 });
+  const CH_BACK = g({ lean: 12, sL: [5, 10], fL: [-44, 74], aF: [-42, -10], aB: [50, -10], hd: 0 });
+  const CH_FWD2 = g({ lean: -6, sL: [3, 6], fL: [62, 8], aF: [96, -16], aB: [-70, -14], hd: -12 });
+  const CH_BACK2 = g({ lean: 14, sL: [5, 10], fL: [-48, 80], aF: [-66, -14], aB: [92, -16], hd: 2 });
+  const shimmy = [];
+  for (let i = 0; i <= 16; i++) {
+    const sh = i % 2 ? 1 : -1, b = Math.cos((i / 16) * Math.PI * 4);
+    shimmy.push([i * 0.06, g({ lean: -7 + 4 * sh, sL: [5, 12 + 5 * b], fL: [-8, 12 + 5 * b], aF: [62 + 9 * sh, 78 - 8 * sh], aB: [48 - 9 * sh, 84 + 8 * sh], hd: -10 - 4 * sh }), F("froh")]);
+  }
+  const TR_A = g({ lean: 10, sL: [10, 22], fL: [-6, 22], aF: [150, 32], aB: [-30, -20], hd: -2 });
+  const TR_B = g({ lean: 6, sL: [4, 10], fL: [-14, 30], aF: [146, 4], aB: [-20, -14], hd: -6 });
+  const PE_A = g({ lean: 4, sL: [6, 14], fL: [-4, 14], aF: [-28, 100], aB: [-32, 104], hd: -6 });
+  const PE_B = g({ lean: 16, sL: [10, 22], fL: [0, 22], aF: [-18, 90], aB: [-22, 94], hd: 26 });
+  Object.assign(GESTEN, {
+    charleston: { name: "Charleston", art: "tanz", dauer: 1.68, loop: true, takt: 0.42, keys: [[0, CH_DOWN, F("froh")], [0.21, CH_FWD, F("froh")], [0.42, CH_DOWN, F("froh")], [0.63, CH_BACK, F("froh")],
+      [0.84, CH_DOWN, F("froh")], [1.05, CH_FWD2, F("froh")], [1.26, CH_DOWN, F("froh")], [1.47, CH_BACK2, F("froh")], [1.68, CH_DOWN, F("froh")]] },
+    shimmy: { name: "Shimmy", art: "tanz", dauer: 0.96, loop: true, takt: 0.48, keys: shimmy },
+    truckin: { name: "Truckin\u2019", art: "tanz", dauer: 1.2, loop: true, takt: 0.3, keys: [[0, TR_A, F("froh")], [0.3, TR_B, F("froh")], [0.6, g({ lean: 10, sL: [12, 26], fL: [-2, 26], aF: [152, 36], aB: [-34, -22], hd: 0 }), F("froh")], [0.9, TR_B, F("froh")], [1.2, TR_A, F("froh")]] },
+    peckin: { name: "Peckin\u2019", art: "tanz", dauer: 1.2, loop: true, takt: 0.3, keys: [[0, PE_A, F("froh")], [0.15, PE_B, F("staunen")], [0.3, PE_A, F("froh")], [0.45, PE_B, F("staunen")], [0.6, PE_A, F("froh")], [0.9, g({ lean: 2, sL: [4, 10], fL: [-8, 12], aF: [-34, 108], aB: [-38, 110], hd: -10 }), F("froh")], [1.2, PE_A, F("froh")]] },
+  });
+  const ARTEN = { sieg: "Sieg", knapp: "Knapp", niederlage: "Niederlage", neutral: "Neutral", tanz: "Tanz" };
+  // Geste zur Zeit t (Sekunden seit dem Start): { pose, lift, mood, done }; Schleifen laufen weiter, sonst bleibt das letzte Bild
+  function gesture(id, t) {
+    const G = GESTEN[id];
+    if (!G) return null;
+    const K = G._v || (G._v = G.keys.map(([tk, q, e]) => [tk, toVec(q, e && e.lift)]));
+    const v = spline(K, t, !!G.loop), tt = G.loop ? ((t % G.dauer) + G.dauer) % G.dauer : t;
+    let mood = "ruhig";
+    for (const [tk, , e] of G.keys) if (tk <= tt + 1e-9 && e && e.mood) mood = e.mood;
+    return { pose: toPose(v), lift: Math.max(0, v[11]), mood, done: !G.loop && t >= G.dauer };
+  }
+  // Atmen und leichtes Verlagern beim Stehen, damit die Figur nie starr wirkt (k = Stärke, 1 = normal)
+  function idle(p, t, k) {
+    k = k == null ? 1 : k;
+    const b = Math.sin(t * 1.75), w = Math.sin(t * 0.86 + 1.3), o = mix(p, p, 0);
+    o.lean += 0.9 * b * k; o.hd -= 0.7 * b * k;
+    o.aF = [o.aF[0] + 1.6 * b * k, o.aF[1] + 1.2 * b * k]; o.aB = [o.aB[0] - 1.3 * b * k, o.aB[1] - b * k];
+    o.sL = [o.sL[0] + 0.7 * w * k, o.sL[1] + 1.2 * Math.max(0, w) * k];
+    return o;
+  }
+  // weich nachführen: Rumpf und Beine zügig, Arme etwas später (fließender Armzug); fast = Sprung, Sturz
+  const RATE = { lean: 9, crouch: 9, hd: 8, sL: 13, fL: 11, aF: 6.5, aB: 6 };
+  function ease(cur, tgt, dt, fast) {
+    if (!cur) return tgt;
+    const o = {}, m = fast ? 2.4 : 1, a = (k) => 1 - Math.exp(-RATE[k] * m * dt);
+    for (const k of KEYS) o[k] = val(cur, k) + (val(tgt, k) - val(cur, k)) * a(k);
+    for (const k of PAIRS) { const f = a(k); o[k] = [cur[k][0] + (tgt[k][0] - cur[k][0]) * f, cur[k][1] + (tgt[k][1] - cur[k][1]) * f]; }
+    return o;
+  }
+
+  const rad = (d) => d * Math.PI / 180, deg = (r) => r * 180 / Math.PI;
+  const vec = (d, L) => [Math.sin(rad(d)) * L, Math.cos(rad(d)) * L];
+  // Gliedlängen: Arme nach den Maßen des Menschen (Oberarm knapp 19 %, Unterarm 15 % der Größe), Schultergelenk 4,5 unter dem Hals
+  const LEN = { thigh: 19, shin: 18, torso: 26, ua: 14, fa: 12.5, shDrop: 4.5 };
+
+  // Gelenke einer Pose im Profil (x vorn, y unten), Knöchel des Standbeins im Ursprung
+  function joints(p) {
+    const sHip = p.sL[0], sKn = p.sL[0] - p.sL[1];
+    const t1 = vec(sHip, LEN.thigh), t2 = vec(sKn, LEN.shin);
+    const hip = [-(t1[0] + t2[0]), -(t1[1] + t2[1])];
+    const knee = [hip[0] + t1[0], hip[1] + t1[1]], ank = [0, 0];
+    const fSh = p.fL[0] - p.fL[1], fK = vec(p.fL[0], LEN.thigh), fKn = [hip[0] + fK[0], hip[1] + fK[1]], fS = vec(fSh, LEN.shin), fAn = [fKn[0] + fS[0], fKn[1] + fS[1]];
+    const nk = [hip[0] + Math.sin(rad(p.lean)) * LEN.torso, hip[1] - Math.cos(rad(p.lean)) * LEN.torso];
+    const sh = [hip[0] + Math.sin(rad(p.lean)) * (LEN.torso - LEN.shDrop), hip[1] - Math.cos(rad(p.lean)) * (LEN.torso - LEN.shDrop)];
+    const arm = (a) => { const u = vec(a[0], LEN.ua), e = [sh[0] + u[0], sh[1] + u[1]], f = vec(a[0] + a[1], LEN.fa); return [sh, e, [e[0] + f[0], e[1] + f[1]]]; };
+    return { hip, knee, ank, fKn, fAn, nk, sh, aF: arm(p.aF), aB: arm(p.aB), sKn, fSh };
+  }
+
+  // Umrechnung aus Gelenkpunkten (beliebige Einheit, y unten) in eine Pose. Damit lassen sich bestehende Posen der Spiele übernehmen.
+  // J: hip, sh, kneeN/ankN (nahes Bein = Standbein), kneeF/ankF, handN/handF, elbN/elbF, face (Blickrichtung). Fehlt der Ellbogen,
+  // landet die Hand trotzdem an derselben Stelle (Maßstab aus dem Standbein): der Arm beugt sich so weit wie nötig, Ellbogen unten.
+  const dirOf = (a, b) => deg(Math.atan2(b[0] - a[0], b[1] - a[1]));
+  const wrap = (d) => ((((d + 180) % 360) + 360) % 360) - 180;
+  function fromPoints(J) {
+    // Knie beugen nur nach vorn: eine Beugung unter 0 (überstreckt) wird gerade
+    const leg = (kn, an) => { const t = dirOf(J.hip, kn); return [t, Math.max(0, wrap(t - dirOf(kn, an)))]; };
+    const legIn = Math.hypot(J.kneeN[0] - J.hip[0], J.kneeN[1] - J.hip[1]) + Math.hypot(J.ankN[0] - J.kneeN[0], J.ankN[1] - J.kneeN[1]);
+    const k = (LEN.thigh + LEN.shin) / (legIn || 1);
+    const arm = (el, ha) => {
+      if (el) { const u = dirOf(J.sh, el); return [u, wrap(dirOf(el, ha) - u)]; }
+      const phi = dirOf(J.sh, ha), d = Math.min(LEN.ua + LEN.fa - 1e-6, Math.max(Math.abs(LEN.ua - LEN.fa) + 1e-6, Math.hypot(ha[0] - J.sh[0], ha[1] - J.sh[1]) * k));
+      const al = deg(Math.acos((LEN.ua ** 2 + d ** 2 - LEN.fa ** 2) / (2 * LEN.ua * d))), el2 = deg(Math.acos((LEN.ua ** 2 + LEN.fa ** 2 - d ** 2) / (2 * LEN.ua * LEN.fa)));
+      return [phi - al, 180 - el2];
+    };
+    // Rumpf von der Hüfte zur Schulter (die Schulter liegt wie in joints() auf der Rumpfachse)
+    const lean = deg(Math.atan2(J.sh[0] - J.hip[0], -(J.sh[1] - J.hip[1])));
+    const p = { lean, crouch: 0, sL: leg(J.kneeN, J.ankN), fL: leg(J.kneeF, J.ankF), aF: arm(J.elbN, J.handN), aB: arm(J.elbF, J.handF), hd: 0 };
+    if (J.face) p.hd = Math.max(-80, Math.min(60, wrap(deg(Math.atan2(J.face[1], J.face[0])) - lean)));
+    const r1 = (v) => Math.round(v * 10) / 10;
+    for (const k of KEYS) p[k] = r1(p[k]);
+    for (const k of PAIRS) p[k] = p[k].map(r1);
+    return p;
+  }
+
+  // Frisuren als SVG-Pfade, Ursprung = Kopfmitte, Hinterkopf bei +x (wird beim Zeichnen gespiegelt)
+  const HAIRP = [
+    { back: ["C 5.5 -4.5 3.4"], top: ["M-6.1 -0.5 C-6 -7 6 -8 6.3 0 C3 -3 -2 -3.5 -6.1 -0.5 Z"] },
+    { back: [], top: ["M-6.3 -1.3 C-7 -8 6.5 -8.5 6.6 1 L5.2 2.5 C4 -1.5 -2 -3.6 -6.3 -1.3 Z"] },
+    { back: ["M4.5 -3 C10 -3 13 1 15 6 C12 3.5 9 2 5 1.5 Z"], top: ["M-6.1 -0.5 C-6 -7 6 -8 6.3 0 C3 -3 -2 -3.5 -6.1 -0.5 Z"], under: true, hang: [4.8, -2.4] },
+    { back: ["C 6.4 0.5 2.9", "C 5 -4.8 3.1"], top: ["M-6.3 -1.3 C-7 -8 6.5 -8.5 6.6 1 L5.2 2.5 C4 -1.5 -2 -3.6 -6.3 -1.3 Z", "C -4.6 -4.6 2.4", "C 0.5 -7.2 2.5"] },
+    // Bubikopf: kinnlang, Pony über der Stirn
+    { back: [], top: ["M-6.6 -0.6 C-7.3 -8.4 7.3 -9.6 7.7 0.2 L7.9 5.4 C6.7 6.5 4.7 6.7 3.2 6.1 C3.9 3.2 2.9 0.1 0.6 -1.5 C-1.7 -2.9 -4.7 -2.4 -6.6 -0.6 Z"] },
+    // Lang: offen bis auf den Rücken
+    { back: ["M2.8 -4.6 C8.4 -4.8 9.4 2 9.2 9 C9 13.4 7.4 15.6 4.4 15.8 C5.8 11.2 5.2 6.2 2.4 2.2 Z"], top: ["M-6.1 -0.5 C-6 -7 6 -8 6.3 0 C3 -3 -2 -3.5 -6.1 -0.5 Z"], under: true, hang: [3.2, -3.6] },
+    // Scheitel: kurz, vorn etwas Fülle
+    { back: [], top: ["M-6.5 -0.4 C-7.4 -7.2 -2.2 -9.2 1.8 -8.5 C5.9 -7.9 7.2 -4.4 6.8 1.0 L5.8 2.0 C5.4 -1.8 3.4 -4.6 0.2 -5.1 C-2.6 -5.6 -5 -3.4 -6.5 -0.4 Z"] },
+    // Stoppeln: ganz kurz, liegt eng am Kopf
+    { back: [], top: ["M-5.9 -1.6 C-5.6 -6.9 5.7 -8.1 6.4 0.4 L5.7 1.6 C5.2 -4.6 -4.2 -5.6 -5.9 -1.6 Z"] },
+    // Afro: rund und voll
+    { back: [], behind: ["C 2.0 -3.6 8.2"], top: [] },
+  ];
+  // Bart auf der Gesichtsseite (+x), Farbe wie das Haar; Dreitagebart = Vollbart blass und innerhalb des Kopfes
+  const BEARDP = [null,
+    "M6.6 0.9 C6.7 2.0 6.3 2.9 5.6 3.2 C5.0 2.7 4.2 2.6 3.6 2.8 C3.8 1.7 4.9 0.9 6.6 0.9 Z",
+    "M-0.8 -1.2 C-1.2 2.6 0 6.2 3.2 7.2 C5.2 7.8 6.9 6.2 6.9 4.0 L6.4 2.0 C5.4 2.6 4.2 2.4 3.8 1.6 C2.6 1.4 1.2 0.6 -0.8 -1.2 Z",
+    "M-0.8 -1.2 C-1.2 2.6 0 6.2 3.2 7.2 C5.2 7.8 6.9 6.2 6.9 4.0 L6.4 2.0 C5.4 2.6 4.2 2.4 3.8 1.6 C2.6 1.4 1.2 0.6 -0.8 -1.2 Z"];
+  const pathCache = {};
+  function shape(ctx, s, fill) {
+    ctx.beginPath();
+    if (s[0] === "C") { const [, x, y, r] = s.split(" "); ctx.arc(+x, +y, +r, 0, Math.PI * 2); }
+    else { const p = pathCache[s] || (pathCache[s] = new Path2D(s)); ctx.fillStyle = fill; ctx.fill(p); ctx.stroke(p); return; }
+    ctx.fillStyle = fill; ctx.fill(); ctx.stroke();
+  }
+
+  // Vieleck mit abgerundeten Ecken (Kleidung): r je Ecke oder für alle, höchstens die halbe Kantenlänge
+  function roundPoly(ctx, pts, r) {
+    const n = pts.length, rr = (i) => (Array.isArray(r) ? r[i] : r);
+    const cut = (p, q, d) => { const dx = q[0] - p[0], dy = q[1] - p[1], l = Math.hypot(dx, dy) || 1, t = Math.min(d / l, 0.5); return [p[0] + dx * t, p[1] + dy * t]; };
+    ctx.beginPath();
+    for (let i = 0; i < n; i++) {
+      const p0 = pts[(i + n - 1) % n], p1 = pts[i], p2 = pts[(i + 1) % n], a = cut(p1, p0, rr(i)), b = cut(p1, p2, rr(i));
+      if (i === 0) ctx.moveTo(a[0], a[1]); else ctx.lineTo(a[0], a[1]);
+      ctx.quadraticCurveTo(p1[0], p1[1], b[0], b[1]);
+    }
+    ctx.closePath();
+  }
+
+  // Glied als weich gebogene, sich verjüngende Form (Oberschenkel kräftig, Knöchel und Handgelenk schmal); lw 0 = ohne Kontur;
+  // taper: wie stark es zum Ende schmaler wird; cap: runder Anfang (Schulter), damit der Arm nicht abgeschnitten am Rumpf klebt
+  function limb(ctx, pts, w, col, lw, taper, cap) {
+    const tp = taper == null ? 0.42 : taper;
+    const [A, B, C] = pts, smp = [];
+    const P0 = [2 * A[0] - B[0], 2 * A[1] - B[1]], P3 = [2 * C[0] - B[0], 2 * C[1] - B[1]];
+    const cr = (p0, p1, p2, p3, t) => [0, 1].map((k) => 0.5 * ((2 * p1[k]) + (-p0[k] + p2[k]) * t + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t * t + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * t * t * t));
+    for (let i = 0; i <= 6; i++) smp.push(cr(P0, A, B, C, i / 6));
+    for (let i = 1; i <= 6; i++) smp.push(cr(A, B, C, P3, i / 6));
+    const n = smp.length, L = [], R = [];
+    for (let i = 0; i < n; i++) {
+      const p = smp[i], q = smp[Math.min(n - 1, i + 1)], o = smp[Math.max(0, i - 1)];
+      let dx = q[0] - o[0], dy = q[1] - o[1]; const d = Math.hypot(dx, dy) || 1; dx /= d; dy /= d;
+      const u = i / (n - 1), hw = (w * (1.08 - tp * u)) / 2;
+      L.push([p[0] - dy * hw, p[1] + dx * hw]); R.push([p[0] + dy * hw, p[1] - dx * hw]);
+    }
+    ctx.beginPath(); ctx.moveTo(L[0][0], L[0][1]);
+    for (const p of L.slice(1)) ctx.lineTo(p[0], p[1]);
+    for (const p of R.reverse()) ctx.lineTo(p[0], p[1]);
+    if (cap) {
+      // Halbkreis um den Anfang, auf der dem Glied abgewandten Seite
+      const r = w * 1.08 / 2, aR = Math.atan2(R[R.length - 1][1] - A[1], R[R.length - 1][0] - A[0]);
+      const back = Math.atan2(A[1] - smp[1][1], A[0] - smp[1][0]), d = (x) => Math.abs(Math.atan2(Math.sin(x), Math.cos(x)));
+      const cw = d(aR + Math.PI / 2 - back) < d(aR - Math.PI / 2 - back);
+      ctx.arc(A[0], A[1], r, aR, aR + (cw ? Math.PI : -Math.PI), !cw);
+    }
+    ctx.closePath(); ctx.fillStyle = col; ctx.fill();
+    if (lw) { ctx.strokeStyle = INK; ctx.lineWidth = lw; ctx.stroke(); }
+  }
+
+  // ------------------------------------------------------------------ Zeichnen
+  // o: x, y = Knöchel des Standbeins im Bild; s Maßstab; dir 1 = nach rechts; lift Höhe; tilt Kippen (Bogenmaß, z. B. Hang, Sturz);
+  // turn Drehung um die eigene Achse (Sprung, Pirouette); swap Standbein auf der fernen Seite; pose; look (cleanLook);
+  // kit (Name aus KITS oder Objekt); ski { n, f } Winkel der Ski in Grad (+ = Spitze nach unten), sonst waagrecht;
+  // poles { n, f } Spitzen der Stöcke in Figur-Einheiten, sonst schräg nach hinten; lw Konturbreite in Bildpunkten
+  // (fest bei jedem Maßstab, für kleine Figuren), sonst wächst sie mit dem Maßstab.
+  // Die Pose ist ein Seitenprofil; jedes Gelenk bekommt eine Tiefe z (Schultern und Hüfte haben Breite), dann wird um die
+  // senkrechte Achse gedreht und von hinten nach vorn gezeichnet. So bleiben Rumpf und Kopf beim Drehen rund.
+  const Z = { sh: 6.2, hip: 3.2 };
+  function draw(ctx, o) {
+    const L = o.look || DEF_LOOK, p = o.pose, s = o.s || 1, K = typeof o.kit === "string" ? KITS[o.kit] : o.kit || KITS.eiskunstlauf;
+    const skin = pal(L.skin, SKIN, 1), suit = pal(L.suit, SUIT, 0), suitD = isHex(L.suitD) ? L.suitD : shade(suit, 0.8);
+    const acc = typeof L.suit === "number" && L.accent === L.suit ? SUIT[(L.suit + 3) % SUIT.length] : pal(L.accent, SUIT, 3);
+    const accD = isHex(L.accentD) ? L.accentD : shade(acc, 0.8);
+    const skiC = { n: isHex(L.ski) ? L.ski : null, f: isHex(L.skiFar) ? L.skiFar : isHex(L.ski) ? shade(L.ski, 0.78) : null };
+    const lwk = o.lw ? o.lw / (1.4 * s) : 1, W = (w) => w * lwk;
+    // Gesichtszüge nur, wenn der Kopf groß genug ist (Radius ab 10 Bildpunkten: Pass, Gestalten, Siegerehrung); face erzwingt oder verbietet
+    const mood = (o.face != null ? o.face : 6.2 * s >= 10) ? o.mood || p.mood || "ruhig" : null;
+    const th = o.turn || 0, c = Math.cos(th), sn = Math.sin(th);
+    ctx.save();
+    ctx.translate(o.x, o.y - (o.lift || 0) * s);
+    if (o.tilt) ctx.rotate(o.tilt);
+    ctx.scale(s * (o.dir || 1), s);
+    ctx.lineCap = "round"; ctx.lineJoin = "round";
+    const J = joints(p), { hip, knee, ank, fKn, fAn } = J;
+    // Drehachse: senkrecht durch die Hüfte
+    const ax = hip[0];
+    // Punkt (Profil x, y, Tiefe z) → Bild [x, y, Tiefe zum Betrachter]
+    const P = (q, z) => { const x = q[0] - ax; return [ax + x * c - z * sn, q[1], x * sn + z * c]; };
+    const depth = (pts) => pts.reduce((m, q) => m + q[2], 0) / pts.length;
+    const parts = [];
+    const zs = o.swap ? -1 : 1;
+    const split = L.pattern === "split", stripe = L.pattern === "stripe";
+    const legN = split ? acc : suit, legF = split ? accD : suitD;
+    // Beine: Fuß je nach Ausrüstung; Ski und Stiefel zeichnet derselbe Teil, damit die Reihenfolge stimmt
+    const leg = (pts, z0, z1, w, col, shinDeg, skiDeg, near) => {
+      const q = pts.map((pt, i) => P(pt, z0 + (z1 - z0) * i / (pts.length - 1)));
+      parts.push({ d: depth(q), f: () => {
+        const an = q[q.length - 1];
+        if (SKI[K.feet]) ski(ctx, an, skiDeg || 0, c, SKI[K.feet], near, W, skiC);
+        if (K.legs === "knickers") {
+          // Kniebundhose bauschig bis unters Knie, darunter der Wollstrumpf mit Bund in der Zweitfarbe
+          const kn = q[1], at = (u) => [kn[0] + (an[0] - kn[0]) * u, kn[1] + (an[1] - kn[1]) * u];
+          limb(ctx, [at(0.3), at(0.65), an], w * 0.66, SOCK[near ? 0 : 1], W(1.1), 0.12);
+          limb(ctx, [q[0], kn, at(0.34)], w * 1.04, (K.pants || [col, col])[near ? 0 : 1], W(1.2), -0.06, true);
+          if (near) limb(ctx, [at(0.33), at(0.37), at(0.41)], w * 0.7, acc, W(0.9), 0);
+        } else {
+          limb(ctx, q, w, col, W(1.2), null, true);
+          if (stripe && near) limb(ctx, q, w * 0.28, acc, 0);
+        }
+        if (K.feet === "skates") skate(ctx, an, shinDeg, c, W);
+        else if (K.feet === "shoes") shoe(ctx, an, c, W);
+        else skiBoot(ctx, an, skiDeg || 0, c, W, K.bootC);
+      } });
+    };
+    const sk = o.ski || {};
+    // Standbein auf der nahen Seite (zs = 1), die nahe Seite ist heller
+    leg([hip, fKn, fAn], -Z.hip * zs, -Z.hip * zs, 6, zs > 0 ? legF : legN, J.fSh, zs > 0 ? sk.f : sk.n, zs < 0);
+    leg([hip, knee, ank], Z.hip * zs, Z.hip * 0.6 * zs, 6.2, zs > 0 ? legN : legF, J.sKn, zs > 0 ? sk.n : sk.f, zs > 0);
+    // Arme mit Hand (Haut oder Handschuh) und Stock
+    const hand = K.glove === "suit" ? suit : K.glove ? GLOVE : skin;
+    const arm = (pts, z0, z1, col, near) => {
+      const q = pts.map((pt, i) => P(pt, z0 + (z1 - z0) * i / (pts.length - 1)));
+      parts.push({ d: depth(q), f: () => {
+        const h = q[q.length - 1], e = q[q.length - 2], an = Math.atan2(h[1] - e[1], h[0] - e[0]);
+        if (K.hands === "poles") {
+          const tip = o.poles && (near ? o.poles.n : o.poles.f);
+          pole(ctx, h, tip ? P(tip, z1) : poleTip(h, e), W);
+        }
+        limb(ctx, q, 4.8, col, W(1.2), 0.32, true);
+        if (stripe && near) limb(ctx, q, 1.4, acc, 0, 0.3);
+        ctx.beginPath(); ctx.ellipse(h[0] + Math.cos(an) * 2.3, h[1] + Math.sin(an) * 2.3, 3.3, 1.95, an, 0, 7);
+        ctx.fillStyle = hand; ctx.strokeStyle = INK; ctx.lineWidth = W(1); ctx.fill(); ctx.stroke();
+      } });
+    };
+    // Stock ohne vorgegebene Spitze: verlängert den Unterarm (hängend zum Boden, beim Jubel nach oben), endet am Boden
+    const poleTip = (h, e) => {
+      let dx = h[0] - e[0], dy = h[1] - e[1]; const d = Math.hypot(dx, dy) || 1; dx /= d; dy /= d;
+      let l = POLE; if (dy > 0.05) l = Math.min(l, (GROUND - h[1]) / dy);
+      return [h[0] + dx * l, h[1] + dy * l];
+    };
+    arm(J.aB, -Z.sh, -Z.sh - 2, suitD, false);
+    arm(J.aF, Z.sh, Z.sh + 2, shade(suit, 1.08), true);
+    // Rumpf: Querschnitt als Ellipse (Tiefe im Profil, Breite von vorn); sichtbare halbe Breite je Höhe
+    const hw = (dep, wid) => Math.sqrt((dep * c) ** 2 + (wid * sn) ** 2);
+    const lvl = [[2.5, 6.2, 6.8], [-6, 4.6, 5.4], [-18, 7.2, 7.4], [-25.5, 7, 8.6]]; // [y im Rumpf, Tiefe, Breite]
+    parts.push({ d: 0, f: () => {
+      ctx.save(); ctx.translate(P(hip, 0)[0], hip[1]);
+      // Rumpf im Raum: Neigung nach vorn, dann um die Achse gedreht → Winkel und Verkürzung im Bild (Waage von vorn wird kurz)
+      const ls = Math.sin(rad(p.lean)) * c, lc = Math.cos(rad(p.lean)), f = Math.max(0.12, Math.hypot(ls, lc));
+      ctx.rotate(Math.atan2(ls, lc));
+      const L2 = lvl.map(([y, dp, wd]) => [y * f, hw(dp, wd)]);
+      const rifleBehind = sn > -0.25;
+      if (K.back === "rifle" && rifleBehind) rifle(ctx, f, c, W);
+      // Umriss mit runden Schultern, runden Hüftkanten und weichen Seiten
+      const torso = () => roundPoly(ctx, L2.map(([y, w]) => [-w, y]).concat(L2.slice().reverse().map(([y, w]) => [w, y])), [2.6, 3.2, 3.2, 3.6, 3.6, 3.2, 3.2, 2.6]);
+      torso(); ctx.fillStyle = suit; ctx.strokeStyle = INK; ctx.lineWidth = W(1.5); ctx.fill(); ctx.stroke();
+      if (stripe) { ctx.save(); torso(); ctx.clip(); ctx.fillStyle = acc; ctx.fillRect(-1.2, -26 * f, 2.4, 28.5 * f); ctx.restore(); }
+      if (K.torso === "sash") {
+        // Schrägstreifen vorn (von hinten unsichtbar)
+        const vis = clamp01((Math.abs(c) * 0.9 + sn * 1.2 + 0.2));
+        if (vis > 0.05) {
+          ctx.save(); torso(); ctx.clip();
+          ctx.globalAlpha = vis; const w1 = hw(5.8, 6.2) * 1.05, w2 = hw(7.1, 7.6) * 1.05, dirS = c >= 0 ? 1 : -1;
+          ctx.beginPath(); ctx.moveTo(-w1 * dirS, -12.5 * f); ctx.lineTo(w2 * dirS, -20.5 * f); ctx.lineTo(w2 * dirS, -17 * f); ctx.lineTo(-w1 * dirS, -9 * f); ctx.closePath();
+          ctx.fillStyle = acc; ctx.fill(); ctx.globalAlpha = 1; ctx.restore();
+          torso(); ctx.lineWidth = W(1.5); ctx.stroke();
+        }
+      } else if (K.torso === "bib") {
+        // Startnummer: helles Leibchen über Brust und Rücken, Schultern bleiben in der Anzugfarbe
+        const b = [[-4.5, hw(4.9, 5.6)], [-12, hw(6.2, 6.6)], [-21, hw(6.6, 7.2)]].map(([y, w]) => [y * f, w * 0.86]);
+        roundPoly(ctx, b.map(([y, w]) => [-w, y]).concat(b.slice().reverse().map(([y, w]) => [w, y])), 1.6); ctx.fillStyle = PAPER; ctx.strokeStyle = INK; ctx.lineWidth = W(1); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = acc; ctx.fillRect(-b[0][1], -6 * f, 2 * b[0][1], 1.6 * f);
+      } else if (K.torso === "sweater") {
+        // Pullover: helle Bordüre über der Brust, dunkler Bund an der Hüfte
+        ctx.save(); torso(); ctx.clip();
+        ctx.fillStyle = acc; ctx.fillRect(-12, -19.6 * f, 24, 4.6 * f);
+        ctx.fillStyle = suitD; ctx.fillRect(-12, -0.8 * f, 24, 4 * f);
+        ctx.restore(); torso(); ctx.strokeStyle = INK; ctx.lineWidth = W(1.5); ctx.stroke();
+      }
+      if (isHex(L.bib)) {
+        // Leibchen (z. B. des Führenden) über dem Anzug, Schultern frei
+        const b = [[-3.5, hw(5.2, 5.9)], [-12, hw(6.4, 6.8)], [-21.5, hw(6.8, 7.4)]].map(([y, w]) => [y * f, w * 0.9]);
+        roundPoly(ctx, b.map(([y, w]) => [-w, y]).concat(b.slice().reverse().map(([y, w]) => [w, y])), 1.6); ctx.fillStyle = L.bib; ctx.strokeStyle = INK; ctx.lineWidth = W(1); ctx.fill(); ctx.stroke();
+      }
+      if (K.back === "rifle" && !rifleBehind) rifle(ctx, f, c, W);
+      ctx.fillStyle = skin; ctx.fillRect(-1.8, -26 * f - 4.5, 3.6, 4.5);
+      // Kopf: Kreis bleibt rund; Frisur, Helm und Mütze drehen mit (Hinterkopf liegt hinten = −x im Profil)
+      const hr = -Math.atan2(ls, lc) * (1 - f) * 0.6 + rad(p.hd || 0);
+      ctx.translate(0, -26 * f - 9.5); ctx.rotate(hr);
+      head(ctx, L, K, c, sn, skin, acc, suit, W, mood, Math.atan2(ls, lc) + hr + (o.tilt || 0));
+      ctx.restore();
+    } });
+    parts.sort((a, b2) => a.d - b2.d).forEach((x) => x.f());
+    ctx.restore();
+  }
+  const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
+
+  // Kopf mit Frisur, Helm oder Mütze; Ursprung = Kopfmitte, Gesicht bei +x (c skaliert die Breite beim Drehen)
+  function head(ctx, L, K, c, sn, skin, acc, suit, W, mood, tilt) {
+    const H = HAIRP[L.hair] || HAIRP[0], hc = pal(L.hairC, HAIRC, 0);
+    // Zopf und lange Haare hängen: Neigt sich der Kopf, drehen sie zum Teil zurück nach unten (um den Ansatz)
+    const hangTo = (h) => { if (!H.hang || !H.back.includes(h)) return; const a = Math.max(-1.2, Math.min(1.2, tilt || 0)) * 0.75 * Math.sign(c || 1); ctx.translate(H.hang[0], H.hang[1]); ctx.rotate(a); ctx.translate(-H.hang[0], -H.hang[1]); };
+    const hair = (list, behind) => {
+      for (const h of list) {
+        // Tiefe des Haarteils: Hinterkopf (Profil −x) kommt nach vorn, wenn der Rücken zum Betrachter zeigt
+        const hx = h[0] === "C" ? -(+h.split(" ")[1]) : -4, dz = hx * sn;
+        if ((dz > 0.5) === behind) continue;
+        ctx.save(); ctx.scale(-c || -0.01, 1); hangTo(h);
+        ctx.strokeStyle = INK; ctx.lineWidth = W(1.3) / Math.max(0.3, Math.abs(c)); shape(ctx, h, hc); ctx.restore();
+      }
+    };
+    const cs = Math.abs(c) < 0.35 ? 0.35 * Math.sign(c || 1) : c;
+    // Fülle, die immer hinter dem Kopf liegt (Afro); Teile ohne Rücksicht auf die Drehung (unter Helm und Mütze)
+    const hairAll = (list) => { for (const h of list) { ctx.save(); ctx.scale(-c || -0.01, 1); hangTo(h); ctx.strokeStyle = INK; ctx.lineWidth = W(1.3) / Math.max(0.3, Math.abs(c)); shape(ctx, h, hc); ctx.restore(); } };
+    if (H.behind && K.head !== "helmet") hairAll(H.behind);
+    if (K.head !== "helmet") hair(H.back, false);
+    ctx.beginPath(); ctx.arc(0, 0, 6.2, 0, 7); ctx.fillStyle = skin; ctx.strokeStyle = INK; ctx.lineWidth = W(1.5); ctx.fill(); ctx.stroke();
+    // Gesichtszüge (mood: ruhig, froh, traurig; null = keine): Nase, Auge, Braue, Mund; nichts, was Mann oder Frau kennzeichnet
+    const front = Math.abs(c) < 0.5 && sn > 0.3, flw = (w) => W(w) / Math.max(0.35, Math.abs(front ? 1 : cs));
+    const mouth = () => {
+      ctx.save(); if (!front) ctx.scale(cs, 1); ctx.strokeStyle = INK; ctx.fillStyle = INK; ctx.lineCap = "round";
+      const mx = front ? -1.1 : 4.3, mw = front ? 2.2 : 1.5;
+      ctx.beginPath();
+      if (mood === "froh") { ctx.moveTo(mx, 2.5); ctx.quadraticCurveTo(mx + mw * 0.55, 4.6, mx + mw * 1.05, 2.3); ctx.closePath(); ctx.fill(); }
+      else if (mood === "traurig") { ctx.moveTo(mx, 3.4); ctx.quadraticCurveTo(mx + mw * 0.5, 2.5, mx + mw, 3.2); ctx.lineWidth = flw(0.6); ctx.stroke(); }
+      else if (mood === "staunen") { ctx.ellipse(mx + mw * 0.6, 3.0, 0.55, 0.85, 0, 0, 7); ctx.fill(); }
+      else { ctx.moveTo(mx, 3.0); ctx.lineTo(mx + mw, 2.8); ctx.lineWidth = flw(0.6); ctx.stroke(); }
+      ctx.restore();
+    };
+    const feats = () => {
+      if (!mood || sn < -0.35) return;
+      ctx.save(); ctx.lineCap = "round"; const brow = shade(hc, 0.85);
+      // Brauen: froh gewölbt, traurig innen hoch, Staunen höher
+      const by = mood === "staunen" ? -0.6 : 0, bIn = mood === "traurig" ? -0.7 : mood === "froh" ? 0.1 : 0, bOut = mood === "traurig" ? 0.4 : 0, bArc = mood === "froh" ? -0.9 : -0.6;
+      if (front) {
+        for (const ex of [-2.1, 2.1]) {
+          ctx.beginPath(); ctx.ellipse(ex, -0.6, 0.6, 0.8, 0, 0, 7); ctx.fillStyle = INK; ctx.fill();
+          const sgn = ex < 0 ? 1 : -1;   // innen = zur Mitte
+          ctx.beginPath(); ctx.moveTo(ex - 1.1, -2.1 + by + (sgn > 0 ? bOut : bIn)); ctx.quadraticCurveTo(ex, -2.1 + by + bArc, ex + 1.1, -2.2 + by + (sgn > 0 ? bIn : bOut)); ctx.strokeStyle = brow; ctx.lineWidth = flw(0.6); ctx.stroke();
+        }
+      } else {
+        ctx.scale(cs, 1);
+        // Nase als Teil des Umrisses: Kopflinie dort überdeckt, Bogen nachgezogen
+        ctx.beginPath(); ctx.moveTo(5.0, -1.2); ctx.lineTo(6.05, -1.1); ctx.quadraticCurveTo(9.0, 0.6, 6.1, 1.3); ctx.lineTo(5.0, 1.4); ctx.closePath(); ctx.fillStyle = skin; ctx.fill();
+        ctx.beginPath(); ctx.moveTo(6.05, -1.1); ctx.quadraticCurveTo(9.0, 0.6, 6.1, 1.3); ctx.strokeStyle = INK; ctx.lineWidth = flw(1.5); ctx.stroke();
+        ctx.beginPath(); ctx.ellipse(3.9, -0.7, 0.55, 0.8, 0, 0, 7); ctx.fillStyle = INK; ctx.fill();
+        ctx.beginPath(); ctx.moveTo(2.9, -2.1 + by + bOut); ctx.quadraticCurveTo(3.9, -2.1 + by + bArc, 5.0, -2.2 + by + bIn); ctx.strokeStyle = brow; ctx.lineWidth = flw(0.65); ctx.stroke();
+      }
+      ctx.restore();
+    };
+    if (mood && sn > -0.35) mouth();
+    // Bart in der Haarfarbe; von hinten unsichtbar
+    if (L.beard && BEARDP[L.beard] && sn > -0.5) {
+      ctx.save(); ctx.scale(cs, 1);
+      const bp = pathCache[BEARDP[L.beard]] || (pathCache[BEARDP[L.beard]] = new Path2D(BEARDP[L.beard]));
+      if (L.beard === 3) { ctx.beginPath(); ctx.arc(0, 0, 6.2, 0, 7); ctx.clip(); ctx.globalAlpha = 0.42; ctx.fillStyle = hc; ctx.fill(bp); }
+      else { ctx.fillStyle = hc; ctx.strokeStyle = INK; ctx.lineWidth = W(1.1) / Math.max(0.35, Math.abs(cs)); ctx.fill(bp); ctx.stroke(bp); }
+      ctx.restore();
+    }
+    if (K.head === "helmet") {
+      // unter dem Helm schauen nur Zopf und lange Haare hervor; der Helm deckt ihren Ansatz
+      if (H.under) hairAll(H.back);
+      feats();
+      // Sprunghelm in der Zweitfarbe, Brille auf der Gesichtsseite; Kinn und Mund bleiben frei (Hautton, Bart)
+      ctx.save(); ctx.scale(cs, 1);
+      ctx.beginPath(); ctx.arc(-0.3, -0.6, 7.3, 1.95, 0.5 + Math.PI * 2); ctx.quadraticCurveTo(2.6, 2.4, -2.4, 6.0); ctx.closePath();
+      ctx.fillStyle = isHex(L.helmet) ? L.helmet : acc; ctx.strokeStyle = INK; ctx.lineWidth = W(1.5) / Math.max(0.35, Math.abs(cs)); ctx.fill(); ctx.stroke();
+      ctx.restore();
+      if (sn > -0.5) {
+        ctx.save(); ctx.scale(cs, 1);
+        ctx.beginPath(); ctx.arc(-0.3, -0.6, 7.35, -0.78, 0.48); ctx.arc(0.3, -0.5, 4.6, 1.08, -1.3, true); ctx.closePath();
+        ctx.fillStyle = isHex(L.visor) ? L.visor : VISOR; ctx.lineWidth = W(1.2) / Math.max(0.35, Math.abs(cs)); ctx.fill(); ctx.stroke();
+        ctx.restore();
+      }
+      ctx.beginPath(); ctx.arc(-3.2, -3.6, 1.1, 0, 7); ctx.fillStyle = "rgba(255,255,255,0.5)"; ctx.fill();
+      return;
+    }
+    if (K.head === "cap") {
+      // Strickmütze in der Zweitfarbe mit Bommel in der Anzugfarbe; sitzt über den Brauen, Haare schauen hinten heraus
+      feats();
+      ctx.save(); ctx.scale(cs, 1); ctx.strokeStyle = INK; ctx.lineWidth = W(1.3) / Math.max(0.35, Math.abs(cs));
+      ctx.beginPath(); ctx.moveTo(-6.9, -0.2); ctx.bezierCurveTo(-7.5, -9.6, 6.4, -10.6, 6.4, -2.9); ctx.lineTo(6.2, -2.0); ctx.lineTo(-6.7, 1.0); ctx.closePath();
+      const capC = isHex(L.cap) ? L.cap : acc;
+      ctx.fillStyle = capC; ctx.fill(); ctx.stroke();
+      roundPoly(ctx, [[-6.8, 0.9], [6.3, -1.9], [5.8, -4.2], [-6.9, -1.5]], 0.9);
+      ctx.fillStyle = shade(capC, 0.82); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(-1.0, -9.6, 2.3, 0, 7); ctx.fillStyle = isHex(L.pom) ? L.pom : suit; ctx.fill(); ctx.stroke();
+      ctx.restore();
+      hair(H.back, true);
+      return;
+    }
+    // Oberkopf: von vorn als Haaransatz rundum, im Profil wie gezeichnet
+    ctx.save(); ctx.scale(-cs, 1); ctx.strokeStyle = INK; ctx.lineWidth = W(1.3);
+    for (const t of H.top) shape(ctx, t, hc);
+    ctx.restore();
+    if (sn > 0.35) { ctx.beginPath(); ctx.ellipse(0, -2.6, 6.3, 3.6 * sn, 0, Math.PI, 0); ctx.fillStyle = hc; ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = W(1.2); ctx.stroke(); }
+    else if (sn < -0.35) { ctx.beginPath(); ctx.ellipse(0, -0.6, 6.3, 6.4 * -sn, 0, Math.PI - 0.3, 0.3); ctx.closePath(); ctx.fillStyle = hc; ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = W(1.2); ctx.stroke(); }
+    feats();
+    hair(H.back, true);
+  }
+
+  // Schlittschuh: Stiefel folgt dem Unterschenkel, Länge folgt der Drehung (Fuß zeigt nach vorn)
+  function skate(ctx, ank, shinDeg, c, W) {
+    ctx.save(); ctx.translate(ank[0], ank[1]); ctx.scale(Math.sign(c || 1) * Math.max(0.35, Math.abs(c)), 1); ctx.rotate(-rad(shinDeg));
+    roundPoly(ctx, [[-2.5, -3.5], [2.5, -3.5], [6, 1], [-2.5, 1.6]], [1, 1.2, 1.4, 0.8]);
+    ctx.fillStyle = PAPER; ctx.strokeStyle = INK; ctx.lineWidth = W(1.3); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-5, 4.2); ctx.lineTo(7.5, 4.2); ctx.lineWidth = W(1.6); ctx.stroke();
+    ctx.restore();
+  }
+  // Schuh (Siegerehrung, Menü)
+  function shoe(ctx, ank, c, W) {
+    ctx.save(); ctx.translate(ank[0], ank[1]); ctx.scale(Math.sign(c || 1) * Math.max(0.35, Math.abs(c)), 1);
+    roundPoly(ctx, [[-2.6, -2.2], [2.2, -2.2], [6.0, -0.2], [6.6, 2.4], [-2.8, 2.4]], [0.8, 1.4, 1.4, 0.6, 0.6]);
+    ctx.fillStyle = BOOT; ctx.strokeStyle = INK; ctx.lineWidth = W(1.2); ctx.fill(); ctx.stroke();
+    ctx.restore();
+  }
+  // Skischuh: steht flach auf dem Ski
+  function skiBoot(ctx, ank, skiDeg, c, W, col) {
+    ctx.save(); ctx.translate(ank[0], ank[1]); ctx.scale(Math.sign(c || 1) * Math.max(0.35, Math.abs(c)), 1); ctx.rotate(rad(skiDeg));
+    roundPoly(ctx, [[-3.2, -3.6], [2.6, -3.6], [6.2, 1.4], [6.2, 3.2], [-3.6, 3.2]], [1, 1.4, 1, 0.6, 0.8]);
+    ctx.fillStyle = col || BOOT; ctx.strokeStyle = INK; ctx.lineWidth = W(1.2); ctx.fill(); ctx.stroke();
+    ctx.restore();
+  }
+  // Ski unter dem Knöchel: gerade Lauffläche, Spitze aufgebogen; Winkel in Grad (+ = Spitze nach unten)
+  function ski(ctx, ank, skiDeg, c, S, near, W, cols) {
+    ctx.save(); ctx.translate(ank[0], ank[1]); ctx.scale(Math.sign(c || 1) * Math.max(0.2, Math.abs(c)), 1); ctx.rotate(rad(skiDeg));
+    const y = 3.2 + S.w / 2;
+    ctx.beginPath(); ctx.moveTo(-S.back, y); ctx.lineTo(S.front, y); ctx.quadraticCurveTo(S.front + S.tipL * 0.75, y, S.front + S.tipL, y - S.tipH);
+    ctx.strokeStyle = S.edge || INK; ctx.lineWidth = S.w + W(2.2); ctx.stroke();
+    ctx.strokeStyle = (near ? cols && cols.n : cols && cols.f) || (near ? S.col : S.colF); ctx.lineWidth = S.w; ctx.stroke();
+    ctx.restore();
+  }
+  // Stock von der Hand zur Spitze, mit Teller kurz vor der Spitze
+  function pole(ctx, h, t, W) {
+    const dx = t[0] - h[0], dy = t[1] - h[1], l = Math.hypot(dx, dy) || 1, ux = dx / l, uy = dy / l;
+    ctx.beginPath(); ctx.moveTo(h[0] - ux * 3, h[1] - uy * 3); ctx.lineTo(t[0], t[1]); ctx.strokeStyle = INK; ctx.lineWidth = W(1.5); ctx.stroke();
+    const bx = t[0] - ux * 4, by = t[1] - uy * 4;
+    ctx.beginPath(); ctx.moveTo(bx - uy * 2.4, by + ux * 2.4); ctx.lineTo(bx + uy * 2.4, by - ux * 2.4); ctx.lineWidth = W(1.3); ctx.stroke();
+  }
+  // Gewehr auf dem Rücken: Schaft aus Holz längs des Rückens, Lauf über die Schulter (im Rumpf-Koordinatensystem)
+  function rifle(ctx, f, c, W) {
+    const x = (v) => v * c;
+    ctx.beginPath(); ctx.moveTo(x(-6.4), -0.5 * f); ctx.lineTo(x(-8.6), -20 * f);
+    ctx.strokeStyle = INK; ctx.lineWidth = 4.2 + W(2); ctx.stroke(); ctx.strokeStyle = WOOD; ctx.lineWidth = 4.2; ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x(-8.4), -18 * f); ctx.lineTo(x(-7.9), -31 * f);
+    ctx.strokeStyle = INK; ctx.lineWidth = 1.6; ctx.stroke();
+  }
+
+  root.CMFigur = { draw, joints, fromPoints, mix, seq, ease, gesture, idle, cleanLook, shade, POSES, ABLAEUFE, GESTEN, ARTEN, KITS, SKI, LEN, DEF_LOOK, SKIN, HAIRC, SUIT, HAIRS, BEARDS, PATTERNS, INK };
 })(typeof window !== "undefined" ? window : globalThis);
 
 /* TELEMARK – Canvas-Grafik: Flutlicht-Nacht im flachen Vektorstil, Welt in Metern, Kamera in px/m. */
@@ -7758,7 +8461,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     sit: P(Object.assign({}, SK_IN, {
       ab: [-0.6, -4.6], kb: [-4.9, -16.2], af: [0, -4.6], kf: [-4.3, -15.8],
       hip: [-14.8, -10.6], sh: [-19.3, -26.3], head: [-21.2, -32.6], face: [0.98, -0.1],
-      eb: [-18.0, -17.6], hb: [-16.0, -9.6], ef: [-18.5, -16.9], hf: [-16.5, -9.0] })),
+      eb: [-18.0, -17.6], hb: [-16.0, -9.6], ef: [-18.5, -16.9], hf: [-16.5, -9.0], ikN: 1, ikF: 1 })),
     // Anlaufhocke: Sprunggelenk ~50°, Knie ~77°, Hüfte ~32°, Oberkörper parallel zur Spur, Arme nach hinten
     crouch: P(Object.assign({}, SK_IN, {
       ab: [-0.6, -4.6], kb: [7.1, -14.2], af: [0, -4.6], kf: [7.7, -13.8],
@@ -7817,7 +8520,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       sf: [[-14, -1.2], [46, -1.2]], sn: [[-12, -1.8], [48, -1.8]],
       ab: [16, -4.2], kb: [7, -9.5], af: [18, -4.4], kf: [8.5, -9.8],
       hip: [-3, -6.5], sh: [-6.5, -22.5], head: [-5.5, -29.2], face: [0.6, 0.8],
-      eb: [-11, -13.5], hb: [-14, -4.5], ef: [-9.5, -13], hf: [-12, -4] }),
+      eb: [-11, -13.5], hb: [-14, -4.5], ef: [-9.5, -13], hf: [-12, -4], ikN: 1, ikF: 1 }),
     fall: P({
       sf: [[-26, -7], [30, -15]], sn: [[-34, -1.8], [24, 3]],
       ab: [-6, -5.5], kb: [-10, -9], af: [0, -3], kf: [-6, -7.5],
@@ -7833,6 +8536,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const o = {};
     for (const k in a) {
       if (k === "sf" || k === "sn") o[k] = [l2(a[k][0], b[k][0], t), l2(a[k][1], b[k][1], t)];
+      else if (typeof a[k] === "number") o[k] = lerp(a[k], b[k] == null ? 0 : b[k], t);   // ikN, ikF: Hand greift (gemeinsame Figur)
       else o[k] = l2(a[k], b[k], t);
     }
     return o;
@@ -8003,7 +8707,11 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     // nur die Hände, die beim Start am Balken waren (wer gerade die Brille richtet, stößt mit einer Hand ab)
     const on = (h, b) => Math.max(0, 1 - Math.hypot(h[0] - b[0], h[1] - b[1]) / 6);
     const hold = 1 - smooth01((t - 0.09) / 0.24);
-    if (hold > 0) gripBar(o, hold * on(from.hf, BAR_N), hold * on(from.hb, BAR_F), moved * 27 / JSCALE);
+    if (hold > 0) {
+      const gN = hold * on(from.hf, BAR_N), gF = hold * on(from.hb, BAR_F);
+      gripBar(o, gN, gF, moved * 27 / JSCALE);
+      o.ikN = Math.max(o.ikN || 0, gN); o.ikF = Math.max(o.ikF || 0, gF);
+    }
     return o;
   }
 
@@ -8047,6 +8755,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
         const helm = env(tl, 1.6, 1.9, 2.5, 2.8), hips = smooth01((tl - 2.6) / 0.35);
         if (helm > 0) reach(o, true, add2(o.head, [1.2, -5.6]), [8, -8], helm);
         if (hips > 0) { reach(o, true, add2(o.hip, [3.6, -2.8]), [-7, 6], hips); reach(o, false, add2(o.hip, [-3.2, -2.8]), [-8, 5], hips); }
+        o.ikN = Math.max(helm, hips); o.ikF = hips;
       }
     }
     return o;
@@ -8057,6 +8766,90 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const w = env(td, 1.4, 1.7, 3.4, 3.8);
     if (w > 0) reach(o, true, add2(o.sh, [3.5 + 2 * Math.sin(td * Math.PI * 2 * 1.6), -18.2]), [8, -4], w);
     return o;
+  }
+
+  // ------------------------------------------------------------------ Gemeinsame Figur (../figur/figur.js, global CMFigur)
+  // Die Posen bleiben Gelenkpunkte des Spiels; je Bild werden sie in Gelenkwinkel der Figur umgerechnet. Der Knöchel des nahen Beins
+  // ist der Ursprung der Figur, die Ski folgen den Skipunkten, die Hände kommen per IK genau dorthin, wo das Spiel sie haben will
+  // (Balken, Helm, Hüften, Ski in der Hand).
+  const FIG = root.CMFigur;
+  const FK = 0.65;   // Spiel-Einheiten je Figur-Einheit: Bein im Spiel rund 24, in der Figur 37
+  const R2D = 180 / Math.PI;
+  const wrapD = (d) => ((((d + 180) % 360) + 360) % 360) - 180;
+  function figPose(J) {
+    const p = FIG.fromPoints({ hip: J.hip, sh: J.sh, kneeN: J.kf, ankN: J.af, kneeF: J.kb, ankF: J.ab, elbN: J.ef, handN: J.hf, elbF: J.eb, handF: J.hb, face: J.face });
+    const S = FIG.joints(p).sh, Lu = FIG.LEN.ua, Lf = FIG.LEN.fa;
+    const toF = (q) => [(q[0] - J.af[0]) / FK, (q[1] - J.af[1]) / FK];
+    // Arm von der Schulter der Figur zur Hand des Spiels; von den zwei Lagen des Ellbogens die, die der des Spiels näher ist
+    const ik = (hand, elb) => {
+      const T = toF(hand), E = toF(elb), dx = T[0] - S[0], dy = T[1] - S[1];
+      const d = Math.min(Lu + Lf - 0.01, Math.max(Math.abs(Lu - Lf) + 0.01, Math.hypot(dx, dy)));
+      const base = Math.atan2(dx, dy), a = Math.acos(Math.max(-1, Math.min(1, (Lu * Lu + d * d - Lf * Lf) / (2 * Lu * d))));
+      let best = null;
+      for (const u of [base + a, base - a]) {
+        const e = [S[0] + Math.sin(u) * Lu, S[1] + Math.cos(u) * Lu], dist = Math.hypot(e[0] - E[0], e[1] - E[1]);
+        if (!best || dist < best.dist) best = { u, e, dist };
+      }
+      const h = [S[0] + Math.sin(base) * d, S[1] + Math.cos(base) * d], f = Math.atan2(h[0] - best.e[0], h[1] - best.e[1]);
+      return [best.u * R2D, wrapD((f - best.u) * R2D)];
+    };
+    // Freie Arme (Flug, Anfahrt, Jubel) behalten ihre Richtung; die Figur hat Arme nach menschlichem Maß, die Hand landet dann am
+    // Oberschenkel. Greift die Hand etwas (Pose mit ikN, ikF: Balken, Brille, Helm, Hüften, Schnee, Ski in der Hand), kommt sie genau ans Ziel.
+    const arm = (key, hand, elb, w) => {
+      if (!(w > 0)) return;
+      const q = ik(hand, elb);
+      p[key] = w >= 1 ? q : [p[key][0] + wrapD(q[0] - p[key][0]) * w, p[key][1] + (q[1] - p[key][1]) * w];
+    };
+    arm("aF", J.hf, J.ef, J.ikN); arm("aB", J.hb, J.eb, J.ikF);
+    // fernes Bein: Knöchel genau auf den des Spiels (Telemark, Abfedern: der hintere Ski bleibt auf dem Schnee), Knie nach vorn
+    const Hp = FIG.joints(p).hip, Lt = FIG.LEN.thigh, Ls = FIG.LEN.shin, A = toF(J.ab), lx = A[0] - Hp[0], ly = A[1] - Hp[1];
+    const ld = Math.min(Lt + Ls - 0.01, Math.max(Math.abs(Lt - Ls) + 0.01, Math.hypot(lx, ly)));
+    const lb = Math.atan2(lx, ly), la = Math.acos(Math.max(-1, Math.min(1, (Lt * Lt + ld * ld - Ls * Ls) / (2 * Lt * ld))));
+    const th = lb + la, kn = [Hp[0] + Math.sin(th) * Lt, Hp[1] + Math.cos(th) * Lt];
+    const an = [Hp[0] + Math.sin(lb) * ld, Hp[1] + Math.cos(lb) * ld], sh = Math.atan2(an[0] - kn[0], an[1] - kn[1]);
+    p.fL = [th * R2D, Math.max(0, wrapD((th - sh) * R2D))];
+    return p;
+  }
+  // Aussehen des Spiels (eigene Farben #rrggbb, Frisur, Bart, Haut) → Aussehen der Figur; 1928: Mütze in der Helmfarbe, Bommel in der Zweitfarbe
+  const lookCache = new WeakMap();
+  function figLook(L) {
+    let o = lookCache.get(L);
+    if (o) return o;
+    const era = L.era === 1928;
+    o = FIG.cleanLook({ hair: L.hair, hairC: L.hairC, beard: L.beard, skin: L.skin, suit: L.suit, suitD: L.suitD, accent: L.accent, accentD: L.accentD,
+      pattern: era ? "uni" : L.pattern, helmet: L.helmet, visor: L.visor, ski: era ? null : L.ski, skiFar: era ? null : L.skiFar, bib: L.bib,
+      cap: era ? L.helmet : null, pom: era ? L.accent : null });
+    lookCache.set(L, o);
+    return o;
+  }
+  const KIT = FIG.KITS.skispringen, KIT28 = FIG.KITS.skispringen1928;
+  const KIT28_OFF = Object.assign({}, KIT28, { head: "hair" });            // 1928 nach dem Sturz: Mütze weggeflogen
+  const KIT_HELD = Object.assign({}, KIT, { head: "hair", feet: "skiBoots" });   // Siegerehrung: Helm ab, Ski in der Hand
+  const KIT28_HELD = Object.assign({}, KIT28, { feet: "skiBoots" });
+  // Ski aufrecht in der Hand (Siegerehrung): wie die Ski der Figur, Spitze vom Körper weg gebogen
+  function heldSki(ctx, sk, col, wood) {
+    const [b, f] = sk, a = Math.atan2(f[1] - b[1], f[0] - b[0]), ux = Math.cos(a), uy = Math.sin(a), nx = uy, ny = -ux;
+    const w = (wood ? 3.0 : 2.6) * FK, tl = (wood ? 10 : 8) * FK, th = (wood ? 6.5 : 4.5) * FK;
+    ctx.beginPath(); ctx.moveTo(b[0], b[1]); ctx.lineTo(f[0], f[1]);
+    ctx.quadraticCurveTo(f[0] + ux * tl * 0.75, f[1] + uy * tl * 0.75, f[0] + ux * tl + nx * th, f[1] + uy * tl + ny * th);
+    ctx.lineCap = "round"; ctx.lineJoin = "round";
+    ctx.strokeStyle = wood ? "#3A2A1C" : FIG.INK; ctx.lineWidth = w + 1.4; ctx.stroke();
+    ctx.strokeStyle = col; ctx.lineWidth = w; ctx.stroke();
+  }
+  // Springer zeichnen: J = Pose des Spiels, L = Aussehen, cr = Breite der Tinte in Posen-Einheiten (null: wächst mit dem Maßstab),
+  // o = { mood, face } für große Ansichten (Siegerehrung, Springer-Menü)
+  function drawFig(ctx, J, L, cr, o) {
+    o = o || {};
+    const era = L.era === 1928;
+    let kit = era ? (L.capOff ? KIT28_OFF : KIT28) : KIT;
+    if (J.held) {
+      kit = era ? KIT28_HELD : KIT_HELD;
+      heldSki(ctx, J.held[0], era ? "#7C5430" : L.skiFar || "#A9B5C6", era);
+      heldSki(ctx, J.held[1], era ? "#A8763F" : L.ski || "#E4EAF2", era);
+    }
+    const ang = (s) => Math.atan2(s[1][1] - s[0][1], s[1][0] - s[0][0]) * R2D;
+    FIG.draw(ctx, { x: J.af[0], y: J.af[1], s: FK, pose: figPose(J), look: figLook(L), kit, ski: J.held ? null : { n: ang(J.sn), f: ang(J.sf) },
+      lw: cr == null ? undefined : cr, mood: o.mood, face: o.face });
   }
 
   // ------------------------------------------------------------------ Fahnentuch (Windfahnen am Hang und im HUD)
@@ -9367,132 +10160,35 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       ctx.stroke();
     }
 
-    // Kapsel mit zwei Radien (konisches Glied) als Teilpfad: a mit Radius ra, b mit Radius rb
-    capsule(a, b, ra, rb) {
-      const ctx = this.ctx, dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy);
-      if (L < 1e-3) { const r = Math.max(ra, rb); ctx.moveTo(a[0] + r, a[1]); ctx.arc(a[0], a[1], r, 0, 6.283); return; }
-      const ang = Math.atan2(dy, dx), th = Math.PI / 2 + Math.asin(Math.max(-1, Math.min(1, (ra - rb) / L)));
-      ctx.moveTo(a[0] + ra * Math.cos(ang + th), a[1] + ra * Math.sin(ang + th));
-      ctx.arc(a[0], a[1], ra, ang + th, ang + 2 * Math.PI - th);
-      ctx.arc(b[0], b[1], rb, ang - th, ang + th);
-      ctx.closePath();
-    }
-    // Körperteil aus Kapseln [a, b, ra, rb]: Kontur in Tinte (Plakat: jede Gliedmaße zuerst in Tinte, breiter), Füllung, Glanzlicht oben.
-    // this.cr: Breite der Kontur in Posen-Einheiten (jumper() setzt sie aus 2,2 Entwurfs-px; sonst 0,9)
-    part(segs, col, plain) {
-      const ctx = this.ctx, cr = this.cr == null ? 0.9 : this.cr;
-      if (!plain) { ctx.beginPath(); for (const s of segs) this.capsule(s[0], s[1], s[2] + cr, s[3] + cr); ctx.fillStyle = C.ink; ctx.fill(); }
-      ctx.beginPath(); for (const s of segs) this.capsule(s[0], s[1], s[2], s[3]); ctx.fillStyle = col; ctx.fill();
-      if (plain) return;
-      ctx.beginPath();
-      for (const [a, b, ra, rb] of segs) {
-        const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1;
-        let nx = -dy / L, ny = dx / L; if (ny > 0) { nx = -nx; ny = -ny; }
-        this.capsule([a[0] + nx * ra * 0.42, a[1] + ny * ra * 0.42], [b[0] + nx * rb * 0.42, b[1] + ny * rb * 0.42], ra * 0.42, rb * 0.42);
-      }
-      ctx.fillStyle = "rgba(255,255,255,0.2)"; ctx.fill();
-    }
-    // Springer von 1928: Mütze statt Helm, Pullover mit Bordüre, Knickerbocker, helle Wollstrümpfe, Lederschuhe, Holzski
-    figure28(J, L) {
-      const ctx = this.ctx, cr = this.cr == null ? 0.9 : this.cr;
-      ctx.lineCap = "round"; ctx.lineJoin = "round";
-      const at = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
-      const wood = "#A8763F", woodD = "#7C5430", pants = "#4D4237", pantsD = "#3A3129", sock = "#E7DECB", sockD = "#C9BEA6", boot = "#4A2F1F", skin = "#E6BE98";
-      const boot1 = (ank, ski) => {
-        const dx = ski[1][0] - ski[0][0], dy = ski[1][1] - ski[0][1], l = Math.hypot(dx, dy) || 1, ux = dx / l, uy = dy / l;
-        return [[ank[0] - ux * 2.4, ank[1] - uy * 2.4 + 0.6], [ank[0] + ux * 3.0, ank[1] + uy * 3.0 + 0.6], 2.0, 1.8];
-      };
-      const held = J.held, flat = (a) => [[a[0] - 1, a[1]], [a[0] + 1, a[1]]];
-      const ski = (sk, col) => { const keep = C.skiEdge; C.skiEdge = "#3A2A1C"; this.ski(sk[0], sk[1], col, 3.2, 6.5); C.skiEdge = keep; };
-      if (held) { ski(held[0], woodD); ski(held[1], wood); }
-      else ski(J.sf, woodD);
-      // hinteres Bein: Knickerbocker bis unters Knie (bauschig), dann Strumpf
-      this.part([[J.hip, J.kb, 3.2, 2.9], [J.kb, at(J.kb, J.ab, 0.22), 2.9, 2.2]], pantsD);
-      this.part([[at(J.kb, J.ab, 0.2), J.ab, 1.8, 1.5]], sockD);
-      this.part([boot1(J.ab, held ? flat(J.ab) : J.sf)], boot);
-      this.part([[J.sh, J.eb, 1.9, 1.6], [J.eb, J.hb, 1.6, 1.3]], L.suitD);
-      this.part([[J.hb, J.hb, 1.45, 1.45]], L.suitD);
-      // Pullover mit heller Bordüre über der Brust
-      this.part([[J.hip, J.sh, 3.8, 4.1]], L.suit);
-      this.part([[at(J.hip, J.sh, 0.6), at(J.hip, J.sh, 0.78), 4.15, 4.2]], L.accent, true);
-      this.part([[at(J.hip, J.sh, 0.0), at(J.hip, J.sh, 0.1), 3.9, 3.9]], L.suitD, true);
-      this.part([[J.hip, J.kf, 3.4, 3.1], [J.kf, at(J.kf, J.af, 0.22), 3.1, 2.3]], pants);
-      this.part([[at(J.kf, J.af, 0.2), J.af, 1.9, 1.6]], sock);
-      this.part([[at(J.kf, J.af, 0.2), at(J.kf, J.af, 0.3), 2.0, 1.95]], L.accent, true);
-      this.part([boot1(J.af, held ? flat(J.af) : J.sn)], boot);
-      const [sx, sy] = J.sh, [hx, hy] = J.head, [dx, dy] = J.face;
-      this.part([[[sx, sy], [sx + (hx - sx) * 0.6, sy + (hy - sy) * 0.6], 2.0, 1.7]], skin);
-      // Kopf, dann die Wollmütze über Scheitel und Hinterkopf mit Bommel
-      ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(hx, hy, 4.4 + cr, 0, 6.283); ctx.fill();
-      ctx.fillStyle = skin; ctx.beginPath(); ctx.arc(hx, hy, 4.4, 0, 6.283); ctx.fill();
-      ctx.fillStyle = "rgba(60,30,20,0.55)"; ctx.beginPath(); ctx.arc(hx + dx * 2.2 - dy * 0.6, hy + dy * 2.2 + dx * 0.6, 0.7, 0, 6.283); ctx.fill();
-      if (!L.capOff) {
-        // Mitte der Mütze: Richtung Scheitel (von der Schulter durch den Kopf), ein Stück zum Hinterkopf hin
-        const up = Math.atan2(hy - sy, hx - sx), back = Math.atan2(-dy, -dx), c = up + 0.35 * Math.atan2(Math.sin(back - up), Math.cos(back - up));
-        ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(hx, hy, 5.0 + cr * 0.8, c - 1.85, c + 1.85); ctx.closePath(); ctx.fill();
-        ctx.fillStyle = L.helmet; ctx.beginPath(); ctx.arc(hx, hy, 5.0, c - 1.85, c + 1.85); ctx.closePath(); ctx.fill();
-        ctx.fillStyle = "rgba(255,255,255,0.18)"; ctx.beginPath(); ctx.arc(hx, hy, 5.0, c - 1.85, c - 1.2); ctx.lineTo(hx, hy); ctx.closePath(); ctx.fill();
-        const bx = hx + Math.cos(c) * 5.9, by = hy + Math.sin(c) * 5.9;
-        ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(bx, by, 2.0 + cr * 0.6, 0, 6.283); ctx.fill();
-        ctx.fillStyle = L.accent; ctx.beginPath(); ctx.arc(bx, by, 2.0, 0, 6.283); ctx.fill();
-      }
-      this.part([[J.sh, J.ef, 2.0, 1.7], [J.ef, J.hf, 1.7, 1.35]], L.suit);
-      this.part([[J.hf, J.hf, 1.5, 1.5]], L.suit);
-      this.part([[at(J.ef, J.hf, 0.82), J.hf, 1.4, 1.4]], L.accent, true);
-      if (!held) ski(J.sn, wood);
-    }
-    // Mütze, die beim Sturz wegfliegt (Welt: x, y in m, a Drehung in Grad)
+    // Mütze, die beim Sturz wegfliegt (Welt: x, y in m, a Drehung in Grad): Strickmütze der gemeinsamen Figur mit Bund und Bommel
     cap28(S, cam, k, c, look) {
-      const ctx = this.ctx, [x, y] = S(c.x, c.y), sc = Math.max(0.5, cam.ppm / 27 * JSCALE);
+      const ctx = this.ctx, [x, y] = S(c.x, c.y), sc = Math.max(0.5, cam.ppm / 27 * JSCALE) * FK;
+      const capC = look.helmet || "#F2F6FB", ink = FIG.INK;
       ctx.save(); ctx.translate(x, y); ctx.rotate(c.a * DEG); ctx.scale(sc, sc);
-      ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(0, 0, 5.8, Math.PI, 0); ctx.closePath(); ctx.fill();
-      ctx.fillStyle = look.helmet; ctx.beginPath(); ctx.arc(0, -0.2, 4.95, Math.PI, 0); ctx.closePath(); ctx.fill();
-      ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(0, -6.2, 2.6, 0, 6.283); ctx.fill();
-      ctx.fillStyle = look.accent; ctx.beginPath(); ctx.arc(0, -6.2, 2.0, 0, 6.283); ctx.fill();
+      ctx.lineJoin = "round"; ctx.strokeStyle = ink; ctx.lineWidth = 1.4;
+      ctx.beginPath(); ctx.moveTo(-6.9, 2.6); ctx.bezierCurveTo(-7.5, -6.8, 6.4, -7.8, 6.4, -0.1); ctx.lineTo(6.2, 0.8); ctx.lineTo(-6.7, 3.8); ctx.closePath();
+      ctx.fillStyle = capC; ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-6.8, 3.7); ctx.lineTo(6.3, 0.9); ctx.lineTo(5.8, -1.4); ctx.lineTo(-6.9, 1.3); ctx.closePath();
+      ctx.fillStyle = FIG.shade(capC, 0.82); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(-1.0, -6.8, 2.3, 0, 6.283); ctx.fillStyle = look.accent || "#EEF2F7"; ctx.fill(); ctx.stroke();
       ctx.restore();
     }
-    figure(J, L) {
-      const ctx = this.ctx;
-      L = L || this.look;
-      if (L.era === 1928) { this.figure28(J, L); return; }
-      const plain = L === GHOST_LOOK;
-      ctx.lineCap = "round"; ctx.lineJoin = "round";
-      // Muster: Streifen längs über Rumpf, Bein und Arm; zweifarbig = Beine in der Zweitfarbe
-      const split = L.pattern === "split", stripe = L.pattern === "stripe";
-      const legN = split ? L.accent : L.suit, legF = split ? L.accentD : L.suitD;
-      const at = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
-      // Skischuh: kurze, kräftige Kapsel längs des Skis am Knöchel
-      const boot = (ank, ski) => {
-        const dx = ski[1][0] - ski[0][0], dy = ski[1][1] - ski[0][1], l = Math.hypot(dx, dy) || 1, ux = dx / l, uy = dy / l;
-        return [[ank[0] - ux * 2.6, ank[1] - uy * 2.6 + 0.6], [ank[0] + ux * 2.8, ank[1] + uy * 2.8 + 0.6], 1.9, 1.7];
-      };
-      // Siegerehrung: beide Ski aufrecht in der Hand hinter dem Körper, die Schuhe stehen flach
-      const held = J.held, flat = (a) => [[a[0] - 1, a[1]], [a[0] + 1, a[1]]];
-      if (held) { this.ski(held[0][0], held[0][1], L.skiFar, 3.0, 5.5); this.ski(held[1][0], held[1][1], L.ski, 3.0, 5.5); }
-      else this.ski(J.sf[0], J.sf[1], L.skiFar, 3.0, 5.5);
-      this.part([[J.hip, J.kb, 3.0, 2.2], [J.kb, J.ab, 2.2, 1.6]], legF, plain);
-      this.part([boot(J.ab, held ? flat(J.ab) : J.sf)], C.boot, plain);
-      this.part([[J.sh, J.eb, 1.7, 1.4], [J.eb, J.hb, 1.4, 1.1]], L.suitD, plain);
-      this.part([[J.hip, J.sh, 3.5, 3.9]], L.suit, plain);
-      if (stripe) this.part([[at(J.hip, J.sh, 0.04), at(J.hip, J.sh, 0.96), 1.1, 1.2]], L.accent, true);
-      // Trikot des Führenden in der Meisterschaft: gelbes Leibchen über dem Anzug
-      if (L.bib) this.part([[at(J.hip, J.sh, 0.16), at(J.hip, J.sh, 0.9), 3.7, 4.0]], L.bib, true);
-      this.part([[J.hip, J.kf, 3.2, 2.3], [J.kf, J.af, 2.3, 1.7]], legN, plain);
-      if (stripe) this.part([[at(J.hip, J.kf, 0.12), J.kf, 0.9, 0.7], [J.kf, at(J.kf, J.af, 0.85), 0.7, 0.55]], L.accent, true);
-      this.part([boot(J.af, held ? flat(J.af) : J.sn)], C.boot, plain);
-      const [sx, sy] = J.sh, [hx, hy] = J.head;
-      this.part([[[sx, sy], [sx + (hx - sx) * 0.62, sy + (hy - sy) * 0.62], 1.9, 1.6]], L.suit, plain);
-      // Helm mit Brille auf der Gesichtsseite und Glanzpunkt
-      const [dx, dy] = J.face;
-      if (!plain) { ctx.fillStyle = C.ink; ctx.beginPath(); ctx.arc(hx, hy, 4.7 + (this.cr == null ? 0.9 : this.cr), 0, 6.283); ctx.fill(); }
-      ctx.fillStyle = L.helmet; ctx.beginPath(); ctx.arc(hx, hy, 4.7, 0, 6.283); ctx.fill();
-      const fa = Math.atan2(dy, dx);
-      ctx.fillStyle = L.visor; ctx.beginPath(); ctx.arc(hx, hy, 4.75, fa - 0.66, fa + 0.66); ctx.arc(hx + dx * 1.3, hy + dy * 1.3, 2.7, fa + 1.0, fa - 1.0, true); ctx.closePath(); ctx.fill();
-      if (!plain) { ctx.fillStyle = "rgba(255,255,255,0.55)"; ctx.beginPath(); ctx.arc(hx - dx * 1.5 - dy * 1.6, hy - dy * 1.5 + dx * -1.6, 1.15, 0, 6.283); ctx.fill(); }
-      this.part([[J.sh, J.ef, 1.8, 1.5], [J.ef, J.hf, 1.5, 1.2]], L.suit, plain);
-      if (stripe) this.part([[at(J.sh, J.ef, 0.15), J.ef, 0.55, 0.45], [J.ef, at(J.ef, J.hf, 0.8), 0.45, 0.4]], L.accent, true);
-      this.part([[J.hf, J.hf, 1.35, 1.35]], C.boot, plain);
-      if (!held) this.ski(J.sn[0], J.sn[1], L.ski, 3.0, 5.5);
+    // Springer: die gemeinsame Figur der Reihe (../figur/, seit 0.56) in den Posen des Spiels (Gelenkpunkte, 27 Einheiten = 1 m).
+    // this.cr: Breite der Tinte in Posen-Einheiten (jumper() setzt sie fürs Spiel; sonst wächst sie mit dem Maßstab)
+    figure(J, L, o) { drawFig(this.ctx, J, L || this.look, this.cr, o); }
+
+    // Geist: erst deckend in eine eigene Fläche, dann durchscheinend ins Bild (so scheinen Arm und Rumpf nicht durcheinander durch)
+    ghostFig(x, y, rot, sc, pose, look, alpha) {
+      const ctx = this.ctx, m = ctx.getTransform ? ctx.getTransform() : null, d = m ? Math.hypot(m.a, m.b) || 1 : this.dpr || 1;
+      const R = 64 * sc, n = Math.min(2048, Math.ceil(2 * R * d));
+      if (typeof document === "undefined" || n < 4) return;
+      const oc = this.ghostCv || (this.ghostCv = document.createElement("canvas"));
+      if (oc.width < n || oc.height < n) { oc.width = Math.max(oc.width, n); oc.height = Math.max(oc.height, n); }
+      const g = oc.getContext("2d");
+      g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, n, n);
+      g.setTransform(d, 0, 0, d, R * d, R * d); g.rotate(rot); g.scale(sc, sc);
+      drawFig(g, pose, look, this.cr);
+      ctx.save(); ctx.globalAlpha = alpha; ctx.drawImage(oc, 0, 0, n, n, x - R, y - R, n / d, n / d); ctx.restore();
     }
 
     // Luft am Springer (Bildschirm): Linien strömen hinter ihm weg. Ruhige Fluglage = glatte, parallele Linien (golden auf dem Luftpolster),
@@ -9573,10 +10269,9 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       const [x, y] = S(J.x, J.y);
       if (ghost) {
         const sc = J.scale != null ? J.scale : Math.max(0.5, cam.ppm / 27 * JSCALE);
-        ctx.save(); ctx.globalAlpha = (J.look ? 0.42 : 0.36) * (J.fade != null ? J.fade : 1);
-        ctx.translate(x, y); ctx.rotate((J.rot || 0) * DEG); ctx.scale(sc, sc);
-        this.figure(J.pose, J.look || GHOST_LOOK);
-        ctx.restore();
+        this.cr = Math.min(2.0, Math.max(0.9, 1.6 * k / sc));
+        this.ghostFig(x, y, (J.rot || 0) * DEG, sc, J.pose, J.look || GHOST_LOOK, (J.look ? 0.5 : 0.42) * (J.fade != null ? J.fade : 1));
+        this.cr = null;
         // Name über dem Kopf des Geists (Mehrspieler: wer fliegt da mit?)
         if (J.label && cam.ppm > 4) {
           const hd = J.pose && J.pose.head ? J.pose.head : [0, -40], a = (J.rot || 0) * DEG;
@@ -9617,8 +10312,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       ctx.save();
       ctx.translate(x, y); ctx.rotate((J.rot || 0) * DEG); ctx.scale(sc, sc);
       if (J.air) this.cushion(J.air, J.pose);
-      // Tintenkontur: 2,2 Entwurfs-px je Seite (× Höhe/800), mindestens 0,85 Posen-Einheiten, wenn die Kamera nah ist
-      this.cr = Math.min(2.4, Math.max(0.85, 2.2 * PK.U * k / sc));
+      // Tinte: 1,6 px bei 390 px Bildhöhe (wächst mit dem Bildschirm), in Posen-Einheiten; nah an der Kamera mindestens 0,9
+      this.cr = Math.min(2.0, Math.max(0.9, 1.6 * k / sc));
       this.figure(J.pose, this.look);
       this.cr = null;
       ctx.restore();
@@ -9705,7 +10400,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   }
 
   // Springer in einen beliebigen Canvas zeichnen (Vorschau im Springer-Menü)
-  function drawFigure(ctx, pose, look) { const r = Object.create(Renderer.prototype); r.ctx = ctx; r.figure(pose, Object.assign({}, DEFAULT_LOOK, look)); }
+  function drawFigure(ctx, pose, look, o) { drawFig(ctx, pose, Object.assign({}, DEFAULT_LOOK, look), null, o); }
   root.TMRender = { Renderer, Snow, POSES, blend, lean, roll, posture, C, drawFigure, DEFAULT_LOOK, flagCloth,
     gest: { gate: gatePose, push: pushPose, outrun: outrunPose, fallUp: fallUpPose }, row28 };
 })(typeof window !== "undefined" ? window : globalThis);
@@ -10630,8 +11325,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 /* TELEMARK – Spielablauf, Kamera, Steuerung, HUD, Wertung, Wettkampf, Partymodus (Hot-Seat), Herausforderung per Link, Wiederholung, Einstellungen. */
 (function () {
   "use strict";
-  const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp;
-  const VERSION = "0.55";
+  const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp, FIG = window.CMFigur;
+  const VERSION = "0.56";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -10937,7 +11632,10 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       ["#3A7BFF", "Blau"], ["#F25C78", "Pink"]],
   };
   const PATTERNS = ["uni", "stripe", "split"];
-  const DEF_LOOK = { suit: "#FF8A3D", pattern: "uni", accent: "#EEF2F7", helmet: "#F2F6FB", visor: "#4FC3F7", ski: "#E4EAF2" };
+  // Kopf der gemeinsamen Figur (../figur/): Frisur, Haarfarbe, Bart und Hautton als Nummern in den Listen der Figur
+  const HEAD_KEYS = [["hair", FIG.HAIRS.length], ["hairC", FIG.HAIRC.length], ["beard", FIG.BEARDS.length], ["skin", FIG.SKIN.length]];
+  const DEF_LOOK = { suit: "#FF8A3D", pattern: "uni", accent: "#EEF2F7", helmet: "#F2F6FB", visor: "#4FC3F7", ski: "#E4EAF2",
+    hair: FIG.DEF_LOOK.hair, hairC: FIG.DEF_LOOK.hairC, beard: FIG.DEF_LOOK.beard, skin: FIG.DEF_LOOK.skin };
   const hexRgb = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
   const mixHex = (h, h2, t) => { const a = hexRgb(h), b = hexRgb(h2); return "#" + a.map((v, i) => Math.round(v + (b[i] - v) * t).toString(16).padStart(2, "0")).join(""); };
   const lum = (h) => { const [r, g, b] = hexRgb(h).map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
@@ -10946,13 +11644,21 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   function lookFor(l) {
     l = Object.assign({}, DEF_LOOK, l || {});
     return { suit: l.suit, suitD: mixHex(l.suit, "#0A1220", 0.32), accent: l.accent, accentD: mixHex(l.accent, "#0A1220", 0.32), pattern: l.pattern,
-      helmet: l.helmet, visor: l.visor, ski: l.ski, skiFar: mixHex(l.ski, "#56657C", 0.35) };
+      helmet: l.helmet, visor: l.visor, ski: l.ski, skiFar: mixHex(l.ski, "#56657C", 0.35), hair: l.hair, hairC: l.hairC, beard: l.beard, skin: l.skin };
+  }
+  // Gesicht für Springer ohne eigenes Aussehen (KI-Feld, Partyspieler): aus dem Namen, immer gleich für denselben Namen
+  function faceFor(name) {
+    let h = 2166136261;
+    for (const ch of String(name || "")) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619) >>> 0; }
+    const r = (n) => { h = (Math.imul(h ^ (h >>> 15), 2246822519) ^ 0x9E3779B9) >>> 0; return h % n; };
+    return { hair: r(FIG.HAIRS.length), hairC: r(FIG.HAIRC.length), skin: r(FIG.SKIN.length), beard: r(10) < 3 ? 1 + r(FIG.BEARDS.length - 1) : 0 };
   }
   // alte Spielstände: nur Anzugfarbe -> Aussehen; unbekannte Werte auf Standard
   {
     const L = Object.assign({}, DEF_LOOK, S.look || (S.color ? { suit: S.color } : {}));
     for (const k of ["suit", "accent", "helmet", "visor", "ski"]) if (!LOOK_COLS[k].some((c) => c[0] === L[k])) L[k] = DEF_LOOK[k];
     if (!PATTERNS.includes(L.pattern)) L.pattern = "uni";
+    for (const [k, n] of HEAD_KEYS) if (!(Number.isInteger(L[k]) && L[k] >= 0 && L[k] < n)) L[k] = DEF_LOOK[k];
     S.look = L; delete S.color;
   }
   const HOT_COLORS = [["#FF8A3D", "#B85A22"], ["#4FD1C5", "#2A8F86"], ["#F25C78", "#A93349"], ["#FFD23F", "#B8901A"], ["#9B8CFF", "#6553C9"],
@@ -14873,7 +15579,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       hi: css.getPropertyValue("--hi").trim() || "#B23524", muted: css.getPropertyValue("--muted").trim() || "#786D59",
       items: top.slice(0, 3).map((x, i) => x && {
         name: x.name, nation: x.color ? null : x.nation, total: x.total, me: !!x.me, rank: Math.min(3, x.rank || i + 1),
-        look: x.look || (x.me ? lookFor(S.look) : x.color ? lookFor({ suit: x.color, helmet: x.color }) : natLook(x.nation)), ph: i * 1.9,
+        look: x.me ? lookFor(S.look) : Object.assign({}, x.look || (x.color ? lookFor({ suit: x.color, helmet: x.color }) : natLook(x.nation)), faceFor(x.name)), ph: i * 1.9,
       }) };
     for (const x of pod.items) if (x && x.nation) flagImg(x.nation);
   }
@@ -14891,7 +15597,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     if (rank === 1) { const k = calmMotion ? 0 : 0.5 + 0.5 * Math.cos(t * sp + ph); pose.ef = P(4.6 + 1.4 * k, -50.6 + 2.6 * k); pose.hf = P(5.8 + 2.4 * k, -60 + 4.5 * k); }
     else if (rank === 2) { pose.ef = P(7.4, -47.6); pose.hf = P(9.8 + 3.4 * w, -55 + 0.8 * Math.abs(w)); }
     else { pose.ef = P(7.8, -44.8); pose.hf = P(11.2 + 2.4 * w, -50.6); }
-    pose.sf = pose.held[0]; pose.sn = pose.held[1];
+    pose.sf = pose.held[0]; pose.sn = pose.held[1]; pose.ikF = 1;   // die hintere Hand hält die Ski
     return pose;
   }
   // wehende Fahne: das Bild in schmalen Streifen, zum freien Ende hin stärker versetzt und schattiert (alle wehen in dieselbe Richtung)
@@ -14959,7 +15665,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       c.fillText(String(x.rank), cx, by + bh / 2 + 1.5 * u);
       // Springer auf der Stufe; der Dritte schaut zur Mitte
       c.save(); c.translate(cx - (k === 2 ? -1 : 1) * 2.5 * u, by); c.scale(k === 2 ? -fs : fs, fs);
-      RM.drawFigure(c, podPose(x.rank, t, x.ph), x.look);
+      RM.drawFigure(c, podPose(x.rank, t, x.ph), x.look, { face: true, mood: "froh" });
       c.restore();
       // über den Skispitzen: Fahne und Name, darunter die Punkte
       const nf = Math.round(clamp(13 * u, 11, 22)), pf = Math.round(clamp(10.5 * u, 10, 17));
@@ -15809,8 +16515,11 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   on("btnJpGuest", () => { $("inName").value = "GAST"; nameDraft = "GAST"; closeJumper(); });
   $("hotNames").addEventListener("keydown", (e) => { if (e.key === "Enter") e.target.blur(); e.stopPropagation(); });
   // ------------------------------------------------------------------ Springer: Name, Nation, Aussehen (mit Vorschau)
-  let jumperFrom = null, jpPose = "flight";
+  let jumperFrom = null, jpPose = "pod", jpTab = "person";
   const LOOK_ROWS = [["swSuit", "suit"], ["swAccent", "accent"], ["swHelmet", "helmet"], ["swVisor", "visor"], ["swSki", "ski"]];
+  // Kopf der Figur: Haarfarbe und Haut als Farbfelder (Nummern in den Listen der Figur), Frisur und Bart zur Auswahl
+  const HEAD_SW = [["swHairC", "hairC", FIG.HAIRC, ["Dunkelbraun", "Braun", "Blond", "Schwarz", "Grau"]],
+    ["swSkin", "skin", FIG.SKIN, ["Sehr hell", "Hell", "Mittel", "Dunkel", "Sehr dunkel"]]];
   const swatchHtml = (key) => LOOK_COLS[key].map(([c, n]) => `<button type="button" class="swatch" role="radio" aria-label="${n}" aria-checked="${c === S.look[key]}" data-c="${c}" style="background:${c}"></button>`).join("");
   let nameDraft = null;   // getippter, noch nicht übernommener Name (bleibt beim Wählen der Farben stehen)
   function fillJumper() {
@@ -15820,8 +16529,14 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     if (!sel.options.length) sel.innerHTML = NATIONS.map(([c, n]) => `<option value="${c}">${n}</option>`).join("");
     sel.value = S.nation;
     for (const [id, key] of LOOK_ROWS) $(id).innerHTML = swatchHtml(key);
+    for (const [id, key, list, names] of HEAD_SW) $(id).innerHTML = list.map((c, i) => `<button type="button" class="swatch" role="radio" aria-label="${names[i]}" aria-checked="${i === S.look[key]}" data-i="${i}" style="background:${c}"></button>`).join("");
+    const sh = $("selHair"), sb = $("selBeard");
+    if (!sh.options.length) sh.innerHTML = FIG.HAIRS.map((n, i) => `<option value="${i}">${n}</option>`).join("");
+    if (!sb.options.length) sb.innerHTML = FIG.BEARDS.map((n, i) => `<option value="${i}">${i ? n : "ohne Bart"}</option>`).join("");
+    sh.value = String(S.look.hair); sb.value = String(S.look.beard);
     segSet("segPattern", S.look.pattern);
-    segSet("segJpPose", jpPose);
+    segSet("segJpPose", jpPose); segSet("segJpTab", jpTab);
+    vis($("jpPerson"), jpTab === "person"); vis($("jpKit"), jpTab === "kit");
     $("swAccent").closest(".set-row").classList.toggle("dim", S.look.pattern === "uni");
   }
   // Name beim ersten Start: Der Springer-Dialog fragt, danach geht es dort weiter, wo man hinwollte
@@ -15846,14 +16561,23 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   }
   function setLook(key, v) { S.look[key] = v; save(); if (ctxMode !== "hot") applyColor(); fillJumper(); }
   for (const [id, key] of LOOK_ROWS) $(id).addEventListener("click", (e) => { const b = e.target.closest(".swatch"); if (b) setLook(key, b.dataset.c); });
+  // Kopf sieht man am besten auf dem Podest (ohne Helm): die Vorschau wechselt dorthin
+  const headLook = (key, v) => { jpPose = "pod"; setLook(key, v); };
+  for (const [id, key] of HEAD_SW) $(id).addEventListener("click", (e) => { const b = e.target.closest(".swatch"); if (b) headLook(key, +b.dataset.i); });
+  $("selHair").addEventListener("change", (e) => headLook("hair", +e.target.value));
+  $("selBeard").addEventListener("change", (e) => headLook("beard", +e.target.value));
   seg("segPattern", (v) => { setLook("pattern", v); if (v !== "uni" && S.look.accent === S.look.suit) setLook("accent", S.look.suit === "#EEF2F7" ? "#262E3B" : "#EEF2F7"); });
   seg("segJpPose", (v) => { jpPose = v; segSet("segJpPose", v); });
+  // Reiter: Person zeigt den Kopf (Podest, ohne Helm), Ausrüstung den Flug
+  seg("segJpTab", (v) => { jpTab = v; if (v === "person") jpPose = "pod"; else if (jpPose === "pod") jpPose = "flight"; fillJumper(); });
   on("btnJpDone", () => closeJumper());
   on("btnJpRandom", () => {
     const pick = (a) => a[Math.floor(Math.random() * a.length)][0];
     const suit = pick(LOOK_COLS.suit);
     let accent = pick(LOOK_COLS.accent); while (accent === suit) accent = pick(LOOK_COLS.accent);
-    S.look = { suit, accent, pattern: PATTERNS[Math.floor(Math.random() * PATTERNS.length)], helmet: pick(LOOK_COLS.helmet), visor: pick(LOOK_COLS.visor), ski: pick(LOOK_COLS.ski) };
+    // Zufall wechselt Anzug, Helm, Brille und Ski; Frisur, Bart, Haare und Haut bleiben (das ist die Person)
+    S.look = { suit, accent, pattern: PATTERNS[Math.floor(Math.random() * PATTERNS.length)], helmet: pick(LOOK_COLS.helmet), visor: pick(LOOK_COLS.visor), ski: pick(LOOK_COLS.ski),
+      hair: S.look.hair, hairC: S.look.hairC, beard: S.look.beard, skin: S.look.skin };
     save(); if (ctxMode !== "hot") applyColor(); fillJumper();
   });
   on("btnSetJumper", () => openJumper("settings"));
@@ -15878,16 +16602,18 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       c.strokeStyle = "rgba(255,255,255,0.22)"; c.lineWidth = 1.4; c.lineCap = "round";
       for (let i = 0; i < 5; i++) { const y = ch * (0.18 + i * 0.16), x = ((t * 160 + i * 97) % (cw + 120)) - 60; c.beginPath(); c.moveTo(cw - x, y); c.lineTo(cw - x + 36, y - 8); c.stroke(); }
     } else if (jpPose === "telemark") { pose = RM.POSES.telemark; rot = 18; slope = true; }
+    else if (jpPose === "pod") { pose = podPose(1, t, 0); rot = 0; }   // Siegerehrung: Helm ab, Ski in der Hand, Faust
     else { pose = RM.POSES.sit; rot = 32; slope = true; }
     // Maßstab und Lage aus dem gedrehten Umriss der Grundhaltung (Kopf mit Helm); die Gesten verändern ihn nicht
-    const hd = pose.head, pts = [pose.sf[0], pose.sf[1], pose.sn[0], pose.sn[1], pose.ab, pose.kb, pose.af, pose.kf, pose.hip, pose.sh, pose.eb, pose.hb, pose.ef, pose.hf,
-      [hd[0], hd[1] - 5], [hd[0] + 5, hd[1]], [hd[0] - 5, hd[1]], [hd[0], hd[1] + 5]];
+    // Podest: halbnah ab den Knien, damit man Frisur, Bart und Gesicht gut sieht
+    const hd = pose.head, near = jpPose === "pod", pts = (near ? [pose.kb, pose.kf] : [pose.sf[0], pose.sf[1], pose.sn[0], pose.sn[1], pose.ab, pose.kb, pose.af, pose.kf])
+      .concat([pose.hip, pose.sh, pose.eb, pose.hb, pose.ef, pose.hf, [hd[0], hd[1] - 7], [hd[0] + 6, hd[1]], [hd[0] - 6, hd[1]], [hd[0], hd[1] + 5]]);
     // am Balken: atmen, Brille richten, Ski in der Spur schieben (Schleife über zwei Atemzüge)
     if (jpPose === "sit") pose = RM.gest.gate(t % (4 * Math.PI / 2.1), -1);
     const co = Math.cos(rot * R), si = Math.sin(rot * R);
     let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
     for (const [x, y] of pts) { const X = x * co - y * si, Y = x * si + y * co; x0 = Math.min(x0, X); x1 = Math.max(x1, X); y0 = Math.min(y0, Y); y1 = Math.max(y1, Y); }
-    const m = 16, sc = Math.min(3.2, (cw - 2 * m) / (x1 - x0), (ch - 2 * m) / (y1 - y0));
+    const m = 16, sc = Math.min(near ? 3.8 : 3.2, (cw - 2 * m) / (x1 - x0), (ch - 2 * m) / (y1 - y0));
     c.save(); c.translate(cw / 2 - (x0 + x1) / 2 * sc, ch / 2 - (y0 + y1) / 2 * sc + bob); c.rotate(rot * R); c.scale(sc, sc);
     if (slope) {
       // Hang bzw. Spur unter den Skiern
@@ -15901,7 +16627,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
         c.strokeStyle = "#435168"; c.lineWidth = 1.4; c.beginPath(); c.moveTo(hp[0] - 4, hp[1] + 1.5); c.lineTo(hp[0] - 6, 1.2); c.stroke();
       }
     }
-    RM.drawFigure(c, pose, look);
+    if (jpPose === "pod") { c.fillStyle = "rgba(230,237,246,0.16)"; c.fillRect(-60, 0, 120, 3); }
+    RM.drawFigure(c, pose, look, jpPose === "pod" ? { face: true, mood: "froh" } : null);
     c.restore();
   }
   seg("segWind", (v) => { S.wind = v; save(); segSet("segWind", v); });
