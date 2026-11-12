@@ -1577,7 +1577,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   </div>
   <button type="button" id="btnInfo" class="title-note"><span id="verTxt">Version</span> · Fanspiel · <u>Info &amp; Datenschutz</u></button>
   <div class="title-top">
-    <button type="button" id="btnJumper" class="chip-btn" aria-label="Springer bearbeiten"><span id="tjFlag" class="flag"></span><span id="tjName">MAT</span><span class="ico ico-muted" data-icon="pencil" data-size="16"></span></button>
+    <button type="button" id="btnJumper" class="chip-btn" aria-label="Deine Figur bearbeiten"><span id="tjFlag" class="flag"></span><span id="tjName">MAT</span><span class="ico ico-muted" data-icon="pencil" data-size="16"></span></button>
     <button type="button" id="btnTod" class="chip-btn tod-btn" aria-label="Tageszeit wechseln"><span id="todIco" class="ico" data-icon="moon" data-size="20"></span><span id="todLbl">Abend</span></button>
     <button type="button" id="btnRecords" class="icon-btn" aria-label="Deine Rekorde"><span class="ico" data-icon="trophy"></span></button>
     <button type="button" id="btnSettings" class="icon-btn" aria-label="Einstellungen"><span class="ico" data-icon="sliders"></span></button>
@@ -1959,10 +1959,10 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
         <div id="segSetTab" class="seg set-tabs" role="tablist" aria-label="Bereich"><button type="button" data-v="play">Spiel</button><button type="button" data-v="help">Hilfen</button><button type="button" data-v="dev">Ton &amp; Gerät</button><button type="button" data-v="data">Spielstand</button></div></div>
       <button type="button" id="btnSetDone" class="btn btn-primary btn-s"><span>Fertig</span></button>
     </div>
-    <!-- Spiel: Springer, Tageszeit; Training: Wind, Startluke, Tempo -->
+    <!-- Spiel: Figur, Tageszeit; Training: Wind, Startluke, Tempo -->
     <div id="setPane-play" class="set-grid set-pane">
       <div class="set-col">
-        <span class="kicker">SPRINGER &amp; SCHANZE</span>
+        <span class="kicker">FIGUR &amp; SCHANZE</span>
         <div class="set-row"><span id="setJumperTxt" class="lbl set-jp-txt">MAT · AUT</span><button type="button" id="btnSetJumper" class="btn btn-secondary btn-s"><span>Anpassen</span><span class="ico" data-icon="arrow-right"></span></button></div>
         <div class="set-row"><span class="lbl">Tageszeit</span><div id="segTod" class="seg" role="radiogroup" aria-label="Tageszeit"><button type="button" data-v="auto">Auto</button><button type="button" data-v="morning">Früh</button><button type="button" data-v="afternoon">Tag</button><button type="button" data-v="evening">Abend</button></div></div>
         <p class="set-note">Auto: jede Schanze zu ihrer typischen Zeit, Abend mit Flutlicht.</p>
@@ -11818,7 +11818,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp, FIG = window.CMFigur, PASS = window.CMPass;
-  const VERSION = "0.57";
+  const VERSION = "0.57.1";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -17089,7 +17089,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     c.restore();
   }
   const passUi = PASS.ui.mount($("scrJumper"), {
-    title: "Dein Springer", kit: "skispringen", nations: NATIONS, defaultName: "SPRINGER",
+    title: "Deine Figur", kit: "skispringen", nations: NATIONS, defaultName: "SPRINGER",
     personHint: "Auf dem Podest nimmst du den Helm ab. Alle sind gleich gebaut; Frisur und Bart wählst du frei. Deine Figur gilt in allen Spielen von Cold Medal.",
     preview: { poses: [["sit", "Start"], ["flight", "Flug"], ["telemark", "Landung"], ["pod", "Podest"]], pose: "pod", personPose: "pod", colorPose: "flight", draw: jumperPreview },
     tabs: [{ id: "kit", label: "Ausrüstung", pose: "flight", rows: [
@@ -17115,7 +17115,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     if (ctxMode !== "hot") applyColor();
     refreshTitle();
   });
-  function openJumper(from, o) { jumperFrom = from; setOverlay("jumper"); passUi.open(Object.assign({ title: "Dein Springer" }, o || {})); }
+  function openJumper(from, o) { jumperFrom = from; setOverlay("jumper"); passUi.open(Object.assign({ title: "Deine Figur" }, o || {})); }
   // Name beim ersten Start: das Fenster fragt, danach geht es dort weiter, wo man hinwollte
   function askName(then) { afterName = then; openJumper("first", { ask: true, title: "Wie heißt du?" }); }
   function closeJumper() { passUi.done(); }   // ohne Namen beim ersten Start bleibt das Fenster offen
