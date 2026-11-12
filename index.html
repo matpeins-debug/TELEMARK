@@ -323,9 +323,6 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
   background: var(--row); color: var(--text); font-family: var(--font-display); font-weight: 700; font-size: 19px; letter-spacing: 0.04em; }
 .set-row input { text-transform: uppercase; }
 .set-row select option { background: #22344A; color: var(--text); }
-.swatches { display: flex; gap: 10px; }
-.swatch { width: 32px; height: 32px; border-radius: 16px; border: 2px solid transparent; cursor: pointer; padding: 0; }
-.swatch[aria-checked="true"] { border-color: var(--text); box-shadow: 0 0 0 2px rgba(var(--shade-rgb), 0.9) inset; }
 .stepper { display: flex; align-items: center; gap: 10px; }
 .stepper-val { font-weight: 800; font-size: 26px; min-width: 30px; text-align: center; }
 .note { font-size: 12px; color: var(--muted); white-space: nowrap; }
@@ -361,33 +358,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .help-opt[aria-checked="true"] { border-color: var(--hi); background: rgba(178, 53, 36, 0.07); }
 .help-opt[aria-checked="true"] i { border-color: var(--hi); background: radial-gradient(circle, var(--hi) 0 3.5px, transparent 4px); }
 
-/* Springer: Name, Nation, Aussehen mit Vorschau */
-.jumper { width: 760px; max-width: calc(100% - 32px); max-height: calc(100% - 20px); overflow: auto; gap: 7px; padding: 14px 20px 16px; touch-action: pan-y; }
-.jumper .h1 { font-size: 32px; line-height: 34px; }
-.jumper, .settings { background: rgba(var(--shade-rgb), 0.96); }
-.jp-grid { display: grid; grid-template-columns: 268px minmax(0, 1fr); gap: 20px; align-items: start; }
-.jp-left { display: flex; flex-direction: column; gap: 8px; }
-.jp-stage { height: 200px; border-radius: 14px; overflow: hidden; border: 1px solid var(--row-2); }
-.jp-stage canvas { display: block; width: 100%; height: 100%; }
-.jp-pose button { flex: 1; }
-.jp-opts { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.jp-opts .set-row { min-height: 32px; justify-content: flex-start; }
-.jp-opts .set-row .lbl { min-width: 92px; }
-.jp-id { gap: 10px; }
-.jp-id input { width: auto; flex: 1; min-width: 0; }
-.jp-head { gap: 10px; }
-.jp-head select { width: auto; flex: 1; min-width: 0; }
-/* Person (Kopf) und Ausrüstung als zwei Reiter; vier Haltungen in der Vorschau */
-.jp-tab { align-self: flex-start; margin: 0 0 2px; }
-.jp-tabbox { display: flex; flex-direction: column; gap: 2px; }
-.jp-tabbox[hidden] { display: none; }
-.jp-hint { margin: 6px 0 0; font-family: var(--font-body); font-size: 12.5px; line-height: 17px; color: var(--muted); max-width: 400px; }
-.seg.jp-pose button { padding: 0 4px; font-size: 14px; letter-spacing: 0.02em; }
-.jp-id select { width: 150px; flex: none; }
-.swatches.sm { gap: 7px; }
-.swatches.sm .swatch { width: 26px; height: 26px; border-radius: 13px; flex: none; }
-.swatch { box-shadow: inset 0 0 0 1px var(--line-2); }
-.set-row.dim .swatches { opacity: 0.35; }
+/* Einstellungen auf dunklem Grund (Papier folgt unten); das Fenster „Gestalten“ steht in ../pass/pass.css */
+.settings { background: rgba(var(--shade-rgb), 0.96); }
 
 @media (prefers-reduced-motion: reduce) {
   .toggle i, .timing-box { transition: none; }
@@ -675,7 +647,7 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
 @font-face { font-family: "Plakat"; src: local("Futura-CondensedMedium"), local("Futura Condensed Medium"); font-weight: 100 599; }
 
 /* Papier: alle Menüflächen und Dialoge */
-.panel-strong, .tcard, .dialog.records, .jumper, .settings, .hillinfo {
+.panel-strong, .tcard, .dialog.records, .settings, .hillinfo {
   --text: #1E2734; --text-2: #3A4454; --muted: #786D59;
   --row: rgba(30, 39, 52, 0.055); --row-2: rgba(30, 39, 52, 0.1); --line: rgba(30, 39, 52, 0.25); --line-2: rgba(30, 39, 52, 0.45);
   --hi: #B23524; --hi-ink: #FBF4E4; --hi-soft: rgba(221, 164, 59, 0.32); --hi-line: rgba(178, 53, 36, 0.6);
@@ -810,8 +782,6 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
 .res-right .rr-head .h2[hidden] + .rs-tabs { margin-left: 0; }
 
 /* Name beim ersten Start */
-.jp-ask { margin: 0 0 6px; font-size: 15px; line-height: 1.35; color: var(--ink-2, #4A4A44); }
-#inName.need { outline: 3px solid var(--warn); outline-offset: 1px; }
 
 /* Titel auf schmalen Bildschirmen und Fußzeile: nichts überlappt die Schanzenkarte oder die Knöpfe */
 .narrow .logo { font-size: 54px; line-height: 56px; }
@@ -838,18 +808,13 @@ button.title-note u { text-decoration: underline; text-underline-offset: 2px; }
 .toggle:disabled { opacity: 0.4; cursor: default; }
 .rc-stats .dt-s { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #startBox.urgent .start-sub, .start-box.urgent .start-sub { color: var(--warn); font-weight: 700; }
-.jp-ask-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: -2px 0 2px; font-family: var(--font-body); font-size: 12.5px; line-height: 16px; color: var(--muted); }
-.jp-ask-row .warn, #jpAskTxt.warn { color: var(--warn); font-weight: 600; }
-.jp-ask-row .btn-plain { flex: none; }
-.jp-id select { flex: none; width: 172px; }
 .res-btns .btn-ico { padding: 0 12px; min-width: 0; }
 .ch-new { font-size: 12.5px; }
 .ch-new .btn-plain { margin-left: 4px; }
 .ra-v.long { font-size: 12.5px; }
 .tut-foot.duel #btnTutSkip { order: 2; }
 .tut-foot.duel #btnTutGo { order: 1; }
-.jp-ask-row .btn-plain, .ch-new .btn-plain { height: 30px; padding: 0 10px; font-size: 13px; }
-.jp-ask-row { margin: -4px 0 0; }
+.ch-new .btn-plain { height: 30px; padding: 0 10px; font-size: 13px; }
 .hint-wrap.raised { bottom: 104px; }
 .rs-det .dt-v { font-size: 16px; }
 .narrow .rs-det .dt-v { font-size: 14px; letter-spacing: 0; }
@@ -1363,6 +1328,111 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 .cm-s { font-size: 11.5px; line-height: 15px; color: var(--muted); }
 .cl-leave { align-self: flex-start; flex: none; height: 32px; margin: 8px 0 2px; padding: 0 10px; font-size: 12.5px; }
 .cl-leave.warn { border-color: var(--warn); color: var(--warn); }
+
+/* Cold Medal Games · Fenster „Gestalten“ (pass/pass.css)
+   Aussehen wie die Menüs des Skispringens: Papier mit Doppelrahmen, Knöpfe wie Druckmarken, Futura für Titel und Knöpfe,
+   Buchschrift für Lesetext. Farben und Schriften kommen aus den Variablen des Spiels (alle Spiele der Reihe haben sie),
+   sonst gelten die Werte des Skispringens. Nur Klassen mit ps-, damit nichts im Spiel verrutscht. Grundstock für oberflaeche/. */
+.ps-dialog {
+  --ps-paper: var(--paper, #F1E7D2); --ps-ink: var(--ink, #1E2734); --ps-ink-deep: var(--ink-deep, #141B25);
+  --ps-red: var(--red, #C23B2A); --ps-warn: var(--warn, #D9682B);
+  --ps-text: #1E2734; --ps-text-2: #3A4454; --ps-muted: #786D59;
+  --ps-row: rgba(30, 39, 52, 0.055); --ps-row-2: rgba(30, 39, 52, 0.1); --ps-line-2: rgba(30, 39, 52, 0.45);
+  --ps-hi: #B23524; --ps-hi-ink: #FBF4E4;
+  --ps-display: var(--font-display, "Futura", "Avenir Next Condensed", "Bahnschrift Condensed", "Roboto Condensed", "Arial Narrow", sans-serif);
+  --ps-body: var(--font-body, "Iowan Old Style", "Charter", "Georgia", serif);
+  --ps-label: var(--font-label, "Futura", "Avenir Next", "Segoe UI", Roboto, Arial, sans-serif);
+  display: flex; flex-direction: column; gap: 7px; box-sizing: border-box;
+  width: 760px; max-width: calc(100% - 32px); max-height: calc(100% - 20px); overflow: auto; padding: 14px 20px 16px; touch-action: pan-y;
+  color: var(--ps-text); font-family: var(--ps-body); text-align: left;
+  background-color: var(--ps-paper);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.36  0 0 0 0 0.28  0 0 0 0 0.16  0 0 0 0.075 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  border: 2px solid var(--ps-ink-deep); border-radius: 4px;
+  box-shadow: inset 0 0 0 4px var(--ps-paper), inset 0 0 0 5px rgba(30, 39, 52, 0.38), 0 5px 0 rgba(8, 12, 18, 0.5);
+  -webkit-user-select: none; user-select: none;
+}
+.ps-dialog *, .ps-dialog *::before, .ps-dialog *::after { box-sizing: border-box; }
+.ps-dialog [hidden] { display: none !important; }
+.ps-dialog button, .ps-dialog input, .ps-dialog select { -webkit-tap-highlight-color: transparent; }
+.ps-dialog button:focus-visible, .ps-dialog input:focus-visible, .ps-dialog select:focus-visible { outline: 2px solid var(--ps-hi); outline-offset: 2px; }
+
+/* Kopf: Titel in Versalien, Zufall und Fertig */
+.ps-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ps-title { margin: 0; font-family: var(--ps-display); font-style: normal; font-weight: 800; font-size: 32px; line-height: 34px;
+  letter-spacing: 0.015em; text-transform: uppercase; color: var(--ps-ink); text-wrap: balance; }
+.ps-head-btns { display: flex; gap: 8px; }
+.ps-btn { display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 44px; padding: 0 16px; margin: 0;
+  border-radius: 4px; font-family: var(--ps-display); font-weight: 700; font-size: 19px; letter-spacing: 0.07em; text-transform: uppercase;
+  white-space: nowrap; cursor: pointer; }
+.ps-btn svg { display: block; flex: none; }
+.ps-btn-1 { background: var(--ps-red); color: #FBF4E4; border: 2px solid var(--ps-ink-deep);
+  box-shadow: inset 0 0 0 2px var(--ps-red), inset 0 0 0 3px rgba(251, 244, 228, 0.5), 0 3px 0 var(--ps-ink-deep); }
+.ps-btn-2 { background: var(--ps-paper); color: var(--ps-ink); border: 2px solid var(--ps-ink-deep); box-shadow: 0 3px 0 var(--ps-ink-deep); }
+.ps-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ps-ink-deep); }
+
+/* Vorschau links, Wahl rechts */
+.ps-grid { display: grid; grid-template-columns: 268px minmax(0, 1fr); gap: 20px; align-items: start; }
+.ps-left { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.ps-stage { height: 200px; border-radius: 14px; overflow: hidden; border: 1px solid var(--ps-row-2); }
+.ps-canvas { display: block; width: 100%; height: 100%; }
+.ps-opts { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+
+/* Zeilen, Umschalter, Farbfelder, Eingaben */
+.ps-row { display: flex; align-items: center; justify-content: flex-start; gap: 12px; min-height: 32px; }
+.ps-lbl { min-width: 92px; font-size: 15px; font-weight: 600; color: var(--ps-text-2); white-space: normal; }
+.ps-row-wrap { align-items: flex-start; }
+.ps-row-wrap .ps-lbl { padding-top: 7px; }
+.ps-seg { display: flex; flex-shrink: 0; border: 2px solid var(--ps-line-2); border-radius: 4px; overflow: hidden; }
+.ps-seg button { height: 36px; margin: 0; padding: 0 10px; border: none; border-radius: 0; background: transparent; color: var(--ps-text-2);
+  font-family: var(--ps-display); font-weight: 700; font-size: 16px; letter-spacing: 0.05em; cursor: pointer; }
+.ps-seg button[aria-checked="true"] { background: var(--ps-hi); color: var(--ps-hi-ink); }
+.ps-seg-s button { height: 26px; padding: 0 9px; font-size: 13px; }
+.ps-tabs { align-self: flex-start; margin: 0 0 2px; }
+.ps-poses button { flex: 1; padding: 0 4px; font-size: 14px; letter-spacing: 0.02em; }
+.ps-tabbox { display: flex; flex-direction: column; gap: 2px; }
+.ps-swatches { display: flex; flex-wrap: wrap; gap: 5px 7px; max-width: calc(var(--ps-per, 8) * 39px - 7px); }
+.ps-swatch { width: 32px; height: 32px; margin: 0; padding: 0; border-radius: 16px; border: 2px solid transparent; cursor: pointer;
+  box-shadow: 0 0 0 1px rgba(30, 39, 52, 0.18) inset; }
+.ps-swatch[aria-checked="true"] { border-color: var(--ps-text); box-shadow: 0 0 0 2px rgba(17, 25, 36, 0.9) inset; }
+.ps-dim .ps-swatches { opacity: 0.35; }
+.ps-name, .ps-select { height: 38px; margin: 0; padding: 0 12px; border-radius: 3px; border: 1px solid var(--ps-line-2); background: var(--ps-row);
+  color: var(--ps-text); font-family: var(--ps-display); font-weight: 700; font-size: 19px; letter-spacing: 0.04em; }
+.ps-name { flex: 1; min-width: 0; width: auto; text-transform: uppercase; -webkit-user-select: text; user-select: text; }
+.ps-name.ps-mixed { text-transform: none; }
+.ps-name::placeholder { color: var(--ps-muted); opacity: 1; }
+.ps-select option { background: #FBF4E4; color: #1E2734; }
+.ps-id { gap: 10px; }
+.ps-id .ps-nation { flex: none; width: 172px; }
+.ps-row-sel { gap: 10px; }
+.ps-row-sel .ps-select { flex: 1; min-width: 0; width: auto; }
+.ps-need { outline: 3px solid var(--ps-warn); outline-offset: 1px; }
+.ps-hint { margin: 6px 0 0; max-width: 400px; font-family: var(--ps-body); font-size: 12.5px; line-height: 17px; color: var(--ps-muted); }
+
+/* erster Start: Name oder als Gast */
+.ps-ask { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: -4px 0 0;
+  font-family: var(--ps-body); font-size: 12.5px; line-height: 16px; color: var(--ps-muted); }
+.ps-warn { color: var(--ps-warn); font-weight: 600; }
+.ps-plain { flex: none; height: 30px; margin: 0; padding: 0 10px; border-radius: 4px; border: 2px solid var(--ps-line-2); background: transparent;
+  color: var(--ps-text); font-family: var(--ps-label); font-weight: 700; font-size: 13px; letter-spacing: 0.04em; cursor: pointer; }
+
+/* eigene Ebene (CMPass.ui.open) für Spiele ohne eigene Ebenen; schmale Bildschirme: Vorschau über der Wahl */
+.ps-screen { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 10px;
+  background: rgba(17, 25, 36, 0.55); }
+.ps-screen[hidden] { display: none; }
+@media (max-width: 640px) {
+  .ps-screen .ps-dialog { width: 100%; max-width: 100%; max-height: 100%; padding: 12px 14px 14px; }
+  .ps-screen .ps-head { flex-wrap: wrap; gap: 8px; }
+  .ps-screen .ps-head-btns { margin-left: auto; }
+  .ps-screen .ps-title { font-size: 24px; line-height: 27px; }
+  .ps-screen .ps-btn { height: 40px; padding: 0 12px; font-size: 17px; }
+  .ps-screen .ps-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .ps-screen .ps-stage { height: 170px; }
+  .ps-screen .ps-lbl { min-width: 66px; }
+  .ps-screen .ps-name, .ps-screen .ps-select { padding: 0 8px; font-size: 17px; }
+  .ps-screen .ps-id .ps-nation { width: 150px; }
+  .ps-screen .ps-ask { margin: 2px 0 0; }
+}
+@media (prefers-reduced-motion: reduce) { .ps-btn:active { transform: none; } }
 
 </style>
 </head>
@@ -1878,37 +1948,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   </div>
 </section>
 
-<!-- ============ Springer: Name, Nation, Kopf (Frisur, Bart, Haare, Haut), Anzug, Helm, Brille, Ski ============ -->
-<section id="scrJumper" class="screen screen-dim2 center" hidden>
-  <div class="dialog jumper panel-strong" role="dialog" aria-labelledby="jpTitle">
-    <div class="set-head"><h2 id="jpTitle" class="h1">Dein Springer</h2><div class="set-head-btns"><button type="button" id="btnJpRandom" class="btn btn-secondary btn-s"><span class="ico" data-icon="dice"></span><span>Zufall</span></button><button type="button" id="btnJpDone" class="btn btn-primary btn-s"><span>Fertig</span></button></div></div>
-    <div class="jp-grid">
-      <div class="jp-left">
-        <div class="jp-stage"><canvas id="jpCanvas" aria-label="Vorschau deines Springers" role="img"></canvas></div>
-        <div id="segJpPose" class="seg jp-pose" role="radiogroup" aria-label="Haltung in der Vorschau"><button type="button" data-v="sit">Start</button><button type="button" data-v="flight">Flug</button><button type="button" data-v="telemark">Landung</button><button type="button" data-v="pod">Podest</button></div>
-      </div>
-      <div class="jp-opts">
-        <div class="set-row jp-id"><input id="inName" type="text" maxlength="12" autocomplete="off" spellcheck="false" aria-label="Name" placeholder="Dein Name"><select id="inNation" aria-label="Nation"></select></div>
-        <div id="jpAsk" class="jp-ask-row" hidden><span id="jpAskTxt">Dein Name steht auf den Tafeln und in Duellen.</span><button type="button" id="btnJpGuest" class="btn-plain">Als Gast spielen</button></div>
-        <div id="segJpTab" class="seg seg-s jp-tab" role="radiogroup" aria-label="Was du gestaltest"><button type="button" data-v="person">Person</button><button type="button" data-v="kit">Ausrüstung</button></div>
-        <div id="jpPerson" class="jp-tabbox">
-        <div class="set-row jp-head"><span class="lbl">Frisur</span><select id="selHair" aria-label="Frisur"></select><select id="selBeard" aria-label="Bart"></select></div>
-        <div class="set-row"><span class="lbl">Haare</span><div id="swHairC" class="swatches sm" role="radiogroup" aria-label="Haarfarbe"></div></div>
-        <div class="set-row"><span class="lbl">Haut</span><div id="swSkin" class="swatches sm" role="radiogroup" aria-label="Hautton"></div></div>
-        <p class="jp-hint">Auf dem Podest nimmst du den Helm ab. Alle sind gleich gebaut; Frisur und Bart wählst du frei.</p>
-        </div>
-        <div id="jpKit" class="jp-tabbox" hidden>
-        <div class="set-row"><span class="lbl">Anzug</span><div id="swSuit" class="swatches sm" role="radiogroup" aria-label="Anzugfarbe"></div></div>
-        <div class="set-row"><span class="lbl">Muster</span><div id="segPattern" class="seg" role="radiogroup" aria-label="Muster des Anzugs"><button type="button" data-v="uni">Uni</button><button type="button" data-v="stripe">Streifen</button><button type="button" data-v="split">Zweifarbig</button></div></div>
-        <div class="set-row"><span class="lbl">Zweitfarbe</span><div id="swAccent" class="swatches sm" role="radiogroup" aria-label="Zweitfarbe des Anzugs"></div></div>
-        <div class="set-row"><span class="lbl">Helm</span><div id="swHelmet" class="swatches sm" role="radiogroup" aria-label="Helmfarbe"></div></div>
-        <div class="set-row"><span class="lbl">Brille</span><div id="swVisor" class="swatches sm" role="radiogroup" aria-label="Farbe der Brille"></div></div>
-        <div class="set-row"><span class="lbl">Ski</span><div id="swSki" class="swatches sm" role="radiogroup" aria-label="Skifarbe"></div></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+<!-- ============ Springer: das Fenster „Gestalten“ aus dem Pass der Reihe (../pass/pass-ui.js füllt es) ============ -->
+<section id="scrJumper" class="screen screen-dim2 center" hidden></section>
 
 <!-- ============ Einstellungen ============ -->
 <section id="scrSettings" class="screen screen-dim2 center" hidden>
@@ -7824,7 +7865,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   const GLOVE = "#2B3442", VISOR = "#4FC3F7", BOOT = "#1E2734", WOOD = "#8E5A34";
   const POLE = 56, GROUND = 4.7;   // Stocklänge; Boden unter dem Knöchel des Standbeins (Unterkante Langlaufski)
 
-  // Kleidung und Ausrüstung je Sportart. head: hair | helmet | cap; feet: skates | jumpSki | xcSki | woodSki | shoes | skiBoots
+  // Kleidung und Ausrüstung je Sportart. head: hair | helmet | cap; feet: skates | jumpSki | xcSki | woodSki | xcWood | shoes | skiBoots
   // (Skischuhe ohne Ski, z. B. Ski in der Hand); torso: sash (Schrägstreifen) | bib (Startnummer) | sweater (Pullover mit Bordüre) | plain;
   // legs: knickers (Kniebundhose und Wollstrümpfe); back: rifle; hands: poles; glove: Handschuhe statt Haut ("suit" = Fäustlinge in der Anzugfarbe);
   // bootC Farbe der Schuhe; pants Hose [nah, fern]
@@ -7835,12 +7876,16 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     plain: { head: "hair", feet: "shoes", torso: "plain" },   // Siegerehrung, Pass, Menü
     // wie 1928 (Nostalgie): Strickmütze, Pullover mit Bordüre, Kniebundhose, Wollstrümpfe, Lederschuhe, Holzski
     skispringen1928: { head: "cap", feet: "woodSki", torso: "sweater", legs: "knickers", glove: "suit", bootC: "#4A2F1F", pants: ["#4D4237", "#3A3129"] },
+    // Biathlon wie um 1960 (Jagd 1960): Strickmütze, Pullover mit Bordüre, Kniebundhose, Wollstrümpfe, Holzski, Gewehr, Stöcke (Biathlon-Chat, 12.11.2026)
+    biathlon1960: { head: "cap", feet: "xcWood", torso: "sweater", legs: "knickers", back: "rifle", hands: "poles", glove: "suit", bootC: "#4A2F1F", pants: ["#4D4237", "#3A3129"] },
   };
   // Ski in Einheiten der Figur: hinter und vor dem Knöchel, Breite, Spitze (Länge, Höhe), Farbe nah und fern, Kante
   const SKI = {
     jumpSki: { back: 46, front: 60, w: 2.6, tipL: 8, tipH: 4.5, col: "#E4EAF2", colF: "#A9B5C6" },
     xcSki: { back: 36, front: 44, w: 1.5, tipL: 5, tipH: 2.6, col: "#2B3442", colF: "#4A5568" },
     woodSki: { back: 44, front: 56, w: 3.0, tipL: 10, tipH: 6.5, col: "#A8763F", colF: "#7C5430", edge: "#3A2A1C" },
+    // Langlaufski aus Holz (wie um 1960): schmaler und kürzer als der Sprungski von 1928 (Biathlon-Chat, 12.11.2026)
+    xcWood: { back: 38, front: 46, w: 2.0, tipL: 7, tipH: 4.2, col: "#A8763F", colF: "#7C5430", edge: "#3A2A1C" },
   };
   const SOCK = ["#E7DECB", "#C9BEA6"];
 
@@ -8418,6 +8463,452 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   }
 
   root.CMFigur = { draw, joints, fromPoints, mix, seq, ease, gesture, idle, cleanLook, shade, POSES, ABLAEUFE, GESTEN, ARTEN, KITS, SKI, LEN, DEF_LOOK, SKIN, HAIRC, SUIT, HAIRS, BEARDS, PATTERNS, INK };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Cold Medal Games · Pass (pass/pass.js, global CMPass)
+ *
+ * Eine Figur für alle Spiele der Reihe (Mat, 12.11.2026): Name, Land, Aussehen, Code und Taler liegen im Pass, nicht im
+ * Spielstand eines einzelnen Spiels. Alle Spiele liegen unter matpeins-debug.github.io und teilen den Browser-Speicher
+ * (Schlüssel „cm.pass“); auf einem anderen Gerät holt man den Pass mit dem persönlichen Code (Schema cm, RPCs public.cm_pass_*).
+ * Das Fenster zum Gestalten liegt in pass-ui.js. Regeln: nur abwärtskompatibel ändern, unbekannte Felder bleiben erhalten,
+ * der Code geht nie im Klartext in die Daten (der Server speichert nur seinen Prüfwert).
+ *
+ * Format (v 1): { v, code, name, nation, look: { hair, hairC, beard, skin, suit, accent, pattern }, taler, at, edited }
+ *   code    12 Zeichen ohne I, O, 0, 1 oder null (entsteht beim ersten Online-Schritt)
+ *   look    Kopf als Nummern in den Listen von figur.js, Farben als #RRGGBB (Liste COLORS), Muster uni | stripe | split
+ *   taler   gemeinsame Währung der Reihe (vorerst schreibt nur das Skispringen)
+ *   at      letzte Änderung (ms); edited: Name oder Aussehen hat jemand selbst gewählt (nicht nur Standard)
+ */
+(function (root) {
+  "use strict";
+  const KEY = "cm.pass", V = 1;
+  const ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";   // ohne I, O, 0, 1 (verwechselbar)
+  const CODE_RE = /^[A-HJ-NP-Z2-9]{12}$/;
+  const HEX = /^#[0-9A-F]{6}$/i;
+  const fig = () => root.CMFigur || null;
+
+  // Eine Farbliste für Anzug und Zweitfarbe in allen Spielen: zuerst die Anzugfarben des Skispringens (Reihenfolge fest, das
+  // Skispringen meldet sie online als Nummer), dann die Plakatfarben der Figur (figur.js SUIT) und Bordeaux; Tinte (SUIT 5)
+  // fehlt in der Auswahl, weil sie wie Schwarz aussieht (bleibt aber gültig).
+  const COLORS = [["#FF8A3D", "Orange"], ["#FFD23F", "Gelb"], ["#E5383B", "Rot"], ["#F25C78", "Pink"], ["#9B6BFF", "Violett"],
+    ["#3A7BFF", "Blau"], ["#4FD1C5", "Türkis"], ["#3FBF6E", "Grün"], ["#EEF2F7", "Weiß"], ["#262E3B", "Schwarz"],
+    ["#C23B2A", "Signalrot"], ["#23466B", "Alpenblau"], ["#3F6B55", "Tannengrün"], ["#DDA43B", "Ocker"], ["#6B3F7A", "Pflaume"], ["#7A2232", "Bordeaux"]];
+  const PATTERNS = [["uni", "Uni"], ["stripe", "Streifen"], ["split", "Zweifarbig"]];
+  const HAIRC_NAMES = ["Dunkelbraun", "Braun", "Blond", "Schwarz", "Grau"];
+  const SKIN_NAMES = ["Sehr hell", "Hell", "Mittel", "Dunkel", "Sehr dunkel"];
+  const NATIONS = [["AUT", "Österreich"], ["GER", "Deutschland"], ["SUI", "Schweiz"], ["NOR", "Norwegen"], ["SLO", "Slowenien"], ["POL", "Polen"],
+    ["JPN", "Japan"], ["FIN", "Finnland"], ["ITA", "Italien"], ["CZE", "Tschechien"], ["FRA", "Frankreich"], ["USA", "USA"]];
+  // Standard wie die Figur: Signalrot mit Ocker (die Plakatfarben der Reihe)
+  const DEF_LOOK = { hair: 0, hairC: 0, beard: 0, skin: 1, suit: "#C23B2A", accent: "#DDA43B", pattern: "uni" };
+  const LOOK_KEYS = ["hair", "hairC", "beard", "skin", "suit", "accent", "pattern"];
+  const HEAD = { hair: 9, hairC: 5, beard: 4, skin: 5 };   // Anzahl, falls figur.js fehlt (Tests ohne Figur)
+  const count = (k) => { const F = fig(); const L = F && { hair: F.HAIRS, hairC: F.HAIRC, beard: F.BEARDS, skin: F.SKIN }[k]; return L ? L.length : HEAD[k]; };
+  const isObj = (v) => !!v && typeof v === "object" && !Array.isArray(v);
+
+  // ------------------------------------------------------------------ Prüfen und Reparieren
+  // Name wie am Server (tm.clean_name): ohne Steuerzeichen und <>"&\/;{}, höchstens 12 Zeichen; leer = noch kein Name
+  const cleanName = (s) => String(s == null ? "" : s).replace(/[\u0000-\u001f\u007f<>"&\\/;{}]/g, "").trim().slice(0, 12);
+  function cleanLook(l) {
+    const o = Object.assign({}, DEF_LOOK);
+    if (!isObj(l)) return o;
+    for (const k of Object.keys(l)) {   // unbekannte einfache Felder (spätere Muster, Wappen) bleiben
+      const v = l[k];
+      if (!LOOK_KEYS.includes(k) && (typeof v === "string" || typeof v === "boolean" || (typeof v === "number" && isFinite(v)))) o[k] = v;
+    }
+    for (const k of ["hair", "hairC", "beard", "skin"]) if (Number.isInteger(l[k]) && l[k] >= 0 && l[k] < count(k)) o[k] = l[k];
+    for (const k of ["suit", "accent"]) {
+      const v = l[k], F = fig();
+      if (typeof v === "string" && HEX.test(v)) o[k] = v.toUpperCase();
+      else if (Number.isInteger(v) && F && F.SUIT[v]) o[k] = F.SUIT[v].toUpperCase();   // Nummer in der Plakatliste der Figur (Eiskunstlauf)
+    }
+    if (PATTERNS.some((p) => p[0] === l.pattern)) o.pattern = l.pattern;
+    return o;
+  }
+  function clean(p) {
+    let o = {};
+    if (isObj(p)) { try { o = JSON.parse(JSON.stringify(p)); } catch (e) { o = {}; } }
+    o.v = Number.isInteger(o.v) && o.v > V ? o.v : V;   // ein neueres Format nicht zurückstufen
+    o.code = typeof o.code === "string" && CODE_RE.test(o.code) ? o.code : null;
+    o.name = cleanName(o.name);
+    o.nation = typeof o.nation === "string" && /^[A-Z]{3}$/.test(o.nation) ? o.nation : "AUT";
+    o.look = cleanLook(o.look);
+    o.taler = typeof o.taler === "number" && isFinite(o.taler) && o.taler >= 0 ? Math.min(1e7, Math.round(o.taler)) : 0;
+    o.at = typeof o.at === "number" && isFinite(o.at) && o.at > 0 ? Math.round(o.at) : 0;
+    o.edited = !!o.edited;
+    return o;
+  }
+  const blank = () => clean(null);
+  // gleich bis auf den Zeitstempel?
+  const same = (a, b) => { const x = Object.assign({}, a, { at: 0 }), y = Object.assign({}, b, { at: 0 }); return JSON.stringify(x) === JSON.stringify(y); };
+
+  // ------------------------------------------------------------------ Speicher (geteilt von allen Spielen dieser Adresse)
+  let cur = null;
+  const subs = [];
+  const store = () => { try { return root.localStorage || null; } catch (e) { return null; } };
+  function read() {
+    const s = store();
+    if (!s) return null;
+    try { const raw = s.getItem(KEY); return raw ? clean(JSON.parse(raw)) : null; } catch (e) {
+      try { const raw = s.getItem(KEY); if (raw) s.setItem(KEY + ".backup", raw); } catch (e2) { /* egal */ }
+      return null;
+    }
+  }
+  function write(p) { const s = store(); if (!s) return false; try { s.setItem(KEY, JSON.stringify(p)); return true; } catch (e) { return false; } }
+  function emit(src) { for (const f of subs.slice()) { try { f(cur, src); } catch (e) { /* ein Spiel darf die anderen nicht stören */ } } }
+
+  // Pass laden; fehlt er, entsteht er aus seed (Objekt oder Funktion mit den Angaben des Spiels). created: eben neu angelegt.
+  let created = false;
+  function load(seed) {
+    cur = read();
+    created = false;
+    if (!cur) {
+      cur = clean(typeof seed === "function" ? seed() : seed);
+      cur.at = cur.at || Date.now();
+      write(cur); created = true;
+    }
+    return cur;
+  }
+  const get = () => cur || load();
+  // Felder ändern; look wird zusammengeführt. Schreibt nur, wenn sich etwas ändert. src: wer ändert (an die Zuhörer).
+  function set(patch, src) {
+    const base = get(), nx = Object.assign({}, base, isObj(patch) ? patch : {});
+    if (isObj(patch) && isObj(patch.look)) nx.look = Object.assign({}, base.look, patch.look);
+    const c = clean(nx);
+    if (same(c, base)) return base;
+    c.at = Date.now();
+    cur = c; write(cur); emit(src || "local");
+    return cur;
+  }
+  // ganzen Pass ersetzen (vom Server geholt, aus einer Datei); bleibt sonst wie set
+  function replace(p, src) { cur = clean(p); cur.at = cur.at || Date.now(); write(cur); emit(src || "load"); return cur; }
+  // Pass auf diesem Gerät löschen (Kopie bleibt unter cm.pass.backup)
+  function remove() {
+    const s = store();
+    try { if (s) { const raw = s.getItem(KEY); if (raw) s.setItem(KEY + ".backup", raw); s.removeItem(KEY); } } catch (e) { /* egal */ }
+    cur = null;
+  }
+  // Zuhörer: fn(pass, src); src "local" | "load" | "tab" (anderer Tab, z. B. das Biathlon daneben). Gibt eine Abmeldung zurück.
+  function on(fn) { subs.push(fn); return () => { const i = subs.indexOf(fn); if (i >= 0) subs.splice(i, 1); }; }
+  if (root.addEventListener) {
+    root.addEventListener("storage", (e) => {
+      if (e.key !== KEY || e.newValue == null) return;   // gelöscht: im Speicher bleibt der Pass, bis das Spiel neu lädt
+      const p = read();
+      if (!p || (cur && same(p, cur))) return;
+      cur = p; emit("tab");
+    });
+  }
+
+  // ------------------------------------------------------------------ Code der Reihe
+  function newCode() {
+    const b = new Uint8Array(12);
+    (root.crypto || globalThis.crypto).getRandomValues(b);
+    let s = "";
+    for (const x of b) s += ALPHA[x & 31];
+    return s;
+  }
+  const codeOk = (c) => typeof c === "string" && CODE_RE.test(c);
+  const fmtCode = (c) => String(c || "").replace(/(.{4})(?=.)/g, "$1-");
+  // Eingabe aufräumen (Leerzeichen, Bindestriche, Kleinbuchstaben); null wenn kein gültiger Code
+  const parseCode = (t) => { const s = String(t || "").toUpperCase().replace(/[^A-Z0-9]/g, ""); return CODE_RE.test(s) ? s : null; };
+  // Code anlegen, falls noch keiner da ist
+  function ensureCode() { const p = get(); return p.code || set({ code: newCode() }, "local").code; }
+
+  // ------------------------------------------------------------------ Online (rpc: Funktion des Spiels, z. B. TMOnline.make(cfg).rpc)
+  // Gesendet wird alles außer dem Code; der Server prüft Felder und Größe und speichert unter dem Prüfwert des Codes.
+  const online = {
+    async put(rpc, p) {
+      p = p || get();
+      if (!p || !codeOk(p.code)) return null;
+      const data = Object.assign({}, p); delete data.code;
+      return rpc("cm_pass_put", { p_code: p.code, p_data: data }, 8000);
+    },
+    // Pass zu einem Code holen: null, wenn es keinen gibt
+    async get(rpc, code) {
+      if (!codeOk(code)) return null;
+      const j = await rpc("cm_pass_get", { p_code: code }, 8000);
+      if (!j || !isObj(j.d)) return null;
+      return clean(Object.assign({}, j.d, { code }));
+    },
+  };
+
+  root.CMPass = { KEY, V, COLORS, PATTERNS, HAIRC_NAMES, SKIN_NAMES, NATIONS, DEF_LOOK, LOOK_KEYS,
+    clean, cleanLook, cleanName, blank, same, load, get, set, replace, remove, on, get created() { return created; },
+    newCode, codeOk, fmtCode, parseCode, ensureCode, online };
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* Cold Medal Games · Fenster „Gestalten“ (pass/pass-ui.js, CMPass.ui)
+ *
+ * Ein Fenster für alle Spiele der Reihe: Vorschau der Figur, Name und Land, Person (Frisur, Bart, Haare, Haut), Farben
+ * (Anzug, Muster, Zweitfarbe) und eigene Reiter der Sportart (im Skispringen: Helm, Brille, Ski). Was man hier wählt, liegt
+ * im Pass und gilt in jedem Spiel. Aussehen wie das Skispringen (Papier, Druckmarken), Klassen mit dem Präfix ps- (pass.css).
+ * Braucht figur.js und pass.js.
+ *
+ * const ui = CMPass.ui.mount(host, opts)   host: leeres Element, das das Spiel ein- und ausblendet (Ebene, Maßstab)
+ *   opts.title        Überschrift, z. B. „Dein Springer“      opts.kit     Kit der Figur in der Vorschau (figur.js KITS)
+ *   opts.nations      [[Kürzel, Name], …] (sonst CMPass.NATIONS) opts.upper  Namen in Versalien (Standard ja)
+ *   opts.labels       { suit: "Anzug", accent: "Zweitfarbe" }  opts.personHint  Satz unter Person
+ *   opts.preview      eigene Vorschau: { poses: [[id, Name], …], pose, personPose, colorPose, draw(ctx, w, h, t, pose, look) }
+ *   opts.tabs         eigene Reiter: [{ id, label, pose, rows: [Zeile, …] }], Zeile:
+ *                       { type: "swatches", label, list: [[Wert, Name, Farbe?], …], get, set, dim? }
+ *                       { type: "seg", label, list: [[Wert, Name], …], get, set }
+ *                       { type: "selects", label, items: [{ list, get, set, aria }] }      { type: "hint", text }
+ *   opts.random()     zusätzlich bei „Zufall“ (Ausrüstung der Sportart)     opts.onDone()  nach „Fertig“
+ *   opts.defaultName  Name, wenn keiner eingegeben ist         opts.dpr()   Pixeldichte der Vorschau
+ * ui.open({ ask, title, tab })   ask: erster Start, ohne Namen geht es nicht weiter (oder „Als Gast spielen“)
+ * ui.refresh() · ui.done() → false, solange ein Name fehlt · ui.close() · ui.el (das Fenster)
+ * CMPass.ui.open(opts) legt selbst eine Ebene über die Seite (für Spiele ohne eigene Ebenen) und zeigt das Fenster.
+ */
+(function (root) {
+  "use strict";
+  const P = root.CMPass, doc = root.document;
+  let uid = 0;
+  const mk = (tag, cls, text) => { const e = doc.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const at = (e, a) => { for (const k of Object.keys(a)) e.setAttribute(k, a[k]); return e; };
+  const DICE = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true">' +
+    '<rect x="3.5" y="3.5" width="17" height="17" rx="2.5"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor" stroke="none"/>' +
+    '<circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor" stroke="none"/></svg>';
+  // Vorschau ohne eigene Zeichnung des Spiels: die Figur steht, jubelt, winkt oder tanzt (Gesten aus figur.js)
+  const DEF_POSES = [["stand", "Stehen"], ["jubel", "Jubel"], ["winken", "Winken"], ["charleston", "Tanz"]];
+
+  function defaultDraw(c, w, h, t, pose, look, kit) {
+    const g = c.createLinearGradient(0, 0, 0, h);
+    g.addColorStop(0, "#1B3157"); g.addColorStop(1, "#0B1526");
+    c.fillStyle = g; c.fillRect(0, 0, w, h);
+    const F = root.CMFigur;
+    if (!F) return;
+    let p = F.POSES.stand, lift = 0, mood = "ruhig";
+    if (pose === "stand") p = F.idle(F.POSES.stand, t);
+    else {
+      const G = F.GESTEN[pose], r = G && F.gesture(pose, G.loop ? t : t % (G.dauer + 1.4));
+      if (r) { p = r.pose; lift = r.lift; mood = r.mood; }
+    }
+    const s = Math.min(w / 64, (h - 26) / 96), y = h - 14;
+    c.fillStyle = "rgba(230,237,246,0.16)"; c.fillRect(w / 2 - 30 * s, y, 60 * s, 3);
+    F.draw(c, { x: w / 2, y, s, dir: 1, pose: p, lift, look: F.cleanLook(look), kit: kit || "plain", face: true, mood });
+  }
+
+  // Eine Zeile im Fenster; sync() stellt den aktuellen Wert dar
+  function row(spec, changed) {
+    if (spec.type === "hint") {
+      const p = mk("p", "ps-hint", typeof spec.text === "function" ? spec.text() : spec.text);
+      return { el: p, sync() { if (typeof spec.text === "function") p.textContent = spec.text(); } };
+    }
+    const r = mk("div", "ps-row");
+    r.appendChild(mk("span", "ps-lbl", spec.label));
+    if (spec.type === "swatches") {
+      const box = at(mk("div", "ps-swatches"), { role: "radiogroup", "aria-label": spec.aria || spec.label });
+      // mehr als acht Felder: gleich lange Reihen (10 → 5 + 5, 16 → 8 + 8)
+      if (spec.list.length > 8) { r.classList.add("ps-row-wrap"); box.style.setProperty("--ps-per", Math.ceil(spec.list.length / Math.ceil(spec.list.length / 8))); }
+      const bs = spec.list.map(([v, name, col]) => {
+        const b = at(mk("button", "ps-swatch"), { type: "button", role: "radio", "aria-label": name, "aria-checked": "false" });
+        b.style.background = col || v; b._v = v; box.appendChild(b); return b;
+      });
+      box.addEventListener("click", (e) => { const b = e.target.closest(".ps-swatch"); if (b && box.contains(b)) { spec.set(b._v); changed(spec); } });
+      r.appendChild(box);
+      return { el: r, sync() { const v = spec.get(); for (const b of bs) b.setAttribute("aria-checked", String(b._v === v)); r.classList.toggle("ps-dim", !!(spec.dim && spec.dim())); } };
+    }
+    if (spec.type === "seg") {
+      const box = at(mk("div", "ps-seg"), { role: "radiogroup", "aria-label": spec.aria || spec.label });
+      const bs = spec.list.map(([v, name]) => { const b = at(mk("button", null, name), { type: "button", role: "radio", "aria-checked": "false" }); b._v = v; box.appendChild(b); return b; });
+      box.addEventListener("click", (e) => { const b = e.target.closest("button"); if (b && box.contains(b)) { spec.set(b._v); changed(spec); } });
+      r.appendChild(box);
+      return { el: r, sync() { const v = spec.get(); for (const b of bs) b.setAttribute("aria-checked", String(b._v === v)); } };
+    }
+    // mehrere Auswahllisten in einer Zeile (Frisur und Bart)
+    r.classList.add("ps-row-sel");
+    const sels = (spec.items || []).map((it) => {
+      const s = at(mk("select", "ps-select"), { "aria-label": it.aria || spec.label });
+      for (const [v, name] of it.list) { const o = mk("option", null, name); o.value = String(v); s.appendChild(o); }
+      s.addEventListener("change", () => { const hit = it.list.find(([v]) => String(v) === s.value); if (hit) { it.set(hit[0]); changed(spec); } });
+      r.appendChild(s);
+      return [s, it];
+    });
+    return { el: r, sync() { for (const [s, it] of sels) s.value = String(it.get()); } };
+  }
+
+  function mount(host, opts) {
+    opts = opts || {};
+    const F = root.CMFigur, id = ++uid, upper = opts.upper !== false;
+    const pv = opts.preview || { poses: DEF_POSES, pose: "stand" };
+    const lbl = Object.assign({ suit: "Anzug", accent: "Zweitfarbe" }, opts.labels || {});
+    const look = () => P.get().look;
+    const setLook = (patch) => P.set({ look: patch, edited: true }, "ui");
+    let tab = "person", pose = pv.personPose || pv.pose || pv.poses[0][0], ask = false, shown = false, raf = 0, openedAt = 0;
+
+    // ---------------------------------------------------------------- Aufbau
+    const dlg = at(mk("div", "ps-dialog"), { role: "dialog", "aria-labelledby": "psTitle" + id });
+    const head = mk("div", "ps-head"), title = at(mk("h2", "ps-title", opts.title || "Deine Figur"), { id: "psTitle" + id });
+    const btns = mk("div", "ps-head-btns");
+    const bRand = at(mk("button", "ps-btn ps-btn-2 ps-random"), { type: "button" });
+    bRand.innerHTML = DICE; bRand.appendChild(mk("span", null, "Zufall"));
+    const bDone = at(mk("button", "ps-btn ps-btn-1 ps-done", "Fertig"), { type: "button" });
+    btns.append(bRand, bDone); head.append(title, btns);
+
+    const grid = mk("div", "ps-grid"), left = mk("div", "ps-left"), opt = mk("div", "ps-opts");
+    const stage = mk("div", "ps-stage"), cv = at(mk("canvas", "ps-canvas"), { role: "img", "aria-label": "Vorschau deiner Figur" });
+    stage.appendChild(cv); left.appendChild(stage);
+    const segPose = at(mk("div", "ps-seg ps-poses"), { role: "radiogroup", "aria-label": "Haltung in der Vorschau" });
+    const poseBtns = pv.poses.map(([v, name]) => { const b = at(mk("button", null, name), { type: "button", role: "radio", "aria-checked": "false" }); b._v = v; segPose.appendChild(b); return b; });
+    if (pv.poses.length > 1) left.appendChild(segPose);
+
+    const idRow = mk("div", "ps-row ps-id");
+    const inName = at(mk("input", "ps-name"), { type: "text", maxlength: "12", autocomplete: "off", spellcheck: "false", "aria-label": "Name", placeholder: "Dein Name" });
+    if (!upper) inName.classList.add("ps-mixed");
+    const selNat = at(mk("select", "ps-select ps-nation"), { "aria-label": "Land" });
+    for (const [c, n] of opts.nations || P.NATIONS) { const o = mk("option", null, n); o.value = c; selNat.appendChild(o); }
+    idRow.append(inName, selNat);
+    const askRow = mk("div", "ps-ask"), askTxt = mk("span", "ps-ask-txt"), bGuest = at(mk("button", "ps-plain", "Als Gast spielen"), { type: "button" });
+    askRow.append(askTxt, bGuest); askRow.hidden = true;
+    const ASK = "Dein Name steht auf den Tafeln und in den Gruppen, in allen Spielen.";
+
+    // Reiter: Person und Farben gehören zum Pass, weitere bringt die Sportart mit
+    const person = [
+      { type: "selects", label: "Frisur", head: true, items: [
+        { aria: "Frisur", list: F.HAIRS.map((n, i) => [i, n]), get: () => look().hair, set: (v) => setLook({ hair: v }) },
+        { aria: "Bart", list: F.BEARDS.map((n, i) => [i, i ? n : "ohne Bart"]), get: () => look().beard, set: (v) => setLook({ beard: v }) }] },
+      { type: "swatches", label: "Haare", aria: "Haarfarbe", head: true, list: F.HAIRC.map((c, i) => [i, P.HAIRC_NAMES[i] || "Haarfarbe " + (i + 1), c]), get: () => look().hairC, set: (v) => setLook({ hairC: v }) },
+      { type: "swatches", label: "Haut", aria: "Hautton", head: true, list: F.SKIN.map((c, i) => [i, P.SKIN_NAMES[i] || "Hautton " + (i + 1), c]), get: () => look().skin, set: (v) => setLook({ skin: v }) },
+      { type: "hint", text: opts.personHint || "Alle sind gleich gebaut; Frisur und Bart wählst du frei. Deine Figur gilt in allen Spielen von Cold Medal." },
+    ];
+    const colors = [
+      { type: "swatches", label: lbl.suit, aria: "Farbe: " + lbl.suit, list: P.COLORS, get: () => look().suit, set: (v) => setLook({ suit: v }) },
+      { type: "seg", label: "Muster", list: P.PATTERNS, get: () => look().pattern, set: (v) => {
+        const L = look(), patch = { pattern: v };
+        if (v !== "uni" && L.accent === L.suit) patch.accent = L.suit === "#EEF2F7" ? "#262E3B" : "#EEF2F7";   // Muster soll man sehen
+        setLook(patch);
+      } },
+      { type: "swatches", label: lbl.accent, aria: lbl.accent, list: P.COLORS, get: () => look().accent, set: (v) => setLook({ accent: v }), dim: () => look().pattern === "uni" },
+    ];
+    const tabs = [{ id: "person", label: "Person", pose: pv.personPose, rows: person }, { id: "farben", label: "Farben", pose: pv.colorPose, rows: colors }]
+      .concat((opts.tabs || []).filter((t) => t && t.id && Array.isArray(t.rows)));
+    const segTab = at(mk("div", "ps-seg ps-seg-s ps-tabs"), { role: "radiogroup", "aria-label": "Was du gestaltest" });
+    const tabBtns = tabs.map((t) => { const b = at(mk("button", null, t.label), { type: "button", role: "radio", "aria-checked": "false" }); b._v = t.id; segTab.appendChild(b); return b; });
+    const changed = (spec) => { if (spec.head && pv.personPose) pose = pv.personPose; refresh(); };
+    const boxes = tabs.map((t) => {
+      const box = mk("div", "ps-tabbox"); box._id = t.id;
+      t._rows = t.rows.map((s) => { const r = row(s, changed); box.appendChild(r.el); return r; });
+      return box;
+    });
+    opt.append(idRow, askRow, segTab, ...boxes);
+    grid.append(left, opt); dlg.append(head, grid);
+    host.appendChild(dlg);
+
+    // ---------------------------------------------------------------- Darstellen
+    function refresh() {
+      const p = P.get();
+      if (doc.activeElement !== selNat) selNat.value = p.nation;
+      for (const b of poseBtns) b.setAttribute("aria-checked", String(b._v === pose));
+      for (const b of tabBtns) b.setAttribute("aria-checked", String(b._v === tab));
+      for (const box of boxes) box.hidden = box._id !== tab;
+      for (const t of tabs) if (t.id === tab) for (const r of t._rows) r.sync();
+      askRow.hidden = !ask;
+    }
+    function setTab(t) {
+      tab = tabs.some((x) => x.id === t) ? t : "person";
+      const T = tabs.find((x) => x.id === tab);
+      if (T && T.pose) pose = T.pose;
+      refresh();
+    }
+    function drawPreview(t) {
+      const cw = cv.clientWidth, ch = cv.clientHeight;
+      if (!cw || !ch) return;
+      const dpr = Math.min(3, Math.max(1, opts.dpr ? opts.dpr() : root.devicePixelRatio || 1));
+      const bw = Math.round(cw * dpr), bh = Math.round(ch * dpr);
+      if (cv.width !== bw || cv.height !== bh) { cv.width = bw; cv.height = bh; }
+      const c = cv.getContext("2d");
+      c.setTransform(dpr, 0, 0, dpr, 0, 0);
+      try {
+        if (opts.preview && opts.preview.draw) opts.preview.draw(c, cw, ch, t, pose, P.get().look);
+        else defaultDraw(c, cw, ch, t, pose, P.get().look, tab === "person" ? opts.personKit || "plain" : opts.kit);
+      } catch (e) { /* eine kaputte Vorschau darf das Fenster nicht stören */ }
+    }
+    const hidden = () => !host.isConnected || host.hidden || doc.hidden || !cv.offsetParent;
+    function frame(ts) {
+      raf = 0;
+      if (!shown) return;
+      if (hidden()) { if (Date.now() - openedAt < 1500) raf = root.requestAnimationFrame(frame); return; }   // gleich nach dem Öffnen noch warten
+      drawPreview(ts / 1000);
+      raf = root.requestAnimationFrame(frame);
+    }
+    const run = () => { if (shown && !raf && root.requestAnimationFrame) raf = root.requestAnimationFrame(frame); };
+    doc.addEventListener("visibilitychange", () => { if (!doc.hidden) run(); });
+
+    // ---------------------------------------------------------------- Bedienen
+    function done() {
+      const raw = (inName.value || "").trim().slice(0, 12), typed = P.cleanName(upper ? raw.toUpperCase() : raw);
+      if (ask && !typed) {
+        inName.classList.add("ps-need"); askTxt.textContent = "Bitte gib einen Namen ein, oder spiel als Gast."; askTxt.classList.add("ps-warn");
+        try { inName.focus(); } catch (e) { /* egal */ }
+        return false;
+      }
+      inName.classList.remove("ps-need"); askTxt.classList.remove("ps-warn");
+      const cur = P.get(), name = typed || cur.name || P.cleanName(opts.defaultName || "");
+      if (name !== cur.name) P.set({ name, edited: true }, "ui");
+      ask = false; shown = false;
+      if (opts.onDone) opts.onDone();
+      return true;
+    }
+    function random() {
+      const pick = (a) => a[Math.floor(Math.random() * a.length)][0];
+      const suit = pick(P.COLORS);
+      let accent = pick(P.COLORS);
+      while (accent === suit) accent = pick(P.COLORS);
+      // Zufall wechselt Farben und Ausrüstung; Frisur, Bart, Haare und Haut bleiben (das ist die Person)
+      setLook({ suit, accent, pattern: pick(P.PATTERNS) });
+      if (opts.random) opts.random();
+      if (tab === "person") setTab("farben"); else refresh();
+    }
+    bDone.addEventListener("click", () => done());
+    bRand.addEventListener("click", () => random());
+    bGuest.addEventListener("click", () => { inName.value = upper ? "GAST" : "Gast"; done(); });
+    segPose.addEventListener("click", (e) => { const b = e.target.closest("button"); if (b && segPose.contains(b)) { pose = b._v; refresh(); } });
+    segTab.addEventListener("click", (e) => { const b = e.target.closest("button"); if (b && segTab.contains(b)) setTab(b._v); });
+    selNat.addEventListener("change", () => P.set({ nation: selNat.value, edited: true }, "ui"));
+    // Tasten beim Tippen nicht ans Spiel weitergeben, außer Escape (schließt das Fenster)
+    inName.addEventListener("keydown", (e) => { if (e.key === "Enter") inName.blur(); if (e.key !== "Escape") e.stopPropagation(); });
+    inName.addEventListener("input", () => { if (inName.value.trim()) { inName.classList.remove("ps-need"); askTxt.classList.remove("ps-warn"); askTxt.textContent = ASK; } });
+    // Änderungen aus einem anderen Spiel (anderer Tab) oder vom Server gleich zeigen
+    P.on((p, src) => { if (src !== "ui") { if (src !== "local" && doc.activeElement !== inName) inName.value = p.name; refresh(); } });
+
+    return {
+      el: dlg,
+      open(o) {
+        o = o || {};
+        ask = !!o.ask;
+        title.textContent = o.title || opts.title || "Deine Figur";
+        inName.value = P.get().name; inName.classList.remove("ps-need");
+        askTxt.textContent = ASK; askTxt.classList.remove("ps-warn");
+        setTab(o.tab || "person");
+        if (!(o.tab && tabs.find((x) => x.id === o.tab && x.pose))) pose = pv.personPose || pv.pose || pose;
+        refresh();
+        shown = true; openedAt = Date.now(); run();
+        if (ask) setTimeout(() => { try { inName.focus(); } catch (e) { /* egal */ } }, 60);
+      },
+      close() { shown = false; },
+      refresh, done, setTab,
+      get tab() { return tab; }, get pose() { return pose; },
+      get name() { return inName.value; },
+    };
+  }
+
+  // Für Spiele ohne eigene Ebenen: eine Ebene über der ganzen Seite, Escape oder „Fertig“ schließt
+  let own = null;
+  function open(opts, o) {
+    if (!own) {
+      const host = at(mk("section", "ps-screen"), { "aria-modal": "true" });
+      host.hidden = true;
+      doc.body.appendChild(host);
+      const onDone = opts && opts.onDone;
+      const ui = mount(host, Object.assign({}, opts, { onDone() { host.hidden = true; if (onDone) onDone(); } }));
+      host.addEventListener("keydown", (e) => { if (e.key === "Escape") { e.preventDefault(); ui.done(); } });
+      own = { host, ui };
+    }
+    own.host.hidden = false;
+    own.ui.open(o);
+    return own.ui;
+  }
+
+  P.ui = { mount, open, DEF_POSES };
 })(typeof window !== "undefined" ? window : globalThis);
 
 /* TELEMARK – Canvas-Grafik: Flutlicht-Nacht im flachen Vektorstil, Welt in Metern, Kamera in px/m. */
@@ -11326,8 +11817,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 /* TELEMARK – Spielablauf, Kamera, Steuerung, HUD, Wertung, Wettkampf, Partymodus (Hot-Seat), Herausforderung per Link, Wiederholung, Einstellungen. */
 (function () {
   "use strict";
-  const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp, FIG = window.CMFigur;
-  const VERSION = "0.56.1";
+  const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp, FIG = window.CMFigur, PASS = window.CMPass;
+  const VERSION = "0.57";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -11476,7 +11967,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     chFmt: "tour", chLevel: "mid", chWind: "var", champ: null, party: null, champBest: {},
     gaugeLeft: false, gaugeSide: "off", flv: 4, hand: "right", sens: 1, ghosts: {}, tops: {}, tod: "auto", missions: {}, daily: null, look: null, expert: false, beginner: false,
     oc: null, osave: false, oat: "", groups: [], tours: [], opend: [], noOnline: false, onlineAsked: false, qdpr: 0, fps: false, n28: null,
-    taler: 0, gear: { ski: 0, suit: 0, bind: 0 }, waxes: [], wax: "u", svc: false, paid: {}, tlog: [], eco: 0, tseen: {}, clubs: [], cseen: {} };
+    taler: 0, gear: { ski: 0, suit: 0, bind: 0 }, waxes: [], wax: "u", svc: false, paid: {}, tlog: [], eco: 0, tseen: {}, clubs: [], cseen: {}, pass: 0 };
   let S = JSON.parse(JSON.stringify(DEF));
   try {
     const raw = localStorage.getItem(KEY);
@@ -11615,15 +12106,16 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   const gaugeShown = () => S.gaugeSide !== "off" || gaugeAuto();
   const gaugeOnLeft = () => S.gaugeSide === "left";
   let cloudT = 0, cloudBusy = false;   // Spielstand online: verzögert sichern, nie zweimal gleichzeitig
-  function saveLocal() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* voll oder gesperrt */ } }
+  let passReady = false;               // Pass der Reihe geladen (siehe unten): ab dann geht jede Änderung auch in den Pass
+  function saveLocal() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { /* voll oder gesperrt */ } if (passReady) toPass(); }
   function save() { saveLocal(); cloudSoon(); }
   const trainSpeed = () => ([1, 0.75, 0.5].includes(S.speed) ? S.speed : S.slow ? 0.5 : 1);
   let H = Hill.getHill(S.hill);
   const gateFor = (Hh) => clamp(S.gates[Hh.key] != null ? S.gates[Hh.key] : Hh.refGate, 1, Hh.gates);
 
-  // Aussehen des Springers: Anzug (Farbe, Muster, Zweitfarbe), Helm, Brille, Ski
-  const SUIT_COLS = [["#FF8A3D", "Orange"], ["#FFD23F", "Gelb"], ["#E5383B", "Rot"], ["#F25C78", "Pink"], ["#9B6BFF", "Violett"], ["#3A7BFF", "Blau"],
-    ["#4FD1C5", "Türkis"], ["#3FBF6E", "Grün"], ["#EEF2F7", "Weiß"], ["#262E3B", "Schwarz"]];
+  // Aussehen des Springers: Anzug (Farbe, Muster, Zweitfarbe) aus dem Pass der Reihe, dazu Helm, Brille, Ski (nur im Skispringen)
+  // Anzugfarben: die Liste des Passes (die ersten zehn wie bisher, Reihenfolge fest wegen der Nummern online, dazu die Plakatfarben)
+  const SUIT_COLS = PASS.COLORS;
   const LOOK_COLS = {
     suit: SUIT_COLS, accent: SUIT_COLS,
     helmet: [["#F2F6FB", "Weiß"], ["#20262F", "Schwarz"], ["#C3CCD8", "Silber"], ["#E2B13C", "Gold"], ["#E5383B", "Rot"], ["#FF8A3D", "Orange"],
@@ -11654,13 +12146,41 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const r = (n) => { h = (Math.imul(h ^ (h >>> 15), 2246822519) ^ 0x9E3779B9) >>> 0; return h % n; };
     return { hair: r(FIG.HAIRS.length), hairC: r(FIG.HAIRC.length), skin: r(FIG.SKIN.length), beard: r(10) < 3 ? 1 + r(FIG.BEARDS.length - 1) : 0 };
   }
-  // alte Spielstände: nur Anzugfarbe -> Aussehen; unbekannte Werte auf Standard
+  // alte Spielstände: nur Anzugfarbe -> Aussehen; unbekannte Werte auf Standard. Anzug und Zweitfarbe dürfen jede Farbe des Passes
+  // sein (auch eine, die ein anderes Spiel gesetzt hat), Helm, Brille und Ski nur aus den eigenen Listen.
+  const HEXRE = /^#[0-9A-F]{6}$/i;
   {
     const L = Object.assign({}, DEF_LOOK, S.look || (S.color ? { suit: S.color } : {}));
-    for (const k of ["suit", "accent", "helmet", "visor", "ski"]) if (!LOOK_COLS[k].some((c) => c[0] === L[k])) L[k] = DEF_LOOK[k];
+    for (const k of ["suit", "accent"]) L[k] = typeof L[k] === "string" && HEXRE.test(L[k]) ? L[k].toUpperCase() : DEF_LOOK[k];
+    for (const k of ["helmet", "visor", "ski"]) if (!LOOK_COLS[k].some((c) => c[0] === L[k])) L[k] = DEF_LOOK[k];
     if (!PATTERNS.includes(L.pattern)) L.pattern = "uni";
     for (const [k, n] of HEAD_KEYS) if (!(Number.isInteger(L[k]) && L[k] >= 0 && L[k] < n)) L[k] = DEF_LOOK[k];
     S.look = L; delete S.color;
+  }
+  // Pass der Reihe (../pass/, Mat 12.11.2026): Name, Land, Kopf, Anzugfarben, Muster und Code gelten in allen Spielen. Das Skispringen
+  // hält seinen Spielstand weiter selbst und gleicht bei jedem Sichern ab; Taler führt der Pass vorerst nur mit (schreibt nur das Skispringen).
+  // Beim ersten Treffen gewinnt ein Pass, den jemand in einem anderen Spiel gestaltet hat; sonst schreibt das Skispringen seine Angaben hinein.
+  const passOf = (st) => {
+    st = st || S;
+    const lk = Object.assign({}, DEF_LOOK, st.look || {});
+    return { code: st.oc || null, name: st.name || "", nation: st.nation || "AUT", taler: st.taler || 0,
+      look: PASS.LOOK_KEYS.reduce((o, k) => { o[k] = lk[k]; return o; }, {}) };
+  };
+  function fromPass(p) {
+    if (p.name) S.name = p.name;
+    if (p.nation) S.nation = p.nation;
+    for (const k of PASS.LOOK_KEYS) if (p.look[k] != null) S.look[k] = p.look[k];
+  }
+  function toPass() {
+    const cur = PASS.get();
+    PASS.set(Object.assign(passOf(), { edited: cur.edited || !!S.name }), "game");
+  }
+  {
+    const p = PASS.load(() => Object.assign(passOf(), { edited: !!S.name }));
+    if (!PASS.created && (S.pass || p.edited)) fromPass(p);
+    if (p.code && !S.oc) S.oc = p.code;   // einen Code aus einem anderen Spiel übernehmen; hat das Skispringen schon einen, gilt seiner (dort liegen die Online-Daten)
+    S.pass = 1; passReady = true;
+    saveLocal();   // schreibt auch den Pass
   }
   const HOT_COLORS = [["#FF8A3D", "#B85A22"], ["#4FD1C5", "#2A8F86"], ["#F25C78", "#A93349"], ["#FFD23F", "#B8901A"], ["#9B8CFF", "#6553C9"],
     ["#7FD49B", "#3F9A5C"], ["#5AA9FF", "#2F6FBF"], ["#E4EAF2", "#8E9BB0"]];
@@ -11669,9 +12189,17 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   // Aussehen für die Online-Rangliste: sechs Zeichen, je ein Platz in den Farblisten (Fremdes wird verworfen)
   const LOOK_KEYS = ["suit", "pattern", "accent", "helmet", "visor", "ski"], B32 = "0123456789abcdefghijklmnopqrstuv";
   const lookList = (k) => (k === "pattern" ? PATTERNS : LOOK_COLS[k].map((c) => c[0]));
+  // Farbe, die nicht in der Liste steht (aus einem anderen Spiel): die ähnlichste Farbe der Liste
+  const nearest = (list, h) => {
+    if (!HEXRE.test(String(h))) return 0;
+    const a = hexRgb(h);
+    let best = 0, bd = 1e9;
+    list.forEach((c, i) => { const b = hexRgb(c), d = (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2; if (d < bd) { bd = d; best = i; } });
+    return best;
+  };
   function lookCode(l) {
     l = Object.assign({}, DEF_LOOK, l || {});
-    return LOOK_KEYS.map((k) => B32[Math.max(0, lookList(k).indexOf(l[k]))]).join("");
+    return LOOK_KEYS.map((k) => { const L = lookList(k), i = L.indexOf(l[k]); return B32[i >= 0 ? i : k === "pattern" ? 0 : nearest(L, l[k])]; }).join("");
   }
   function lookDecode(s) {
     if (typeof s !== "string" || !/^[0-9a-v]{6}$/.test(s)) return null;
@@ -12080,7 +12608,6 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     if (name === "shop") fillShop();
     if (name === "online") fillOnline();
     if (name === "info") fillInfo();
-    if (name === "jumper") fillJumper();
     if (name === "records") fillRecords();
     if (name === "hill") fillHillInfo();
   }
@@ -14104,7 +14631,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   let grpMaking = false, pendBusy = false, askCb = null;
   const onlineReady = () => !!ON && !S.noOnline;
   const meName = () => String(S.name || "SPRINGER").toUpperCase();
-  function myCode() { if (!S.oc) { S.oc = OL.newCode(); saveLocal(); } return S.oc; }
+  // ein Code für alle Spiele: hat der Pass schon einen (aus einem anderen Spiel), gilt dieser
+  function myCode() { if (!S.oc) { S.oc = PASS.get().code || OL.newCode(); saveLocal(); } return S.oc; }
   const onlineFail = (e, head) => showToastSafeText(head || "ONLINE", OL ? OL.message(e) : "Keine Verbindung");
   const dateTimeDE = (iso) => {
     const d = new Date(iso);
@@ -14909,6 +15437,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     try {
       const at = await ON.rpc("tm_save", { p_code: S.oc, p_name: meName(), p_nation: S.nation || "", p_data: cloudData() });
       S.oat = typeof at === "string" ? at : new Date().toISOString(); saveLocal();
+      PASS.online.put(ON.rpc).catch(() => { /* der Pass kommt beim nächsten Sichern mit */ });   // Figur für alle Spiele, unter demselben Code
       if (overlay === "online") fillOnline();
       return true;
     } catch (e) { if (manual) onlineFail(e, "NICHT GESICHERT"); return false; }
@@ -16512,88 +17041,13 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   const setGate = (d) => { S.gates[H.key] = clamp(gateFor(H) + d, 1, H.gates); save(); txt($("setGateVal"), String(gateFor(H))); if (J && J.phase === "gate" && ctxMode === "training") { J.gate = S.gates[H.key]; J.s = H.gatePos[J.gate]; } };
   on("setGateMinus", () => setGate(-1));
   on("setGatePlus", () => setGate(1));
-  $("inNation").addEventListener("change", (e) => { S.nation = e.target.value; save(); refreshTitle(); });
-  $("inName").addEventListener("keydown", (e) => { if (e.key === "Enter") e.target.blur(); e.stopPropagation(); });
-  $("inName").addEventListener("input", (e) => { nameDraft = e.target.value; if (e.target.value.trim()) { e.target.classList.remove("need"); txt($("jpAskTxt"), "Dein Name steht auf den Tafeln und in Duellen."); } });
-  on("btnJpGuest", () => { $("inName").value = "GAST"; nameDraft = "GAST"; closeJumper(); });
   $("hotNames").addEventListener("keydown", (e) => { if (e.key === "Enter") e.target.blur(); e.stopPropagation(); });
-  // ------------------------------------------------------------------ Springer: Name, Nation, Aussehen (mit Vorschau)
-  let jumperFrom = null, jpPose = "pod", jpTab = "person";
-  const LOOK_ROWS = [["swSuit", "suit"], ["swAccent", "accent"], ["swHelmet", "helmet"], ["swVisor", "visor"], ["swSki", "ski"]];
-  // Kopf der Figur: Haarfarbe und Haut als Farbfelder (Nummern in den Listen der Figur), Frisur und Bart zur Auswahl
-  const HEAD_SW = [["swHairC", "hairC", FIG.HAIRC, ["Dunkelbraun", "Braun", "Blond", "Schwarz", "Grau"]],
-    ["swSkin", "skin", FIG.SKIN, ["Sehr hell", "Hell", "Mittel", "Dunkel", "Sehr dunkel"]]];
-  const swatchHtml = (key) => LOOK_COLS[key].map(([c, n]) => `<button type="button" class="swatch" role="radio" aria-label="${n}" aria-checked="${c === S.look[key]}" data-c="${c}" style="background:${c}"></button>`).join("");
-  let nameDraft = null;   // getippter, noch nicht übernommener Name (bleibt beim Wählen der Farben stehen)
-  function fillJumper() {
-    if (document.activeElement !== $("inName")) $("inName").value = nameDraft != null ? nameDraft : S.name;
-    vis($("jpAsk"), jumperFrom === "first");
-    const sel = $("inNation");
-    if (!sel.options.length) sel.innerHTML = NATIONS.map(([c, n]) => `<option value="${c}">${n}</option>`).join("");
-    sel.value = S.nation;
-    for (const [id, key] of LOOK_ROWS) $(id).innerHTML = swatchHtml(key);
-    for (const [id, key, list, names] of HEAD_SW) $(id).innerHTML = list.map((c, i) => `<button type="button" class="swatch" role="radio" aria-label="${names[i]}" aria-checked="${i === S.look[key]}" data-i="${i}" style="background:${c}"></button>`).join("");
-    const sh = $("selHair"), sb = $("selBeard");
-    if (!sh.options.length) sh.innerHTML = FIG.HAIRS.map((n, i) => `<option value="${i}">${n}</option>`).join("");
-    if (!sb.options.length) sb.innerHTML = FIG.BEARDS.map((n, i) => `<option value="${i}">${i ? n : "ohne Bart"}</option>`).join("");
-    sh.value = String(S.look.hair); sb.value = String(S.look.beard);
-    segSet("segPattern", S.look.pattern);
-    segSet("segJpPose", jpPose); segSet("segJpTab", jpTab);
-    vis($("jpPerson"), jpTab === "person"); vis($("jpKit"), jpTab === "kit");
-    $("swAccent").closest(".set-row").classList.toggle("dim", S.look.pattern === "uni");
-  }
-  // Name beim ersten Start: Der Springer-Dialog fragt, danach geht es dort weiter, wo man hinwollte
-  let afterName = null;
-  function askName(then) {
-    afterName = then;
-    openJumper("first");
-    txt($("jpTitle"), "Wie heißt du?");
-    setTimeout(() => { try { $("inName").focus(); } catch (e) { /* egal */ } }, 60);
-  }
-  function openJumper(from) { jumperFrom = from; txt($("jpTitle"), "Dein Springer"); setOverlay("jumper"); }
-  function closeJumper() {
-    const typed = ($("inName").value || "").trim().toUpperCase().slice(0, 12);
-    if (jumperFrom === "first" && !typed) { $("inName").focus(); $("inName").classList.add("need"); txt($("jpAskTxt"), "Bitte gib einen Namen ein, oder spiel als Gast."); $("jpAskTxt").classList.add("warn"); return; }
-    nameDraft = null; $("jpAskTxt").classList.remove("warn");
-    $("inName").classList.remove("need");
-    S.name = typed || S.name || "SPRINGER";
-    save(); refreshTitle();
-    if (J && ctxMode !== "hot") { el.ppFlag.innerHTML = flag(S.nation); txt(el.ppName, S.name); txt(el.ppNation, S.nation); }
-    setOverlay(jumperFrom === "settings" ? "settings" : null);
-    if (jumperFrom === "first" && afterName) { const f = afterName; afterName = null; f(); }
-  }
-  function setLook(key, v) { S.look[key] = v; save(); if (ctxMode !== "hot") applyColor(); fillJumper(); }
-  for (const [id, key] of LOOK_ROWS) $(id).addEventListener("click", (e) => { const b = e.target.closest(".swatch"); if (b) setLook(key, b.dataset.c); });
-  // Kopf sieht man am besten auf dem Podest (ohne Helm): die Vorschau wechselt dorthin
-  const headLook = (key, v) => { jpPose = "pod"; setLook(key, v); };
-  for (const [id, key] of HEAD_SW) $(id).addEventListener("click", (e) => { const b = e.target.closest(".swatch"); if (b) headLook(key, +b.dataset.i); });
-  $("selHair").addEventListener("change", (e) => headLook("hair", +e.target.value));
-  $("selBeard").addEventListener("change", (e) => headLook("beard", +e.target.value));
-  seg("segPattern", (v) => { setLook("pattern", v); if (v !== "uni" && S.look.accent === S.look.suit) setLook("accent", S.look.suit === "#EEF2F7" ? "#262E3B" : "#EEF2F7"); });
-  seg("segJpPose", (v) => { jpPose = v; segSet("segJpPose", v); });
-  // Reiter: Person zeigt den Kopf (Podest, ohne Helm), Ausrüstung den Flug
-  seg("segJpTab", (v) => { jpTab = v; if (v === "person") jpPose = "pod"; else if (jpPose === "pod") jpPose = "flight"; fillJumper(); });
-  on("btnJpDone", () => closeJumper());
-  on("btnJpRandom", () => {
-    const pick = (a) => a[Math.floor(Math.random() * a.length)][0];
-    const suit = pick(LOOK_COLS.suit);
-    let accent = pick(LOOK_COLS.accent); while (accent === suit) accent = pick(LOOK_COLS.accent);
-    // Zufall wechselt Anzug, Helm, Brille und Ski; Frisur, Bart, Haare und Haut bleiben (das ist die Person)
-    S.look = { suit, accent, pattern: PATTERNS[Math.floor(Math.random() * PATTERNS.length)], helmet: pick(LOOK_COLS.helmet), visor: pick(LOOK_COLS.visor), ski: pick(LOOK_COLS.ski),
-      hair: S.look.hair, hairC: S.look.hairC, beard: S.look.beard, skin: S.look.skin };
-    save(); if (ctxMode !== "hot") applyColor(); fillJumper();
-  });
-  on("btnSetJumper", () => openJumper("settings"));
-  // Vorschau: Springer in der gewählten Haltung, leicht bewegt
-  const jpCv = $("jpCanvas");
-  function drawJumperPreview(t) {
-    const cw = jpCv.clientWidth, ch = jpCv.clientHeight;
-    if (!cw || !ch) return;
-    const dpr = Math.min(3, (window.devicePixelRatio || 1) * uiS);
-    const bw = Math.round(cw * dpr), bh = Math.round(ch * dpr);
-    if (jpCv.width !== bw || jpCv.height !== bh) { jpCv.width = bw; jpCv.height = bh; }
-    const c = jpCv.getContext("2d");
-    c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  // ------------------------------------------------------------------ Springer: das Fenster „Gestalten“ aus dem Pass der Reihe (../pass/pass-ui.js)
+  // Person und Farben gehören zum Pass und gelten in allen Spielen; Helm, Brille und Ski bringt das Skispringen als eigenen Reiter mit.
+  let jumperFrom = null, afterName = null;
+  const setGear = (k, v) => { S.look[k] = v; save(); if (ctxMode !== "hot") applyColor(); };
+  // Vorschau: Springer in der gewählten Haltung, leicht bewegt (Start am Balken, Flug, Landung, Podest ohne Helm)
+  function jumperPreview(c, cw, ch, t, jpPose) {
     const g = c.createLinearGradient(0, 0, 0, ch); g.addColorStop(0, "#1B3157"); g.addColorStop(1, "#0B1526");
     c.fillStyle = g; c.fillRect(0, 0, cw, ch);
     const R = Math.PI / 180, look = lookFor(S.look);
@@ -16634,6 +17088,46 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     RM.drawFigure(c, pose, look, jpPose === "pod" ? { face: true, mood: "froh" } : null);
     c.restore();
   }
+  const passUi = PASS.ui.mount($("scrJumper"), {
+    title: "Dein Springer", kit: "skispringen", nations: NATIONS, defaultName: "SPRINGER",
+    personHint: "Auf dem Podest nimmst du den Helm ab. Alle sind gleich gebaut; Frisur und Bart wählst du frei. Deine Figur gilt in allen Spielen von Cold Medal.",
+    preview: { poses: [["sit", "Start"], ["flight", "Flug"], ["telemark", "Landung"], ["pod", "Podest"]], pose: "pod", personPose: "pod", colorPose: "flight", draw: jumperPreview },
+    tabs: [{ id: "kit", label: "Ausrüstung", pose: "flight", rows: [
+      { type: "swatches", label: "Helm", aria: "Helmfarbe", list: LOOK_COLS.helmet, get: () => S.look.helmet, set: (v) => setGear("helmet", v) },
+      { type: "swatches", label: "Brille", aria: "Farbe der Brille", list: LOOK_COLS.visor, get: () => S.look.visor, set: (v) => setGear("visor", v) },
+      { type: "swatches", label: "Ski", aria: "Skifarbe", list: LOOK_COLS.ski, get: () => S.look.ski, set: (v) => setGear("ski", v) },
+      { type: "hint", text: "Helm, Brille und Ski gibt es nur im Skispringen. Person und Farben gelten in allen Spielen." }] }],
+    // Zufall: das Fenster wählt Anzug, Muster und Zweitfarbe, das Skispringen dazu Helm, Brille und Ski
+    random() {
+      const pick = (a) => a[Math.floor(Math.random() * a.length)][0];
+      S.look.helmet = pick(LOOK_COLS.helmet); S.look.visor = pick(LOOK_COLS.visor); S.look.ski = pick(LOOK_COLS.ski);
+      save(); if (ctxMode !== "hot") applyColor();
+    },
+    dpr: () => Math.min(3, (window.devicePixelRatio || 1) * uiS),
+    onDone: afterJumper,
+  });
+  // Pass geändert: im Fenster, in einem anderen Spiel (anderer Tab) oder vom Server. Das Skispringen übernimmt es sofort.
+  PASS.on((p, src) => {
+    if (src === "game") return;
+    fromPass(p);
+    if (p.code && !S.oc) S.oc = p.code;
+    save();
+    if (ctxMode !== "hot") applyColor();
+    refreshTitle();
+  });
+  function openJumper(from, o) { jumperFrom = from; setOverlay("jumper"); passUi.open(Object.assign({ title: "Dein Springer" }, o || {})); }
+  // Name beim ersten Start: das Fenster fragt, danach geht es dort weiter, wo man hinwollte
+  function askName(then) { afterName = then; openJumper("first", { ask: true, title: "Wie heißt du?" }); }
+  function closeJumper() { passUi.done(); }   // ohne Namen beim ersten Start bleibt das Fenster offen
+  function afterJumper() {
+    S.name = PASS.get().name || S.name || "SPRINGER";
+    save(); refreshTitle();
+    if (J && ctxMode !== "hot") { el.ppFlag.innerHTML = flag(S.nation); txt(el.ppName, S.name); txt(el.ppNation, S.nation); }
+    const from = jumperFrom; jumperFrom = null;
+    setOverlay(from === "settings" ? "settings" : null);
+    if (from === "first" && afterName) { const f = afterName; afterName = null; f(); }
+  }
+  on("btnSetJumper", () => openJumper("settings"));
   seg("segWind", (v) => { S.wind = v; save(); segSet("segWind", v); });
   seg("rsTabs", setRsTab);
   function setTod(v) {
@@ -16877,7 +17371,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     // Menüs und Tafeln zeichnen jetzt auch mit voller Bildrate: Kulisse und ruhender Hang sind zwischengespeichert, und die bewegten
     // Details (Zug, Seilbahn, Nebel, Probesprung) liefen mit 30 Bildern je Sekunde sichtbar ruckig. Nur hinter deckenden Tafeln halb.
     menuAcc += dtReal;
-    if (mode !== "jump" && mode !== "replay" && mode !== "title" && menuAcc < 1 / 31) { if (overlay === "jumper") drawJumperPreview(tAnim); return; }
+    if (mode !== "jump" && mode !== "replay" && mode !== "title" && menuAcc < 1 / 31) return;   // die Vorschau im Fenster „Gestalten“ zeichnet sich selbst
     menuAcc = 0;
     if (mode === "final" || mode === "champ") drawPodium(tAnim);
     renderer.draw({ hill: H, cam, t: tAnim, jumper: jv, ghost, ghosts, gate: J && J.phase === "gate" ? J.gate : null, best,
@@ -16885,7 +17379,6 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       particles, flags: true, windNow: wNow, snow, focus, screen: screenText(st),
       speedLines: st && st.phase === "inrun" ? { a: clamp((st.v - 3) / 20, 0, 1) * 0.85, ang: st.ang } : null,
       cap: (mode === "jump" || mode === "result") && jc && jc.cap28 ? jc.cap28 : null, dim });
-    if (overlay === "jumper") drawJumperPreview(tAnim);
   }
 
   // ------------------------------------------------------------------ Info: Spielstand sichern und laden, Fanspiel, Datenschutz, Impressum
@@ -16965,7 +17458,9 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   on("btnLoadNo", () => { loadState = null; vis($("ifLoad"), false); });
   on("btnLoadYes", () => {
     if (!loadState) return;
-    try { const raw = localStorage.getItem(KEY); if (raw) localStorage.setItem(KEY + ".backup", raw); localStorage.setItem(KEY, JSON.stringify(loadState)); location.reload(); }
+    // Spielstand aus der Datei: die Figur darin wird auch die Figur der Reihe (Pass)
+    const st = Object.assign({}, loadState, { pass: 1 }), ps = Object.assign(passOf(st), { edited: !!st.name });
+    try { const raw = localStorage.getItem(KEY); if (raw) localStorage.setItem(KEY + ".backup", raw); localStorage.setItem(KEY, JSON.stringify(st)); passReady = false; PASS.replace(ps, "game"); location.reload(); }
     catch (e) { softNotice("Speichern ist in diesem Browser nicht möglich"); }
   });
   // ------------------------------------------------------------------ Online-Fenster: Spielstand per Code, auf dieses Gerät holen, Online-Daten löschen
@@ -16983,7 +17478,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     vis($("btnOlSave"), !saved && !off); vis($("btnOlNow"), saved && !off); vis($("btnOlStop"), saved);
     vis($("olLoadBox"), !!olLoad);
     $("tgOnline").setAttribute("aria-checked", String(!S.noOnline));
-    txt($("olPriv"), "Freiwillig und nur, wenn du es nutzt: Für Gruppen speichern wir Name, Nation, Farben, Sprünge sowie Reaktionen und Kommentare zu Sprüngen, sichtbar für alle mit dem Gruppen-Link, dazu wer in welcher Gruppe ist, für den Online-Spielstand deinen Spielstand. Gespeichert bei Supabase Inc. auf Servern in Frankfurt (Art. 6 Abs. 1 lit. b DSGVO). Gruppen werden 30 Tage nach dem letzten Sprung, Beitritt oder Kommentar gelöscht, dein Eintrag mit Namen ebenso, mit Online-Spielstand erst nach 13 Monaten ohne Nutzung. Deinen Code speichern wir nur als Prüfwert.");
+    txt($("olPriv"), "Freiwillig und nur, wenn du es nutzt: Für Gruppen speichern wir Name, Nation, Farben, Sprünge sowie Reaktionen und Kommentare zu Sprüngen, sichtbar für alle mit dem Gruppen-Link, dazu wer in welcher Gruppe ist, für den Online-Spielstand deinen Spielstand und deine Figur für alle Spiele von Cold Medal (Name, Land, Aussehen, Taler). Gespeichert bei Supabase Inc. auf Servern in Frankfurt (Art. 6 Abs. 1 lit. b DSGVO). Gruppen werden 30 Tage nach dem letzten Sprung, Beitritt oder Kommentar gelöscht, dein Eintrag mit Namen ebenso, mit Online-Spielstand erst nach 13 Monaten ohne Nutzung. Deinen Code speichern wir nur als Prüfwert.");
   }
   on("btnOnline", () => openOnline(overlay === "info" ? "info" : null));
   on("btnOlDone", () => closeOnline());
@@ -17005,7 +17500,9 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       if (!j || !j.d || typeof j.d !== "object" || Array.isArray(j.d)) { showToastSafeText("NICHTS GEFUNDEN", "Zu diesem Code gibt es keinen Spielstand"); return; }
       const test = Object.assign(JSON.parse(JSON.stringify(DEF)), JSON.parse(JSON.stringify(j.d)));
       sanitize(test);
-      olLoad = { code, d: j.d, at: typeof j.at === "string" ? j.at : "" };
+      let pass = null;   // die Figur der Reihe gehört dazu, falls schon online (sonst entsteht sie aus dem Spielstand)
+      try { pass = await PASS.online.get(ON.rpc, code); } catch (e) { pass = null; }
+      olLoad = { code, d: j.d, at: typeof j.at === "string" ? j.at : "", pass };
       txt($("olLoadTxt"), `Spielstand von ${test.name || "SPRINGER"} vom ${dateTimeDE(olLoad.at)}, ${test.jumps} Sprünge. Dein jetziger Stand wird ersetzt.`);
       vis($("olLoadBox"), true);
     } catch (e) { onlineFail(e, "NICHT GELADEN"); }
@@ -17013,8 +17510,9 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   on("btnOlNo", () => { olLoad = null; vis($("olLoadBox"), false); });
   on("btnOlYes", () => {
     if (!olLoad) return;
-    const st = Object.assign({}, olLoad.d, { oc: olLoad.code, osave: true, oat: olLoad.at, ghosts: S.ghosts, opend: [] });
-    try { const raw = localStorage.getItem(KEY); if (raw) localStorage.setItem(KEY + ".backup", raw); localStorage.setItem(KEY, JSON.stringify(st)); location.reload(); }
+    const st = Object.assign({}, olLoad.d, { oc: olLoad.code, osave: true, oat: olLoad.at, ghosts: S.ghosts, opend: [], pass: 1 });
+    const ps = Object.assign(olLoad.pass || Object.assign(passOf(st), { edited: !!st.name }), { code: olLoad.code });
+    try { const raw = localStorage.getItem(KEY); if (raw) localStorage.setItem(KEY + ".backup", raw); localStorage.setItem(KEY, JSON.stringify(st)); passReady = false; PASS.replace(ps, "game"); location.reload(); }
     catch (e) { softNotice("Speichern ist in diesem Browser nicht möglich"); }
   });
   on("tgOnline", () => { S.noOnline = !S.noOnline; S.onlineAsked = true; saveLocal(); fillOnline(); });
@@ -17030,7 +17528,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     try {
       await ON.rpc("tm_forget", { p_code: S.oc });
       S.oc = null; S.osave = false; S.oat = ""; S.clubs = []; S.cseen = {}; S.opend = []; saveLocal(); fillOnline();
-      showToastSafeText("GELÖSCHT", "Spielstand und Gruppen-Ergebnisse sind online gelöscht");
+      showToastSafeText("GELÖSCHT", "Spielstand, Figur und Gruppen-Ergebnisse sind online gelöscht");
     } catch (e) { onlineFail(e, "NICHT GELÖSCHT"); }
   });
   on("btnAkYes", () => { S.onlineAsked = true; S.noOnline = false; saveLocal(); setOverlay(null); const f = askCb; askCb = null; if (f) f(); });
