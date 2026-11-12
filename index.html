@@ -967,6 +967,7 @@ button.chb-row svg:last-child { color: var(--hi); opacity: .85; }
 .narrow .mu-steps, .narrow .mu-p { font-size: 12.5px; line-height: 16px; }
 
 /* Hinweis auf eine neue Version (Web-App): oben in der Mitte, über allem */
+body.injump .upd-btn, body.injump #snack { display: none; }   /* kein Hinweis von außen während des Sprungs */
 .upd-btn { position: absolute; left: 50%; top: 8px; transform: translateX(-50%); z-index: 60; height: 32px; padding: 0 14px; border: 2px solid var(--ink-deep); border-radius: 4px;
   background: var(--gold); color: var(--ink-deep); font-family: var(--font-label); font-weight: 700; font-size: 13px; letter-spacing: 0.04em; white-space: nowrap; cursor: pointer; box-shadow: 0 3px 0 rgba(20, 27, 37, 0.5); }
 
@@ -11326,7 +11327,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp, FIG = window.CMFigur;
-  const VERSION = "0.56";
+  const VERSION = "0.56.1";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -12197,7 +12198,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     // Anfängerhilfen in allen Modi für einen allein (auch Wettkampf, Meisterschaft, Arcade, Party). Online, in der Tageschallenge und
     // beim Anlegen einer Gruppe springen alle unter gleichen Bedingungen; eine Mission „Ohne Hilfen“ bleibt ohne.
     const fair = ctxMode === "chal" || ctxMode === "daily" || grpNew;
-    const beginner = !!S.beginner && !expert && !fair && !(ctxMode === "mission" && ms.m.noAssist);
+    // Nostalgie (alte Schanze, Wochenschau): während des Sprungs keine Einblendungen; ohne Text gäbe es auch kein Anhalten für Anfänger
+    const beginner = !!S.beginner && !expert && !fair && !(ctxMode === "mission" && ms.m.noAssist) && !H.era;
     // Tageszeit und Schnee des Tages; Material aus dem Shop (Einheitsmaterial online, in der Tageschallenge, in der Party, 1928, im Übungssprung)
     const tod = ctxMode === "mission" ? ms.m.tod || todFor(H) : ctxMode === "daily" ? dc.tod : ctxMode === "chal" ? chal.t : todFor(H);
     const gear = gearFor(fair || ctxMode === "hot" || !!H.era || practice, snowCond(H, tod, todayStr()));
@@ -12206,7 +12208,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     jc = { seed: jseed, practice, light: "red", tLight: 0.9 + Math.random() * 1.2, rec: [], recT: -1, slow: practice ? [0.5, 0.7, 1][clamp(3 - practiceLeft, 0, 2)] : (ctxMode === "training" ? trainSpeed() : 1),
       drag: null, timing: null, toastT: 0, doneT: 0, dragged: false, finished: false, who, colors,
       countdown: ctxMode === "comp" || ctxMode === "hot" ? 10 : null, ghostRec: [], ghostT: -1, toLead: null, speedT: 0,
-      noAssist: (ctxMode === "mission" && !!ms.m.noAssist) || expert, expert, beginner, grpNew, freeze: null, target: ctxMode === "mission" ? missionTarget(ms.m, H) : null,
+      noAssist: (ctxMode === "mission" && !!ms.m.noAssist) || expert, expert, beginner, grpNew, freeze: null, quiet: !!H.era, target: ctxMode === "mission" ? missionTarget(ms.m, H) : null,
       prevBest: S.bests[H.key] ? S.bests[H.key].d : null, gear, tod };
     vis($("ppMode"), expert || beginner); txt($("ppMode"), expert ? "EXPERTENMODUS" : beginner ? "ANFÄNGERMODUS" : "");
     $("ppMode").classList.toggle("beg", beginner);
@@ -12479,8 +12481,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
         jc.timing = jc.timing || { pos: 1, zone: z };
         jc.timing.zone = z; jc.timing.final = lbl;
         if (z === "none") jc.timing.pos = 1;
-        if (!jc.expert && H.era) showToast({ perfect: "Ein Satz wie ein Adler!", good: "Guter Absprung.", early: "Zu früh gesprungen!", late: "Zu spät!", none: "Kein Absprung!" }[z], z === "perfect" ? "voller Abdruck" : z === "good" ? "fast perfekt" : z === "none" ? "vor der Kante tippen" : "kostet Weite", "", 1.5, true);
-        else if (!jc.expert) showToast(lbl, z === "perfect" ? "voller Abdruck" : z === "good" ? "fast perfekt" : z === "none" ? "vor der Kante tippen" : "kostet Weite", z === "perfect" || z === "good" ? "cyan" : "warn", 1.4, true);   // seitlich: der Springer bleibt beim Abheben frei sichtbar
+        if (!jc.expert && !jc.quiet) showToast(lbl, z === "perfect" ? "voller Abdruck" : z === "good" ? "fast perfekt" : z === "none" ? "vor der Kante tippen" : "kostet Weite", z === "perfect" || z === "good" ? "cyan" : "warn", 1.4, true);   // seitlich: der Springer bleibt beim Abheben frei sichtbar
         vib(z === "perfect" ? [15, 40, 15] : z === "good" ? 20 : 45);   // gut: kurz und knackig, daneben: länger
         Snd.takeoff(z);
         jc.speedT = 1.1;
@@ -12494,16 +12495,16 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
         spray(L.x, J.y, L.kind === "fall" ? (H.era ? 120 : 70) : 34, Math.min(9, 3 + L.vt * 0.2), -L.beta);
         if (H.era && L.kind === "fall") { jc.cap28 = { x: J.x, y: J.y + 1.4, vx: J.vx * 0.45, vy: 4.5 + Math.random() * 1.5, a: 0, va: (Math.random() < 0.5 ? -1 : 1) * 620, rest: false }; renderer.look.capOff = true; }
         Snd.touchdown(L.kind, clamp((L.dist - H.K * 0.75) / (H.HS - H.K * 0.75), 0, 1.2), L.why);
-        if (L.kind === "telemark") { showToast(H.era ? "Telemark!" : "TELEMARK!", L.early ? "zu früh vorbereitet" : H.era ? "wie im Lehrbuch" : "saubere Landung", "", 1.6, true); vib([20, 40, 30]); }
-        else if (L.kind === "twofoot" && H.era) { showToast("Ohne Telemark.", L.why === "hard" ? "zu weit: harte Landung" : "die Richter runzeln die Stirn", "warn", 2.2, true); vib(45); }
+        if (jc.quiet) vib(L.kind === "telemark" ? [20, 40, 30] : L.kind === "twofoot" ? 45 : [70, 50, 120]);   // Nostalgie: nur fühlen, Wertung auf der Tafel
+        else if (L.kind === "telemark") { showToast("TELEMARK!", L.early ? "zu früh vorbereitet" : "saubere Landung", "", 1.6, true); vib([20, 40, 30]); }
         else if (L.kind === "twofoot") { showToast("OHNE TELEMARK", L.why === "hard" ? "zu weit: harte Landung" : L.why === "late" ? "zu spät getippt" : L.why === "roll" ? "zu schräg aufgesetzt" : "nicht zur Landung getippt", "warn", 2.2, true); vib(45); }
         else {
           const cw = J.crashWhy;
           const sub = cw === "roll" ? "Balance verloren" : cw === "rollLand" ? "schräg aufgesetzt" : J.noseDive ? "zu viel Vorlage" : (L.dtL != null && L.dtL < 0.12 ? "zu spät getippt" : "zu harte Landung");
-          showToast(H.era ? "Sturz!" : "STURZ", sub, "warn", 2.4, true); vib([70, 50, 120]);
+          showToast("STURZ", sub, "warn", 2.4, true); vib([70, 50, 120]);
         }
         txt(el.distVal, fmt1(L.dist) + " m");
-        if (ctxMode === "training" && !jc.beginner && L.kind !== "fall" && (jc.prevBest == null || L.dist > jc.prevBest)) { vis(el.distChip, true); txt(el.distChip, "NEUE BESTWEITE"); }
+        if (ctxMode === "training" && !jc.beginner && !jc.quiet && L.kind !== "fall" && (jc.prevBest == null || L.dist > jc.prevBest)) { vis(el.distChip, true); txt(el.distChip, "NEUE BESTWEITE"); }
         if (ctxMode !== "training" && jc.toLead != null && L.kind !== "fall" && L.dist >= jc.toLead) { vis(el.distChip, true); txt(el.distChip, ctxMode === "chal" ? (chal.grp && chal.board[0] && chal.board[0].me ? "WEITER ALS DEIN BESTER" : `WEITER ALS ${chal.n}`) : jc.duel ? "ÜBER DER DUELL-LINIE" : "ÜBER DER FÜHRUNGSLINIE"); }
       }
       if (ev.type === "stopped") { jc.doneT = 0; Snd.stopped(J.landing ? J.landing.kind : null); }
@@ -12746,7 +12747,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       const pos = jc.timing ? jc.timing.pos : clamp((0.5 - tauEdge) / 0.5, 0, 1);
       el.timingMark.style.left = (pos * 100).toFixed(1) + "%";
       const z = jc.timing ? (jc.timing.final || { perfect: "PERFEKT", good: "GUT", early: "ZU FRÜH", late: "ZU SPÄT", none: "" }[jc.timing.zone]) : "";
-      txt(el.timingLbl, z);
+      txt(el.timingLbl, jc && jc.quiet ? "" : z);
       el.timingLbl.classList.toggle("bad", !!(jc.timing && !["perfect", "good"].includes(jc.timing.zone)));
     }
     let pill = null;
@@ -12756,6 +12757,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     }
     if (jc && live && jc.freeze) pill = jc.freeze === "takeoff" ? "DRÜCKEN & HALTEN" : jc.freeze === "fly" ? (drag || jc.kb ? null : "FINGER AUFLEGEN") : drag && !drag.hover ? "LOSLASSEN" : "JETZT TIPPEN";
     if (jc && live && jc.beginner && !jc.freeze && ph === "flight" && !drag && J.prepTime == null && !J.noseDive) pill = "FINGER AUFLEGEN";
+    if (jc && jc.quiet) pill = null;   // Nostalgie: keine Einblendungen während des Sprungs
     vis(el.tapPill, !!pill);
     if (pill) pill = dsk(pill);
     if (pill && el.tapPillText.textContent !== pill) el.tapPillText.textContent = pill;
@@ -12856,6 +12858,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       if (!jc.lookT) { jc.lookT = J.t; S.lookNew--; save(); }
       if (J.t - jc.lookT < 3.2) hint = ["pad", "Neu: Goldene Linien unter den Ski", "perfekte Fluglage", "center"];
     }
+    if (jc && jc.quiet) hint = null;
     vis(el.hint, !!hint);
     el.hint.classList.toggle("raised", !!(live && (showSpeed || showTiming)));   // nicht über Tempo und Absprung-Leiste legen
     if (hint) {
@@ -16784,7 +16787,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     }
   }
   // Winterspiele 1928: Wochenschau-Ebene an, solange man auf der alten Schanze springt oder die Tafel davon sieht
-  let filmOn = false;
+  let filmOn = false, jumpOn = false;
   function setFilm(on) {
     filmOn = on;
     const fx = $("filmFx");
@@ -16803,6 +16806,9 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const dtReal = Math.min(0.1, (now - last) / 1000); last = now; tAnim += dtReal;
     const film = !!(H && H.era) && (mode === "jump" || mode === "result" || mode === "replay");
     if (film !== filmOn) setFilm(film);
+    // während eines Sprungs keine Hinweise von außen (z. B. „Neue Version“); sie kommen danach wieder
+    const inJump = mode === "jump";
+    if (inJump !== jumpOn) { jumpOn = inJump; document.body.classList.toggle("injump", inJump); }
     let st = null, good = false, best = null, jv = null, ghost = null, ghosts = null;
     if (bd && bd.armMenu > 0) { bd.armMenu -= dtReal; if (bd.armMenu <= 0 && mode === "board") renderBoard(); }
     qualityTick(dtReal);
