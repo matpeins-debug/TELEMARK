@@ -246,6 +246,9 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .title-note { position: absolute; right: 24px; bottom: 12px; margin: 0; font-size: 11px; line-height: 14px; color: rgba(245, 237, 218, 0.78); text-shadow: 0 1px 2px rgba(var(--shade-rgb), 0.7); pointer-events: none; }
 .tod-btn { gap: 6px; padding: 0 12px 0 10px; font-weight: 600; font-size: 14px; }
 .tod-btn .ico { color: var(--warn); display: flex; }
+/* Hauptseite: Code der Reihe (öffnet „Deine Figur“ im Reiter Code); der Code selbst steht nicht offen da (Bildschirmfotos) */
+.code-btn { gap: 6px; padding: 0 12px 0 10px; font-weight: 600; font-size: 14px; }
+.code-btn .ico { color: var(--red); display: flex; }
 
 .tut { position: absolute; inset: 0; padding: 24px 32px 22px; display: flex; flex-direction: column; gap: 14px; }
 .tut-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
@@ -1329,7 +1332,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 .cl-leave { align-self: flex-start; flex: none; height: 32px; margin: 8px 0 2px; padding: 0 10px; font-size: 12.5px; }
 .cl-leave.warn { border-color: var(--warn); color: var(--warn); }
 
-/* Cold Medal Games · Fenster „Gestalten“ (pass/pass.css)
+/* Cold Medal Games · Fenster „Deine Figur“ (pass/pass.css)
    Aussehen wie die Menüs des Skispringens: Papier mit Doppelrahmen, Knöpfe wie Druckmarken, Futura für Titel und Knöpfe,
    Buchschrift für Lesetext. Farben und Schriften kommen aus den Variablen des Spiels (alle Spiele der Reihe haben sie),
    sonst gelten die Werte des Skispringens. Nur Klassen mit ps-, damit nichts im Spiel verrutscht. Grundstock für oberflaeche/. */
@@ -1337,12 +1340,12 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   --ps-paper: var(--paper, #F1E7D2); --ps-ink: var(--ink, #1E2734); --ps-ink-deep: var(--ink-deep, #141B25);
   --ps-red: var(--red, #C23B2A); --ps-warn: var(--warn, #D9682B);
   --ps-text: #1E2734; --ps-text-2: #3A4454; --ps-muted: #786D59;
-  --ps-row: rgba(30, 39, 52, 0.055); --ps-row-2: rgba(30, 39, 52, 0.1); --ps-line-2: rgba(30, 39, 52, 0.45);
+  --ps-row: rgba(30, 39, 52, 0.055); --ps-row-2: rgba(30, 39, 52, 0.1); --ps-line: rgba(30, 39, 52, 0.22); --ps-line-2: rgba(30, 39, 52, 0.45);
   --ps-hi: #B23524; --ps-hi-ink: #FBF4E4;
   --ps-display: var(--font-display, "Futura", "Avenir Next Condensed", "Bahnschrift Condensed", "Roboto Condensed", "Arial Narrow", sans-serif);
   --ps-body: var(--font-body, "Iowan Old Style", "Charter", "Georgia", serif);
   --ps-label: var(--font-label, "Futura", "Avenir Next", "Segoe UI", Roboto, Arial, sans-serif);
-  display: flex; flex-direction: column; gap: 7px; box-sizing: border-box;
+  display: flex; flex-direction: column; gap: 10px; box-sizing: border-box;
   width: 760px; max-width: calc(100% - 32px); max-height: calc(100% - 20px); overflow: auto; padding: 14px 20px 16px; touch-action: pan-y;
   color: var(--ps-text); font-family: var(--ps-body); text-align: left;
   background-color: var(--ps-paper);
@@ -1353,15 +1356,14 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 }
 .ps-dialog *, .ps-dialog *::before, .ps-dialog *::after { box-sizing: border-box; }
 .ps-dialog [hidden] { display: none !important; }
-.ps-dialog button, .ps-dialog input, .ps-dialog select { -webkit-tap-highlight-color: transparent; }
-.ps-dialog button:focus-visible, .ps-dialog input:focus-visible, .ps-dialog select:focus-visible { outline: 2px solid var(--ps-hi); outline-offset: 2px; }
+.ps-dialog button, .ps-dialog input, .ps-dialog select, .ps-stage { -webkit-tap-highlight-color: transparent; }
+.ps-dialog button:focus-visible, .ps-dialog input:focus-visible, .ps-dialog select:focus-visible, .ps-stage:focus-visible { outline: 2px solid var(--ps-hi); outline-offset: 2px; }
 
-/* Kopf: Titel in Versalien, Zufall und Fertig */
+/* Kopf: Titel in Versalien, rechts nur „Fertig“ */
 .ps-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .ps-title { margin: 0; font-family: var(--ps-display); font-style: normal; font-weight: 800; font-size: 32px; line-height: 34px;
   letter-spacing: 0.015em; text-transform: uppercase; color: var(--ps-ink); text-wrap: balance; }
-.ps-head-btns { display: flex; gap: 8px; }
-.ps-btn { display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 44px; padding: 0 16px; margin: 0;
+.ps-btn { display: flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 18px; margin: 0;
   border-radius: 4px; font-family: var(--ps-display); font-weight: 700; font-size: 19px; letter-spacing: 0.07em; text-transform: uppercase;
   white-space: nowrap; cursor: pointer; }
 .ps-btn svg { display: block; flex: none; }
@@ -1369,70 +1371,100 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   box-shadow: inset 0 0 0 2px var(--ps-red), inset 0 0 0 3px rgba(251, 244, 228, 0.5), 0 3px 0 var(--ps-ink-deep); }
 .ps-btn-2 { background: var(--ps-paper); color: var(--ps-ink); border: 2px solid var(--ps-ink-deep); box-shadow: 0 3px 0 var(--ps-ink-deep); }
 .ps-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ps-ink-deep); }
+.ps-btn:disabled { opacity: 0.55; cursor: default; }
 
-/* Vorschau links, Wahl rechts */
+/* links die Figur (antippen wechselt die Haltung), rechts die Reiter */
 .ps-grid { display: grid; grid-template-columns: 268px minmax(0, 1fr); gap: 20px; align-items: start; }
-.ps-left { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-.ps-stage { height: 200px; border-radius: 14px; overflow: hidden; border: 1px solid var(--ps-row-2); }
+.ps-left { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.ps-stage { height: 236px; border-radius: 4px; overflow: hidden; border: 2px solid var(--ps-ink-deep); background: #E9E4D3; cursor: pointer;
+  box-shadow: 0 3px 0 rgba(20, 27, 37, 0.35); }
+.ps-stage:active { transform: translateY(1px); box-shadow: 0 2px 0 rgba(20, 27, 37, 0.35); }
 .ps-canvas { display: block; width: 100%; height: 100%; }
-.ps-opts { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ps-cap { margin: 0; font-family: var(--ps-body); font-size: 12.5px; line-height: 16px; color: var(--ps-muted); text-align: center; }
+.ps-opts { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 
-/* Zeilen, Umschalter, Farbfelder, Eingaben */
+/* Reiter über die ganze Breite */
+.ps-seg { display: flex; flex-shrink: 0; border: 2px solid var(--ps-line-2); border-radius: 4px; overflow: hidden; }
+.ps-seg button { height: 34px; margin: 0; padding: 0 10px; border: none; border-radius: 0; background: transparent; color: var(--ps-text-2);
+  font-family: var(--ps-display); font-weight: 700; font-size: 16px; letter-spacing: 0.04em; cursor: pointer; }
+.ps-seg button + button { border-left: 1px solid var(--ps-line); }
+.ps-seg button[aria-checked="true"] { background: var(--ps-hi); color: var(--ps-hi-ink); }
+.ps-tabs { align-self: stretch; border-color: var(--ps-ink-deep); }
+.ps-tabs button { flex: 1 1 auto; padding: 0 8px; }
+.ps-tabbox { display: flex; flex-direction: column; gap: 6px; }
+
+/* Zeilen, Farbfelder, Eingaben */
 .ps-row { display: flex; align-items: center; justify-content: flex-start; gap: 12px; min-height: 32px; }
-.ps-lbl { min-width: 92px; font-size: 15px; font-weight: 600; color: var(--ps-text-2); white-space: normal; }
+.ps-lbl { flex: none; width: 92px; font-size: 15px; font-weight: 600; color: var(--ps-text-2); white-space: normal;
+  -webkit-hyphens: auto; hyphens: auto; overflow-wrap: break-word; }
 .ps-row-wrap { align-items: flex-start; }
 .ps-row-wrap .ps-lbl { padding-top: 7px; }
-.ps-seg { display: flex; flex-shrink: 0; border: 2px solid var(--ps-line-2); border-radius: 4px; overflow: hidden; }
-.ps-seg button { height: 36px; margin: 0; padding: 0 10px; border: none; border-radius: 0; background: transparent; color: var(--ps-text-2);
-  font-family: var(--ps-display); font-weight: 700; font-size: 16px; letter-spacing: 0.05em; cursor: pointer; }
-.ps-seg button[aria-checked="true"] { background: var(--ps-hi); color: var(--ps-hi-ink); }
-.ps-seg-s button { height: 26px; padding: 0 9px; font-size: 13px; }
-.ps-tabs { align-self: flex-start; margin: 0 0 2px; }
-.ps-poses button { flex: 1; padding: 0 4px; font-size: 14px; letter-spacing: 0.02em; }
-.ps-tabbox { display: flex; flex-direction: column; gap: 2px; }
 .ps-swatches { display: flex; flex-wrap: wrap; gap: 5px 7px; max-width: calc(var(--ps-per, 8) * 39px - 7px); }
 .ps-swatch { width: 32px; height: 32px; margin: 0; padding: 0; border-radius: 16px; border: 2px solid transparent; cursor: pointer;
   box-shadow: 0 0 0 1px rgba(30, 39, 52, 0.18) inset; }
 .ps-swatch[aria-checked="true"] { border-color: var(--ps-text); box-shadow: 0 0 0 2px rgba(17, 25, 36, 0.9) inset; }
 .ps-dim .ps-swatches { opacity: 0.35; }
-.ps-name, .ps-select { height: 38px; margin: 0; padding: 0 12px; border-radius: 3px; border: 1px solid var(--ps-line-2); background: var(--ps-row);
+.ps-name, .ps-select, .ps-input { height: 38px; margin: 0; padding: 0 12px; border-radius: 3px; border: 1px solid var(--ps-line-2); background: var(--ps-row);
   color: var(--ps-text); font-family: var(--ps-display); font-weight: 700; font-size: 19px; letter-spacing: 0.04em; }
-.ps-name { flex: 1; min-width: 0; width: auto; text-transform: uppercase; -webkit-user-select: text; user-select: text; }
+.ps-name, .ps-input { flex: 1; min-width: 0; width: auto; text-transform: uppercase; -webkit-user-select: text; user-select: text; }
 .ps-name.ps-mixed { text-transform: none; }
-.ps-name::placeholder { color: var(--ps-muted); opacity: 1; }
+.ps-name::placeholder, .ps-input::placeholder { color: var(--ps-muted); opacity: 1; text-transform: none; letter-spacing: 0.02em; }
 .ps-select option { background: #FBF4E4; color: #1E2734; }
 .ps-id { gap: 10px; }
 .ps-id .ps-nation { flex: none; width: 172px; }
 .ps-row-sel { gap: 10px; }
 .ps-row-sel .ps-select { flex: 1; min-width: 0; width: auto; }
 .ps-need { outline: 3px solid var(--ps-warn); outline-offset: 1px; }
-.ps-hint { margin: 6px 0 0; max-width: 400px; font-family: var(--ps-body); font-size: 12.5px; line-height: 17px; color: var(--ps-muted); }
+.ps-hint { margin: 2px 0 0; max-width: 420px; font-family: var(--ps-body); font-size: 12.5px; line-height: 17px; color: var(--ps-muted); }
+.ps-plain { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 32px; margin: 0; padding: 0 10px; border-radius: 4px;
+  border: 2px solid var(--ps-line-2); background: transparent; color: var(--ps-text); font-family: var(--ps-label); font-weight: 700; font-size: 13px;
+  letter-spacing: 0.04em; cursor: pointer; }
+.ps-plain svg { display: block; flex: none; }
+.ps-random { margin-left: auto; width: 38px; height: 38px; padding: 0; justify-content: center; }
 
 /* erster Start: Name oder als Gast */
-.ps-ask { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: -4px 0 0;
+.ps-ask { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: -2px 0 2px;
   font-family: var(--ps-body); font-size: 12.5px; line-height: 16px; color: var(--ps-muted); }
 .ps-warn { color: var(--ps-warn); font-weight: 600; }
-.ps-plain { flex: none; height: 30px; margin: 0; padding: 0 10px; border-radius: 4px; border: 2px solid var(--ps-line-2); background: transparent;
-  color: var(--ps-text); font-family: var(--ps-label); font-weight: 700; font-size: 13px; letter-spacing: 0.04em; cursor: pointer; }
 
-/* eigene Ebene (CMPass.ui.open) für Spiele ohne eigene Ebenen; schmale Bildschirme: Vorschau über der Wahl */
+/* Reiter Code */
+.ps-codebox { gap: 7px; }
+.ps-code-top { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; min-height: 36px; }
+.ps-code-val { flex: 1; min-width: 0; font-family: var(--ps-display); font-weight: 800; font-size: 26px; line-height: 30px; letter-spacing: 0.1em;
+  color: var(--ps-ink); white-space: nowrap; font-variant-numeric: tabular-nums; -webkit-user-select: text; user-select: text; }
+.ps-code-val.ps-none { font-family: var(--ps-body); font-weight: 400; font-size: 15px; letter-spacing: 0; color: var(--ps-muted); }
+.ps-code-st { margin: 0; }
+.ps-codebox .ps-btn { height: 38px; padding: 0 14px; font-size: 16px; }
+.ps-code-save { align-self: flex-start; }
+.ps-sep { display: flex; align-items: center; gap: 10px; margin: 4px 0 0; font-family: var(--ps-label); font-weight: 700; font-size: 11px;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--ps-muted); }
+.ps-sep::after { content: ""; flex: 1; height: 1px; background: var(--ps-line); }
+.ps-code-row { gap: 10px; }
+.ps-code-in { letter-spacing: 0.12em; }
+.ps-code-res { margin: 0; }
+.ps-code-ok { gap: 10px; }
+
+/* eigene Ebene (CMPass.ui.open) für Spiele ohne eigene Ebenen; schmale Bildschirme: Figur über den Reitern */
 .ps-screen { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 10px;
   background: rgba(17, 25, 36, 0.55); }
 .ps-screen[hidden] { display: none; }
 @media (max-width: 640px) {
   .ps-screen .ps-dialog { width: 100%; max-width: 100%; max-height: 100%; padding: 12px 14px 14px; }
-  .ps-screen .ps-head { flex-wrap: wrap; gap: 8px; }
-  .ps-screen .ps-head-btns { margin-left: auto; }
   .ps-screen .ps-title { font-size: 24px; line-height: 27px; }
-  .ps-screen .ps-btn { height: 40px; padding: 0 12px; font-size: 17px; }
+  .ps-screen .ps-head .ps-btn { height: 40px; padding: 0 14px; font-size: 17px; }
   .ps-screen .ps-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
-  .ps-screen .ps-stage { height: 170px; }
-  .ps-screen .ps-lbl { min-width: 66px; }
-  .ps-screen .ps-name, .ps-screen .ps-select { padding: 0 8px; font-size: 17px; }
+  .ps-screen .ps-stage { height: 190px; }
+  .ps-screen .ps-row { gap: 8px; }
+  .ps-screen .ps-lbl { width: 60px; }
+  .ps-screen .ps-seg button { padding: 0 7px; }
+  .ps-screen .ps-random { width: 36px; }
+  .ps-screen .ps-swatches { gap: 5px; max-width: calc(var(--ps-per, 8) * 33px - 5px); }
+  .ps-screen .ps-swatch { width: 28px; height: 28px; border-radius: 14px; }
+  .ps-screen .ps-name, .ps-screen .ps-select, .ps-screen .ps-input { padding: 0 8px; font-size: 17px; }
   .ps-screen .ps-id .ps-nation { width: 150px; }
-  .ps-screen .ps-ask { margin: 2px 0 0; }
+  .ps-screen .ps-code-val { flex: none; font-size: 21px; letter-spacing: 0.04em; }
 }
-@media (prefers-reduced-motion: reduce) { .ps-btn:active { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .ps-btn:active, .ps-stage:active { transform: none; } }
 
 </style>
 </head>
@@ -1578,6 +1610,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   <button type="button" id="btnInfo" class="title-note"><span id="verTxt">Version</span> · Fanspiel · <u>Info &amp; Datenschutz</u></button>
   <div class="title-top">
     <button type="button" id="btnJumper" class="chip-btn" aria-label="Deine Figur bearbeiten"><span id="tjFlag" class="flag"></span><span id="tjName">MAT</span><span class="ico ico-muted" data-icon="pencil" data-size="16"></span></button>
+    <button type="button" id="btnCode" class="chip-btn code-btn" aria-label="Dein Code" hidden><span class="ico" data-icon="key" data-size="20"></span><span>Code</span></button>
     <button type="button" id="btnTod" class="chip-btn tod-btn" aria-label="Tageszeit wechseln"><span id="todIco" class="ico" data-icon="moon" data-size="20"></span><span id="todLbl">Abend</span></button>
     <button type="button" id="btnRecords" class="icon-btn" aria-label="Deine Rekorde"><span class="ico" data-icon="trophy"></span></button>
     <button type="button" id="btnSettings" class="icon-btn" aria-label="Einstellungen"><span class="ico" data-icon="sliders"></span></button>
@@ -1948,7 +1981,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   </div>
 </section>
 
-<!-- ============ Springer: das Fenster „Gestalten“ aus dem Pass der Reihe (../pass/pass-ui.js füllt es) ============ -->
+<!-- ============ Figur: das Fenster „Deine Figur“ aus dem Pass der Reihe (../pass/pass-ui.js füllt es; Reiter Code nur in der Web-Fassung) ============ -->
 <section id="scrJumper" class="screen screen-dim2 center" hidden></section>
 
 <!-- ============ Einstellungen ============ -->
@@ -8470,7 +8503,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
  * Eine Figur für alle Spiele der Reihe (Mat, 12.11.2026): Name, Land, Aussehen, Code und Taler liegen im Pass, nicht im
  * Spielstand eines einzelnen Spiels. Alle Spiele liegen unter matpeins-debug.github.io und teilen den Browser-Speicher
  * (Schlüssel „cm.pass“); auf einem anderen Gerät holt man den Pass mit dem persönlichen Code (Schema cm, RPCs public.cm_pass_*).
- * Das Fenster zum Gestalten liegt in pass-ui.js. Regeln: nur abwärtskompatibel ändern, unbekannte Felder bleiben erhalten,
+ * Das Fenster „Deine Figur“ liegt in pass-ui.js. Regeln: nur abwärtskompatibel ändern, unbekannte Felder bleiben erhalten,
  * der Code geht nie im Klartext in die Daten (der Server speichert nur seinen Prüfwert).
  *
  * Format (v 1): { v, code, name, nation, look: { hair, hairC, beard, skin, suit, accent, pattern }, taler, at, edited }
@@ -8636,26 +8669,32 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     newCode, codeOk, fmtCode, parseCode, ensureCode, online };
 })(typeof window !== "undefined" ? window : globalThis);
 
-/* Cold Medal Games · Fenster „Gestalten“ (pass/pass-ui.js, CMPass.ui)
+/* Cold Medal Games · Fenster „Deine Figur“ (pass/pass-ui.js, CMPass.ui)
  *
- * Ein Fenster für alle Spiele der Reihe: Vorschau der Figur, Name und Land, Person (Frisur, Bart, Haare, Haut), Farben
- * (Anzug, Muster, Zweitfarbe) und eigene Reiter der Sportart (im Skispringen: Helm, Brille, Ski). Was man hier wählt, liegt
- * im Pass und gilt in jedem Spiel. Aussehen wie das Skispringen (Papier, Druckmarken), Klassen mit dem Präfix ps- (pass.css).
- * Braucht figur.js und pass.js.
+ * Ein Fenster für alle Spiele der Reihe: links die Figur auf hellem Plakatgrund (antippen wechselt die Haltung), rechts Reiter:
+ * Person (Name, Land, Frisur, Bart, Haare, Haut), Farben (Anzug, Muster, Zweitfarbe, Zufall), eigene Reiter der Sportart
+ * (im Skispringen: Ausrüstung) und Code (der persönliche Code der Reihe: zeigen, kopieren, online sichern, auf einem anderen
+ * Gerät holen). Was man hier wählt, liegt im Pass und gilt in jedem Spiel. Aussehen wie das Skispringen (Papier, Druckmarken),
+ * Klassen mit dem Präfix ps- (pass.css). Braucht figur.js und pass.js.
  *
  * const ui = CMPass.ui.mount(host, opts)   host: leeres Element, das das Spiel ein- und ausblendet (Ebene, Maßstab)
- *   opts.title        Überschrift, z. B. „Dein Springer“      opts.kit     Kit der Figur in der Vorschau (figur.js KITS)
+ *   opts.title        Überschrift, Standard „Deine Figur“      opts.kit     Kit der Figur in der Vorschau (figur.js KITS)
  *   opts.nations      [[Kürzel, Name], …] (sonst CMPass.NATIONS) opts.upper  Namen in Versalien (Standard ja)
- *   opts.labels       { suit: "Anzug", accent: "Zweitfarbe" }  opts.personHint  Satz unter Person
+ *   opts.labels       { suit: "Anzug", accent: "Zweitfarbe" }  opts.personHint  kurzer Satz unter Person
  *   opts.preview      eigene Vorschau: { poses: [[id, Name], …], pose, personPose, colorPose, draw(ctx, w, h, t, pose, look) }
+ *                     (Hintergrund wie hier: CMPass.ui.backdrop(ctx, w, h))
  *   opts.tabs         eigene Reiter: [{ id, label, pose, rows: [Zeile, …] }], Zeile:
- *                       { type: "swatches", label, list: [[Wert, Name, Farbe?], …], get, set, dim? }
- *                       { type: "seg", label, list: [[Wert, Name], …], get, set }
+ *                       { type: "swatches", label, list: [[Wert, Name, Farbe?], …], get, set, dim?, hide? }
+ *                       { type: "seg", label, list: [[Wert, Name], …], get, set, hide? }
  *                       { type: "selects", label, items: [{ list, get, set, aria }] }      { type: "hint", text }
+ *   opts.code         Reiter Code: { status() → { code?, text, save?, load? }, save(), load(code) → { text, apply? } }
+ *                     status: code = der gezeigte Code (sonst der im Pass, null = „noch keiner“), save = Beschriftung des Knopfs
+ *                     zum Sichern (ohne: kein Knopf), load: false blendet „Auf einem anderen Gerät“ aus. Fehler als Error mit Text.
+ *                     Für Spiele nur mit Pass: CMPass.ui.codeVia(rpc). Ohne opts.code kein Reiter Code.
  *   opts.random()     zusätzlich bei „Zufall“ (Ausrüstung der Sportart)     opts.onDone()  nach „Fertig“
  *   opts.defaultName  Name, wenn keiner eingegeben ist         opts.dpr()   Pixeldichte der Vorschau
  * ui.open({ ask, title, tab })   ask: erster Start, ohne Namen geht es nicht weiter (oder „Als Gast spielen“)
- * ui.refresh() · ui.done() → false, solange ein Name fehlt · ui.close() · ui.el (das Fenster)
+ * ui.refresh() · ui.done() → false, solange ein Name fehlt · ui.close() · ui.setTab(id) · ui.el (das Fenster)
  * CMPass.ui.open(opts) legt selbst eine Ebene über die Seite (für Spiele ohne eigene Ebenen) und zeigt das Fenster.
  */
 (function (root) {
@@ -8664,16 +8703,33 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   let uid = 0;
   const mk = (tag, cls, text) => { const e = doc.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
   const at = (e, a) => { for (const k of Object.keys(a)) e.setAttribute(k, a[k]); return e; };
-  const DICE = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true">' +
+  const DICE = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true">' +
     '<rect x="3.5" y="3.5" width="17" height="17" rx="2.5"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor" stroke="none"/>' +
     '<circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor" stroke="none"/></svg>';
   // Vorschau ohne eigene Zeichnung des Spiels: die Figur steht, jubelt, winkt oder tanzt (Gesten aus figur.js)
   const DEF_POSES = [["stand", "Stehen"], ["jubel", "Jubel"], ["winken", "Winken"], ["charleston", "Tanz"]];
+  const errText = (e) => (e && e.message ? e.message : "Hat nicht geklappt. Bitte später noch einmal.");
+
+  // Hintergrund der Vorschau: heller Plakathimmel mit blassen Bergen über Schnee. Hell, damit jede Farbe gut steht (auch
+  // dunkle Anzüge und Haare); die Figur hat eine dunkle Kontur. Für eigene Vorschauen der Spiele: CMPass.ui.backdrop(…).
+  function backdrop(c, w, h, o) {
+    o = o || {};
+    const g = c.createLinearGradient(0, 0, 0, h);
+    g.addColorStop(0, "#C7DAE5"); g.addColorStop(0.6, "#E9E4D3"); g.addColorStop(1, "#F1E7D2");
+    c.fillStyle = g; c.fillRect(0, 0, w, h);
+    c.fillStyle = "rgba(35,70,107,0.12)";
+    c.beginPath(); c.moveTo(0, h * 0.64);
+    for (const [x, y] of [[0.14, 0.47], [0.27, 0.58], [0.45, 0.39], [0.63, 0.55], [0.8, 0.44], [1, 0.6]]) c.lineTo(w * x, h * y);
+    c.lineTo(w, h); c.lineTo(0, h); c.closePath(); c.fill();
+    if (o.ground !== false) {
+      const y = o.groundY != null ? o.groundY : h - 12;
+      c.fillStyle = "#FBF8F1"; c.fillRect(0, y, w, h - y);
+      c.fillStyle = "rgba(30,39,52,0.28)"; c.fillRect(0, y, w, 1.5);
+    }
+  }
 
   function defaultDraw(c, w, h, t, pose, look, kit) {
-    const g = c.createLinearGradient(0, 0, 0, h);
-    g.addColorStop(0, "#1B3157"); g.addColorStop(1, "#0B1526");
-    c.fillStyle = g; c.fillRect(0, 0, w, h);
+    backdrop(c, w, h);
     const F = root.CMFigur;
     if (!F) return;
     let p = F.POSES.stand, lift = 0, mood = "ruhig";
@@ -8682,12 +8738,11 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       const G = F.GESTEN[pose], r = G && F.gesture(pose, G.loop ? t : t % (G.dauer + 1.4));
       if (r) { p = r.pose; lift = r.lift; mood = r.mood; }
     }
-    const s = Math.min(w / 64, (h - 26) / 96), y = h - 14;
-    c.fillStyle = "rgba(230,237,246,0.16)"; c.fillRect(w / 2 - 30 * s, y, 60 * s, 3);
-    F.draw(c, { x: w / 2, y, s, dir: 1, pose: p, lift, look: F.cleanLook(look), kit: kit || "plain", face: true, mood });
+    const s = Math.min(w / 64, (h - 26) / 96);
+    F.draw(c, { x: w / 2, y: h - 13, s, dir: 1, pose: p, lift, look: F.cleanLook(look), kit: kit || "plain", face: true, mood });
   }
 
-  // Eine Zeile im Fenster; sync() stellt den aktuellen Wert dar
+  // Eine Zeile im Fenster; sync() stellt den aktuellen Wert dar (und blendet aus, wenn hide() es will)
   function row(spec, changed) {
     if (spec.type === "hint") {
       const p = mk("p", "ps-hint", typeof spec.text === "function" ? spec.text() : spec.text);
@@ -8695,6 +8750,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     }
     const r = mk("div", "ps-row");
     r.appendChild(mk("span", "ps-lbl", spec.label));
+    const hide = () => { r.hidden = !!(spec.hide && spec.hide()); };
     if (spec.type === "swatches") {
       const box = at(mk("div", "ps-swatches"), { role: "radiogroup", "aria-label": spec.aria || spec.label });
       // mehr als acht Felder: gleich lange Reihen (10 → 5 + 5, 16 → 8 + 8)
@@ -8705,14 +8761,14 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       });
       box.addEventListener("click", (e) => { const b = e.target.closest(".ps-swatch"); if (b && box.contains(b)) { spec.set(b._v); changed(spec); } });
       r.appendChild(box);
-      return { el: r, sync() { const v = spec.get(); for (const b of bs) b.setAttribute("aria-checked", String(b._v === v)); r.classList.toggle("ps-dim", !!(spec.dim && spec.dim())); } };
+      return { el: r, sync() { hide(); const v = spec.get(); for (const b of bs) b.setAttribute("aria-checked", String(b._v === v)); r.classList.toggle("ps-dim", !!(spec.dim && spec.dim())); } };
     }
     if (spec.type === "seg") {
       const box = at(mk("div", "ps-seg"), { role: "radiogroup", "aria-label": spec.aria || spec.label });
       const bs = spec.list.map(([v, name]) => { const b = at(mk("button", null, name), { type: "button", role: "radio", "aria-checked": "false" }); b._v = v; box.appendChild(b); return b; });
       box.addEventListener("click", (e) => { const b = e.target.closest("button"); if (b && box.contains(b)) { spec.set(b._v); changed(spec); } });
       r.appendChild(box);
-      return { el: r, sync() { const v = spec.get(); for (const b of bs) b.setAttribute("aria-checked", String(b._v === v)); } };
+      return { el: r, sync() { hide(); const v = spec.get(); for (const b of bs) b.setAttribute("aria-checked", String(b._v === v)); } };
     }
     // mehrere Auswahllisten in einer Zeile (Frisur und Bart)
     r.classList.add("ps-row-sel");
@@ -8723,7 +8779,70 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       r.appendChild(s);
       return [s, it];
     });
-    return { el: r, sync() { for (const [s, it] of sels) s.value = String(it.get()); } };
+    return { el: r, sync() { hide(); for (const [s, it] of sels) s.value = String(it.get()); } };
+  }
+
+  // Reiter Code: der persönliche Code der Reihe (zeigen, kopieren), online sichern, auf einem anderen Gerät holen
+  function codeTab(code, stop) {
+    const box = mk("div", "ps-tabbox ps-codebox");
+    const top = mk("div", "ps-code-top"), val = mk("b", "ps-code-val");
+    const bCopy = at(mk("button", "ps-plain", "Kopieren"), { type: "button" });
+    top.append(mk("span", "ps-lbl", "Dein Code"), val, bCopy);
+    const st = mk("p", "ps-hint ps-code-st");
+    const bSave = at(mk("button", "ps-btn ps-btn-2 ps-code-save"), { type: "button" });
+    const sep = mk("p", "ps-sep", "Auf einem anderen Gerät");
+    const inRow = mk("div", "ps-row ps-code-row");
+    const inCode = at(mk("input", "ps-input ps-code-in"), { type: "text", maxlength: "16", autocomplete: "off", spellcheck: "false", "aria-label": "Code eingeben", placeholder: "Code eingeben" });
+    const bGet = at(mk("button", "ps-btn ps-btn-2 ps-code-get", "Holen"), { type: "button" });
+    inRow.append(inCode, bGet);
+    const res = mk("p", "ps-hint ps-code-res"); res.hidden = true;
+    const okRow = mk("div", "ps-row ps-code-ok"); okRow.hidden = true;
+    const bYes = at(mk("button", "ps-btn ps-btn-1 ps-code-yes", "Laden"), { type: "button" }), bNo = at(mk("button", "ps-plain", "Abbrechen"), { type: "button" });
+    okRow.append(bYes, bNo);
+    box.append(top, st, bSave, sep, inRow, res, okRow);
+    let pending = null, busy = false, shownCode = "";
+    // Rückfrage zum Laden: dann nur noch sie (der obere Teil hat Pause), damit alles ins Fenster passt
+    const ask = (on) => { okRow.hidden = !on; top.hidden = st.hidden = on; if (on) bSave.hidden = true; else sync(); };
+    function sync() {
+      const s = (code.status && code.status()) || {}, c = "code" in s ? s.code : P.get().code;
+      shownCode = P.codeOk(c) ? c : "";
+      val.textContent = shownCode ? P.fmtCode(shownCode) : "noch keiner";
+      val.classList.toggle("ps-none", !shownCode);
+      bCopy.hidden = !shownCode;
+      st.textContent = s.text || "";
+      bSave.textContent = s.save || ""; bSave.hidden = !s.save;
+      // Holen geht nur, wenn das Spiel online ist (s.load === false: aus oder keine Verbindung möglich)
+      const canLoad = s.load !== false;
+      sep.hidden = inRow.hidden = !canLoad;
+      if (!canLoad) { pending = null; okRow.hidden = true; res.hidden = true; }
+      if (pending) { top.hidden = st.hidden = bSave.hidden = true; } else { top.hidden = st.hidden = false; }
+    }
+    bCopy.addEventListener("click", async () => {
+      const t = P.fmtCode(shownCode);
+      try { await root.navigator.clipboard.writeText(t); bCopy.textContent = "Kopiert"; }
+      catch (e) { const rg = doc.createRange(); rg.selectNodeContents(val); const sel = root.getSelection(); sel.removeAllRanges(); sel.addRange(rg); bCopy.textContent = "Markiert"; }
+      setTimeout(() => { bCopy.textContent = "Kopieren"; }, 1800);
+    });
+    bSave.addEventListener("click", async () => {
+      if (busy) return;
+      busy = true; bSave.disabled = true;
+      try { await code.save(); sync(); } catch (e) { sync(); st.textContent = errText(e); }
+      busy = false; bSave.disabled = false;
+    });
+    bGet.addEventListener("click", async () => {
+      const c = P.parseCode(inCode.value);
+      if (pending) { pending = null; ask(false); }
+      res.hidden = false; res.classList.remove("ps-warn");
+      if (!c) { res.textContent = "Kein gültiger Code: 12 Zeichen, zum Beispiel K7PM-3QXD-9TRA."; res.classList.add("ps-warn"); return; }
+      res.textContent = "Suche …"; bGet.disabled = true;
+      try { const r = await code.load(c); res.textContent = r.text; if (r.apply) { pending = r.apply; ask(true); } }
+      catch (e) { res.textContent = errText(e); res.classList.add("ps-warn"); }
+      bGet.disabled = false;
+    });
+    bYes.addEventListener("click", () => { const f = pending; if (!f) return; pending = null; ask(false); res.hidden = true; inCode.value = ""; f(); });
+    bNo.addEventListener("click", () => { pending = null; ask(false); res.hidden = true; inCode.value = ""; });
+    inCode.addEventListener("keydown", (e) => { if (e.key === "Enter") bGet.click(); stop(e); });
+    return { box, sync };
   }
 
   function mount(host, opts) {
@@ -8733,24 +8852,29 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const lbl = Object.assign({ suit: "Anzug", accent: "Zweitfarbe" }, opts.labels || {});
     const look = () => P.get().look;
     const setLook = (patch) => P.set({ look: patch, edited: true }, "ui");
-    let tab = "person", pose = pv.personPose || pv.pose || pv.poses[0][0], ask = false, shown = false, raf = 0, openedAt = 0;
+    const personPose = pv.personPose || pv.pose || pv.poses[0][0];
+    let tab = "person", pose = personPose, ask = false, shown = false, raf = 0, openedAt = 0;
+    // Tasten beim Tippen nicht ans Spiel weitergeben, außer Escape (schließt das Fenster)
+    const stop = (e) => { if (e.key !== "Escape") e.stopPropagation(); };
 
-    // ---------------------------------------------------------------- Aufbau
+    // ---------------------------------------------------------------- Aufbau: Kopf nur Titel und Fertig
     const dlg = at(mk("div", "ps-dialog"), { role: "dialog", "aria-labelledby": "psTitle" + id });
     const head = mk("div", "ps-head"), title = at(mk("h2", "ps-title", opts.title || "Deine Figur"), { id: "psTitle" + id });
-    const btns = mk("div", "ps-head-btns");
-    const bRand = at(mk("button", "ps-btn ps-btn-2 ps-random"), { type: "button" });
-    bRand.innerHTML = DICE; bRand.appendChild(mk("span", null, "Zufall"));
     const bDone = at(mk("button", "ps-btn ps-btn-1 ps-done", "Fertig"), { type: "button" });
-    btns.append(bRand, bDone); head.append(title, btns);
+    head.append(title, bDone);
 
+    // links: die Figur; antippen wechselt die Haltung
     const grid = mk("div", "ps-grid"), left = mk("div", "ps-left"), opt = mk("div", "ps-opts");
-    const stage = mk("div", "ps-stage"), cv = at(mk("canvas", "ps-canvas"), { role: "img", "aria-label": "Vorschau deiner Figur" });
-    stage.appendChild(cv); left.appendChild(stage);
-    const segPose = at(mk("div", "ps-seg ps-poses"), { role: "radiogroup", "aria-label": "Haltung in der Vorschau" });
-    const poseBtns = pv.poses.map(([v, name]) => { const b = at(mk("button", null, name), { type: "button", role: "radio", "aria-checked": "false" }); b._v = v; segPose.appendChild(b); return b; });
-    if (pv.poses.length > 1) left.appendChild(segPose);
+    const stage = at(mk("div", "ps-stage"), { role: "button", tabindex: "0", "aria-label": "Haltung der Figur wechseln" });
+    const cv = at(mk("canvas", "ps-canvas"), { role: "img", "aria-label": "Vorschau deiner Figur" });
+    const cap = mk("p", "ps-cap");
+    stage.appendChild(cv); left.append(stage, cap);
+    const poseName = () => (pv.poses.find((x) => x[0] === pose) || pv.poses[0])[1];
+    const nextPose = () => { const i = pv.poses.findIndex((x) => x[0] === pose); pose = pv.poses[(i + 1) % pv.poses.length][0]; refresh(); };
+    stage.addEventListener("click", nextPose);
+    stage.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); nextPose(); } });
 
+    // Person: Name und Land, dann der Kopf
     const idRow = mk("div", "ps-row ps-id");
     const inName = at(mk("input", "ps-name"), { type: "text", maxlength: "12", autocomplete: "off", spellcheck: "false", "aria-label": "Name", placeholder: "Dein Name" });
     if (!upper) inName.classList.add("ps-mixed");
@@ -8760,16 +8884,15 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const askRow = mk("div", "ps-ask"), askTxt = mk("span", "ps-ask-txt"), bGuest = at(mk("button", "ps-plain", "Als Gast spielen"), { type: "button" });
     askRow.append(askTxt, bGuest); askRow.hidden = true;
     const ASK = "Dein Name steht auf den Tafeln und in den Gruppen, in allen Spielen.";
-
-    // Reiter: Person und Farben gehören zum Pass, weitere bringt die Sportart mit
     const person = [
       { type: "selects", label: "Frisur", head: true, items: [
         { aria: "Frisur", list: F.HAIRS.map((n, i) => [i, n]), get: () => look().hair, set: (v) => setLook({ hair: v }) },
         { aria: "Bart", list: F.BEARDS.map((n, i) => [i, i ? n : "ohne Bart"]), get: () => look().beard, set: (v) => setLook({ beard: v }) }] },
       { type: "swatches", label: "Haare", aria: "Haarfarbe", head: true, list: F.HAIRC.map((c, i) => [i, P.HAIRC_NAMES[i] || "Haarfarbe " + (i + 1), c]), get: () => look().hairC, set: (v) => setLook({ hairC: v }) },
       { type: "swatches", label: "Haut", aria: "Hautton", head: true, list: F.SKIN.map((c, i) => [i, P.SKIN_NAMES[i] || "Hautton " + (i + 1), c]), get: () => look().skin, set: (v) => setLook({ skin: v }) },
-      { type: "hint", text: opts.personHint || "Alle sind gleich gebaut; Frisur und Bart wählst du frei. Deine Figur gilt in allen Spielen von Cold Medal." },
+      { type: "hint", text: opts.personHint || "Deine Figur gilt in allen Spielen von Cold Medal." },
     ];
+    // Farben: die Zweitfarbe erscheint erst, wenn ein Muster sie braucht
     const colors = [
       { type: "swatches", label: lbl.suit, aria: "Farbe: " + lbl.suit, list: P.COLORS, get: () => look().suit, set: (v) => setLook({ suit: v }) },
       { type: "seg", label: "Muster", list: P.PATTERNS, get: () => look().pattern, set: (v) => {
@@ -8777,19 +8900,27 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
         if (v !== "uni" && L.accent === L.suit) patch.accent = L.suit === "#EEF2F7" ? "#262E3B" : "#EEF2F7";   // Muster soll man sehen
         setLook(patch);
       } },
-      { type: "swatches", label: lbl.accent, aria: lbl.accent, list: P.COLORS, get: () => look().accent, set: (v) => setLook({ accent: v }), dim: () => look().pattern === "uni" },
+      { type: "swatches", label: lbl.accent, aria: lbl.accent, list: P.COLORS, get: () => look().accent, set: (v) => setLook({ accent: v }), hide: () => look().pattern === "uni" },
     ];
     const tabs = [{ id: "person", label: "Person", pose: pv.personPose, rows: person }, { id: "farben", label: "Farben", pose: pv.colorPose, rows: colors }]
       .concat((opts.tabs || []).filter((t) => t && t.id && Array.isArray(t.rows)));
-    const segTab = at(mk("div", "ps-seg ps-seg-s ps-tabs"), { role: "radiogroup", "aria-label": "Was du gestaltest" });
-    const tabBtns = tabs.map((t) => { const b = at(mk("button", null, t.label), { type: "button", role: "radio", "aria-checked": "false" }); b._v = t.id; segTab.appendChild(b); return b; });
-    const changed = (spec) => { if (spec.head && pv.personPose) pose = pv.personPose; refresh(); };
+    const changed = (spec) => { if (spec.head) pose = personPose; refresh(); };
     const boxes = tabs.map((t) => {
       const box = mk("div", "ps-tabbox"); box._id = t.id;
+      if (t.id === "person") box.append(idRow, askRow);
       t._rows = t.rows.map((s) => { const r = row(s, changed); box.appendChild(r.el); return r; });
       return box;
     });
-    opt.append(idRow, askRow, segTab, ...boxes);
+    // Zufall gehört zu den Farben (Würfel am Ende der Zeile Muster): Anzug, Muster, Zweitfarbe und die Ausrüstung der Sportart;
+    // die Person bleibt
+    const bRand = at(mk("button", "ps-plain ps-random"), { type: "button", "aria-label": "Zufällige Farben", title: "Zufällige Farben" });
+    bRand.innerHTML = DICE;
+    tabs[1]._rows[1].el.appendChild(bRand);
+    let code = null;
+    if (opts.code) { code = codeTab(opts.code, stop); code.box._id = "code"; boxes.push(code.box); tabs.push({ id: "code", label: "Code", pose: personPose, rows: [], _rows: [] }); }
+    const segTab = at(mk("div", "ps-seg ps-tabs"), { role: "tablist", "aria-label": "Was du gestaltest" });
+    const tabBtns = tabs.map((t) => { const b = at(mk("button", null, t.label), { type: "button", role: "tab", "aria-selected": "false" }); b._v = t.id; segTab.appendChild(b); return b; });
+    opt.append(segTab, ...boxes);
     grid.append(left, opt); dlg.append(head, grid);
     host.appendChild(dlg);
 
@@ -8797,11 +8928,12 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     function refresh() {
       const p = P.get();
       if (doc.activeElement !== selNat) selNat.value = p.nation;
-      for (const b of poseBtns) b.setAttribute("aria-checked", String(b._v === pose));
-      for (const b of tabBtns) b.setAttribute("aria-checked", String(b._v === tab));
+      for (const b of tabBtns) { const on = b._v === tab; b.setAttribute("aria-selected", String(on)); b.setAttribute("aria-checked", String(on)); }
       for (const box of boxes) box.hidden = box._id !== tab;
       for (const t of tabs) if (t.id === tab) for (const r of t._rows) r.sync();
+      if (code && tab === "code") code.sync();
       askRow.hidden = !ask;
+      cap.textContent = pv.poses.length > 1 ? poseName() + " · antippen für eine andere Haltung" : "";
     }
     function setTab(t) {
       tab = tabs.some((x) => x.id === t) ? t : "person";
@@ -8819,7 +8951,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       c.setTransform(dpr, 0, 0, dpr, 0, 0);
       try {
         if (opts.preview && opts.preview.draw) opts.preview.draw(c, cw, ch, t, pose, P.get().look);
-        else defaultDraw(c, cw, ch, t, pose, P.get().look, tab === "person" ? opts.personKit || "plain" : opts.kit);
+        else defaultDraw(c, cw, ch, t, pose, P.get().look, tab === "person" || tab === "code" ? opts.personKit || "plain" : opts.kit);
       } catch (e) { /* eine kaputte Vorschau darf das Fenster nicht stören */ }
     }
     const hidden = () => !host.isConnected || host.hidden || doc.hidden || !cv.offsetParent;
@@ -8837,6 +8969,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     function done() {
       const raw = (inName.value || "").trim().slice(0, 12), typed = P.cleanName(upper ? raw.toUpperCase() : raw);
       if (ask && !typed) {
+        setTab("person");
         inName.classList.add("ps-need"); askTxt.textContent = "Bitte gib einen Namen ein, oder spiel als Gast."; askTxt.classList.add("ps-warn");
         try { inName.focus(); } catch (e) { /* egal */ }
         return false;
@@ -8853,19 +8986,17 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       const suit = pick(P.COLORS);
       let accent = pick(P.COLORS);
       while (accent === suit) accent = pick(P.COLORS);
-      // Zufall wechselt Farben und Ausrüstung; Frisur, Bart, Haare und Haut bleiben (das ist die Person)
       setLook({ suit, accent, pattern: pick(P.PATTERNS) });
       if (opts.random) opts.random();
-      if (tab === "person") setTab("farben"); else refresh();
+      pose = pv.colorPose || pose;
+      refresh();
     }
     bDone.addEventListener("click", () => done());
     bRand.addEventListener("click", () => random());
     bGuest.addEventListener("click", () => { inName.value = upper ? "GAST" : "Gast"; done(); });
-    segPose.addEventListener("click", (e) => { const b = e.target.closest("button"); if (b && segPose.contains(b)) { pose = b._v; refresh(); } });
     segTab.addEventListener("click", (e) => { const b = e.target.closest("button"); if (b && segTab.contains(b)) setTab(b._v); });
     selNat.addEventListener("change", () => P.set({ nation: selNat.value, edited: true }, "ui"));
-    // Tasten beim Tippen nicht ans Spiel weitergeben, außer Escape (schließt das Fenster)
-    inName.addEventListener("keydown", (e) => { if (e.key === "Enter") inName.blur(); if (e.key !== "Escape") e.stopPropagation(); });
+    inName.addEventListener("keydown", (e) => { if (e.key === "Enter") inName.blur(); stop(e); });
     inName.addEventListener("input", () => { if (inName.value.trim()) { inName.classList.remove("ps-need"); askTxt.classList.remove("ps-warn"); askTxt.textContent = ASK; } });
     // Änderungen aus einem anderen Spiel (anderer Tab) oder vom Server gleich zeigen
     P.on((p, src) => { if (src !== "ui") { if (src !== "local" && doc.activeElement !== inName) inName.value = p.name; refresh(); } });
@@ -8878,9 +9009,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
         title.textContent = o.title || opts.title || "Deine Figur";
         inName.value = P.get().name; inName.classList.remove("ps-need");
         askTxt.textContent = ASK; askTxt.classList.remove("ps-warn");
-        setTab(o.tab || "person");
-        if (!(o.tab && tabs.find((x) => x.id === o.tab && x.pose))) pose = pv.personPose || pv.pose || pose;
-        refresh();
+        setTab(ask ? "person" : o.tab || "person");
         shown = true; openedAt = Date.now(); run();
         if (ask) setTimeout(() => { try { inName.focus(); } catch (e) { /* egal */ } }, 60);
       },
@@ -8888,6 +9017,23 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       refresh, done, setTab,
       get tab() { return tab; }, get pose() { return pose; },
       get name() { return inName.value; },
+    };
+  }
+
+  // Reiter Code für Spiele, die nur den Pass online sichern (ohne eigenen Spielstand): rpc wie bei CMPass.online
+  function codeVia(rpc) {
+    return {
+      status() {
+        const p = P.get();
+        return p.code ? { code: p.code, text: "Mit diesem Code holst du deine Figur auf jedes Gerät, in jedem Spiel von Cold Medal. Gib ihn nicht weiter.", save: "Jetzt sichern" }
+          : { code: null, text: "Sichere deine Figur online, dann bekommst du deinen Code. Mit ihm holst du sie auf jedes Gerät.", save: "Online sichern" };
+      },
+      async save() { P.ensureCode(); await P.online.put(rpc); },
+      async load(code) {
+        const p = await P.online.get(rpc, code);
+        if (!p) throw new Error("Zu diesem Code gibt es keine Figur.");
+        return { text: `Figur ${p.name || "ohne Namen"} (${p.nation}). Deine Figur auf diesem Gerät wird ersetzt.`, apply() { P.replace(p, "load"); } };
+      },
     };
   }
 
@@ -8908,7 +9054,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     return own.ui;
   }
 
-  P.ui = { mount, open, DEF_POSES };
+  P.ui = { mount, open, backdrop, codeVia, DEF_POSES };
 })(typeof window !== "undefined" ? window : globalThis);
 
 /* TELEMARK – Canvas-Grafik: Flutlicht-Nacht im flachen Vektorstil, Welt in Metern, Kamera in px/m. */
@@ -11818,7 +11964,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp, FIG = window.CMFigur, PASS = window.CMPass;
-  const VERSION = "0.57.1";
+  const VERSION = "0.58";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -11871,6 +12017,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     sliders: '<path d="M4 6h9"/><path d="M19 6h1"/><circle cx="16" cy="6" r="2.5"/><path d="M4 12h1"/><path d="M11 12h9"/><circle cx="8" cy="12" r="2.5"/><path d="M4 18h11"/><circle cx="18" cy="18" r="2.5"/>',
     share: '<path d="M12 3.5v11"/><path d="M7.8 7.6L12 3.5l4.2 4.1"/><path d="M5.5 12.5v6a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-6"/>',
     lock: '<rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/>',
+    key: '<circle cx="8" cy="15.5" r="4"/><path d="M10.9 12.6L19.5 4"/><path d="M15.5 8l2.6 2.6"/><path d="M13.3 10.2l2 2"/>',
     sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4"/>',
     sunrise: '<path d="M3 18h18"/><path d="M7 18a5 5 0 0 1 10 0"/><path d="M12 7.5v3M5.4 11.4l1.6 1.4M18.6 11.4L17 12.8"/><path d="M5 21.5h14" opacity="0.5"/>',
     moon: '<path d="M19.5 14.6A7.6 7.6 0 0 1 9.4 4.5a7.9 7.9 0 1 0 10.1 10.1z"/>',
@@ -12634,6 +12781,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   }
   function refreshTitle() {
     el.tjFlag.innerHTML = flag(S.nation); txt(el.tjName, S.name || "SPRINGER");
+    vis($("btnCode"), !!ON);
     requestAnimationFrame(fitLogo);
     $("hillSketch").innerHTML = hillSketch(H);
     txt($("hillName"), H.name); txt($("hillSub"), hillSub(H));
@@ -15439,6 +15587,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       S.oat = typeof at === "string" ? at : new Date().toISOString(); saveLocal();
       PASS.online.put(ON.rpc).catch(() => { /* der Pass kommt beim nächsten Sichern mit */ });   // Figur für alle Spiele, unter demselben Code
       if (overlay === "online") fillOnline();
+      else if (overlay === "jumper") passUi.refresh();   // Reiter Code: „zuletzt am …“
       return true;
     } catch (e) { if (manual) onlineFail(e, "NICHT GESICHERT"); return false; }
     finally { cloudBusy = false; }
@@ -17015,6 +17164,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   on("btnTutGo", () => { practiceLeft = 3; ctxMode = "training"; newJump(); });
   on("btnSettings", () => openSettings("title"));
   on("btnJumper", () => openJumper("title"));
+  on("btnCode", () => openJumper("title", { tab: "code" }));   // Hauptseite: der Code der Reihe, direkt im Reiter Code
   on("btnPause", () => pause());
   on("btnResume", () => setOverlay(null));
   on("btnRestart", () => {
@@ -17042,21 +17192,21 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   on("setGateMinus", () => setGate(-1));
   on("setGatePlus", () => setGate(1));
   $("hotNames").addEventListener("keydown", (e) => { if (e.key === "Enter") e.target.blur(); e.stopPropagation(); });
-  // ------------------------------------------------------------------ Springer: das Fenster „Gestalten“ aus dem Pass der Reihe (../pass/pass-ui.js)
+  // ------------------------------------------------------------------ Figur: das Fenster „Deine Figur“ aus dem Pass der Reihe (../pass/pass-ui.js)
   // Person und Farben gehören zum Pass und gelten in allen Spielen; Helm, Brille und Ski bringt das Skispringen als eigenen Reiter mit.
   let jumperFrom = null, afterName = null;
   const setGear = (k, v) => { S.look[k] = v; save(); if (ctxMode !== "hot") applyColor(); };
-  // Vorschau: Springer in der gewählten Haltung, leicht bewegt (Start am Balken, Flug, Landung, Podest ohne Helm)
+  // Vorschau: Springer in der gewählten Haltung, leicht bewegt (Start am Balken, Flug, Landung, Podest ohne Helm).
+  // Heller Plakatgrund aus dem Pass-Fenster (wie in allen Spielen), damit jede Farbe gut steht.
   function jumperPreview(c, cw, ch, t, jpPose) {
-    const g = c.createLinearGradient(0, 0, 0, ch); g.addColorStop(0, "#1B3157"); g.addColorStop(1, "#0B1526");
-    c.fillStyle = g; c.fillRect(0, 0, cw, ch);
+    PASS.ui.backdrop(c, cw, ch, { ground: false });
     const R = Math.PI / 180, look = lookFor(S.look);
     let pose, rot, bob = 0, slope = false;
     if (jpPose === "flight") {
       pose = RM.roll(RM.lean(RM.POSES.flight, Math.sin(t * 0.9) * 2.5), Math.sin(t * 0.6) * 0.3);
       rot = -12 + Math.sin(t * 0.8) * 2; bob = Math.sin(t * 1.3) * 3;
       // Fahrtwind-Striche
-      c.strokeStyle = "rgba(255,255,255,0.22)"; c.lineWidth = 1.4; c.lineCap = "round";
+      c.strokeStyle = "rgba(30,39,52,0.2)"; c.lineWidth = 1.4; c.lineCap = "round";
       for (let i = 0; i < 5; i++) { const y = ch * (0.18 + i * 0.16), x = ((t * 160 + i * 97) % (cw + 120)) - 60; c.beginPath(); c.moveTo(cw - x, y); c.lineTo(cw - x + 36, y - 8); c.stroke(); }
     } else if (jpPose === "telemark") { pose = RM.POSES.telemark; rot = 18; slope = true; }
     else if (jpPose === "pod") { pose = podPose(1, t, 0); rot = 0; }   // Siegerehrung: Helm ab, Ski in der Hand, Faust
@@ -17073,9 +17223,9 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const m = 16, sc = Math.min(near ? 3.8 : 3.2, (cw - 2 * m) / (x1 - x0), (ch - 2 * m) / (y1 - y0));
     c.save(); c.translate(cw / 2 - (x0 + x1) / 2 * sc, ch / 2 - (y0 + y1) / 2 * sc + bob); c.rotate(rot * R); c.scale(sc, sc);
     if (slope) {
-      // Hang bzw. Spur unter den Skiern
-      c.fillStyle = "#C9D4E2"; c.fillRect(-600, 1.2, 1200, 600);
-      c.fillStyle = "#E6EDF6"; c.fillRect(-600, 1.2, 1200, 1.4);
+      // Hang bzw. Spur unter den Skiern: Schnee mit einer Tintenlinie
+      c.fillStyle = "#FBF8F1"; c.fillRect(-600, 1.2, 1200, 600);
+      c.fillStyle = "rgba(30,39,52,0.3)"; c.fillRect(-600, 1.2, 1200, 0.45);
       if (jpPose === "sit") {
         // Startbalken quer über der Spur, auf Hüfthöhe
         const hp = RM.POSES.sit.hip;
@@ -17084,19 +17234,33 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
         c.strokeStyle = "#435168"; c.lineWidth = 1.4; c.beginPath(); c.moveTo(hp[0] - 4, hp[1] + 1.5); c.lineTo(hp[0] - 6, 1.2); c.stroke();
       }
     }
-    if (jpPose === "pod") { c.fillStyle = "rgba(230,237,246,0.16)"; c.fillRect(-60, 0, 120, 3); }
+    if (jpPose === "pod") { c.fillStyle = "rgba(30,39,52,0.18)"; c.fillRect(-60, 0, 120, 3); }
     RM.drawFigure(c, pose, look, jpPose === "pod" ? { face: true, mood: "froh" } : null);
     c.restore();
   }
   const passUi = PASS.ui.mount($("scrJumper"), {
     title: "Deine Figur", kit: "skispringen", nations: NATIONS, defaultName: "SPRINGER",
-    personHint: "Auf dem Podest nimmst du den Helm ab. Alle sind gleich gebaut; Frisur und Bart wählst du frei. Deine Figur gilt in allen Spielen von Cold Medal.",
+    personHint: "Gilt in allen Spielen von Cold Medal. Auf dem Podest ohne Helm.",
     preview: { poses: [["sit", "Start"], ["flight", "Flug"], ["telemark", "Landung"], ["pod", "Podest"]], pose: "pod", personPose: "pod", colorPose: "flight", draw: jumperPreview },
     tabs: [{ id: "kit", label: "Ausrüstung", pose: "flight", rows: [
       { type: "swatches", label: "Helm", aria: "Helmfarbe", list: LOOK_COLS.helmet, get: () => S.look.helmet, set: (v) => setGear("helmet", v) },
       { type: "swatches", label: "Brille", aria: "Farbe der Brille", list: LOOK_COLS.visor, get: () => S.look.visor, set: (v) => setGear("visor", v) },
       { type: "swatches", label: "Ski", aria: "Skifarbe", list: LOOK_COLS.ski, get: () => S.look.ski, set: (v) => setGear("ski", v) },
-      { type: "hint", text: "Helm, Brille und Ski gibt es nur im Skispringen. Person und Farben gelten in allen Spielen." }] }],
+      { type: "hint", text: "Gibt es nur im Skispringen." }] }],
+    // Reiter Code: derselbe Code wie im Online-Fenster (Spielstand und Figur), nur in der Fassung mit Online
+    code: ON ? {
+      status() {
+        const saved = !!(S.osave && S.oc);
+        if (S.noOnline) return { code: saved ? S.oc : null, load: false, text: "Online-Funktionen sind aus. Du schaltest sie unter Einstellungen → Online ein." };
+        if (saved) return { code: S.oc, text: (S.oat ? `Online gesichert, zuletzt am ${dateTimeDE(S.oat)}. ` : "Wird online gesichert. ") + "Mit dem Code holst du Spielstand und Figur auf jedes Gerät. Gib ihn nicht weiter." };
+        return { code: null, text: "Sichere Spielstand und Figur online. Dann bekommst du deinen Code und holst damit alles auf ein anderes Gerät.", save: "Online sichern" };
+      },
+      async save() {
+        myCode(); S.osave = true; saveLocal();
+        if (await cloudNow(true)) showToastSafeText("GESICHERT", "Code aufheben, zum Beispiel als Notiz");
+      },
+      async load(code) { const r = await olFetch(code); return { text: r.text, apply: () => olApply(r.load) }; },
+    } : null,
     // Zufall: das Fenster wählt Anzug, Muster und Zweitfarbe, das Skispringen dazu Helm, Brille und Ski
     random() {
       const pick = (a) => a[Math.floor(Math.random() * a.length)][0];
@@ -17371,7 +17535,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     // Menüs und Tafeln zeichnen jetzt auch mit voller Bildrate: Kulisse und ruhender Hang sind zwischengespeichert, und die bewegten
     // Details (Zug, Seilbahn, Nebel, Probesprung) liefen mit 30 Bildern je Sekunde sichtbar ruckig. Nur hinter deckenden Tafeln halb.
     menuAcc += dtReal;
-    if (mode !== "jump" && mode !== "replay" && mode !== "title" && menuAcc < 1 / 31) return;   // die Vorschau im Fenster „Gestalten“ zeichnet sich selbst
+    if (mode !== "jump" && mode !== "replay" && mode !== "title" && menuAcc < 1 / 31) return;   // die Vorschau im Fenster „Deine Figur“ zeichnet sich selbst
     menuAcc = 0;
     if (mode === "final" || mode === "champ") drawPodium(tAnim);
     renderer.draw({ hill: H, cam, t: tAnim, jumper: jv, ghost, ghosts, gate: J && J.phase === "gate" ? J.gate : null, best,
@@ -17492,29 +17656,36 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     try { await navigator.clipboard.writeText(OL.fmtCode(S.oc)); showToastSafeText("KOPIERT", "Code in der Zwischenablage"); }
     catch (e) { const rg = document.createRange(); rg.selectNodeContents($("olCode")); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(rg); }
   });
+  // Spielstand zu einem Code holen (Online-Fenster und Reiter Code im Fenster „Deine Figur“): was geladen würde und der Text zum
+  // Bestätigen. Fehler als Error mit Text für den Spieler; nf: zu diesem Code gibt es nichts.
+  async function olFetch(code) {
+    let j;
+    try { j = await ON.rpc("tm_load", { p_code: code }); } catch (e) { throw new Error(OL.message(e)); }
+    if (!j || !j.d || typeof j.d !== "object" || Array.isArray(j.d)) throw Object.assign(new Error("Zu diesem Code gibt es keinen Spielstand."), { nf: true });
+    const test = Object.assign(JSON.parse(JSON.stringify(DEF)), JSON.parse(JSON.stringify(j.d)));
+    sanitize(test);
+    let pass = null;   // die Figur der Reihe gehört dazu, falls schon online (sonst entsteht sie aus dem Spielstand)
+    try { pass = await PASS.online.get(ON.rpc, code); } catch (e) { pass = null; }
+    const load = { code, d: j.d, at: typeof j.at === "string" ? j.at : "", pass };
+    return { load, text: `Spielstand von ${test.name || "SPRINGER"} vom ${dateTimeDE(load.at)}, ${test.jumps} Sprünge. Dein jetziger Stand wird ersetzt.` };
+  }
+  // geholten Spielstand übernehmen: alter Stand als Sicherung, Figur in den Pass, neu laden
+  function olApply(load) {
+    const st = Object.assign({}, load.d, { oc: load.code, osave: true, oat: load.at, ghosts: S.ghosts, opend: [], pass: 1 });
+    const ps = Object.assign(load.pass || Object.assign(passOf(st), { edited: !!st.name }), { code: load.code });
+    try { const raw = localStorage.getItem(KEY); if (raw) localStorage.setItem(KEY + ".backup", raw); localStorage.setItem(KEY, JSON.stringify(st)); passReady = false; PASS.replace(ps, "game"); location.reload(); }
+    catch (e) { softNotice("Speichern ist in diesem Browser nicht möglich"); }
+  }
   on("btnOlLoad", async () => {
     const code = OL.parseCode($("olIn").value);
     if (!code) { showToastSafeText("KEIN GÜLTIGER CODE", "12 Zeichen, zum Beispiel K7PM-3QXD-9TRA"); return; }
     try {
-      const j = await ON.rpc("tm_load", { p_code: code });
-      if (!j || !j.d || typeof j.d !== "object" || Array.isArray(j.d)) { showToastSafeText("NICHTS GEFUNDEN", "Zu diesem Code gibt es keinen Spielstand"); return; }
-      const test = Object.assign(JSON.parse(JSON.stringify(DEF)), JSON.parse(JSON.stringify(j.d)));
-      sanitize(test);
-      let pass = null;   // die Figur der Reihe gehört dazu, falls schon online (sonst entsteht sie aus dem Spielstand)
-      try { pass = await PASS.online.get(ON.rpc, code); } catch (e) { pass = null; }
-      olLoad = { code, d: j.d, at: typeof j.at === "string" ? j.at : "", pass };
-      txt($("olLoadTxt"), `Spielstand von ${test.name || "SPRINGER"} vom ${dateTimeDE(olLoad.at)}, ${test.jumps} Sprünge. Dein jetziger Stand wird ersetzt.`);
-      vis($("olLoadBox"), true);
-    } catch (e) { onlineFail(e, "NICHT GELADEN"); }
+      const r = await olFetch(code);
+      olLoad = r.load; txt($("olLoadTxt"), r.text); vis($("olLoadBox"), true);
+    } catch (e) { showToastSafeText(e.nf ? "NICHTS GEFUNDEN" : "NICHT GELADEN", e.message); }
   });
   on("btnOlNo", () => { olLoad = null; vis($("olLoadBox"), false); });
-  on("btnOlYes", () => {
-    if (!olLoad) return;
-    const st = Object.assign({}, olLoad.d, { oc: olLoad.code, osave: true, oat: olLoad.at, ghosts: S.ghosts, opend: [], pass: 1 });
-    const ps = Object.assign(olLoad.pass || Object.assign(passOf(st), { edited: !!st.name }), { code: olLoad.code });
-    try { const raw = localStorage.getItem(KEY); if (raw) localStorage.setItem(KEY + ".backup", raw); localStorage.setItem(KEY, JSON.stringify(st)); passReady = false; PASS.replace(ps, "game"); location.reload(); }
-    catch (e) { softNotice("Speichern ist in diesem Browser nicht möglich"); }
-  });
+  on("btnOlYes", () => { if (olLoad) olApply(olLoad); });
   on("tgOnline", () => { S.noOnline = !S.noOnline; S.onlineAsked = true; saveLocal(); fillOnline(); });
   on("btnOlDel", async () => {
     const b = $("btnOlDel"), sp = b.querySelector("span");
