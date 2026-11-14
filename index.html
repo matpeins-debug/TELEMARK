@@ -1274,6 +1274,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 .mc-t small { font-size: 12px; line-height: 15px; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mc-new { flex: none; height: 19px; padding: 0 6px; border-radius: 3px; background: var(--hi); color: var(--hi-ink); font-family: var(--font-display); font-weight: 700;
   font-size: 11.5px; line-height: 19px; letter-spacing: 0.04em; white-space: nowrap; }
+.mc-bs { display: flex; gap: 4px; align-items: center; }
+.mc-down { background: var(--gold); color: #2A1B05; }
 .mu-clubs .btn { flex: none; }
 .mu-hint { color: var(--text-2); font-size: 12.5px; line-height: 16px; }
 
@@ -1299,9 +1301,19 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 .cl-round { display: flex; align-items: center; gap: 2px; flex: 1 1 auto; min-width: 0; }
 .cl-round .ghost-btn { width: 30px; height: 28px; }
 .cl-round-n { flex: 1; min-width: 0; text-align: center; font-family: var(--font-display); font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.cl-sub { margin: 0; font-size: 12.5px; line-height: 16px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cl-sub { margin: 0; font-size: 12.5px; line-height: 17px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cl-side { display: flex; flex-direction: column; gap: 6px; min-height: 0; padding: 7px 8px 6px; border-radius: 4px; background: var(--row); }
 .cl-tabs { flex: none; }
+/* Nachricht an die Gruppe: Feld über dem Gespräch (16 px, sonst vergrößert das iPhone beim Tippen) */
+.cl-say { display: flex; gap: 5px; flex: none; }
+.cl-say[hidden] { display: none; }
+.cl-say input { flex: 1 1 auto; min-width: 0; height: 34px; padding: 0 9px; border-radius: 3px; border: 1px solid var(--line-2); background: var(--paper); color: var(--text); font: inherit; font-size: 16px; }
+.cl-say .btn { flex: none; height: 34px; padding: 0 10px; font-size: 15px; }
+.ev-msg { cursor: default; border-left: 2px solid var(--hi); border-radius: 0 3px 3px 0; background: var(--row); }
+.ev-msg.me { background: var(--hi-soft); }
+.ev-msg .jc-del { width: 22px; height: 18px; margin-left: auto; }
+.ev-msg .tlk-h i { margin-left: auto; }
+.ev-msg .jc-del + i { margin-left: 0; }
 .cl-tabs button { flex: 1; }
 .club .hd-btns { justify-content: flex-start; margin-top: 0; }
 .club #btnClGo { margin-left: auto; flex: 0 1 auto; min-width: 0; }
@@ -1331,6 +1343,31 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 .cm-s { font-size: 11.5px; line-height: 15px; color: var(--muted); }
 .cl-leave { align-self: flex-start; flex: none; height: 32px; margin: 8px 0 2px; padding: 0 10px; font-size: 12.5px; }
 .cl-leave.warn { border-color: var(--warn); color: var(--warn); }
+/* Rangliste: wie oft und wie weit im Schnitt, vor Reaktionen und Kommentar */
+.gj-x { flex: none; font-size: 12px; line-height: 16px; color: var(--text-2); }
+.gj-x + .tlk-n, .gj-x + .gj-c { margin-left: 4px; }
+/* Statistik der Gruppe: Spaltenkopf zum Sortieren, je Springer zwei Zeilen (Zahlen und Verlauf, darunter Auszeichnung und mehr) */
+.sx-head, .sx-row { display: grid; grid-template-columns: minmax(0, 1fr) 52px 52px 58px 46px 52px; column-gap: 4px; align-items: center; flex: none; }
+.sx-head { position: sticky; top: 0; z-index: 1; padding: 0 6px 2px; background: var(--paper); font-family: var(--font-display); font-size: 10px; line-height: 14px; font-weight: 700; letter-spacing: 0.03em; color: var(--muted); }
+.sx-k { height: 22px; padding: 0; border: 0; border-radius: 3px; background: none; color: inherit; font: inherit; letter-spacing: inherit; text-align: right; white-space: nowrap; cursor: pointer; }
+.sx-k.on { color: var(--text); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; text-decoration-color: var(--hi); }
+.sx-vh { text-align: center; }
+.sx-head .sx-who { font-size: inherit; }
+.sx-row { grid-template-rows: 20px 16px; padding: 3px 6px; border-radius: 4px; background: var(--row); }
+.sx-row.me { background: var(--hi-soft); }
+.sx-who { display: flex; align-items: center; gap: 5px; min-width: 0; font-size: 14px; white-space: nowrap; }
+.sx-who b { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 400; }
+.sx-who .flag, .sx-who .you, .sx-who .hm { flex: none; }
+.sx-n { text-align: right; font-family: var(--font-display); font-weight: 700; font-size: 14px; white-space: nowrap; }
+.sx-n.bad { color: var(--red); }
+.sx-v { display: flex; justify-content: center; color: var(--text-2); }
+.sx-sp .sx-fall { fill: var(--red); }
+.sx-sub { grid-column: 1 / -1; display: flex; align-items: center; gap: 6px; min-width: 0; overflow: hidden; white-space: nowrap; font-size: 11.5px; line-height: 16px; color: var(--muted); }
+.sx-aw { display: inline-flex; align-items: center; gap: 3px; flex: none; color: var(--text); font-weight: 600; }
+.sx-aw svg { color: #B07A1A; flex: none; }
+.sx-d { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.sx-aw + .sx-d::before { content: "· "; }
+.sx-note { flex: none; margin: 6px 6px 0; font-size: 11.5px; line-height: 15px; color: var(--muted); }
 
 /* Cold Medal Games · Fenster „Deine Figur“ (pass/pass.css)
    Aussehen wie die Menüs des Skispringens: Papier mit Doppelrahmen, Knöpfe wie Druckmarken, Futura für Titel und Knöpfe,
@@ -1815,7 +1852,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     <div class="cl-body">
       <div class="cl-main">
         <div class="cl-bar">
-          <div id="segClView" class="seg seg-xs" role="radiogroup" aria-label="Runde oder Gesamtwertung" hidden><button type="button" data-v="round">Runde</button><button type="button" data-v="tot">Gesamt</button></div>
+          <div id="segClView" class="seg seg-xs" role="radiogroup" aria-label="Rangliste, Gesamtwertung oder Statistik"><button type="button" data-v="round">Runde</button><button type="button" data-v="tot">Gesamt</button><button type="button" data-v="stat">Statistik</button></div>
           <div id="clRound" class="cl-round" hidden><button type="button" id="clPrev" class="ghost-btn" aria-label="Vorherige Runde"><span class="ico" data-icon="chev-left" data-size="16"></span></button><span id="clRoundN" class="cl-round-n"></span><button type="button" id="clNext" class="ghost-btn" aria-label="Nächste Runde"><span class="ico" data-icon="chev-right" data-size="16"></span></button></div>
         </div>
         <p id="clSub" class="cl-sub"></p>
@@ -1823,6 +1860,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       </div>
       <div class="cl-side">
         <div id="segClSide" class="seg seg-xs cl-tabs" role="radiogroup" aria-label="Gespräch oder Mitglieder"><button type="button" data-v="talk">Gespräch</button><button type="button" data-v="mem">Mitglieder</button></div>
+        <form id="clSay" class="cl-say" autocomplete="off" hidden><input id="clSayIn" type="text" maxlength="80" enterkeyhint="send" placeholder="Nachricht an die Gruppe …" aria-label="Nachricht an die Gruppe"><button type="submit" id="btnClSay" class="btn btn-secondary btn-s"><span>Senden</span></button></form>
         <div id="clFeed" class="cg-feed cl-feed"></div>
       </div>
     </div>
@@ -9834,7 +9872,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 
     setLook(l) { this.look = Object.assign({}, DEFAULT_LOOK, l || {}); }
     // Wetterlage aus kulisse/wetter.js: klar, grau, neu, sturm (seit 0.59). x: Wind in m/s für die Richtung von Nebel und Wolken.
-    setWeather(lage, x) { this.wx = WX && WX.NAME[lage] ? lage : "klar"; this.wxX = +x || 0; }
+    // null: ohne Wetter und ohne Schneefall (Bildvergleich der Kulisse, test/kulisse_vergleich.py)
+    setWeather(lage, x) { this.wx = lage == null ? null : WX && WX.NAME[lage] ? lage : "klar"; this.wxX = +x || 0; }
 
     setTheme(name) {
       const n = TOD[name] ? name : "evening";
@@ -12206,7 +12245,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp, FIG = window.CMFigur, PASS = window.CMPass;
-  const VERSION = "0.59";
+  const VERSION = "0.60";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -12356,7 +12395,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     chFmt: "tour", chLevel: "mid", chWind: "var", champ: null, party: null, champBest: {},
     gaugeLeft: false, gaugeSide: "off", flv: 4, hand: "right", sens: 1, ghosts: {}, tops: {}, tod: "auto", missions: {}, daily: null, look: null, expert: false, beginner: false,
     oc: null, osave: false, oat: "", groups: [], tours: [], opend: [], noOnline: false, onlineAsked: false, qdpr: 0, fps: false, n28: null,
-    taler: 0, gear: { ski: 0, suit: 0, bind: 0 }, waxes: [], wax: "u", svc: false, paid: {}, tlog: [], eco: 0, tseen: {}, clubs: [], cseen: {}, pass: 0 };
+    taler: 0, gear: { ski: 0, suit: 0, bind: 0 }, waxes: [], wax: "u", svc: false, paid: {}, tlog: [], eco: 0, tseen: {}, clubs: [], cseen: {}, crank: {}, pass: 0 };
   let S = JSON.parse(JSON.stringify(DEF));
   try {
     const raw = localStorage.getItem(KEY);
@@ -12450,6 +12489,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     for (const x of o.clubs) { if (!hillOk(x.h1)) x.h1 = x.h; for (const k of ["k", "nm", "rk", "nr", "rt", "nt", "nw", "at"]) if (!num(x[k])) x[k] = 0; x.mem = x.mem.filter(isObj).slice(0, 6); }
     if (o.clubs.length > 16) o.clubs.length = 16;
     keep(o.cseen, (v) => Array.isArray(v) && v.length === 2 && num(v[0]) && num(v[1]));
+    keep(o.crank, (v) => num(v) && v >= 1 && v <= 9999);   // dein Platz beim letzten Blick (seit 0.60: „überholt“ unter Deine Gruppen)
     if (o.n28 != null && !(isObj(o.n28) && num(o.n28.best) && num(o.n28.medal))) { o.n28 = null; fixed++; }
     // Preisgeld und Material: Kontostand, Stufen 0–2, eigene Wachse, letzte Einnahmen
     if (!(o.taler >= 0)) { o.taler = 0; fixed++; } else o.taler = Math.round(o.taler);
@@ -12670,8 +12710,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   const SCREENS = { title: "scrTitle", tutorial: "scrTutorial", result: "scrResult", setup: "scrSetup", board: "scrBoard", hand: "scrHand", final: "scrFinal", arcade: "scrArcade", chal: "scrChal", champ: "scrChamp", multi: "scrMulti", club: "scrClub" };
   const vis = (e, on) => { if (e.hidden === on) e.hidden = !on; };
   // Zahl und Einheit (75 %, 148,5 m, 142,4 P.) und Wort und Zahl (HS 140, Luke 12, Platz 3) nie trennen: geschütztes Leerzeichen
-  const NB_U = /(\d) (?=(?:%|°C|°|Taler|km\/h|m\/s|min|ms|m|s|P\.|Pkt\.?|Punkte?|PUNKTE?|Springer|SPRINGER|Schanzen|SCHANZEN|Sprünge|Versuche|Sterne|Min\.|Std\.|Runden|RUNDEN|Mitglieder|MITGLIEDER|MITGLIED|Mitglied|neu)(?![A-Za-zÄÖÜäöüß]))/g;
-  const NB_W = /(^|[^A-Za-zÄÖÜäöüß])(HS|K|Luke|LUKE|Platz|PLATZ|Rang|Durchgang|DURCHGANG|Sprung|SPRUNG|Versuch|VERSUCH|Schanze|SCHANZE|Tournee|TOURNEE|Runde|RUNDE|Nr\.|Aufwind|Rückenwind|Wind|Standard|Sieg|Bronze|Silber|Gold|Böen|fehlen) (?=[\d−+])/g;
+  const NB_U = /(\d) (?=(?:%|°C|°|Taler|km\/h|m\/s|min|ms|m|s|P\.|Pkt\.?|Punkte?|PUNKTE?|Springer|SPRINGER|Schanzen|SCHANZEN|Sprünge|Sprung|Stürze|Sturz|Versuche|Sterne|Min\.|Std\.|Runden|RUNDEN|Mitglieder|MITGLIEDER|MITGLIED|Mitglied|neu)(?![A-Za-zÄÖÜäöüß]))/g;
+  const NB_W = /(^|[^A-Za-zÄÖÜäöüß])(HS|K|Luke|LUKE|Platz|PLATZ|Rang|Durchgang|DURCHGANG|Sprung|SPRUNG|Versuch|VERSUCH|Schanze|SCHANZE|Tournee|TOURNEE|Runde|RUNDE|Nr\.|Aufwind|Rückenwind|Wind|Standard|Sieg|Bronze|Silber|Gold|Böen|fehlen|Ø|±) (?=[\d−+])/g;
   // dazu: Ordnungszahl und Wort (1. Durchgang, 18. Februar) und Bezeichnung vor einem Messwert mit Einheit (Landung 94,9 km/h, Vorlage 96 %)
   const NB_O = /(\d\.) (?=[A-ZÄÖÜ])/g;
   const NB_L = /([A-Za-zÄÖÜäöüß]{2,}) (?=[−+]?\d[\d,.]*[ \u00a0](?:%|°|km\/h|m\/s|ms|m|s|P\.|Pkt|Punkte)(?![A-Za-zÄÖÜäöüß]))/g;
@@ -14987,10 +15027,11 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   function clubRowHtml(x) {
     const mem = (x.mem || []).slice(0, 4).map((m, i) => { const l = lookDecode(m.l); return helm(m.me ? lookFor(S.look) : l ? lookFor(l) : natLook(m.c), i); }).join("");
     const where = `${hillShort(x.h)}${x.k > 1 ? ` · Runde ${x.k}` : ""}`;
-    const me = x.k > 1 ? (x.rt ? `gesamt Platz ${x.rt} von ${x.nt}` : x.nt ? `${x.nt} gesprungen, du noch nicht` : "noch niemand gesprungen")
-      : x.rk ? `Platz ${x.rk} von ${x.nr}` : x.nr ? `${x.nr} gesprungen, du noch nicht` : "noch niemand gesprungen";
+    const now = x.k > 1 ? x.rt : x.rk, was = S.crank[x.c] || 0, down = was > 0 && now > was;   // seit deinem letzten Blick überholt
+    const me = (x.k > 1 ? (x.rt ? `gesamt Platz ${x.rt} von ${x.nt}` : x.nt ? `${x.nt} gesprungen, du noch nicht` : "noch niemand gesprungen")
+      : x.rk ? `Platz ${x.rk} von ${x.nr}` : x.nr ? `${x.nr} gesprungen, du noch nicht` : "noch niemand gesprungen") + (down ? ` (vorher ${was})` : "");
     return `<button type="button" class="mc-row" data-c="${x.c}"><span class="mc-mem">${mem}</span><span class="mc-t"><b>${esc(clubName(x))}</b><small>${esc(nb(`${where} · ${me}`))}</small></span>` +
-      (x.nw ? `<span class="mc-new">${x.nw > 99 ? "99+" : x.nw} neu</span>` : "") + icon("arrow-right", 16) + `</button>`;
+      `<span class="mc-bs">${down ? `<span class="mc-new mc-down">überholt</span>` : ""}${x.nw ? `<span class="mc-new">${x.nw > 99 ? "99+" : x.nw} neu</span>` : ""}</span>` + icon("arrow-right", 16) + `</button>`;
   }
   // Duell per Link (ohne Online): einmal springen, dann den Link mit dem Sprung schicken
   function startGroupJump() {
@@ -15072,7 +15113,12 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const Hh = Hill.getHill(b.h), nat = (c) => (NATIONS.some((y) => y[0] === c) ? c : "");
     const board = (Array.isArray(b.b) ? b.b : []).filter((x) => x && typeof x === "object").map((x) => ({
       r: Math.max(1, Math.round(+x.r) || 1), n: String(x.n || "SPRINGER").slice(0, 12), c: nat(x.c), d: clamp(+x.d || 0, 0, 400), p: clamp(+x.p || 0, -100, 500),
-      k: KIND_SHORT[x.k] ? x.k : "twofoot", x: Math.max(1, Math.round(+x.x) || 1), me: x.me === true, l: lookDecode(x.l), id: isRid(x.id) ? x.id : null, at: tms(x.at) }));
+      k: KIND_SHORT[x.k] ? x.k : "twofoot", x: Math.max(1, Math.round(+x.x) || 1), me: x.me === true, l: lookDecode(x.l), id: isRid(x.id) ? x.id : null, at: tms(x.at),
+      u: isRid(x.u) ? x.u : null, f: cnt(x.f), na: cnt(x.na), a: optNum(x.a, -100, 500), ad: optNum(x.ad, 0, 400), w: optNum(x.w, 0, 400),
+      tq: optNum(x.tq, 0, 100), s: optNum(x.s, 0, 600), lt: tms(x.lt), v: Array.isArray(x.v) ? x.v.slice(-12).map((y) => optNum(y, -100, 500)) : [] }));
+    // wer in dieser Runde bisher nur gestürzt ist (zählt nicht für die Rangliste, aber in der Statistik)
+    const fo = (Array.isArray(b.fo) ? b.fo : []).filter((x) => x && typeof x === "object").slice(0, 50).map((x) => ({
+      n: String(x.n || "SPRINGER").slice(0, 12), c: nat(x.c), l: lookDecode(x.l), me: x.me === true, u: isRid(x.u) ? x.u : null, f: Math.max(1, cnt(x.f)), lt: tms(x.lt) }));
     const lead = board[0] || { n: "SPRINGER", c: "", d: 0, p: 0, k: "twofoot" };
     let path = null;
     try { path = b.gh ? ghostUnpack2(String(b.gh)) : null; } catch (e) { path = null; }
@@ -15083,6 +15129,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       tries: keep ? keep.tries : 0, best: keep ? keep.best : null, ghosts: keep ? keep.ghosts : null, board, total: Math.max(board.length, Math.round(+b.n) || 0),
       // neuester Eintrag im Gespräch (ändert er sich, wird das Gespräch neu geladen); seit wann es die Runde gibt und wer sie gestartet hat
       tk: b.tk != null && Number.isFinite(+b.tk) ? Math.max(0, Math.round(+b.tk)) : 0, at: tms(b.at), on: b.on ? String(b.on).slice(0, 12) : "",
+      nx: cnt(b.nx) || board.reduce((a, y) => a + y.x + y.f, 0) + fo.reduce((a, y) => a + y.f, 0),   // alle Sprünge der Runde (mit Stürzen)
+      fo, v60: b.nx != null,   // Server mit Sprungbuch und Nachrichten (SQL vom 14.11.2026); ohne bleiben Statistik und Nachrichtenfeld aus
     };
     if (keep && keep.club) c.club = keep.club;   // Runde einer Gruppe bleibt es auch nach dem Nachladen
     return c;
@@ -15103,12 +15151,16 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   // Der Link (#g=CODE) bleibt für immer derselbe. Alte Links auf eine Gruppe oder Tournee (#t=) öffnen die Gruppe, zu der sie gehören.
   // Jede Runde ist eine Gruppe wie bisher (gleiche Schanze, Luke und Wind für alle); die Gesamtwertung zählt je Runde den besten Sprung.
   let club = null, clubT = 0, clubBusy = false, clubView = "round", clubSide = "talk", leaveArm = 0, addCtx = null, addBusy = false, myBusy = false;
+  let statSort = "x";   // Statistik: sortiert nach Sprüngen, Schnitt (Weite, Punkte) oder Stürzen
   const hillKnown = (k) => Hill.HILLS.some((h) => h.key === k);
   const natOk = (c) => (NATIONS.some((y) => y[0] === c) ? c : "");
   const lookOk = (s) => (typeof s === "string" && /^[0-9a-v]{6}$/.test(s) ? s : null);
   const cleanTitle = (s) => (typeof s === "string" ? s.replace(/[\u0000-\u001f<>]/g, "").replace(/\s+/g, " ").trim().slice(0, 24) : "") || null;
   // Zeit vom Server (ISO mit Mikrosekunden) in ms; auf Millisekunden gekürzt, das verstehen alle Browser
   const tms = (iso) => { const t = Date.parse(String(iso || "").replace(/(\.\d{3})\d+/, "$1")); return isNaN(t) ? 0 : t; };
+  // Zahl vom Server (oder null, wenn sie fehlt) und Zähler (nie negativ)
+  const optNum = (v, a, z) => (v == null || v === "" || !Number.isFinite(+v) ? null : clamp(+v, a, z));
+  const cnt = (v) => clamp(Math.round(+v) || 0, 0, 1e6);
   const clubName = (k) => k.name || `Gruppe ${hillShort(k.h1 || (k.legs ? k.legs[0].h : k.h))}`;
   const memLook = (m) => (m.me ? lookFor(S.look) : m.l ? lookFor(m.l) : natLook(m.c));
   const emptyAnswer = () => { const e = new Error("leere Antwort"); e.status = 500; return e; };
@@ -15144,14 +15196,17 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const num = (v, a, z) => clamp(Math.round(+v) || 0, a, z);
     const mem = (Array.isArray(b.mem) ? b.mem : []).filter((x) => x && typeof x === "object").map((x) => ({
       n: String(x.n || "SPRINGER").slice(0, 12), c: natOk(x.c), l: lookDecode(x.l), lc: lookOk(x.l), me: x.me === true, own: x.own === true,
-      j: tms(x.j), k: num(x.k, 0, 24), p: clamp(+x.p || 0, -2400, 12000), r: num(x.r, 0, 9999) }));
+      j: tms(x.j), k: num(x.k, 0, 24), p: clamp(+x.p || 0, -2400, 12000), r: num(x.r, 0, 9999),
+      // über alle Runden: Kennung in der Gruppe, Sprünge (mit Stürzen), Stürze, zuletzt gesprungen
+      u: isRid(x.u) ? x.u : null, x: cnt(x.x), f: cnt(x.f), lt: tms(x.lt) }));
     const tot = (Array.isArray(b.tot) ? b.tot : []).filter((x) => x && typeof x === "object").map((x) => ({
       r: Math.max(1, num(x.r, 1, 9999)), n: String(x.n || "SPRINGER").slice(0, 12), c: natOk(x.c), l: lookDecode(x.l), p: clamp(+x.p || 0, -2400, 12000),
-      d: clamp(+x.d || 0, 0, 9600), k: num(x.k, 0, 24), me: x.me === true }));
+      d: clamp(+x.d || 0, 0, 9600), k: num(x.k, 0, 24), me: x.me === true, u: isRid(x.u) ? x.u : null }));
     const kept = keep && keep.c === b.c;
     const sel = !kept ? n - 1 : keep.sel >= keep.legs.length - 1 ? n - 1 : clamp(keep.sel, 0, n - 1);
     return { c: b.c, name: cleanTitle(b.name), own: b.own === true, on: b.on ? String(b.on).slice(0, 12) : "", at: tms(b.at), inn: b.in === true,
-      tk: num(b.tk, 0, 1e12), jt: tms(b.jt), legs, mem, nm: Math.max(mem.length, num(b.nm, 0, 9999)), tot, total: Math.max(tot.length, num(b.n, 0, 9999)), sel };
+      tk: num(b.tk, 0, 1e12), jt: tms(b.jt), legs, mem, nm: Math.max(mem.length, num(b.nm, 0, 9999)), tot, total: Math.max(tot.length, num(b.n, 0, 9999)), sel,
+      nx: cnt(b.nx) || mem.reduce((a, m) => a + m.x, 0), nf: cnt(b.nf) || mem.reduce((a, m) => a + m.f, 0) };
   }
   // in „Deine Gruppen“ merken (auch ohne Netz zu sehen)
   function rememberClub(k) {
@@ -15161,12 +15216,15 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     S.clubs = [e].concat(S.clubs.filter((x) => x.c !== k.c)).slice(0, 16);
     saveLocal();
   }
-  // gesehen: neueste Nummer im Gespräch und Zeit des neuesten Sprungs (für „neu“ unter „Deine Gruppen“)
+  // gesehen: neueste Nummer im Gespräch und Zeit des neuesten Sprungs (für „neu“ unter „Deine Gruppen“) und dein Platz
+  // (mit mehreren Runden gesamt; ist er später schlechter, steht dort „überholt“)
   function clubSeen(k) {
+    const meR = k.legs.length > 1 ? k.tot.find((x) => x.me) : k.legs[0].board.find((x) => x.me), r = meR ? meR.r : 0;
+    if (r !== (S.crank[k.c] || 0)) { if (r) S.crank[k.c] = r; else delete S.crank[k.c]; saveLocal(); }
     const prev = S.cseen[k.c], jt = k.jt || 0;
     if (prev && prev[0] === k.tk && prev[1] === jt) return;
     S.cseen[k.c] = [k.tk || 0, jt];
-    const ks = Object.keys(S.cseen); if (ks.length > 40) for (const x of ks.slice(0, ks.length - 40)) delete S.cseen[x];
+    const ks = Object.keys(S.cseen); if (ks.length > 40) for (const x of ks.slice(0, ks.length - 40)) { delete S.cseen[x]; delete S.crank[x]; }
     const e = S.clubs.find((x) => x.c === k.c); if (e) e.nw = 0;
     saveLocal();
   }
@@ -15234,22 +15292,27 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     demo = null; demoWait = 0.4;
     clubPoll();
   }
-  // Kopf (Name, Mitglieder), links Runde oder Gesamt, rechts Gespräch oder Mitglieder, unten Link teilen, neue Runde, springen
+  // links: Runde (Rangliste), Gesamt (ab zwei Runden) oder Statistik
+  const clubV60 = (k) => k.legs.some((c) => c.v60);
+  const clubViewOf = (k) => (clubView === "stat" && clubV60(k) ? "stat" : k.legs.length > 1 && clubView === "tot" ? "tot" : "round");
+  // Kopf (Name, Mitglieder), links Runde, Gesamt oder Statistik, rechts Gespräch oder Mitglieder, unten Link teilen, neue Runde, springen
   function fillClub() {
     const k = club; if (!k || mode !== "club") return;
     const n = k.legs.length; k.sel = clamp(k.sel, 0, n - 1);
-    const c = k.legs[k.sel], Hh = Hill.getHill(c.h), tot = n > 1 && clubView === "tot";
+    const view = clubViewOf(k), c = k.legs[k.sel], Hh = Hill.getHill(c.h), tot = view === "tot";
     txt($("clName"), clubName(k));
     vis($("btnClName"), k.own && onlineReady());
     txt($("clKick"), `${k.nm} ${k.nm === 1 ? "MITGLIED" : "MITGLIEDER"}`);
     const L = k.mem.slice(0, 6);
     $("clMem").innerHTML = L.map((m, i) => `<span class="cm-h${m.me ? " me" : ""}">${helm(memLook(m), i)}</span>`).join("") + (k.nm > L.length ? `<span class="cm-more">+${k.nm - L.length}</span>` : "");
-    vis($("segClView"), n > 1); segSet("segClView", tot ? "tot" : "round");
-    vis($("clRound"), n > 1 && !tot);
+    const sb = $("segClView").querySelectorAll("button");
+    txt(sb[0], n > 1 ? "Runde" : "Rangliste"); vis(sb[1], n > 1); vis(sb[2], clubV60(k)); segSet("segClView", view);
+    vis($("segClView"), n > 1 || clubV60(k));
+    vis($("clRound"), n > 1 && view !== "tot");
     txt($("clRoundN"), `Runde ${k.sel + 1} von ${n}`);
     $("clPrev").disabled = k.sel <= 0; $("clNext").disabled = k.sel >= n - 1;
-    txt($("clSub"), tot ? `${n} Runden · es zählt je Runde dein bester Sprung`
-      : `${n > 1 ? "" : "Runde 1 · "}${Hh.short || Hh.name} HS${Hh.HS} · Luke ${c.g} · Wind ${WIND_NAME[c.w]} · ${TOD_NAME[c.t]}${S.tutorialDone ? "" : " · zuerst drei kurze Übungssprünge"}`);
+    txt($("clSub"), view === "stat" ? statSub(k) : tot ? `${n} Runden · es zählt je Runde dein bester Sprung`
+      : `${Hh.short || Hh.name} HS${Hh.HS} · Luke ${c.g} · Wind ${WIND_NAME[c.w]} · ${TOD_NAME[c.t]}${c.nx > 1 ? ` · ${c.nx} Sprünge` : ""}${S.tutorialDone ? "" : " · zuerst drei kurze Übungssprünge"}`);
     clubLists();
     vis($("btnClRound"), onlineReady() && n < 24);
     const go = `Springen: ${hillShort(k.legs[tot ? n - 1 : k.sel].h)}`;
@@ -15258,17 +15321,20 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   }
   function clubLists() {
     const k = club; if (!k || mode !== "club") return;
-    const tot = k.legs.length > 1 && clubView === "tot";
-    keepScroll($("clRows"), tot ? totRowsHtml(k) : roundRowsHtml(k.legs[k.sel]));
+    const view = clubViewOf(k);
+    keepScroll($("clRows"), view === "stat" ? statHtml(k) : view === "tot" ? totRowsHtml(k) : roundRowsHtml(k.legs[k.sel]));
     segSet("segClSide", clubSide);
+    vis($("clSay"), clubSide !== "mem" && onlineReady() && clubV60(k));
     keepScroll($("clFeed"), clubSide === "mem" ? memListHtml(k) : clubFeedHtml(k));
   }
   function roundRowsHtml(c) {
     const b = c.board, me = b.find((x) => x.me);
     let rows = b.slice(0, 40);
     if (me && !rows.includes(me)) rows = rows.concat([me]);
+    const quiet = !(talk[c.grp] && talk[c.grp].list.length), tap = `Sprung antippen: ansehen, ${TALK_EMO.like} oder ${TALK_EMO.lol} geben, etwas dazuschreiben.`;
     return rows.length ? jumpRowsHtml(c, rows) + (c.total > rows.length ? `<span class="chb-more">und ${c.total - rows.length} weitere</span>` : "")
-        + (rows.length < 3 ? `<p class="cg-empty cl-tip">Schick den Link in eure WhatsApp-Gruppe: Wer ihn antippt, springt mit demselben Wind. Sprung antippen: ansehen, ${TALK_EMO.like} oder ${TALK_EMO.lol} geben, etwas dazuschreiben.</p>` : "")
+        + (rows.length < 3 ? `<p class="cg-empty cl-tip">Schick den Link in eure WhatsApp-Gruppe: Wer ihn antippt, springt mit demselben Wind. ${tap}</p>`
+          : quiet ? `<p class="cg-empty cl-tip">${tap}</p>` : "")
       : `<p class="cg-empty">${c.club && c.club.leg > 1 ? "Neue Runde, noch niemand gesprungen. Spring als Erster!" : "Noch niemand gesprungen. Schick den Link und spring als Erster!"}</p>`;
   }
   // Gesamtwertung: Summe der besten Punkte je Runde, darunter die Runden einzeln
@@ -15278,7 +15344,9 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     if (me && !rows.includes(me)) rows = rows.concat([me]);
     if (!rows.length) return `<p class="cg-empty">Noch niemand gesprungen.</p>`;
     return rows.map((x) => {
-      const per = k.legs.map((c, i) => { const y = x.me ? c.board.find((z) => z.me) : c.board.find((z) => !z.me && z.n === x.n && z.c === x.c); return y ? `R${i + 1} ${fmt1(y.p)}` : ""; }).filter(Boolean).join(" · ");
+      const same = (z) => (x.me ? z.me : x.u && z.u ? z.u === x.u : !z.me && z.n === x.n && z.c === x.c);
+      const m = k.mem.find(same), per = [m && m.x ? `${m.x} ${m.x === 1 ? "Sprung" : "Sprünge"}` : ""].concat(k.legs.map((c, i) => {
+        const y = c.board.find(same); return y ? `R${i + 1} ${fmt1(y.p)}` : ""; })).filter(Boolean).join(" · ");
       return `<div class="gj tot${x.me ? " me" : ""}"><div class="gj-main"><span class="gj-r">${x.r}</span><span class="gj-who">${helm(x.me ? lookFor(S.look) : x.l ? lookFor(x.l) : natLook(x.c), x.r)}${x.c ? flagSpan(x.c) : ""}` +
         `<span class="gj-nm">${esc(x.n)}</span>${x.me ? '<span class="you">DU</span>' : ""}</span><span class="gj-d">${x.k}/${n}</span><span class="gj-p">${fmt1(x.p)}</span>` +
         `<span class="gj-t"><span class="gj-c dim">${esc(nb(per))}</span></span></div></div>`;
@@ -15288,14 +15356,76 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   function memListHtml(k) {
     const n = k.legs.length;
     const rows = k.mem.map((m) => {
+      const pts = m.k ? `${n > 1 ? `${m.k} von ${n} Runden, ` : ""}${fmt1(m.p)} Punkte${m.r ? `, Platz ${m.r}` : ""}` : "";
       const s = [m.own ? "hat die Gruppe gegründet" : m.j ? `dabei seit ${ago(m.j).replace(/^vor .*|gerade eben/, "heute")}` : "",
-        m.k ? `${n > 1 ? `${m.k} von ${n} Runden, ` : ""}${fmt1(m.p)} Punkte${m.r ? `, Platz ${m.r}` : ""}` : "noch nicht gesprungen"].filter(Boolean).join(" · ");
+        m.x ? `${m.x} ${m.x === 1 ? "Sprung" : "Sprünge"}` : "", pts || (m.x ? "noch kein gestandener" : "noch nicht gesprungen")].filter(Boolean).join(" · ");
       return `<div class="cm-row${m.me ? " me" : ""}"><span class="cm-who">${helm(memLook(m), 0)}${m.c ? flagSpan(m.c) : ""}<b>${esc(m.n)}</b>${m.me ? '<span class="you">DU</span>' : ""}</span>` +
         `<span class="cm-s">${esc(nb(s))}</span></div>`;
     }).join("");
     const more = k.nm > k.mem.length ? `<p class="cg-empty">und ${k.nm - k.mem.length} weitere</p>` : "";
     const leave = k.inn && onlineReady() ? `<button type="button" class="btn-plain cl-leave${leaveArm && Date.now() - leaveArm < 4000 ? " warn" : ""}" data-leave="1">${leaveArm && Date.now() - leaveArm < 4000 ? "Wirklich verlassen? Nochmal tippen" : "Gruppe verlassen"}</button>` : "";
     return rows + more + leave;
+  }
+  // Statistik einer Runde (je Runde, weil Schanzen verschieden groß sind): oben die Zahlen der Runde, dann je Springer Sprünge,
+  // Schnitt (Weite, Punkte), Stürze und Verlauf (die letzten zwölf, Stürze rot unten); darunter, was ihn auszeichnet, weitester Sprung,
+  // Telemark-Anteil und wann zuletzt. Spaltenkopf antippen: danach sortieren.
+  const STAT_COLS = [["x", "SPRÜNGE"], ["ad", "Ø WEITE"], ["a", "Ø PUNKTE"], ["f", "STÜRZE"]];
+  // alle, die in der Runde gesprungen sind: aus der Rangliste (x = gestandene + Stürze) und wer nur gestürzt ist
+  function statRows(c) {
+    return c.board.map((y) => Object.assign({}, y, { x: y.x + y.f, land: y.x })).concat(c.fo.map((y) => Object.assign({}, y, {
+      x: y.f, land: 0, na: 0, a: null, ad: null, w: null, tq: null, s: null, r: 0, v: Array(Math.min(12, y.f)).fill(null) })));
+  }
+  function statSub(k) {
+    const c = k.legs[k.sel], Hh = Hill.getHill(c.h), L = statRows(c), nf = L.reduce((a, m) => a + m.f, 0);
+    return `${Hh.short || Hh.name} HS${Hh.HS}` + (L.length ? ` · ${c.nx} ${c.nx === 1 ? "Sprung" : "Sprünge"}${nf ? ` · ${nf} ${nf === 1 ? "Sturz" : "Stürze"}` : ""} · ${L.length} Springer` : "");
+  }
+  // Auszeichnungen (ab zwei Springern, die es betrifft; bei Gleichstand alle): meiste Sprünge, bester Schnitt, weitester Sprung,
+  // am konstantesten (kleinste Streuung ab fünf Sprüngen), Telemark-Ass (größter Anteil ab fünf Sprüngen, mindestens die Hälfte)
+  function statAwards(L) {
+    const aw = new Map(), give = (C, val, lab, low) => {
+      if (C.length < 2) return;
+      const best = low ? Math.min(...C.map(val)) : Math.max(...C.map(val));
+      const win = C.filter((m) => val(m) === best);
+      if (win.length === C.length) return;   // alle gleich: niemand hebt sich ab
+      for (const m of win) aw.set(m, (aw.get(m) || []).concat([lab]));
+    };
+    give(L.filter((m) => m.x >= 2), (m) => m.x, "meiste Sprünge");
+    give(L.filter((m) => m.na >= 3 && m.a != null), (m) => m.a, "bester Schnitt");
+    give(L.filter((m) => m.w != null), (m) => m.w, "weitester Sprung");
+    give(L.filter((m) => m.na >= 5 && m.s != null), (m) => m.s, "am konstantesten", true);
+    give(L.filter((m) => m.na >= 5 && m.tq != null && m.tq >= 50), (m) => m.tq, "Telemark-Ass");
+    return aw;
+  }
+  // Verlauf als kleine Linie: gestandene Sprünge nach Punkten (gemeinsamer Maßstab der Gruppe), Stürze als roter Punkt unten
+  function sparkSvg(v, lo, hi) {
+    const W = 50, Hh = 18, n = v.length;
+    if (!n) return "";
+    const X = (i) => (n === 1 ? W / 2 : 2 + (i * (W - 4)) / (n - 1)), Y = (p) => (hi > lo ? 2.5 + (1 - (p - lo) / (hi - lo)) * (Hh - 6) : Hh / 2 - 1);
+    const pts = v.map((p, i) => (p == null ? null : [X(i), Y(p)])).filter(Boolean), f1 = (q) => `${q[0].toFixed(1)},${q[1].toFixed(1)}`;
+    const line = pts.length > 1 ? `<polyline points="${pts.map(f1).join(" ")}" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>` : "";
+    const falls = v.map((p, i) => (p == null ? `<circle class="sx-fall" cx="${X(i).toFixed(1)}" cy="${Hh - 2}" r="1.9"/>` : "")).join("");
+    const end = pts.length ? `<circle cx="${pts[pts.length - 1][0].toFixed(1)}" cy="${pts[pts.length - 1][1].toFixed(1)}" r="2.1" fill="currentColor"/>` : "";
+    return `<svg class="sx-sp" width="${W}" height="${Hh}" viewBox="0 0 ${W} ${Hh}" aria-hidden="true">${line}${falls}${end}</svg>`;
+  }
+  function statHtml(k) {
+    const c = k.legs[k.sel], L = statRows(c), many = k.legs.length > 1;
+    const none = k.mem.filter((m) => !L.some((y) => (m.me ? y.me : m.u && y.u === m.u)));
+    const noneP = none.length ? `<p class="sx-note">${many ? "In dieser Runde noch nicht" : "Noch nicht"} gesprungen: ${esc(none.slice(0, 12).map((m) => (m.me ? "du" : m.n)).join(", "))}${none.length > 12 ? ` und ${none.length - 12} weitere` : ""}</p>` : "";
+    if (!L.length) return `<p class="cg-empty">Noch niemand gesprungen${many ? " in dieser Runde" : ""}. Hier steht dann, wer wie oft springt, mit Schnitt, Stürzen und Verlauf.</p>`;
+    const key = STAT_COLS.some((c) => c[0] === statSort) ? statSort : "x", val = (m) => (m[key] == null ? -Infinity : m[key]);
+    const rows = L.slice().sort((p, q) => val(q) - val(p) || q.x - p.x || (p.r || 9999) - (q.r || 9999));
+    const aw = statAwards(L), all = L.flatMap((m) => m.v.filter((y) => y != null)), lo = Math.min(...all), hi = Math.max(...all);
+    const head = `<div class="sx-head"><span class="sx-who">SPRINGER</span>` + STAT_COLS.map(([c, lab]) =>
+      `<button type="button" class="sx-k${c === key ? " on" : ""}" data-sort="${c}" aria-pressed="${c === key}">${lab}</button>`).join("") + `<span class="sx-vh">VERLAUF</span></div>`;
+    const body = rows.map((m) => {
+      const a = aw.get(m), det = [m.w != null ? `weitester ${fmt1(m.w)} m` : "", m.tq != null && m.na >= 3 ? `Telemark ${Math.round(m.tq)} %` : "", m.lt ? `zuletzt ${ago(m.lt)}` : ""].filter(Boolean).join(" · ");
+      return `<div class="sx-row${m.me ? " me" : ""}"><span class="sx-who">${helm(m.me ? lookFor(S.look) : m.l ? lookFor(m.l) : natLook(m.c), 0)}${m.c ? flagSpan(m.c) : ""}<b>${esc(m.n)}</b>${m.me ? '<span class="you">DU</span>' : ""}</span>` +
+        `<span class="sx-n">${m.x}</span><span class="sx-n">${m.ad != null ? fmt1(m.ad) : "–"}</span><span class="sx-n">${m.a != null ? fmt1(m.a) : "–"}</span><span class="sx-n${m.f ? " bad" : ""}">${m.f}</span>` +
+        `<span class="sx-v">${sparkSvg(m.v, lo, hi)}</span>` +
+        `<span class="sx-sub">${a ? `<span class="sx-aw">${icon("trophy", 12)}${esc(a.join(", "))}</span>` : ""}<span class="sx-d">${esc(nb(det))}</span></span></div>`;
+    }).join("");
+    const old = L.some((m) => m.land > m.na) ? `<p class="sx-note">Schnitt und Verlauf zählen die Sprünge ab 14.11.2026.</p>` : "";
+    return head + body + noneP + old;
   }
   // Gespräch der Gruppe, Neuestes oben: Sprünge (je Springer und Runde der beste), Reaktionen und Kommentare, neue Runden, wer dazukam
   function clubFeedHtml(k) {
@@ -15310,6 +15440,12 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       }
       const T = talk[c.grp];
       if (T) for (const y of T.list) {
+        if (y.k === "m") {
+          ev.push({ t: y.at || 0, h: `<div class="tlk-row ev-msg${y.me ? " me" : ""}"><span class="tlk-h"><b>${esc(y.me ? "DU" : y.a)}</b>` +
+            `${y.me && y.i ? `<button type="button" class="jc-del" data-g="${c.grp}" data-del="${y.i}" aria-label="Nachricht löschen">${icon("x", 12)}</button>` : ""}<i>${ago(y.at)}</i></span>` +
+            `<span class="tlk-b">${esc(y.b)}</span></div>` });
+          continue;
+        }
         const who = c.board.find((z) => z.id === y.j), tn = who ? (who.me ? "deinem Sprung" : who.n) : "einem Sprung";
         ev.push({ t: y.at || 0, h: `<button type="button" class="tlk-row${y.old ? " old" : ""}${y.me ? " me" : ""}"${who && !y.old ? ` data-g="${c.grp}" data-card="${y.j}"` : ""}>` +
           `<span class="tlk-h"><b>${esc(y.me ? "DU" : y.a)}</b><span class="tlk-to"> zu ${esc(tn)}${y.old ? " (früher)" : ""}${n > 1 ? esc(nb(` · Runde ${i + 1}`)) : ""}</span>` +
@@ -15321,7 +15457,22 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     if (k.at) ev.push({ t: k.at, h: `<div class="ev-sys"><span><b>${esc(k.on || "Jemand")}</b> gründet die Gruppe</span><i>${ago(k.at)}</i></div>` });
     ev.sort((a, b) => b.t - a.t);
     const body = ev.slice(0, 60).map((e) => e.h).join("");
-    return (k.legs.some((c) => c.board.length) ? "" : `<p class="cg-empty">Tipp auf einen Sprung: ansehen, ${TALK_EMO.like} oder ${TALK_EMO.lol} geben, etwas dazuschreiben.</p>`) + body;
+    return (k.legs.some((c) => c.board.length) ? "" : `<p class="cg-empty">Schreib der Gruppe oder tipp auf einen Sprung: ansehen, ${TALK_EMO.like} oder ${TALK_EMO.lol} geben, etwas dazuschreiben.</p>`) + body;
+  }
+  // Nachricht an die Gruppe: geht in die neueste Runde (dort springen gerade alle); ohne Namen erst fragen
+  async function clubSay() {
+    const k = club; if (!k || !onlineReady()) return;
+    const v = $("clSayIn").value.replace(/\s+/g, " ").trim().slice(0, 80);
+    if (!v) { $("clSayIn").focus(); return; }
+    if (!S.name) { askName(() => { showClub(); clubSay(); }); return; }
+    const g = k.legs[k.legs.length - 1].grp, btn = $("btnClSay");
+    btn.disabled = true;
+    try {
+      talkSet(g, await ON.rpc("tm_club_say", { p_code: myCode(), p_name: meName(), p_nation: S.nation || "", p_group: g, p_body: v }, 8000));
+      $("clSayIn").value = ""; $("clFeed").scrollTop = 0;
+      const c = k.legs.find((y) => y.grp === g); if (c && talk[g]) c.tk = talk[g].tk;   // nicht gleich wieder laden
+    } catch (e) { onlineFail(e, "NICHT GESENDET"); }
+    finally { btn.disabled = false; }
   }
   // Live: solange die Gruppe offen ist, alle 5 Sekunden nachsehen
   function clubPoll() {
@@ -15370,7 +15521,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const c = club.c;
     try {
       await ON.rpc("tm_club_leave", { p_code: myCode(), p_group: c });
-      S.clubs = S.clubs.filter((x) => x.c !== c); delete S.cseen[c]; saveLocal();
+      S.clubs = S.clubs.filter((x) => x.c !== c); delete S.cseen[c]; delete S.crank[c]; saveLocal();
       clearTimeout(clubT); club = null;
       openMulti();
       showToastSafeText("GRUPPE VERLASSEN", "Mit dem Link kannst du jederzeit wieder dazukommen", 2600);
@@ -15470,12 +15621,13 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   const TALK_NAME = { like: "Daumen hoch", lol: "Lachen", wow: "Staunen", fire: "Feuer" };
   const talk = {}, talkBusy = {};
   function isRid(v) { return typeof v === "string" && /^[0-9a-f]{10}$/.test(v); }
+  // Einträge: Reaktion oder Kommentar zu einem Sprung (j = Kennung des Sprungs) oder Nachricht an die ganze Gruppe (k = "m", ohne Sprung)
   function talkParse(L) {
     const nat = (c) => (NATIONS.some((y) => y[0] === c) ? c : "");
-    return (Array.isArray(L) ? L : []).filter((x) => x && typeof x === "object" && isRid(x.j) && (TALK_EMO[x.k] || x.k === "c")).map((x) => ({
-      i: Math.max(0, Math.round(+x.i) || 0), j: x.j, k: x.k, b: x.k === "c" ? String(x.b || "").slice(0, 80) : "",
-      t: x.t == null || !Number.isFinite(+x.t) ? null : clamp(+x.t, 0, 60), a: String(x.a || "SPRINGER").slice(0, 12), c: nat(x.c),
-      me: x.me === true, old: x.old === true, at: tms(x.at) })).filter((x) => x.k !== "c" || x.b.trim());
+    return (Array.isArray(L) ? L : []).filter((x) => x && typeof x === "object" && (isRid(x.j) ? TALK_EMO[x.k] || x.k === "c" : x.k === "m")).map((x) => ({
+      i: Math.max(0, Math.round(+x.i) || 0), j: x.k === "m" ? null : x.j, k: x.k, b: x.k === "c" || x.k === "m" ? String(x.b || "").slice(0, 80) : "",
+      t: x.k === "m" || x.t == null || !Number.isFinite(+x.t) ? null : clamp(+x.t, 0, 60), a: String(x.a || "SPRINGER").slice(0, 12), c: nat(x.c),
+      me: x.me === true, old: x.k !== "m" && x.old === true, at: tms(x.at) })).filter((x) => (x.k !== "c" && x.k !== "m") || x.b.trim());
   }
   // Runde zu einem Code: die gerade gesprungene oder eine Runde der offenen Gruppe
   function grpByCode(g) {
@@ -15514,8 +15666,10 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const c = grpByCode(g), me = c && c.board.find((x) => x.me), T = talk[g], seen = S.tseen[g] || 0;
     if (!T || T.tk <= seen) return;
     const fresh = me && me.id ? T.list.filter((x) => x.j === me.id && !x.me && !x.old && x.i > seen) : [];
+    const msg = mode === "club" ? [] : T.list.filter((x) => x.k === "m" && !x.me && x.i > seen);
     S.tseen[g] = T.tk; saveLocal();
-    if (!fresh.length || mode === "jump" || mode === "replay") return;
+    if ((!fresh.length && !msg.length) || mode === "jump" || mode === "replay") return;
+    if (!fresh.length) { showToastSafeText("NEU IN DER GRUPPE", msg.slice(-2).map((x) => `${x.a}: „${x.b}“`).join(" · "), 3600); return; }
     const parts = fresh.slice(-3).map((x) => x.k === "c" ? `${x.a}: „${x.b}“` : `${TALK_EMO[x.k]} ${x.a}`);
     showToastSafeText("NEU ZU DEINEM SPRUNG", parts.join(" · "), 3600);
   }
@@ -15559,15 +15713,23 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   }
   // Sprünge als Zeilen: Platz, Springer, Weite, Punkte, darunter Reaktionen und der letzte Kommentar.
   // Zeile antippen = Sprungkarte (ansehen, reagieren, schreiben), ▶ = gleich ansehen.
+  // wie oft (mit Stürzen) und wie weit im Schnitt (ab zwei gebuchten gestandenen Sprüngen), Stürze
+  function rowStat(x) {
+    const n = (x.x || 0) + (x.f || 0);
+    if (!n) return "";
+    return [`${n} ${n === 1 ? "Sprung" : "Sprünge"}`, x.na >= 2 && x.ad != null ? `Ø ${fmt1(x.ad)} m` : "", x.f ? `${x.f} ${x.f === 1 ? "Sturz" : "Stürze"}` : ""].filter(Boolean).join(" · ");
+  }
   function jumpRowsHtml(c, rows) {
     return rows.map((x) => {
       const wi = ghostFor(c, x), s = x.id ? talkSum(c.grp, x.id) : null;
       const chips = s ? TALK_K.filter((k) => s.n[k]).map((k) => `<span class="tlk-n${s.mine[k] ? " mine" : ""}">${TALK_EMO[k]}<b>${s.n[k]}</b></span>`).join("") +
         (s.cm.length ? `<span class="tlk-n">${icon("chat", 13)}<b>${s.cm.length}</b></span>` : "") : "";
       const last = s && s.cm.length ? s.cm[s.cm.length - 1] : null;
-      const line = chips || last ? chips + (last ? `<span class="gj-c"><b>${esc(last.me ? "DU" : last.a)}:</b> ${esc(last.b)}</span>` : "")
-        : `<span class="gj-c dim">${!x.id ? "" : x.me ? "dein Sprung · antippen: was sagen die anderen?" : `antippen: ${TALK_EMO.like} ${TALK_EMO.lol} oder etwas schreiben`}</span>`;
-      return `<div class="gj${x.me ? " me" : ""}"><button type="button" class="gj-main"${x.id ? ` data-card="${x.id}"` : ""} aria-label="${esc(x.n)}: ${fmt1(x.d)} m, ${fmt1(x.p)} Punkte">` +
+      const st = rowStat(x), stH = st ? `<span class="gj-x">${esc(nb(st))}</span>` : "";
+      const hint = !x.id ? "" : x.me ? "dein Sprung · antippen: was sagen die anderen?" : `antippen: ${TALK_EMO.like} ${TALK_EMO.lol} oder etwas schreiben`;
+      const line = stH + (chips || last ? chips + (last ? `<span class="gj-c"><b>${esc(last.me ? "DU" : last.a)}:</b> ${esc(last.b)}</span>` : "")
+        : !st && hint ? `<span class="gj-c dim">${hint}</span>` : "");
+      return `<div class="gj${x.me ? " me" : ""}"><button type="button" class="gj-main"${x.id ? ` data-card="${x.id}"` : ""} aria-label="${esc(x.n)}: ${fmt1(x.d)} m, ${fmt1(x.p)} Punkte${st ? `, ${esc(st)}` : ""}">` +
         `<span class="gj-r">${x.r}</span><span class="gj-who">${helm(x.me ? lookFor(S.look) : x.l ? lookFor(x.l) : natLook(x.c), x.r)}${x.c ? flagSpan(x.c) : ""}<span class="gj-nm">${esc(x.n)}</span>${x.me ? '<span class="you">DU</span>' : ""}</span>` +
         `<span class="gj-d">${fmt1(x.d)} m</span><span class="gj-p">${fmt1(x.p)}</span><span class="gj-t">${line}</span></button>` +
         (wi >= 0 ? `<button type="button" class="gj-play" data-watch="${wi}" aria-label="Sprung von ${esc(x.n)} ansehen">${icon("play", 18)}</button>`
@@ -15579,6 +15741,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const T = talk[c.grp], L = T ? T.list.slice(-n).reverse() : [];
     if (!L.length) return `<p class="cg-empty">Noch nichts los. Tipp auf einen Sprung: ansehen, ${TALK_EMO.like} oder ${TALK_EMO.lol} geben, etwas dazuschreiben.</p>`;
     return L.map((x) => {
+      if (x.k === "m") return `<div class="tlk-row ev-msg${x.me ? " me" : ""}"><span class="tlk-h"><b>${esc(x.me ? "DU" : x.a)}</b><span class="tlk-to"> an alle</span></span><span class="tlk-b">${esc(x.b)}</span></div>`;
       const who = c.board.find((y) => y.id === x.j), tn = who ? (who.me ? "deinem Sprung" : who.n) : "einem Sprung";
       const at = x.t != null ? `<span class="tlk-at">${fmt1(x.t)} s</span>` : "";
       return `<button type="button" class="tlk-row${x.old ? " old" : ""}${x.me ? " me" : ""}"${who && !x.old ? ` data-card="${x.j}"` : ""}>` +
@@ -15721,10 +15884,12 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     wtPop({ k: "c", t, me: true, a: meName(), b: v });
     talkPost(w.g, w.id, "c", v, t);
   }
-  // Gruppensprung senden; ohne Verbindung merken und später nachsenden
+  // Gruppensprung senden; ohne Verbindung merken und später nachsenden. Ein Sturz zählt nicht für die Rangliste, geht aber
+  // für die Statistik (wie oft gesprungen, Stürze) an die Gruppe; ohne Verbindung bleibt er still weg.
   async function postGroup(entry) {
     const g = chal && chal.grp;
-    if (!ON || !g || !entry || entry.kind === "fall") return;
+    if (!ON || !g || !entry) return;
+    if (entry.kind === "fall") { postFall(entry, g); return; }
     let gh = null;
     try { gh = ghostPack2(entry.path); } catch (e) { gh = null; }
     const p = { g, d: entry.dist, p: chalPts(entry.total), k: entry.kind, gh: typeof gh === "string" && gh.length <= 4000 ? gh : null };
@@ -15751,6 +15916,22 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       if (!e.status || e.status >= 500) { queuePending(p); entry.grpQueued = true; }
       else onlineFail(e, "NICHT GESENDET");
     }
+    if (mode === "result" && lastResult === entry) grpRefresh(entry);
+  }
+  async function postFall(entry, g) {
+    entry.grpState = "send";
+    try {
+      const b = await ON.rpc("tm_club_fall", { p_code: myCode(), p_name: meName(), p_nation: S.nation || "", p_group: g, p_dist: clamp(chalPts(entry.dist), 0, 400),
+        p_points: Number.isFinite(entry.total) ? clamp(chalPts(entry.total), -100, 500) : null, p_look: lookCode(S.look) });
+      if (chal && chal.club) {
+        const k = clubFrom(b, club && club.c === chal.club.c ? club : null), c = k && k.legs.find((y) => y.grp === g);
+        if (c && chal && chal.grp === g) { c.ghosts = chal.ghosts; c.tries = chal.tries; c.best = chal.best; k.sel = k.legs.indexOf(c); club = k; rememberClub(k); chal = c; }
+      } else if (b && Array.isArray(b.legs)) {
+        const c = groupChal(b.legs.find((y) => y && y.g === g), chal);
+        if (c && chal && chal.grp === g) chal = c;
+      }
+      entry.grpState = "ok";
+    } catch (e) { entry.grpState = "fail"; /* nur Statistik: ohne Verbindung oder bei altem Server bleibt es still */ }
     if (mode === "result" && lastResult === entry) grpRefresh(entry);
   }
   function queuePending(p) {
@@ -15811,7 +15992,9 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   function grpRefresh(r) {
     grpChip(r, $("rsChip"));
     grpCountLine(r);
-    txt($("rsSession"), chal.club && chal.club.n > 1 ? `Runde ${chal.club.leg} · ${H.name} · Luke ${chal.g}` : `${H.name} · Luke ${chal.g} · ${chal.total} Springer`);
+    const me = chal.board.find((x) => x.me), nth = me && r.grpState !== "send" ? me.x + me.f : 0;
+    txt($("rsSession"), (chal.club && chal.club.n > 1 ? `Runde ${chal.club.leg} · ${H.name} · Luke ${chal.g}` : `${H.name} · Luke ${chal.g} · ${chal.total} Springer`) +
+      (nth > 1 ? ` · dein ${nth}. Sprung` : ""));
     rankHeader(r);
     if (rsTab !== "list") vis($("rsRank"), false);
     else if (rsFill) rsFill();
@@ -17315,12 +17498,15 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   $("clMem").addEventListener("click", () => { if (!club) return; clubSide = "mem"; $("clFeed").scrollTop = 0; clubLists(); });
   $("clRows").addEventListener("click", (e) => {
     if (!club) return;
+    const so = e.target.closest("[data-sort]"); if (so) { statSort = so.dataset.sort; clubLists(); return; }
     const c = club.legs[club.sel];
     const w = e.target.closest("[data-watch]"); if (w && c) { watchGhost(c, +w.dataset.watch, () => showClub()); return; }
     const d = e.target.closest("[data-card]"); if (d && c) openJcard(c.grp, d.dataset.card);
   });
+  $("clSay").addEventListener("submit", (e) => { e.preventDefault(); clubSay(); });
   $("clFeed").addEventListener("click", (e) => {
     if (e.target.closest("[data-leave]")) { clubLeave(); return; }
+    const del = e.target.closest("[data-del]"); if (del && del.dataset.g) { talkDel(del.dataset.g, +del.dataset.del); return; }
     const d = e.target.closest("[data-card]"); if (d && d.dataset.g) openJcard(d.dataset.g, d.dataset.card);
   });
   on("btnClShare", async () => { if (club) await shareLink(clubText(club)); });
@@ -17379,7 +17565,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   on("hotMinus", () => { readHotNames(); S.hot.n = clamp(S.hot.n - 1, 2, 8); save(); fillHotNames(); });
   on("hotPlus", () => { readHotNames(); S.hot.n = clamp(S.hot.n + 1, 2, 8); save(); fillHotNames(); });
   const seg = (id, f) => $(id).addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; f(b.dataset.v); });
-  seg("segClView", (v) => { clubView = v === "tot" ? "tot" : "round"; $("clRows").scrollTop = 0; fillClub(); });
+  seg("segClView", (v) => { clubView = v === "tot" ? "tot" : v === "stat" ? "stat" : "round"; $("clRows").scrollTop = 0; fillClub(); });
   seg("segClSide", (v) => { clubSide = v === "mem" ? "mem" : "talk"; leaveArm = 0; $("clFeed").scrollTop = 0; clubLists(); });
   // Shop und Wachs am Start
   on("btnShop", () => openShop());
@@ -17959,7 +18145,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     olDelArm = 0; txt(sp, "Meine Online-Daten löschen"); b.classList.remove("warn");
     try {
       await ON.rpc("tm_forget", { p_code: S.oc });
-      S.oc = null; S.osave = false; S.oat = ""; S.clubs = []; S.cseen = {}; S.opend = []; saveLocal(); fillOnline();
+      S.oc = null; S.osave = false; S.oat = ""; S.clubs = []; S.cseen = {}; S.crank = {}; S.opend = []; saveLocal(); fillOnline();
       showToastSafeText("GELÖSCHT", "Spielstand, Figur und Gruppen-Ergebnisse sind online gelöscht");
     } catch (e) { onlineFail(e, "NICHT GELÖSCHT"); }
   });
