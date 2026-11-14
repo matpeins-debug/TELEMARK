@@ -249,6 +249,11 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 /* Hauptseite: Code der Reihe (öffnet „Deine Figur“ im Reiter Code); der Code selbst steht nicht offen da (Bildschirmfotos) */
 .code-btn { gap: 6px; padding: 0 12px 0 10px; font-weight: 600; font-size: 14px; }
 .code-btn .ico { color: var(--red); display: flex; }
+/* Fragebogen (0.63): sichtbar im Hauptmenü, unten rechts über der Fußzeile; oben klein „Bitte ausfüllen“ wie beim Shop */
+.fb-chip { position: absolute; right: 24px; bottom: 46px; height: 46px; padding: 0 14px 0 11px; gap: 8px; }
+.fbq { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+.fbq-k { font-family: var(--font-label); font-weight: 700; font-size: 10px; line-height: 11px; letter-spacing: 0.16em; color: var(--red); white-space: nowrap; }
+.fbq-t { font-family: var(--font-display); font-weight: 700; font-size: 15px; line-height: 17px; white-space: nowrap; }
 
 .tut { position: absolute; inset: 0; padding: 24px 32px 22px; display: flex; flex-direction: column; gap: 14px; }
 .tut-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
@@ -1844,6 +1849,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     </div>
   </div>
   <button type="button" id="btnInfo" class="title-note"><span id="verTxt">Version</span> · Fanspiel · <u>Info &amp; Datenschutz</u></button>
+  <button type="button" id="btnFb" class="chip-btn code-btn fb-chip" aria-label="Fragebogen zum Spiel, bitte ausfüllen" hidden><span class="ico" data-icon="chat" data-size="20"></span><span class="fbq"><span class="fbq-k">BITTE AUSFÜLLEN</span><span class="fbq-t">Fragebogen zum Spiel</span></span></button>
   <div class="title-top">
     <button type="button" id="btnJumper" class="chip-btn" aria-label="Deine Figur bearbeiten"><span id="tjFlag" class="flag"></span><span id="tjName">MAT</span><span class="ico ico-muted" data-icon="pencil" data-size="16"></span></button>
     <button type="button" id="btnCode" class="chip-btn code-btn" aria-label="Dein Code" hidden><span class="ico" data-icon="key" data-size="20"></span><span>Code</span></button>
@@ -2279,7 +2285,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
         <div class="set-row"><span class="lbl set-txt">Version, Datenschutz und Hinweise zum Spiel</span><button type="button" id="btnSetInfo" class="btn btn-secondary btn-s"><span>Info</span><span class="ico" data-icon="arrow-right"></span></button></div>
       </div>
       <div class="set-col">
-        <div id="rowSetFb" class="set-row" hidden><span class="lbl set-txt">Was gut ist und was stört: kurzer Fragebogen, gut eine Minute</span><button type="button" id="btnSetFb" class="btn btn-secondary btn-s"><span>Rückmeldung</span><span class="ico" data-icon="arrow-right"></span></button></div>
+        <div id="rowSetFb" class="set-row" hidden><span class="lbl set-txt">Was gut ist und was stört: kurzer Fragebogen zum Spiel, gut eine Minute</span><button type="button" id="btnSetFb" class="btn btn-secondary btn-s"><span>Fragebogen</span><span class="ico" data-icon="arrow-right"></span></button></div>
         <div class="set-row"><span id="setResetTxt" class="lbl set-txt">Bestweiten, Sterne und Meisterschaft löschen</span><button type="button" id="btnReset" class="btn btn-secondary btn-s"><span>Zurücksetzen</span></button></div>
       </div>
     </div>
@@ -9594,8 +9600,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   function mount(host, opts) {
     opts = opts || {};
     const name = opts.name || "das Spiel", plays = () => (typeof opts.plays === "function" ? +opts.plays() || 0 : 0);
-    const el = at(mk("div", "fb-dialog"), { role: "dialog", "aria-modal": "true", "aria-label": "Rückmeldung zum Spiel", tabindex: "-1" });
-    const head = mk("div", "fb-head"), kick = mk("span", "fb-kicker", `RÜCKMELDUNG · ${String(name).toUpperCase()}`), count = mk("span", "fb-count");
+    const el = at(mk("div", "fb-dialog"), { role: "dialog", "aria-modal": "true", "aria-label": "Fragebogen zum Spiel", tabindex: "-1" });
+    const head = mk("div", "fb-head"), kick = mk("span", "fb-kicker", `FRAGEBOGEN · ${String(name).toUpperCase()}`), count = mk("span", "fb-count");
     const bx = at(btn("fb-x", null, X), { "aria-label": "Schließen" });
     head.append(kick, count, bx);
     const bar = mk("div", "fb-bar"), fill = mk("i");
@@ -12673,7 +12679,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp, FIG = window.CMFigur, PASS = window.CMPass;
-  const VERSION = "0.62";
+  const VERSION = "0.63";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -13534,6 +13540,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   function refreshTitle() {
     el.tjFlag.innerHTML = flag(S.nation); txt(el.tjName, S.name || "SPRINGER");
     vis($("btnCode"), !!ON);
+    vis($("btnFb"), !!FB);
     requestAnimationFrame(fitLogo);
     $("hillSketch").innerHTML = hillSketch(H);
     txt($("hillName"), H.name); txt($("hillSub"), hillSub(H)); fitSoon();
@@ -18548,6 +18555,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   on("btnInfo", () => openInfo("title"));
   on("btnSetInfo", () => openInfo("settings"));
   on("btnSetFb", () => openFb("settings"));
+  on("btnFb", () => openFb(null));
   on("btnIfDone", () => closeInfo());
   on("btnSaveOut", () => exportSave());
   on("btnSaveIn", () => { $("inSaveFile").value = ""; $("inSaveFile").click(); });
@@ -18575,7 +18583,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     vis($("btnOlSave"), !saved && !off); vis($("btnOlNow"), saved && !off); vis($("btnOlStop"), saved);
     vis($("olLoadBox"), !!olLoad);
     $("tgOnline").setAttribute("aria-checked", String(!S.noOnline));
-    txt($("olPriv"), "Freiwillig und nur, wenn du es nutzt: Für Gruppen speichern wir Name, Nation, Farben, Sprünge sowie Reaktionen und Kommentare zu Sprüngen, sichtbar für alle mit dem Gruppen-Link, dazu wer in welcher Gruppe ist, für den Online-Spielstand deinen Spielstand und deine Figur für alle Spiele von Cold Medal (Name, Land, Aussehen, Taler). Gespeichert bei Supabase Inc. auf Servern in Frankfurt (Art. 6 Abs. 1 lit. b DSGVO). Gruppen werden 30 Tage nach dem letzten Sprung, Beitritt oder Kommentar gelöscht, dein Eintrag mit Namen ebenso, mit Online-Spielstand erst nach 13 Monaten ohne Nutzung. Deinen Code speichern wir nur als Prüfwert. Den Fragebogen speichern wir ohne Namen und Code.");
+    txt($("olPriv"), "Freiwillig und nur, wenn du es nutzt: Für Gruppen speichern wir Name, Nation, Farben, Sprünge sowie Reaktionen und Kommentare zu Sprüngen, sichtbar für alle mit dem Gruppen-Link, dazu wer in welcher Gruppe ist, für den Online-Spielstand deinen Spielstand und deine Figur für alle Spiele von Cold Medal (Name, Land, Aussehen, Taler). Gespeichert bei Supabase Inc. auf Servern in Frankfurt (Art. 6 Abs. 1 lit. b DSGVO). Gruppen werden 30 Tage nach dem letzten Sprung, Beitritt oder Kommentar gelöscht, dein Eintrag mit Namen ebenso, mit Online-Spielstand erst nach 13 Monaten ohne Nutzung. Deinen Code speichern wir nur als Prüfwert. Den Fragebogen speichern wir ohne Namen und Code, zwei Jahre lang.");
   }
   on("btnOnline", () => openOnline(overlay === "info" ? "info" : null));
   on("btnOlDone", () => closeOnline());
