@@ -1466,6 +1466,22 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 }
 @media (prefers-reduced-motion: reduce) { .ps-btn:active, .ps-stage:active { transform: none; } }
 
+/* 14.11.2026 (Mat: „das Figurenmenü muss vereinheitlicht und schöner gestaltet werden“, iPhone-Schriften laufen breiter):
+   Kopf mit Zeile „Athletenpass“, Bühne mit Rahmen wie ein Passbild, Reiter und Auswahlknöpfe schrumpfen statt überzulaufen,
+   Bildunterschrift einzeilig. Nur Aussehen und Platz; Aufbau, Klassen und Verhalten bleiben gleich. */
+.ps-head { padding-bottom: 6px; border-bottom: 2px solid var(--ps-ink-deep); }
+.ps-title::before { content: "Athletenpass · Cold Medal Games"; display: block; margin-bottom: 2px; font-family: var(--ps-label); font-weight: 700;
+  font-size: 11px; line-height: 13px; letter-spacing: 0.24em; color: var(--ps-red); }
+.ps-stage { border-width: 3px; box-shadow: inset 0 0 0 3px #FBF8F1, inset 0 0 0 4px rgba(30, 39, 52, 0.25), 0 3px 0 rgba(20, 27, 37, 0.35); }
+.ps-cap { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ps-tabs button { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ps-row > .ps-seg { flex: 0 1 auto; min-width: 0; max-width: 100%; }
+.ps-row > .ps-seg button { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 8px; font-size: 15px; }
+.ps-opts, .ps-tabbox { min-width: 0; }
+.ps-dialog { gap: 8px; }
+.ps-head { padding-bottom: 4px; }
+.ps-title { font-size: 28px; line-height: 29px; }
+
 </style>
 </head>
 <body>
@@ -7586,6 +7602,190 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   K.panorama = { LAYERS, buildPanorama, drawPanorama, drawFront, drawSky, drawReflection, drawLive, mountPanorama, placePanorama };
 })(typeof window !== "undefined" ? window : globalThis);
 
+/* Cold Medal Games · Wetter für alle Spiele (kulisse/wetter.js, CMKulisse.wetter)
+ *
+ * Vier Wetterlagen, sichtbar und spürbar verschieden (erprobt im Schneeball 0.8 bis 0.11, Mat 13. und 14.11.2026; herausgelöst
+ * für alle Spiele am 14.11.2026): klar (sonnig), grau (bedeckt), neu (Schneefall), sturm (Schneesturm). Hier liegen das Bild des
+ * Wetters und das Wetter des Tages; was es mit der Physik macht (Wind, Schnee, Ski, Ball), legt jedes Spiel selbst fest.
+ * Gezeichnet wird ohne Zustand, nur aus der Zeit t: kein Zufall im Bild, gleiche Zeit gibt gleiches Bild.
+ *
+ *   W.tag(ort, datum, o)     Wetter des Tages je Ort, aus Ort und Datum gerechnet, für alle gleich. datum: beliebiger Schlüssel
+ *                            ("2026-11-14", Seed einer Gruppenrunde). o.gewicht { klar, grau, neu, sturm } (Standard 2, 1, 1, 1),
+ *                            o.schnee: Neigung des Orts zu Schneefall (Faktor auf neu)
+ *   W.wind(lage, t, x)       Wind für Animationen: { d: Richtung ±1, k: Grundstärke 0 … 1, g: Stärke mit Böen }; x: Wind in m/s
+ *   W.himmel(c, o)           über Himmel und Bergen, direkt nach dem Panorama: Sonne mit Glanz und Strahlen, Alpendohlen; Hochnebel,
+ *                            Nebel- und Wolkenbänke, im Sturm fast weiß. o: { lage, W, unten (Horizont, bis dahin wird getönt), t,
+ *                            nacht, sonne: [x, y] oder tageszeit ("morning" links tief, sonst rechts hoch), x (Wind m/s), k (Maßstab,
+ *                            Bildhöhe / 390), voegel (Standard ja) }
+ *   W.ueber(c, o)            über der ganzen Szene, zuletzt: Glitzern auf dem Schnee, Flocken, Sturmnebel, Schneefahnen am Boden.
+ *                            o: { lage, W, H, t, cx (Kameraweg in px auf Bodenhöhe, für die Parallaxe), boden (y der Schneefläche; ohne
+ *                            kein Glitzern und keine Schneefahnen), flocken (eigene Flocken, Standard ja), nacht, x, k, dicht (Stärke
+ *                            des Schleiers bei bedeckt und Sturm, Standard 1; das Skispringen nimmt weniger, damit der Springer gut
+ *                            zu sehen bleibt) }
+ *   W.rauch(c, x, y, s, t, a0, w)  Rauch, der mit dem Wind zieht (w aus W.wind): bei Windstille gerade, im Sturm flach weggerissen
+ *   W.temp(lage, tageszeit)  Abweichung der Temperatur in °C: Sonne wärmt am Tag, Schneefall kühlt etwas, Sturm deutlich
+ *   W.flocken(lage)          Menge Schneefall 0 … 1,3 für Spiele mit eigenen Flocken
+ *   W.KEYS, W.NAME (sonnig, bedeckt …), W.SICHT (klare Sicht, graues Licht …)
+ */
+(function (root) {
+  "use strict";
+  const TAU = Math.PI * 2;
+  const KEYS = ["klar", "grau", "neu", "sturm"];
+  const NAME = { klar: "sonnig", grau: "bedeckt", neu: "Schneefall", sturm: "Schneesturm" };
+  const SICHT = { klar: "klare Sicht", grau: "graues Licht", neu: "es schneit", sturm: "kaum Sicht" };
+  const BASE = { klar: 0.08, grau: 0.2, neu: 0.28, sturm: 0.82 };   // Grundstärke des Winds je Lage (0 still … 1 Sturm)
+  const ok = (l) => (NAME[l] ? l : "klar");
+
+  // FNV-1a über den Text: gleiche Eingabe, gleiche Zahl, auf jedem Gerät
+  function hash(s) {
+    let h = 0x811c9dc5;
+    s = String(s);
+    for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+    return h >>> 0;
+  }
+  // Rauschwert 0 … 1 aus zwei Zahlen (Positionen der Flocken und Funken, ohne Zustand)
+  const hsh = (i, k) => { const v = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453; return v - Math.floor(v); };
+
+  function tag(ort, datum, o) {
+    o = o || {};
+    const w = Object.assign({ klar: 2, grau: 1, neu: 1, sturm: 1 }, o.gewicht || {});
+    if (o.schnee != null) w.neu *= Math.max(0, o.schnee);
+    let sum = 0;
+    for (const k of KEYS) sum += Math.max(0, w[k] || 0);
+    if (!(sum > 0)) return "klar";
+    let x = (hash(`wetter|${String(ort || "").split("-")[0]}|${datum}`) % 100000) / 100000 * sum;
+    for (const k of KEYS) { x -= Math.max(0, w[k] || 0); if (x < 0) return k; }
+    return "klar";
+  }
+
+  function wind(lage, t, x) {
+    x = +x || 0;
+    const k = Math.min(1, BASE[ok(lage)] + Math.abs(x) * 0.05), gust = 0.7 + 0.3 * Math.sin(t * 1.3) * Math.sin(t * 0.47 + 2);
+    return { d: x < 0 ? -1 : 1, k, g: k * gust };
+  }
+
+  const temp = (lage, tageszeit) => (lage === "klar" ? (tageszeit === "evening" ? 0 : 1.5) : lage === "neu" ? -1 : lage === "sturm" ? -4 : 0);
+  const flocken = (lage) => ({ klar: 0, grau: 0.2, neu: 1, sturm: 1.3 })[ok(lage)];
+
+  function rauch(c, x, y, s, t, a0, w) {
+    w = w || { d: 1, k: 0, g: 0 };
+    const dx = w.d * (0.5 + w.g * 5), up = 3.2 * (1 - w.g * 0.7), sp = 0.22 + w.g * 0.4;
+    for (let i = 0; i < 7; i++) {
+      const a = (t * sp + i / 7) % 1;
+      c.fillStyle = `rgba(210,212,216,${a0 * (1 - a)})`;
+      c.beginPath(); c.arc(x + a * dx * s + Math.sin(t + i) * 0.15 * s * (1 - w.k), y - a * up * s, (0.25 + a * 0.7 * (1 + w.g * 0.6)) * s, 0, TAU); c.fill();
+    }
+  }
+
+  function himmel(c, o) {
+    const lage = ok(o.lage), W = o.W, bottom = o.unten, t = o.t || 0, night = !!o.nacht, k = o.k || 1, dir = (+o.x || 0) < 0 ? -1 : 1;
+    c.save();
+    if (lage === "klar") {
+      if (night) { c.restore(); return; }
+      const sun = o.sonne || (o.tageszeit === "morning" ? [W * 0.18, 70 * k] : [W * 0.72, 40 * k]), sx = sun[0], sy = sun[1];
+      const g = c.createRadialGradient(sx, sy, 4 * k, sx, sy, 260 * k);
+      g.addColorStop(0, "rgba(255,250,225,0.95)"); g.addColorStop(0.08, "rgba(255,244,210,0.55)"); g.addColorStop(0.4, "rgba(255,236,200,0.12)"); g.addColorStop(1, "rgba(255,236,200,0)");
+      // Glanz nur im Umkreis der Sonne füllen (außerhalb ist der Verlauf durchsichtig)
+      const x0 = Math.max(0, sx - 260 * k), x1 = Math.min(W, sx + 260 * k), y1 = Math.min(bottom, sy + 260 * k);
+      c.fillStyle = g; if (x1 > x0 && y1 > 0) c.fillRect(x0, 0, x1 - x0, y1);
+      c.fillStyle = "rgba(255,255,248,1)"; c.beginPath(); c.arc(sx, sy, 13 * k, 0, TAU); c.fill();
+      // Strahlen, langsam drehend
+      c.translate(sx, sy); c.rotate(t * 0.03); c.fillStyle = "rgba(255,248,220,0.10)";
+      for (let i = 0; i < 9; i++) { c.rotate(TAU / 9); c.beginPath(); c.moveTo(0, 0); c.lineTo(220 * k, (-12 - (i % 3) * 6) * k); c.lineTo(220 * k, (12 + (i % 2) * 6) * k); c.closePath(); c.fill(); }
+      c.restore(); c.save();
+      // Alpendohlen kreisen über dem Tal
+      if (o.voegel !== false) {
+        c.strokeStyle = "rgba(30,30,36,0.85)"; c.lineWidth = 1.4 * k; c.lineCap = "round";
+        for (let i = 0; i < 5; i++) {
+          const ang = t * (0.25 + i * 0.04) + i * 1.3, bx = W * (0.3 + 0.12 * i) + Math.cos(ang) * (40 + i * 9) * k, by = (70 + i * 11 + Math.sin(ang) * 16) * k, fl = Math.sin(t * 9 + i * 2) * 2.5 * k, sz = (3.6 - i * 0.25) * k;
+          c.beginPath(); c.moveTo(bx - sz, by - fl); c.quadraticCurveTo(bx - sz * 0.4, by - k, bx, by); c.quadraticCurveTo(bx + sz * 0.4, by - k, bx + sz, by - fl); c.stroke();
+        }
+      }
+      c.restore();
+      return;
+    }
+    const a = lage === "grau" ? [0.55, 0.3] : lage === "neu" ? [0.62, 0.42] : [0.9, 0.82];
+    const col = night ? "110,112,130" : lage === "sturm" ? "226,230,236" : "190,196,205";
+    const g = c.createLinearGradient(0, 0, 0, bottom); g.addColorStop(0, `rgba(${col},${a[0]})`); g.addColorStop(1, `rgba(${col},${a[1]})`);
+    c.fillStyle = g; c.fillRect(0, 0, W, bottom);
+    // Nebelbänke ziehen über die Bergflanken (bei bedeckt deutlich, sonst zart)
+    const fa = lage === "grau" ? 0.5 : lage === "neu" ? 0.35 : 0.25, fc = night ? "150,150,170" : "236,238,242", span = W + 500 * k;
+    for (let i = 0; i < 5; i++) {
+      const sp = (6 + i * 3) * dir * (lage === "sturm" ? 4 : 1) * k, x = ((i * 211 * k + t * sp) % span + span) % span - 250 * k, y = bottom - (70 - i * 13) * k + Math.sin(t * 0.2 + i) * 4 * k;
+      const g2 = c.createRadialGradient(x, y, 4 * k, x, y, 200 * k); g2.addColorStop(0, `rgba(${fc},${fa})`); g2.addColorStop(1, `rgba(${fc},0)`);
+      c.fillStyle = g2; c.save(); c.translate(x, y); c.scale(1, 0.16); c.translate(-x, -y); c.fillRect(x - 200 * k, y - 200 * k, 400 * k, 400 * k); c.restore();
+    }
+    // Wolkenbänke (nicht bei Hochnebel)
+    if (lage !== "grau") {
+      c.fillStyle = `rgba(${night ? "90,92,110" : "160,168,180"},${lage === "sturm" ? 0.35 : 0.3})`;
+      const sp2 = W + 300 * k;
+      for (let i = 0; i < 7; i++) {
+        const x = ((i * 157 * k + t * (lage === "sturm" ? 30 : 4) * dir * k) % sp2 + sp2) % sp2 - 150 * k, y = (30 + (i % 3) * 38) * k;
+        c.beginPath(); c.ellipse(x, y, 150 * k, 24 * k, 0, 0, TAU); c.fill();
+      }
+    }
+    c.restore();
+  }
+
+  function ueber(c, o) {
+    const lage = ok(o.lage), W = o.W, H = o.H, t = o.t || 0, cx = o.cx || 0, k = o.k || 1, boden = o.boden, flk = o.flocken !== false;
+    const dir = (+o.x || 0) < 0 ? -1 : 1, md = (v, m) => ((v % m) + m) % m, dk = o.dicht != null ? Math.max(0, +o.dicht) : 1;
+    c.save();
+    if (lage === "klar") {
+      // Glitzern: einzelne Kristalle funkeln auf dem Schnee auf (nicht am Abend)
+      if (boden != null && !o.nacht) {
+        c.strokeStyle = "rgba(255,255,255,0.95)"; c.lineWidth = 1;
+        for (let i = 0; i < 70; i++) {
+          const x = md(hsh(i, 1) * W * 1.5 - cx, W), y = boden + 10 * k + hsh(i, 2) * (H - boden - 12 * k), tw = Math.sin(t * (2 + hsh(i, 3) * 4) + i * 3);
+          if (tw > 0.75) { const r = (tw - 0.75) * 10 * (0.5 + hsh(i, 4)) * k; c.beginPath(); c.moveTo(x - r, y); c.lineTo(x + r, y); c.moveTo(x, y - r); c.lineTo(x, y + r); c.stroke(); }
+        }
+      }
+      c.restore();
+      return;
+    }
+    if (lage === "grau") {
+      c.fillStyle = `rgba(110,120,135,${0.1 * dk})`; c.fillRect(0, 0, W, H);
+      if (flk) {   // vereinzelte Flocken
+        c.fillStyle = "rgba(255,255,255,0.7)";
+        for (let i = 0; i < 18; i++) { const x = md(hsh(i, 8) * W - cx / 3 + Math.sin(t * 0.6 + i) * 18 * k, W), y = md(hsh(i, 9) * H + t * 12 * k, H); c.beginPath(); c.arc(x, y, 1.1 * k, 0, TAU); c.fill(); }
+      }
+      c.restore();
+      return;
+    }
+    const st = lage === "sturm";
+    if (st) {   // Nebel: oben dicht, unten lichter, schwillt mit den Böen
+      const gu = 0.5 + 0.5 * Math.sin(t * 0.9) * Math.sin(t * 0.37 + 1), g = c.createLinearGradient(0, 0, 0, H);
+      g.addColorStop(0, `rgba(232,236,242,${(0.55 + 0.2 * gu) * dk})`); g.addColorStop(0.62, `rgba(232,236,242,${(0.25 + 0.22 * gu) * dk})`); g.addColorStop(1, `rgba(232,236,242,${(0.05 + 0.08 * gu) * dk})`);
+      c.fillStyle = g; c.fillRect(0, 0, W, H);
+    }
+    if (flk) {
+      const n = st ? 420 : 120, vx = st ? 260 * dir : 14, vy = st ? 120 : 26;
+      c.fillStyle = "rgba(255,255,255,0.88)"; c.strokeStyle = "rgba(255,255,255,0.8)"; c.lineCap = "round";
+      for (let i = 0; i < n; i++) {
+        const d = 0.4 + hsh(i, 5) * 0.9, x = md(hsh(i, 6) * W - cx * 0.5 * d + Math.sin(t * 0.7 + i) * 12 * k + t * vx * d * k, W), y = md(hsh(i, 7) * H + t * vy * d * k, H);
+        if (st) { c.lineWidth = (0.8 + d) * k; c.beginPath(); c.moveTo(x, y); c.lineTo(x - dir * 9 * d * k, y - 4 * d * k); c.stroke(); }
+        else { c.beginPath(); c.arc(x, y, (0.9 + d * 1.1) * k, 0, TAU); c.fill(); }
+      }
+      if (!st) {   // große, nahe Flocken taumeln vorbei
+        c.fillStyle = "rgba(255,255,255,0.75)";
+        for (let i = 0; i < 14; i++) { const x = md(hsh(i, 14) * W - cx * 1.8 + Math.sin(t * 1.1 + i * 2) * 26 * k + t * 20 * k, W), y = md(hsh(i, 15) * H + t * 55 * k, H), r = (2.2 + hsh(i, 16) * 2.2) * k; c.beginPath(); c.arc(x, y, r, 0, TAU); c.fill(); }
+      }
+    }
+    if (st && boden != null) {   // Schneefahnen fegen über den Boden
+      const w = wind(lage, t, o.x), span = W + 400 * k;
+      for (let i = 0; i < 26; i++) {
+        const d = 0.5 + hsh(i, 10), y = boden + 6 * k + hsh(i, 11) * (H - boden - 6 * k), len = (60 + hsh(i, 12) * 140) * d * k, x = md(hsh(i, 13) * span - cx * 0.85 * d + t * 420 * d * dir * k, span) - 200 * k;
+        const g = c.createLinearGradient(x - dir * len, y, x, y); g.addColorStop(0, "rgba(250,252,255,0)"); g.addColorStop(1, `rgba(250,252,255,${0.35 * w.g + 0.1})`);
+        c.strokeStyle = g; c.lineWidth = (2 + d * 3) * k; c.beginPath(); c.moveTo(x - dir * len, y + Math.sin(t * 3 + i) * 2 * k); c.quadraticCurveTo(x - dir * len * 0.5, y - 3 * d * k, x, y); c.stroke();
+      }
+    }
+    c.restore();
+  }
+
+  const K = root.CMKulisse || (root.CMKulisse = {});
+  K.wetter = { KEYS, NAME, SICHT, hash, tag, wind, himmel, ueber, rauch, temp, flocken };
+})(typeof window !== "undefined" ? window : globalThis);
+
 /* TELEMARK – Kulisse an der Schanze: Zuschauer, Banden, Richterturm und Objekte entlang des Hangs.
  * Orte, Panorama, Stadion-Teile und Tageszeiten liegen gemeinsam in ../kulisse/ (basis, orte, stadion, panorama).
  * Welt in Metern (wie render.js). Die Schnittstelle TMScene bleibt wie vorher.
@@ -7955,7 +8155,10 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     jubel: [[0, POSES.stand], [0.35, POSES.cheer], [0.6, { lean: -2, crouch: 0, sL: [6, 14], fL: [0, 14], aF: [150, 26], aB: [-150, -26], hd: -14 }], [1, POSES.cheer]],
     winken: [[0, POSES.wave], [0.5, Object.assign({}, POSES.wave, { aF: [112, 66] })], [1, POSES.wave]],
   };
-  const KEYS = ["lean", "crouch", "hd"], PAIRS = ["sL", "fL", "aF", "aB"];
+  // fA/sA Spiel-/Standbein seitlich abgespreizt, aFA/aBA Arm vorn/hinten seitlich gehoben (Grad, frei, Standard 0):
+  // Drehung um die Achse nach vorn durch Hüfte bzw. Schulter – sichtbar, sobald sich die Figur dreht (Eiskunstlauf 0.43)
+  // ao3: Arme seitlich für die 3D-Figur (figur3d.js), unabhängig von der Blickrichtung; 2D nutzt es nicht
+  const KEYS = ["lean", "crouch", "hd", "ao", "fA", "sA", "aFA", "aBA", "ao3"], PAIRS = ["sL", "fL", "aF", "aB"];
   const val = (o, k) => (o[k] == null ? 0 : o[k]);
   function mix(a, b, t) {
     const o = {};
@@ -7965,8 +8168,12 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   }
   // Posen als Zahlenreihe (für weiche Kurven durch Schlüsselbilder); lift = Höhe über dem Boden (Sprung)
   const CH = 12;
-  const toVec = (p, lift) => [val(p, "lean"), val(p, "crouch"), val(p, "hd"), p.sL[0], p.sL[1], p.fL[0], p.fL[1], p.aF[0], p.aF[1], p.aB[0], p.aB[1], lift || 0];
-  const toPose = (v) => ({ lean: v[0], crouch: v[1], hd: v[2], sL: [v[3], v[4]], fL: [v[5], v[6]], aF: [v[7], v[8]], aB: [v[9], v[10]] });
+  const toVec = (p, lift) => [val(p, "lean"), val(p, "crouch"), val(p, "hd"), p.sL[0], p.sL[1], p.fL[0], p.fL[1], p.aF[0], p.aF[1], p.aB[0], p.aB[1], lift || 0, val(p, "ao"), val(p, "fA"), val(p, "sA"), val(p, "aFA"), val(p, "aBA"), val(p, "ao3")];
+  const toPose = (v) => {
+    const o = { lean: v[0], crouch: v[1], hd: v[2], sL: [v[3], v[4]], fL: [v[5], v[6]], aF: [v[7], v[8]], aB: [v[9], v[10]], ao: v[12] || 0 };
+    ["fA", "sA", "aFA", "aBA", "ao3"].forEach((k, i) => { if (v[13 + i]) o[k] = v[13 + i]; });
+    return o;
+  };
   // Weiche Kurve durch Schlüsselbilder K = [[t, Zahlenreihe], …]: Geschwindigkeit ohne Sprung (Hermite-Kurve), aber kein
   // Überschwingen: an Umkehrpunkten und Haltepunkten steht die Bewegung kurz (Steigung 0). loop: zyklisch, letztes = erstes Bild.
   function spline(K, t, loop) {
@@ -8080,7 +8287,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     return o;
   }
   // weich nachführen: Rumpf und Beine zügig, Arme etwas später (fließender Armzug); fast = Sprung, Sturz
-  const RATE = { lean: 9, crouch: 9, hd: 8, sL: 13, fL: 11, aF: 6.5, aB: 6 };
+  const RATE = { lean: 9, crouch: 9, hd: 8, ao: 6.5, sL: 13, fL: 11, aF: 6.5, aB: 6, fA: 11, sA: 13, aFA: 6.5, aBA: 6, ao3: 7 };
   function ease(cur, tgt, dt, fast) {
     if (!cur) return tgt;
     const o = {}, m = fast ? 2.4 : 1, a = (k) => 1 - Math.exp(-RATE[k] * m * dt);
@@ -8241,8 +8448,14 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const split = L.pattern === "split", stripe = L.pattern === "stripe";
     const legN = split ? acc : suit, legF = split ? accD : suitD;
     // Beine: Fuß je nach Ausrüstung; Ski und Stiefel zeichnet derselbe Teil, damit die Reihenfolge stimmt
-    const leg = (pts, z0, z1, w, col, shinDeg, skiDeg, near) => {
-      const q = pts.map((pt, i) => P(pt, z0 + (z1 - z0) * i / (pts.length - 1)));
+    // seitlich abspreizen: Drehung um die Achse nach vorn durch den ersten Punkt (Hüfte, Schulter), nach außen (Seite von z0)
+    const abd = (pt, i, root, z, A, side) => {
+      if (!A || !i) return [pt[1], z];
+      const dy = pt[1] - root[1], a = rad(A);
+      return [root[1] + dy * Math.cos(a), z + side * dy * Math.sin(a)];
+    };
+    const leg = (pts, z0, z1, w, col, shinDeg, skiDeg, near, A) => {
+      const q = pts.map((pt, i) => { const [y, z] = abd(pt, i, pts[0], z0 + (z1 - z0) * i / (pts.length - 1), A, Math.sign(z0) || 1); return P([pt[0], y], z); });
       parts.push({ d: depth(q), f: () => {
         const an = q[q.length - 1];
         if (SKI[K.feet]) ski(ctx, an, skiDeg || 0, c, SKI[K.feet], near, W, skiC);
@@ -8263,12 +8476,19 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     };
     const sk = o.ski || {};
     // Standbein auf der nahen Seite (zs = 1), die nahe Seite ist heller
-    leg([hip, fKn, fAn], -Z.hip * zs, -Z.hip * zs, 6, zs > 0 ? legF : legN, J.fSh, zs > 0 ? sk.f : sk.n, zs < 0);
-    leg([hip, knee, ank], Z.hip * zs, Z.hip * 0.6 * zs, 6.2, zs > 0 ? legN : legF, J.sKn, zs > 0 ? sk.n : sk.f, zs > 0);
+    leg([hip, fKn, fAn], -Z.hip * zs, -Z.hip * zs, 6, zs > 0 ? legF : legN, J.fSh, zs > 0 ? sk.f : sk.n, zs < 0, p.fA);
+    leg([hip, knee, ank], Z.hip * zs, Z.hip * 0.6 * zs, 6.2, zs > 0 ? legN : legF, J.sKn, zs > 0 ? sk.n : sk.f, zs > 0, p.sA);
     // Arme mit Hand (Haut oder Handschuh) und Stock
     const hand = K.glove === "suit" ? suit : K.glove ? GLOVE : skin;
-    const arm = (pts, z0, z1, col, near) => {
-      const q = pts.map((pt, i) => P(pt, z0 + (z1 - z0) * i / (pts.length - 1)));
+    // ao (Grad, frei, Standard 0): Arme seitlich vom Körper weg, um die senkrechte Achse durch die Schulter gedreht
+    const ao = rad(p.ao || 0), aoC = Math.cos(ao), aoS = Math.sin(ao);
+    const arm = (pts, z0, z1, col, near, A) => {
+      const q = pts.map((pt, i) => {
+        const [y, z] = abd(pt, i, pts[0], z0 + (z1 - z0) * i / (pts.length - 1), A, Math.sign(z0) || 1);
+        if (!ao || !i) return P([pt[0], y], z);
+        const dx = pt[0] - pts[0][0];
+        return P([pts[0][0] + dx * aoC, y], z + Math.sign(z0) * Math.abs(dx) * aoS);
+      });
       parts.push({ d: depth(q), f: () => {
         const h = q[q.length - 1], e = q[q.length - 2], an = Math.atan2(h[1] - e[1], h[0] - e[0]);
         if (K.hands === "poles") {
@@ -8287,8 +8507,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       let l = POLE; if (dy > 0.05) l = Math.min(l, (GROUND - h[1]) / dy);
       return [h[0] + dx * l, h[1] + dy * l];
     };
-    arm(J.aB, -Z.sh, -Z.sh - 2, suitD, false);
-    arm(J.aF, Z.sh, Z.sh + 2, shade(suit, 1.08), true);
+    arm(J.aB, -Z.sh, -Z.sh - 2, suitD, false, p.aBA);
+    arm(J.aF, Z.sh, Z.sh + 2, shade(suit, 1.08), true, p.aFA);
     // Rumpf: Querschnitt als Ellipse (Tiefe im Profil, Breite von vorn); sichtbare halbe Breite je Höhe
     const hw = (dep, wid) => Math.sqrt((dep * c) ** 2 + (wid * sn) ** 2);
     const lvl = [[2.5, 6.2, 6.8], [-6, 4.6, 5.4], [-18, 7.2, 7.4], [-25.5, 7, 8.6]]; // [y im Rumpf, Tiefe, Breite]
@@ -9550,6 +9770,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     predazzo: { snow: 0.4 }, zakopane: { snow: 1.25 }, willingen: { snow: 0.95 }, engelberg: { snow: 0.5 }, planica: { snow: 0.7 }, stmoritz: { snow: 0.35 },
   };
   const atmoFor = (key) => ATMO[key] || ATMO[key.split("-")[0]] || ATMO.oberstdorf;
+  const WX = root.CMKulisse && root.CMKulisse.wetter;   // Wetterlagen der Reihe (kulisse/wetter.js)
   function mixHex(a, b, t) {
     const h = (c) => [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)];
     const A = h(a), B = h(b);
@@ -9612,6 +9833,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     }
 
     setLook(l) { this.look = Object.assign({}, DEFAULT_LOOK, l || {}); }
+    // Wetterlage aus kulisse/wetter.js: klar, grau, neu, sturm (seit 0.59). x: Wind in m/s für die Richtung von Nebel und Wolken.
+    setWeather(lage, x) { this.wx = WX && WX.NAME[lage] ? lage : "klar"; this.wxX = +x || 0; }
 
     setTheme(name) {
       const n = TOD[name] ? name : "evening";
@@ -9732,6 +9955,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       const vis = (x, y, m) => x > xMin - (m || 0) && x < xMax + (m || 0) && y > yMin - (m || 0) && y < yMax + (m || 0);
 
       this.background(G, cam, k, v);
+      // Wetter über Himmel und Bergen (die Ebenen liegen hinter der Leinwand: hier nur Tönung, Nebel, Wolken, Sonne darüber)
+      if (WX && this.wx) WX.himmel(ctx, { lage: this.wx, W, unten: this.hor + 8 * k, t: v.t || 0, nacht: this.theme === "evening", tageszeit: this.theme, x: this.wxX, k });
       // Bäume hinter der Kante: bei ruhender Kamera (Menü, Übersicht: tausende Punkte) einmal zeichnen, dann nur kopieren
       const q = (x) => Math.round(x * 512), camKey = q(cam.cx) + "," + q(cam.cy) + "," + q(cam.ppm) + "," + q(cam.ax) + "," + q(cam.ay) + "|" + W + "x" + H + "@" + this.dpr + "|" + this.theme + "|" + G.H.key;
       this.stillLayer("back", camKey, () => this.backTrees(G, cam, k, xMin, xMax));
@@ -9740,6 +9965,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       Scene.drawWorld(ctx, v.hill, G.world, cam, { W, H, t: v.t, focus: v.focus, screen: v.screen }, G.rightY);
       this.groundLayer(G, v.hill, S, xMin, xMax, cam, k, v);
       this.grainLayer();
+      // Wetter-Schleier über Hang und Kulisse, unter dem Springer: im Sturm neblig, der Springer bleibt klar zu sehen
+      if (WX && this.wx) WX.ueber(ctx, { lage: this.wx, W, H, t: v.t || 0, flocken: false, nacht: this.theme === "evening", x: this.wxX, k, dicht: 0.75 });
       if (v.flags) this.windFlags(v.hill, S, cam, k, v);
       if (v.best && v.best.d > 40) this.beam(v.hill, S, cam, k, v.best);
       if (v.ideal) this.idealLine(S, cam, k, v.ideal);
@@ -9754,7 +9981,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       if (v.particles) this.particles(S, cam, k, v.particles);
       // Vordergrund der Plakat-Orte (Bande, Zweige): vor dem Hang, hinter dem HUD
       Scene.drawFront(ctx, this.pano, cam, this.hor, this.vs, k, W, H, G.anchor);
-      if (v.snow) v.snow.draw(ctx, k, atmoFor(v.hill.key).snow);
+      if (v.snow) { const dens = WX ? WX.flocken(this.wx) * (0.75 + 0.25 * atmoFor(v.hill.key).snow) : atmoFor(v.hill.key).snow; if (dens > 0) v.snow.draw(ctx, k, dens); }
       if (v.dim) { ctx.fillStyle = "rgba(14,20,28," + v.dim + ")"; ctx.fillRect(0, 0, W, H); }
     }
 
@@ -11039,7 +11266,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 
   // Springer in einen beliebigen Canvas zeichnen (Vorschau im Springer-Menü)
   function drawFigure(ctx, pose, look, o) { drawFig(ctx, pose, Object.assign({}, DEFAULT_LOOK, look), null, o); }
-  root.TMRender = { Renderer, Snow, POSES, blend, lean, roll, posture, C, drawFigure, DEFAULT_LOOK, flagCloth,
+  root.TMRender = { Renderer, Snow, snowOf: (key) => atmoFor(key).snow, POSES, blend, lean, roll, posture, C, drawFigure, DEFAULT_LOOK, flagCloth,
     gest: { gate: gatePose, push: pushPose, outrun: outrunPose, fallUp: fallUpPose }, row28 };
 })(typeof window !== "undefined" ? window : globalThis);
 
@@ -11255,6 +11482,12 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       // Umgebung: Wind in den Bäumen, langsam an- und abschwellend
       N.amb = this.loop(B.pink, "lowpass", 900, 0.6, this.bus.amb);
       const al = c.createOscillator(), ag = c.createGain(); al.frequency.value = 0.09; ag.gain.value = 0.02; al.connect(ag); ag.connect(N.amb.g.gain); al.start();
+      // Wetter (seit 0.59): Sturm heult (Rauschen im Bandpass, Tonhöhe und Stärke schwanken in Böen), Schneefall dämpft leise
+      N.storm = this.loop(B.pink, "bandpass", 420, 1.1, this.bus.amb);
+      const sl = c.createOscillator(), sg = c.createGain(); sl.frequency.value = 0.17; sg.gain.value = 160; sl.connect(sg); sg.connect(N.storm.fl.frequency); sl.start();
+      const sl2 = c.createOscillator(), sg2 = c.createGain(); sl2.frequency.value = 0.31; sg2.gain.value = 0; sl2.connect(sg2); sg2.connect(N.storm.g.gain); sl2.start();
+      N.stormLfo = sg2;
+      if (this.wx) this.weather(this.wx);
       // ältere iPhones: ein kurzer stiller Puffer innerhalb der Nutzeraktion schaltet Web Audio frei
       try { const sb = c.createBufferSource(); sb.buffer = c.createBuffer(1, 1, 22050); sb.connect(c.destination); sb.start(0); } catch (e) { /* egal */ }
     },
@@ -11844,11 +12077,20 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       this.to(N.ooh.fl.frequency, 430 + 170 * e, 0.2); this.to(N.ooh.f2.frequency, 820 + 280 * e, 0.2);
       this.to(N.ooh.vs.playbackRate, 0.9 + 0.32 * e, 0.25);
     },
+    // Wetterlage aus kulisse/wetter.js: im Sturm heult der Wind, sonst still
+    weather(lage) {
+      this.wx = lage;
+      if (!this.ok() || !this.nodes.storm) return;
+      const st = lage === "sturm";
+      this.to(this.nodes.storm.g.gain, st ? 0.11 : 0, 1.2);
+      this.to(this.nodes.stormLfo.gain, st ? 0.05 : 0, 1.2);
+    },
     // Ruhe am Start: Umgebung, entferntes Gemurmel
     ambience(level) {
       if (!this.ok()) return;
       this.to(this.nodes.amb.g.gain, 0.06 * level, 0.6);
       this.to(this.nodes.crowd.g.gain, 0.1 * level, 0.6);
+      if (this.wx) this.weather(this.wx);   // nach silence() heult der Sturm wieder
     },
     reset() { Object.assign(this.cs, { excite: 0, bellsAt: false, hold: 0, lastOut: 0 }); },
     jumpEnd() {
@@ -11964,7 +12206,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp, FIG = window.CMFigur, PASS = window.CMPass;
-  const VERSION = "0.58";
+  const VERSION = "0.59";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -12400,8 +12642,23 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     predazzo: "morning", zakopane: "evening", willingen: "afternoon", engelberg: "afternoon", planica: "morning" };
   const todFor = (Hh) => S.tod === "auto" ? HILL_TOD[(Hh || H).key.split("-")[0]] || "evening" : S.tod;
   if (!TODS.some((t) => t[0] === S.tod)) S.tod = "auto";
-  renderer.setTheme(todFor(H));
-  const snow = new RM.Snow(100);   // je Schanze fällt ein Teil davon (Zakopane alle, Innsbruck wenige)
+  // Wetter (seit 0.59, kulisse/wetter.js): Wetter des Tages je Schanze, aus Ort und Datum gerechnet und für alle gleich; in Gruppen
+  // und Herausforderungen aus deren Seed (im Link auch fest mitgegeben), in der Tageschallenge aus ihrem. Ein Sturm gehört zu böigem
+  // Wind: bei böigem Wind immer Sturm, ohne ihn wird aus einem Sturmtag dichter Schneefall. Wie oft es schneit, folgt dem Ort.
+  // Das Wetter ändert keinen Wind und keine Luke: es zeigt sich im Bild, im Ton und in der Schneetemperatur (Wachs).
+  const WX = window.CMKulisse.wetter;
+  let wxNow = "klar", wxSnd = null;
+  function wxFor(Hh, windMode, key) {
+    if (windMode === "strong") return "sturm";
+    const l = WX.tag(Hh.key, key || todayStr(), { schnee: RM.snowOf(Hh.key) });
+    return l === "sturm" ? "neu" : l;
+  }
+  function setWx(lage, x) { wxNow = WX.NAME[lage] ? lage : "klar"; renderer.setWeather(wxNow, x); }
+  const wxName = (l) => { const n = WX.NAME[l] || ""; return n.charAt(0).toUpperCase() + n.slice(1); };
+  // Menü und Übersicht: Tageszeit und Wetter des Tages an der Schanze, wie im Training
+  function menuScene() { renderer.setTheme(todFor(H)); setWx(wxFor(H, S.wind)); }
+  menuScene();
+  const snow = new RM.Snow(160);   // je Wetter fällt ein Teil davon (Schneefall viel, Sturm alle, bedeckt wenige, sonnig keine)
   fillIcons(document);
   $("btnPause").innerHTML = icon("pause");
   const hud = $("hud");
@@ -12799,7 +13056,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     if (!HILL_ORDER.includes(key)) return;
     S.hill = key; save();
     H = Hill.getHill(key);
-    renderer.setTheme(todFor(H));
+    menuScene();
     demo = null; demoWait = 0.3; particles = [];
     if (mode === "title") { updateCam(camTarget(null), 0, true); refreshTitle(); }
     if (mode === "setup") fillSetupHill();
@@ -12877,19 +13134,21 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const beginner = !!S.beginner && !expert && !fair && !(ctxMode === "mission" && ms.m.noAssist) && !H.era;
     // Tageszeit und Schnee des Tages; Material aus dem Shop (Einheitsmaterial online, in der Tageschallenge, in der Party, 1928, im Übungssprung)
     const tod = ctxMode === "mission" ? ms.m.tod || todFor(H) : ctxMode === "daily" ? dc.tod : ctxMode === "chal" ? chal.t : todFor(H);
-    const gear = gearFor(fair || ctxMode === "hot" || !!H.era || practice, snowCond(H, tod, todayStr()));
+    const wm = wind.mode === "side" ? "var" : wind.mode;
+    const wx = ctxMode === "chal" ? chal.x || wxFor(H, wm, "c" + chal.s) : wxFor(H, wm, ctxMode === "daily" ? "d" + dc.seed : grpNew ? "c" + seed : todayStr());
+    const gear = gearFor(fair || ctxMode === "hot" || !!H.era || practice, snowCond(H, tod, todayStr(), wx));
     J = new Ph.Jump(H, { gate, refGate, wind, seed: jseed, inrunCtl: expert, upright: ctxMode === "mission" && !!ms.m.n28 && ms.res.length === 1 && !!ms.upright,
       muK: gear.muK, aero: gear.aero, rollK: gear.rollK });
     jc = { seed: jseed, practice, light: "red", tLight: 0.9 + Math.random() * 1.2, rec: [], recT: -1, slow: practice ? [0.5, 0.7, 1][clamp(3 - practiceLeft, 0, 2)] : (ctxMode === "training" ? trainSpeed() : 1),
       drag: null, timing: null, toastT: 0, doneT: 0, dragged: false, finished: false, who, colors,
       countdown: ctxMode === "comp" || ctxMode === "hot" ? 10 : null, ghostRec: [], ghostT: -1, toLead: null, speedT: 0,
       noAssist: (ctxMode === "mission" && !!ms.m.noAssist) || expert, expert, beginner, grpNew, freeze: null, quiet: !!H.era, target: ctxMode === "mission" ? missionTarget(ms.m, H) : null,
-      prevBest: S.bests[H.key] ? S.bests[H.key].d : null, gear, tod };
+      prevBest: S.bests[H.key] ? S.bests[H.key].d : null, gear, tod, wx };
     vis($("ppMode"), expert || beginner); txt($("ppMode"), expert ? "EXPERTENMODUS" : beginner ? "ANFÄNGERMODUS" : "");
     $("ppMode").classList.toggle("beg", beginner);
     jc.toLead = toLeadDist();
     jc.duel = ctxMode === "comp" && comp.ko && comp.round === 1 && comp.duelOf("me") && comp.res[comp.duelOf("me")].r1 ? comp.byId[comp.duelOf("me")].name : null;
-    renderer.setTheme(tod);
+    renderer.setTheme(tod); setWx(wx, wind.mean || 0);
     fillGoalBox(); fillWaxBox();
     jc.ghost = ctxMode === "training" && !practice && S.ghosts[H.key] ? S.ghosts[H.key] : null;
     if (ctxMode === "chal" && chal.path) jc.ghost = { d: chal.d, path: chal.path };
@@ -13398,7 +13657,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       el.lightR.className = "light" + (jc.light === "red" ? " on-r" : "");
       el.lightG.className = "light" + (jc.light === "green" ? " on-g" : "");
       txt(el.startTitle, H.era ? (jc.light === "green" ? "Die Fahne ist unten!" : "Der Starter hebt die Fahne") : jc.light === "green" ? "Los!" : "Warte auf Grün");
-      let sub = jc.light === "green" ? (jc.expert ? "Daumen auflegen und halten, an der Kante loslassen" : "Tippen zum Start") : H.era ? "Mütze zurechtrücken" : (J.wind.mode === "off" ? "Wind aus" : "Wind wird gemessen");
+      let sub = jc.light === "green" ? (jc.expert ? "Daumen auflegen und halten, an der Kante loslassen" : "Tippen zum Start") : H.era ? "Mütze zurechtrücken" : `${wxName(wxNow)} · ${J.wind.mode === "off" ? "Wind aus" : "Wind wird gemessen"}`;
       if (jc.light === "green" && jc.countdown != null) sub = `${jc.expert ? "Daumen auflegen" : "Tippen zum Start"} · noch ${Math.max(0, Math.ceil(jc.countdown))} s`;
       el.startBox.classList.toggle("urgent", jc.light === "green" && jc.countdown != null && jc.countdown <= 5);
       txt(el.startSub, dsk(sub));
@@ -14447,7 +14706,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     if (H && H.era) applyColor(null);
     ms = null; dc = null;
     if (H && H.key !== S.hill) H = Hill.getHill(S.hill);
-    renderer.setTheme(todFor(H));
+    menuScene();
   }
 
   // Tageschallenge: aus dem Datum abgeleitet, für alle gleich
@@ -14639,7 +14898,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
         r.push([x.n, x.c || "", x.d, x.p, x.k]);
       }
     }
-    return { v: 1, h: H.key, g: J.gate, w: J.wind.mode, s: jc.seed, t: ctxMode === "chal" ? chal.t : todFor(H),
+    return { v: 1, h: H.key, g: J.gate, w: J.wind.mode, s: jc.seed, t: ctxMode === "chal" ? chal.t : todFor(H), x: jc.wx || wxNow,
       n, c: (jc.who && jc.who.nation) || S.nation,
       d: sc.dist, p: chalPts(sc.total), k: sc.kind, ...(r.length ? { r: r.slice(0, CH_BOARD) } : {}),
       ...(() => { const g2 = ghostPack2(jc.ghostRec); return g2 != null ? { g2 } : { gh: ghostPack(jc.ghostRec) }; })() };
@@ -14654,7 +14913,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       return {
         h: c.h, g: clamp(Math.round(+c.g) || Hh.refGate, 1, Hh.gates),
         w: WIND_NAME[c.w] ? c.w : "var", s: Number.isFinite(+c.s) ? Math.abs(Math.round(+c.s)) % 2147483647 : 1,
-        t: TOD_NAME[c.t] ? c.t : "evening", n: name || "SPRINGER", c: NATIONS.some((x) => x[0] === c.c) ? c.c : "",
+        t: TOD_NAME[c.t] ? c.t : "evening", x: WX.NAME[c.x] ? c.x : null, n: name || "SPRINGER", c: NATIONS.some((x) => x[0] === c.c) ? c.c : "",
         d: clamp(+c.d || 0, 0, 400), p: clamp(+c.p || 0, -100, 500), k: KIND_SHORT[c.k] ? c.k : "twofoot",
         path: c.g2 ? ghostUnpack2(c.g2) : ghostUnpack(c.gh), tries: 0, best: null,
         r: (Array.isArray(c.r) ? c.r : []).filter((x) => Array.isArray(x) && x.length >= 4).slice(0, CH_BOARD).map((x) => ({
@@ -15937,7 +16196,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   function watchGhost(c, i, back) {
     const g = c && c.ghosts && c.ghosts[i];
     if (!g) return;
-    H = Hill.getHill(c.h); renderer.setTheme(c.t);
+    H = Hill.getHill(c.h); renderer.setTheme(c.t); setWx(c.x || wxFor(H, c.w, "c" + c.s));
     startWatch(g, back, c.grp);
   }
   function watchGroupRow(i) { const c = chal; if (c) watchGhost(c, i, () => openChal(c)); }
@@ -16627,11 +16886,12 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     willingen: -1, engelberg: -5, planica: 1, stmoritz: -14 };
   const TOD_T = { morning: -3, afternoon: 2, evening: -2 };
   const tempTxt = (t) => `${t < 0 ? "−" : t > 0 ? "+" : ""}${Math.abs(t)} °C`;
-  function snowCond(Hh, tod, date) {
+  function snowCond(Hh, tod, date, wx) {
     const k = Hh.key, b = TEMP_BASE[k] != null ? TEMP_BASE[k] : TEMP_BASE[k.split("-")[0]] != null ? TEMP_BASE[k.split("-")[0]] : -4;
-    const t = Math.round(b + (TOD_T[tod] || 0) + (hash32(`${date}|${k}`) % 7) - 3);
+    // Wetter: Sonne wärmt am Tag, Schneefall kühlt etwas, Sturm deutlich (kulisse/wetter.js)
+    const t = Math.round(b + (TOD_T[tod] || 0) + (hash32(`${date}|${k}`) % 7) - 3 + (wx ? WX.temp(wx, tod) : 0));
     const band = t < -8 ? "k" : t < -2 ? "m" : "w";
-    return { t, band, tod, snow: band === "k" ? "Pulverschnee" : band === "m" ? "trockener Schnee" : "nasser Schnee" };
+    return { t, band, tod, wx: wx || null, snow: band === "k" ? "Pulverschnee" : band === "m" ? "trockener Schnee" : "nasser Schnee" };
   }
   const BAND_I = { k: 0, m: 1, w: 2 };
   // Wachs zum Schnee: passend schneller, daneben langsamer als Universal
@@ -16727,8 +16987,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     return `<div class="sh-thermo" aria-hidden="true"><i class="k" style="width:${x(-8)}%"></i><i class="m" style="width:${x(-2) - x(-8)}%"></i><i class="w" style="width:${100 - x(-2)}%"></i><b style="left:${x(t).toFixed(1)}%"></b></div>`;
   }
   function waxPaneHtml() {
-    const c = snowCond(H, todFor(H), todayStr());
-    let h = `<div class="sh-wax"><div class="sh-cond"><span class="kicker">HEUTE · ${esc(hillShort(H.key).toUpperCase())} · ${(TOD_NAME[c.tod] || "").toUpperCase()}</span>` +
+    const c = snowCond(H, todFor(H), todayStr(), wxFor(H, S.wind));
+    let h = `<div class="sh-wax"><div class="sh-cond"><span class="kicker">HEUTE · ${esc(hillShort(H.key).toUpperCase())} · ${(TOD_NAME[c.tod] || "").toUpperCase()} · ${esc(wxName(c.wx).toUpperCase())}</span>` +
       `<div class="sh-tline"><b class="sh-temp">${tempTxt(c.t)}</b><span>${c.snow}</span></div>${thermo(c.t)}` +
       `<p>Passend: <b>${WAX[c.band].n}</b>. Passt das Wachs, gleitet der Ski schneller, sonst bremst er.${S.svc ? " Dein Servicemann wachst vor jedem Sprung selbst." : " Am Start kannst du es mit einem Tipp wechseln."}</p></div><div class="sh-list">`;
     for (const w of WAX_KEYS) {
@@ -17529,7 +17789,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       }
     }
     const wNow = J ? (J.wind.mode === "off" ? 0 : J.wind.display(J.t)) : 0.6;
-    snow.update(cam, dtReal, W, Hs, wNow);
+    snow.update(cam, dtReal, W, Hs, wxNow === "sturm" ? (wNow * 3 + (wNow < 0 ? -8 : 8)) * 4 : wNow);   // im Sturm treibt der Schnee quer
+    if (wxSnd !== wxNow) { wxSnd = wxNow; Snd.weather(wxNow); }
     const dim = mode === "tutorial" ? 0.55 : (mode === "result" || mode === "final") ? 0.25 : (mode === "board" || mode === "hand" || mode === "setup" || mode === "arcade" || mode === "chal" || mode === "champ" || mode === "multi" || mode === "club") ? 0.35 : 0;
     const focus = st ? { x: st.x, landed: (st.phase === "outrun" || st.phase === "done") && st.kind !== "fall" } : null;
     // Menüs und Tafeln zeichnen jetzt auch mit voller Bildrate: Kulisse und ruhender Hang sind zwischengespeichert, und die bewegten
@@ -17760,7 +18021,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 
   // für Tests
   window.__tm = { get J() { return J; }, get mode() { return mode; }, get comp() { return comp; }, get hot() { return hot; }, get bd() { return bd; },
-    onAction, newJump, get H() { return H; }, S, finishJump, get drag() { return drag; }, padScale: () => padK() * uiS, get chal() { return chal; }, get club() { return club; }, openClub, openGroup: openClub, get lastResult() { return lastResult; }, chalUrl, chalDecode, Hap, setHill, get online() { return { on: !!ON, oc: S.oc, osave: S.osave, clubs: S.clubs, cseen: S.cseen, opend: S.opend }; }, cloudNow, get cam() { return cam; }, get st() { return lastSt; }, get Q() { return Q; }, get jc() { return jc; }, renderer, Snd, startWatch, ghostPack2, ghostUnpack2, get rp() { return rp; }, talkPost };
+    onAction, newJump, get H() { return H; }, S, finishJump, setWx, wxFor, get wx() { return wxNow; }, get drag() { return drag; }, padScale: () => padK() * uiS, get chal() { return chal; }, get club() { return club; }, openClub, openGroup: openClub, get lastResult() { return lastResult; }, chalUrl, chalDecode, Hap, setHill, get online() { return { on: !!ON, oc: S.oc, osave: S.osave, clubs: S.clubs, cseen: S.cseen, opend: S.opend }; }, cloudNow, get cam() { return cam; }, get st() { return lastSt; }, get Q() { return Q; }, get jc() { return jc; }, renderer, Snd, startWatch, ghostPack2, ghostUnpack2, get rp() { return rp; }, talkPost };
 })();
 
 </script>
