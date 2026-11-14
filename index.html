@@ -1419,7 +1419,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 /* Scrollbereiche: unten weich auslaufen lassen, solange noch etwas folgt (Klasse setzt fadeAll im Spiel) */
 .fade-more { -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 26px), transparent); mask-image: linear-gradient(to bottom, #000 calc(100% - 26px), transparent); }
 /* Ergebnis, Analyse: Erklärung darf zweizeilig werden statt „…“; schmalere Balken */
-.an-row { grid-template-columns: 70px minmax(0, 1fr) 28px 54px; align-items: center; }
+.an-row { grid-template-columns: 70px minmax(0, 1fr) 28px 60px; align-items: center; }   /* 60 px: auch „+12,0 m“ (0.62) */
 .an-s { white-space: normal; line-height: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 /* Ergebnis, Details: zwei Spalten in allen Größen, Erklärung bis drei Zeilen */
 .det-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1431,7 +1431,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 .narrow .st-grid { letter-spacing: 0.08em; }
 .narrow .st-row .sr-d { font-size: 15px; }
 .st-row .sr-n, .tk-row .tk-n, .cp-row .sr-n { text-overflow: ellipsis; }
-.narrow .an-row { grid-template-columns: 64px minmax(0, 1fr) 50px; }
+.narrow .an-row { grid-template-columns: 64px minmax(0, 1fr) 60px; }
 .narrow .an-b { display: none; }
 /* Tageschallenge: „Starten“ füllt die Zeile, „Teilen“ ist ein Symbol daneben; beide bleiben in der Karte, bei jeder Schrift */
 .dy-btns #btnDyShare { flex: none; min-width: 0; padding: 0 14px; }
@@ -1611,6 +1611,96 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 .ps-dialog { gap: 8px; }
 .ps-head { padding-bottom: 4px; }
 .ps-title { font-size: 28px; line-height: 29px; }
+
+/* Cold Medal Games · Rückmeldung der Spieler (oberflaeche/fragebogen.css, zu fragebogen.js)
+   Aussehen wie die Menüs der Reihe (Papier mit Doppelrahmen, Knöpfe wie Druckmarken). Farben und Schriften aus den Variablen
+   des Spiels, sonst die Werte des Skispringens. Nur Klassen mit fb-. Große Ziele zum Antippen, passt bei 780 × 390 ohne Scrollen. */
+.fb-dialog {
+  --fb-paper: var(--paper, #F1E7D2); --fb-ink: var(--ink, #1E2734); --fb-ink-deep: var(--ink-deep, #141B25); --fb-red: var(--red, #C23B2A);
+  --fb-text: #1E2734; --fb-text-2: #3A4454; --fb-muted: #786D59;
+  --fb-row: rgba(30, 39, 52, 0.055); --fb-row-2: rgba(30, 39, 52, 0.1); --fb-line: rgba(30, 39, 52, 0.22); --fb-line-2: rgba(30, 39, 52, 0.45);
+  --fb-hi: #B23524; --fb-hi-ink: #FBF4E4;
+  --fb-display: var(--font-display, "Futura", "Avenir Next Condensed", "Bahnschrift Condensed", "Roboto Condensed", "Arial Narrow", sans-serif);
+  --fb-body: var(--font-body, "Iowan Old Style", "Charter", "Georgia", serif);
+  --fb-label: var(--font-label, "Futura", "Avenir Next", "Segoe UI", Roboto, Arial, sans-serif);
+  display: flex; flex-direction: column; gap: 8px; box-sizing: border-box;
+  width: 680px; max-width: calc(100% - 32px); max-height: calc(100% - 20px); overflow: auto; padding: 14px 20px 16px; touch-action: pan-y;
+  color: var(--fb-text); font-family: var(--fb-body); text-align: left;
+  background-color: var(--fb-paper);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.36  0 0 0 0 0.28  0 0 0 0 0.16  0 0 0 0.075 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  border: 2px solid var(--fb-ink-deep); border-radius: 4px;
+  box-shadow: inset 0 0 0 4px var(--fb-paper), inset 0 0 0 5px rgba(30, 39, 52, 0.38), 0 5px 0 rgba(8, 12, 18, 0.5);
+  -webkit-user-select: none; user-select: none;
+}
+.fb-dialog *, .fb-dialog *::before, .fb-dialog *::after { box-sizing: border-box; }
+.fb-dialog [hidden] { display: none !important; }
+.fb-dialog button, .fb-dialog textarea { -webkit-tap-highlight-color: transparent; }
+.fb-dialog button:focus-visible, .fb-dialog textarea:focus-visible { outline: 2px solid var(--fb-hi); outline-offset: 2px; }
+.fb-dialog.fb-small { width: 500px; }
+.fb-dialog:focus { outline: none; }
+
+/* Kopf: Kicker, Zähler, Schließen; darunter der Fortschritt */
+.fb-head { display: flex; align-items: center; gap: 12px; min-height: 30px; }
+.fb-kicker { flex: 1 1 auto; min-width: 0; font-family: var(--fb-label); font-weight: 700; font-size: 11px; line-height: 14px; letter-spacing: 0.16em;
+  color: var(--fb-red); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fb-count { flex: none; font-family: var(--fb-display); font-weight: 700; font-size: 15px; color: var(--fb-muted); font-variant-numeric: tabular-nums; }
+.fb-x { flex: none; display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; padding: 0; margin: 0;
+  border: 2px solid var(--fb-line-2); border-radius: 4px; background: transparent; color: var(--fb-ink); cursor: pointer; }
+.fb-bar { height: 4px; border-radius: 2px; background: var(--fb-row-2); overflow: hidden; flex: none; }
+.fb-bar i { display: block; width: 0; height: 100%; background: var(--fb-hi); transition: width 0.25s; }
+
+/* Eine Aussage je Seite: Bereich, Aussage, sieben Stufen, Beschriftung der Enden */
+.fb-body { display: flex; flex-direction: column; gap: 9px; min-height: 0; }
+.fb-area { margin-top: 2px; font-family: var(--fb-label); font-weight: 700; font-size: 10.5px; line-height: 13px; letter-spacing: 0.14em; color: var(--fb-muted); }
+.fb-q { margin: 0; min-height: 58px; font-family: var(--fb-display); font-style: normal; font-weight: 700; font-size: 25px; line-height: 29px; letter-spacing: 0.01em;
+  color: var(--fb-text); text-wrap: balance; }
+.fb-q.fb-big { min-height: 0; font-size: 30px; line-height: 34px; }
+.fb-scale { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+.fb-opt { position: relative; display: flex; align-items: center; justify-content: center; height: 50px; min-width: 0; padding: 0; margin: 0;
+  border: 2px solid var(--fb-line); border-radius: 4px; background: var(--fb-row); color: var(--fb-ink); cursor: pointer; }
+.fb-opt i { display: block; width: 24px; height: 24px; border-radius: 50%; border: 2.5px solid var(--fb-line-2); background: var(--fb-paper); }
+.fb-opt:nth-child(1) i, .fb-opt:nth-child(7) i { width: 30px; height: 30px; }
+.fb-opt:nth-child(2) i, .fb-opt:nth-child(6) i { width: 27px; height: 27px; }
+.fb-opt:nth-child(4) i { width: 20px; height: 20px; }
+.fb-opt.on { border-color: var(--fb-hi); background: rgba(178, 53, 36, 0.1); }
+.fb-opt.on i { border-color: var(--fb-hi); background: radial-gradient(circle, var(--fb-hi) 0 45%, var(--fb-paper) 48%); }
+.fb-opt:active { transform: translateY(1px); }
+.fb-nps { grid-template-columns: repeat(11, minmax(0, 1fr)); gap: 5px; }
+.fb-num { font-family: var(--fb-display); font-weight: 700; font-size: 19px; }
+.fb-num.on { background: var(--fb-hi); border-color: var(--fb-ink-deep); color: var(--fb-hi-ink); }
+.fb-ends { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; margin-top: -3px; font-family: var(--fb-body); font-size: 12.5px; line-height: 15px; color: var(--fb-muted); }
+.fb-ends span:nth-child(2) { text-align: center; }
+.fb-ends span:last-child { text-align: right; }
+.fb-ends2 { grid-template-columns: 1fr 1fr; }
+
+/* Freie Fragen, Hinweis, Dank */
+.fb-texts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.fb-tl { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.fb-tl span { font-family: var(--fb-display); font-weight: 700; font-size: 16px; line-height: 19px; color: var(--fb-text); }
+.fb-ta { width: 100%; height: 100px; resize: none; padding: 7px 9px; border: 2px solid var(--fb-line-2); border-radius: 4px; background: rgba(255, 255, 255, 0.55);
+  color: var(--fb-text); font-family: var(--fb-body); font-size: 16px; line-height: 20px; -webkit-user-select: text; user-select: text; }
+.fb-ta::placeholder { color: var(--fb-muted); opacity: 0.8; }
+.fb-note, .fb-text { margin: 0; font-family: var(--fb-body); font-size: 13px; line-height: 17px; color: var(--fb-text-2); }
+.fb-note { font-style: italic; color: var(--fb-muted); }
+.fb-text { font-size: 15px; line-height: 21px; }
+
+/* Fuß: Zurück links, Überspringen oder Senden rechts */
+.fb-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 2px; }
+.fb-foot-r { justify-content: flex-end; }
+.fb-inv { justify-content: flex-end; flex-wrap: wrap; }
+.fb-gap { flex: 1 1 auto; }
+.fb-plain { height: 36px; padding: 0 10px; margin: 0; border: 0; background: none; color: var(--fb-text-2); font-family: var(--fb-display); font-weight: 700;
+  font-size: 15px; letter-spacing: 0.04em; white-space: nowrap; cursor: pointer; }
+.fb-plain:disabled { opacity: 0.4; cursor: default; }
+.fb-btn { display: flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 18px; margin: 0; border-radius: 4px;
+  font-family: var(--fb-display); font-weight: 700; font-size: 19px; letter-spacing: 0.07em; text-transform: uppercase; white-space: nowrap; cursor: pointer; }
+.fb-btn svg { display: block; flex: none; }
+.fb-btn-1 { background: var(--fb-red); color: #FBF4E4; border: 2px solid var(--fb-ink-deep);
+  box-shadow: inset 0 0 0 2px var(--fb-red), inset 0 0 0 3px rgba(251, 244, 228, 0.5), 0 3px 0 var(--fb-ink-deep); }
+.fb-btn-2 { background: var(--fb-paper); color: var(--fb-ink); border: 2px solid var(--fb-ink-deep); box-shadow: 0 3px 0 var(--fb-ink-deep); }
+.fb-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--fb-ink-deep); }
+.fb-btn:disabled { opacity: 0.55; cursor: default; }
+@media (prefers-reduced-motion: reduce) { .fb-bar i { transition: none; } }
 
 </style>
 </head>
@@ -2189,6 +2279,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
         <div class="set-row"><span class="lbl set-txt">Version, Datenschutz und Hinweise zum Spiel</span><button type="button" id="btnSetInfo" class="btn btn-secondary btn-s"><span>Info</span><span class="ico" data-icon="arrow-right"></span></button></div>
       </div>
       <div class="set-col">
+        <div id="rowSetFb" class="set-row" hidden><span class="lbl set-txt">Was gut ist und was stört: kurzer Fragebogen, gut eine Minute</span><button type="button" id="btnSetFb" class="btn btn-secondary btn-s"><span>Rückmeldung</span><span class="ico" data-icon="arrow-right"></span></button></div>
         <div class="set-row"><span id="setResetTxt" class="lbl set-txt">Bestweiten, Sterne und Meisterschaft löschen</span><button type="button" id="btnReset" class="btn btn-secondary btn-s"><span>Zurücksetzen</span></button></div>
       </div>
     </div>
@@ -2202,6 +2293,9 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     <div class="pic-foot"><span class="hd-text">Lange drücken zum Sichern oder Teilen.</span><a id="picDl" class="btn btn-secondary btn-s" href="#" download="cold-medal-ski-jumping.png"><span>Herunterladen</span></a><button type="button" id="btnPicDone" class="btn btn-primary btn-s"><span>Fertig</span></button></div>
   </div>
 </section>
+
+<!-- ============ Rückmeldung: Fragebogen (../oberflaeche/fragebogen.js baut den Inhalt) ============ -->
+<section id="scrFb" class="screen screen-dim3 center" hidden></section>
 
 <!-- ============ Online: Spielstand per Code, auf dieses Gerät holen, Online-Daten löschen ============ -->
 <section id="scrOnline" class="screen screen-dim3 center" hidden>
@@ -9409,6 +9503,246 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   P.ui = { mount, open, backdrop, codeVia, DEF_POSES };
 })(typeof window !== "undefined" ? window : globalThis);
 
+/* Cold Medal Games · Rückmeldung der Spieler (oberflaeche/fragebogen.js, CMFragebogen)
+ *
+ * Kurzer Fragebogen zum Antippen, in jedem Spiel der Reihe gleich (Mat, 14.11.2026: „was gut ist und was schlecht ist“,
+ * professionell und validiert, aber nicht umfangreich). Aufbau nach dem miniPXI (Haider et al., CHI PLAY 2022): die elf
+ * Bereiche des Player Experience Inventory (Vanden Abeele et al. 2020) mit je einer Aussage, sieben Stufen von −3 (stimme gar
+ * nicht zu) bis +3 (stimme voll zu). Dazu die Weiterempfehlung 0 bis 10 (Net Promoter Score) und zwei freie Fragen: was gefällt,
+ * was stört. 13 Antippen, gut eine Minute.
+ * Die deutschen Sätze sind eigene Formulierungen je Bereich. Den validierten deutschen Wortlaut (Graf et al., Mensch und
+ * Computer 2022) übernehmen wir nicht ohne Erlaubnis der Autoren; mit Erlaubnis lässt er sich in ITEMS einsetzen.
+ *
+ * Bereiche: Funktion: aa Grafik und Ton, ec Steuerung, cg Ziele, ch Herausforderung, pf Fortschritt;
+ *           Erleben:  ma Können, au Freiheit, cu Neugier, im Eintauchen, me Bedeutung; dazu en Spaß.
+ *
+ * const fb = CMFragebogen.mount(host, opts)   host: leeres Element, das das Spiel ein- und ausblendet (Ebene, Maßstab)
+ *   opts.game     Kürzel des Spiels (skispringen)         opts.name   Name im Text, z. B. „Cold Medal“
+ *   opts.version  Version des Spiels                      opts.plays()  wie oft gespielt (für Einladung und Stufe)
+ *   opts.meta()   kleine Angaben ohne Personenbezug: { d: "phone"|"tablet"|"desktop", g: in einer Gruppe (ja/nein) }
+ *   opts.send(p)  → Promise; schickt p an public.cm_feedback_send (Felder p_game, p_version, p_answers, p_nps, p_good, p_bad,
+ *                 p_meta). Wirft der Server die Antwort als ungültig zurück, Fehler mit e.drop = true (dann nicht nachsenden).
+ *   opts.onClose(sent)  nach dem Schließen
+ * fb.open()   der Fragebogen     fb.invite()   die Einladung (Los geht's, Später, Nein danke)     fb.close()   fb.el
+ * CMFragebogen.due(game, plays, o)   ob die Einladung fällig ist: ab o.min Spielen (15), nach „Später“ oder Abbrechen erst
+ *   o.every Spiele danach (25), nach einer Antwort erst wieder nach o.days Tagen (30) und o.again Spielen (60); nie nach „Nein danke“.
+ *   Leer gesendet wird nichts; ohne Verbindung bleibt die Antwort gemerkt (höchstens zehn) und flush() sendet sie nach.
+ * CMFragebogen.flush(send)   Antworten, die offline blieben, nachsenden (→ Zahl der gesendeten)
+ * Klassen mit dem Präfix fb- (fragebogen.css), Farben und Schriften aus den Variablen des Spiels.
+ */
+(function (root) {
+  "use strict";
+  const doc = root.document, KEY = "cm.fb";
+  const ITEMS = [
+    ["aa", "Grafik und Ton", "Grafik und Ton gefallen mir."],
+    ["ec", "Steuerung", "Die Steuerung geht mir leicht von der Hand."],
+    ["cg", "Ziele", "Ich weiß immer, was ich tun soll und worauf es ankommt."],
+    ["ch", "Herausforderung", "Es fordert mich, ohne mich zu frustrieren."],
+    ["pf", "Fortschritt", "Ich sehe gut, wie ich mich verbessere."],
+    ["ma", "Können", "Ich habe das Gefühl, etwas zu können."],
+    ["au", "Freiheit", "Ich habe genug Freiheit, wie ich spiele."],
+    ["cu", "Neugier", "Ich will wissen, was als Nächstes kommt."],
+    ["im", "Eintauchen", "Beim Spielen vergesse ich alles um mich herum."],
+    ["me", "Bedeutung", "Das Spiel bedeutet mir etwas."],
+    ["en", "Spaß", "Das Spiel macht mir Spaß."],
+  ];
+  const ENDS = ["stimme gar nicht zu", "teils", "stimme voll zu"];
+  const STEPS = ITEMS.length + 2;   // Aussagen, Weiterempfehlung, freie Fragen
+  const X = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  const ARROW = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  const mk = (tag, cls, text) => { const e = doc.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const at = (e, a) => { for (const k of Object.keys(a)) e.setAttribute(k, a[k]); return e; };
+  const btn = (cls, text, html) => { const b = mk("button", cls, text); b.type = "button"; if (html) b.insertAdjacentHTML("beforeend", html); return b; };
+
+  // Gemerkt im Browser (für alle Spiele unter derselben Adresse): beantwortet, später, nie, Warteschlange
+  function load() {
+    let s = null;
+    try { s = JSON.parse(root.localStorage.getItem(KEY)); } catch (e) { s = null; }
+    s = s && typeof s === "object" ? s : {};
+    for (const k of ["done", "later", "never"]) if (!s[k] || typeof s[k] !== "object") s[k] = {};
+    s.queue = Array.isArray(s.queue) ? s.queue.slice(-10) : [];
+    return s;
+  }
+  function store(s) { try { root.localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) { /* privat oder voll: dann nur für diesen Besuch */ } }
+
+  function due(game, plays, o) {
+    o = o || {};
+    const min = o.min != null ? o.min : 15, every = o.every != null ? o.every : 25, again = o.again != null ? o.again : 60, days = o.days != null ? o.days : 30;
+    const s = load(), n = +plays || 0, d = s.done[game], l = s.later[game];
+    if (s.never[game] || n < min) return false;
+    if (d && !(n - (+d.p || 0) >= again && Date.now() - (+d.t || 0) >= days * 864e5)) return false;
+    if (l != null && n - (+l || 0) < every) return false;
+    return true;
+  }
+  const later = (game, plays) => { const s = load(); s.later[game] = +plays || 0; store(s); };
+  const never = (game) => { const s = load(); s.never[game] = 1; store(s); };
+  function done(game, version, plays) { const s = load(); s.done[game] = { v: String(version || ""), t: Date.now(), p: +plays || 0 }; delete s.later[game]; store(s); }
+  function queue(p) { const s = load(); s.queue.push(p); s.queue = s.queue.slice(-10); store(s); }
+  async function flush(send) {
+    if (typeof send !== "function") return 0;
+    let n = 0;
+    for (;;) {
+      const s = load();
+      if (!s.queue.length) return n;
+      try { await send(s.queue[0]); n++; } catch (e) { if (!(e && e.drop)) return n; }
+      const t = load(); t.queue.shift(); store(t);
+    }
+  }
+  // Stufe der Spielmenge statt der genauen Zahl: 0 unter 10, 1 bis 24, 2 bis 49, 3 bis 99, 4 bis 199, 5 bis 499, 6 ab 500
+  const playBand = (n) => [10, 25, 50, 100, 200, 500].filter((x) => n >= x).length;
+
+  function mount(host, opts) {
+    opts = opts || {};
+    const name = opts.name || "das Spiel", plays = () => (typeof opts.plays === "function" ? +opts.plays() || 0 : 0);
+    const el = at(mk("div", "fb-dialog"), { role: "dialog", "aria-modal": "true", "aria-label": "Rückmeldung zum Spiel", tabindex: "-1" });
+    const head = mk("div", "fb-head"), kick = mk("span", "fb-kicker", `RÜCKMELDUNG · ${String(name).toUpperCase()}`), count = mk("span", "fb-count");
+    const bx = at(btn("fb-x", null, X), { "aria-label": "Schließen" });
+    head.append(kick, count, bx);
+    const bar = mk("div", "fb-bar"), fill = mk("i");
+    bar.appendChild(fill);
+    const body = mk("div", "fb-body");
+    el.append(head, bar, body);
+    host.appendChild(el);
+    let step = 0, ans = {}, nps = null, good = "", bad = "", t0 = 0, sent = false, busy = false, timer = 0;
+    const focus = () => setTimeout(() => { if (!host.hidden && !el.contains(doc.activeElement)) try { el.focus({ preventScroll: true }); } catch (e) { /* alt */ } }, 30);
+
+    function progress(on) {
+      vis(count, on); vis(bar, on);
+      if (!on) return;
+      count.textContent = `${Math.min(step + 1, STEPS)} / ${STEPS}`;
+      fill.style.width = `${Math.round((100 * Math.min(step, STEPS)) / STEPS)}%`;
+    }
+    function vis(e, on) { e.hidden = !on; }
+    function foot(back, right) {
+      const f = mk("div", "fb-foot"), b = btn("fb-plain fb-back", "‹ Zurück");
+      b.disabled = !back; b.style.visibility = back ? "" : "hidden";
+      b.addEventListener("click", () => go(step - 1));
+      f.append(b, right);
+      return f;
+    }
+    function choose(row, b, set) {
+      for (const x of row.children) { const on = x === b; x.classList.toggle("on", on); x.setAttribute("aria-checked", on ? "true" : "false"); }
+      set();
+      clearTimeout(timer); timer = setTimeout(() => go(step + 1), 230);   // kurz zeigen, dann weiter
+    }
+    function item(i) {
+      const [k, area, text] = ITEMS[i];
+      const row = at(mk("div", "fb-scale"), { role: "radiogroup", "aria-label": text });
+      for (let v = -3; v <= 3; v++) {
+        const lab = `${v + 4} von 7` + (v === -3 ? `, ${ENDS[0]}` : v === 0 ? `, ${ENDS[1]}` : v === 3 ? `, ${ENDS[2]}` : "");
+        const b = at(btn("fb-opt" + (ans[k] === v ? " on" : "")), { role: "radio", "aria-checked": ans[k] === v ? "true" : "false", "aria-label": lab });
+        b.appendChild(mk("i"));
+        b.addEventListener("click", () => choose(row, b, () => { ans[k] = v; }));
+        row.appendChild(b);
+      }
+      const ends = mk("div", "fb-ends");
+      for (const t of ENDS) ends.appendChild(mk("span", null, t));
+      const skip = btn("fb-plain fb-skip", "Überspringen");
+      skip.addEventListener("click", () => { delete ans[k]; go(step + 1); });
+      body.append(mk("span", "fb-area", area.toUpperCase()), mk("h2", "fb-q", text), row, ends, foot(i > 0, skip));
+    }
+    function recommend() {
+      const row = at(mk("div", "fb-scale fb-nps"), { role: "radiogroup", "aria-label": "Weiterempfehlung von 0 bis 10" });
+      for (let v = 0; v <= 10; v++) {
+        const b = at(btn("fb-opt fb-num" + (nps === v ? " on" : ""), String(v)), { role: "radio", "aria-checked": nps === v ? "true" : "false" });
+        b.addEventListener("click", () => choose(row, b, () => { nps = v; }));
+        row.appendChild(b);
+      }
+      const ends = mk("div", "fb-ends fb-ends2");
+      ends.append(mk("span", null, "sicher nicht"), mk("span", null, "auf jeden Fall"));
+      const skip = btn("fb-plain fb-skip", "Überspringen");
+      skip.addEventListener("click", () => { nps = null; go(step + 1); });
+      body.append(mk("span", "fb-area", "WEITEREMPFEHLUNG"), mk("h2", "fb-q", `Wie wahrscheinlich empfiehlst du ${name} Freunden?`), row, ends, foot(true, skip));
+    }
+    function texts() {
+      const box = mk("div", "fb-texts");
+      const field = (label, ph, val, set) => {
+        const l = mk("label", "fb-tl"), s = mk("span", null, label), t = at(mk("textarea", "fb-ta"), { maxlength: "400", rows: "3", placeholder: ph, enterkeyhint: "done" });
+        t.value = val; t.addEventListener("input", () => set(t.value));
+        l.append(s, t);
+        return l;
+      };
+      box.append(field("Was gefällt dir am besten?", "z. B. der Flug, die Gruppen …", good, (v) => { good = v; }),
+        field("Was stört dich, was sollen wir besser machen?", "Fehler, Wünsche, Ideen …", bad, (v) => { bad = v; }));
+      const sendB = btn("fb-btn fb-btn-1 fb-send", "Senden", ARROW);
+      sendB.addEventListener("click", () => submit(sendB));
+      body.append(mk("span", "fb-area", "ZUM SCHLUSS, FREIWILLIG"), box, mk("p", "fb-note", "Ohne Namen und Code gespeichert, nur mit Version, Art des Geräts und groben Spielangaben."), foot(true, sendB));
+    }
+    function thanks(state) {
+      const fin = btn("fb-btn fb-btn-1 fb-fin", "Fertig");
+      fin.addEventListener("click", () => close());
+      body.append(mk("h2", "fb-q fb-big", "Danke, das hilft!"),
+        mk("p", "fb-text", state === "ok" ? `Deine Antworten sind angekommen. Sie zeigen, was an ${name} gut ist und was wir besser machen.`
+          : state === "queued" ? "Gerade ohne Verbindung: Deine Antworten sind gemerkt und gehen beim nächsten Start raus."
+          : "Das ließ sich leider nicht speichern. Danke trotzdem fürs Mitmachen!"),
+        at(mk("div", "fb-foot fb-foot-r"), {}));
+      body.lastChild.appendChild(fin);
+      setTimeout(() => fin.focus && fin.focus({ preventScroll: true }), 30);
+    }
+    function go(n) {
+      clearTimeout(timer);
+      step = Math.max(0, Math.min(n, STEPS));
+      body.innerHTML = ""; el.classList.remove("fb-small");
+      progress(step < STEPS);
+      if (step < ITEMS.length) item(step); else if (step === ITEMS.length) recommend(); else texts();
+    }
+    function payload() {
+      const a = {};
+      for (const [k] of ITEMS) a[k] = Number.isInteger(ans[k]) ? ans[k] : null;
+      const meta = Object.assign({}, typeof opts.meta === "function" ? opts.meta() || {} : {}, { j: playBand(plays()), s: Math.min(3600, Math.round((Date.now() - t0) / 1000)) });
+      return { p_game: String(opts.game || "spiel"), p_version: String(opts.version || "0"), p_answers: a, p_nps: Number.isInteger(nps) ? nps : null,
+        p_good: good.replace(/\s+/g, " ").trim().slice(0, 400), p_bad: bad.replace(/\s+/g, " ").trim().slice(0, 400), p_meta: meta };
+    }
+    async function submit(b) {
+      if (busy) return;
+      const p = payload();
+      // nichts angetippt und nichts geschrieben: nichts senden, nur schließen (die Einladung kommt später wieder)
+      if (!p.p_good && !p.p_bad && p.p_nps == null && !Object.values(p.p_answers).some((v) => v != null)) { close(); return; }
+      busy = true; b.disabled = true;
+      let state = "ok";
+      try { if (typeof opts.send !== "function") throw new Error("offline"); await opts.send(p); }
+      catch (e) { if (e && e.drop) state = "drop"; else { queue(p); state = "queued"; } }
+      busy = false; sent = true;
+      done(opts.game, opts.version, plays());
+      body.innerHTML = ""; progress(false); thanks(state);
+    }
+    function open() {
+      ans = {}; nps = null; good = ""; bad = ""; sent = false; busy = false; t0 = Date.now();
+      host.hidden = false; go(0); focus();
+    }
+    function invite() {
+      clearTimeout(timer); sent = false;
+      body.innerHTML = ""; progress(false); el.classList.add("fb-small");
+      const go1 = btn("fb-btn fb-btn-1", "Los geht’s", ARROW), lat = btn("fb-btn fb-btn-2", "Später"), no = btn("fb-plain", "Nein danke");
+      go1.addEventListener("click", () => open());
+      lat.addEventListener("click", () => { later(opts.game, plays()); close(); });
+      no.addEventListener("click", () => { never(opts.game); close(); });
+      const row = mk("div", "fb-foot fb-inv");
+      row.append(no, mk("span", "fb-gap"), lat, go1);
+      body.append(mk("h2", "fb-q fb-big", `Wie gefällt dir ${name}?`),
+        mk("p", "fb-text", `${ITEMS.length + 1} kurze Fragen zum Antippen, dazu zwei zum Schreiben, wenn du magst. Gut eine Minute, ohne Namen. Was gut ist und was nicht, hilft uns am meisten.`), row);
+      host.hidden = false; focus();
+    }
+    function close() {
+      clearTimeout(timer);
+      if (!sent) later(opts.game, plays());   // abgebrochen: die Einladung kommt erst nach weiteren Spielen wieder
+      host.hidden = true;
+      if (typeof opts.onClose === "function") opts.onClose(sent);
+    }
+    bx.addEventListener("click", () => close());
+    el.addEventListener("keydown", (e) => {
+      e.stopPropagation();   // Tasten im Bogen steuern nicht das Spiel
+      if (e.key === "Escape") { e.preventDefault(); close(); return; }
+      if (step < ITEMS.length && /^[1-7]$/.test(e.key) && !el.classList.contains("fb-small") && !(e.target && /^(TEXTAREA|INPUT)$/.test(e.target.nodeName))) {
+        const b = body.querySelectorAll(".fb-opt")[+e.key - 1]; if (b) b.click();
+      }
+    });
+    return { el, open, invite, close };
+  }
+
+  root.CMFragebogen = { ITEMS, ENDS, STEPS, mount, due, later, never, done, queue, flush, playBand, load, version: 1 };
+})(typeof window !== "undefined" ? window : globalThis);
+
 /* TELEMARK – Canvas-Grafik: Flutlicht-Nacht im flachen Vektorstil, Welt in Metern, Kamera in px/m. */
 (function (root) {
   "use strict";
@@ -12339,12 +12673,15 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp, FIG = window.CMFigur, PASS = window.CMPass;
-  const VERSION = "0.61";
+  const VERSION = "0.62";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
   const OL = window.TMOnline || null;
   const ON = OL && SITE.web ? OL.make(SITE.sb) : null;
+  // Rückmeldung der Spieler (../oberflaeche/fragebogen.js, seit 0.62): kurzer Fragebogen, nur im Web mit Online
+  const FB = ON && window.CMFragebogen ? window.CMFragebogen : null;
+  let fb = null, fbFrom = null, fbRun = 0;   // fbRun: Sprünge in diesem Besuch (Einladung erst nach dem Spielen)
   // ------------------------------------------------------------------ Fehlergrenzen
   // Ein Fehler beim Start zeigt einen Rettungsbildschirm (neu laden oder Spielstand zurücksetzen) statt einer leeren Seite;
   // ein Fehler während des Spiels hält die Bildschleife nicht an, erst eine lange Fehlerserie führt zum Rettungsbildschirm.
@@ -13139,6 +13476,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     vis($("scrInfo"), name === "info");
     vis($("scrPic"), name === "pic");
     vis($("scrOnline"), name === "online");
+    vis($("scrFb"), name === "fb");
     fitSoon();
     vis($("scrAsk"), name === "ask");
     vis($("scrShop"), name === "shop");
@@ -13232,6 +13570,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     vis(hud, false); showScreen("title"); refreshTitle(); applyColor();
     Snd.silence(); Snd.ambience(1);
     demo = null; demoWait = 0.4;
+    fbMaybe();
   }
 
   // ------------------------------------------------------------------ Sprung
@@ -14017,7 +14356,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const mine = ctxMode !== "hot";
     let newBest = false;
     if (mine) {
-      S.jumps++; S.sumD += sc.dist; if (sc.kind === "telemark") S.telemarks++;
+      S.jumps++; fbRun++; S.sumD += sc.dist; if (sc.kind === "telemark") S.telemarks++;
       const b = S.bests[H.key];
       newBest = !jc.beginner && sc.kind !== "fall" && (!b || sc.dist > b.d);
       const how = jumpRecord(sc);
@@ -17552,6 +17891,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     txt($("setCtlNote"), desk() ? "Im Flug: Maus bewegen, ohne zu klicken (oder Pfeiltasten). Hoch = Vorlage, runter = aufrecht, seitlich = Balance."
       : "Im Flug: Daumen auflegen und schieben. Hoch = Vorlage, runter = aufrecht, seitlich = Balance.");
     vis($("rowSetOnline"), !!ON);
+    vis($("rowSetFb"), !!FB);
     $("tgSound").setAttribute("aria-checked", String(S.sound));
     $("tgVibe").setAttribute("aria-checked", String(S.vibe));
     $("tgMusic").setAttribute("aria-checked", String(S.music !== false));
@@ -17943,7 +18283,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   stage.addEventListener("pointerup", endDrag);
   stage.addEventListener("pointercancel", endDrag);
   window.addEventListener("keydown", (e) => {
-    if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "SELECT")) return;
+    if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "SELECT" || e.target.tagName === "TEXTAREA")) return;
     // Zwischentitel (1928): Leertaste/Enter blättert weiter, Escape bricht ab (zurück zu den Challenges)
     if (tcQ) {
       if ((e.key === " " || e.key === "Enter") && !(tcQ.cur && tcQ.cur.btns)) { e.preventDefault(); nextCard(); }
@@ -17951,7 +18291,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       return;
     }
     if (e.key === "Escape" || e.key === "p" || e.key === "P") {
-      if (overlay === "jcard") closeJcard(); else if (overlay === "add") { addCtx = null; setOverlay(null); } else if (overlay === "settings") closeSettings(); else if (overlay === "shop") closeShop(); else if (overlay === "jumper") closeJumper(); else if (overlay === "pause" || overlay === "records" || overlay === "hill") setOverlay(null); else if (overlay === "info") closeInfo(); else if (overlay === "pic") setOverlay(null); else if (mode === "club") { clearTimeout(clubT); openMulti(); } else if (mode === "arcade" || mode === "chal" || mode === "multi") goTitle(); else pause();
+      if (overlay === "jcard") closeJcard(); else if (overlay === "add") { addCtx = null; setOverlay(null); } else if (overlay === "settings") closeSettings(); else if (overlay === "shop") closeShop(); else if (overlay === "jumper") closeJumper(); else if (overlay === "pause" || overlay === "records" || overlay === "hill") setOverlay(null); else if (overlay === "info") closeInfo(); else if (overlay === "pic") setOverlay(null); else if (overlay === "fb") { if (fb) fb.close(); else setOverlay(null); } else if (mode === "club") { clearTimeout(clubT); openMulti(); } else if (mode === "arcade" || mode === "chal" || mode === "multi") goTitle(); else pause();
       return;
     }
     if (overlay) return;
@@ -18109,6 +18449,34 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       cap: (mode === "jump" || mode === "result") && jc && jc.cap28 ? jc.cap28 : null, dim });
   }
 
+  // ------------------------------------------------------------------ Rückmeldung: Fragebogen nach dem miniPXI (../oberflaeche/fragebogen.js)
+  // Elf Aussagen (−3 … +3), Weiterempfehlung 0 … 10, zwei freie Fragen; gespeichert ohne Namen und Code (public.cm_feedback_send).
+  // Aus den Einstellungen (Spielstand) jederzeit; als Einladung zurück im Menü nach drei Sprüngen in diesem Besuch, ab 15 Sprüngen
+  // insgesamt, nach „Später“ erst 25 Sprünge danach, nach einer Antwort frühestens nach 30 Tagen und 60 Sprüngen, nie nach „Nein danke“.
+  function fbSend(p) { return ON.rpc("cm_feedback_send", p, 8000).catch((e) => { if (e && e.status === 400) e.drop = true; throw e; }); }
+  function fbDevice() {
+    const coarse = !!(window.matchMedia && window.matchMedia("(pointer: coarse)").matches), m = Math.min(screen.width || 0, screen.height || 0);
+    return !coarse ? "desktop" : m >= 600 ? "tablet" : "phone";
+  }
+  function fbMount() {
+    if (!fb && FB) fb = FB.mount($("scrFb"), { game: "skispringen", name: "Cold Medal", version: VERSION, plays: () => S.jumps || 0,
+      meta: () => ({ d: fbDevice(), g: S.clubs.length > 0 }), send: fbSend,
+      onClose: () => { if (overlay === "fb") setOverlay(fbFrom === "settings" ? "settings" : null); fbFrom = null; } });
+    return fb;
+  }
+  function openFb(from, invite) {
+    if (!fbMount()) return;
+    fbFrom = from || null; setOverlay("fb");
+    if (invite) fb.invite(); else fb.open();
+  }
+  function fbMaybe() {
+    if (!FB || fbRun < 3 || !onlineReady() || !FB.due("skispringen", S.jumps || 0)) return;
+    setTimeout(() => {
+      if (mode !== "title" || overlay || tcQ || !FB.due("skispringen", S.jumps || 0)) return;
+      fbRun = 0; openFb(null, true);
+    }, 900);
+  }
+
   // ------------------------------------------------------------------ Info: Spielstand sichern und laden, Fanspiel, Datenschutz, Impressum
   let infoFrom = null, loadState = null;
   function openInfo(from) { infoFrom = from; loadState = null; setOverlay("info"); }
@@ -18117,7 +18485,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     txt($("ifKicker"), `COLD MEDAL · VERSION ${VERSION}`);
     vis($("btnOnline"), !!ON);
     txt($("ifPriv0"), ON
-      ? "Kein Konto, keine Werbung, keine Cookies, keine Analyse. Dein Spielstand bleibt im Browser auf diesem Gerät. Ein Duell-Link enthält Name, Nation und Sprung und geht nur an die, denen du ihn schickst. Online-Gruppen und Online-Spielstand sind freiwillig, Details unter Online."
+      ? "Kein Konto, keine Werbung, keine Cookies, keine Analyse. Dein Spielstand bleibt im Browser auf diesem Gerät. Ein Duell-Link enthält Name, Nation und Sprung und geht nur an die, denen du ihn schickst. Online-Gruppen, Online-Spielstand und der Fragebogen zur Rückmeldung sind freiwillig, Details unter Online."
       : "Kein Konto, keine Werbung, keine Cookies, keine Analyse. Name, Nation, Bestweiten und Einstellungen speichert das Spiel nur im Browser auf diesem Gerät, es sendet nichts an einen Server. Ein Duell-Link enthält deinen Namen, deine Nation und deinen Sprung und geht nur an die, denen du ihn selbst schickst.");
     const im = SITE.impressum || {};
     const lines = [im.name, im.adresse, im.mail].filter((x) => typeof x === "string" && x.trim());
@@ -18179,6 +18547,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   }
   on("btnInfo", () => openInfo("title"));
   on("btnSetInfo", () => openInfo("settings"));
+  on("btnSetFb", () => openFb("settings"));
   on("btnIfDone", () => closeInfo());
   on("btnSaveOut", () => exportSave());
   on("btnSaveIn", () => { $("inSaveFile").value = ""; $("inSaveFile").click(); });
@@ -18206,7 +18575,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     vis($("btnOlSave"), !saved && !off); vis($("btnOlNow"), saved && !off); vis($("btnOlStop"), saved);
     vis($("olLoadBox"), !!olLoad);
     $("tgOnline").setAttribute("aria-checked", String(!S.noOnline));
-    txt($("olPriv"), "Freiwillig und nur, wenn du es nutzt: Für Gruppen speichern wir Name, Nation, Farben, Sprünge sowie Reaktionen und Kommentare zu Sprüngen, sichtbar für alle mit dem Gruppen-Link, dazu wer in welcher Gruppe ist, für den Online-Spielstand deinen Spielstand und deine Figur für alle Spiele von Cold Medal (Name, Land, Aussehen, Taler). Gespeichert bei Supabase Inc. auf Servern in Frankfurt (Art. 6 Abs. 1 lit. b DSGVO). Gruppen werden 30 Tage nach dem letzten Sprung, Beitritt oder Kommentar gelöscht, dein Eintrag mit Namen ebenso, mit Online-Spielstand erst nach 13 Monaten ohne Nutzung. Deinen Code speichern wir nur als Prüfwert.");
+    txt($("olPriv"), "Freiwillig und nur, wenn du es nutzt: Für Gruppen speichern wir Name, Nation, Farben, Sprünge sowie Reaktionen und Kommentare zu Sprüngen, sichtbar für alle mit dem Gruppen-Link, dazu wer in welcher Gruppe ist, für den Online-Spielstand deinen Spielstand und deine Figur für alle Spiele von Cold Medal (Name, Land, Aussehen, Taler). Gespeichert bei Supabase Inc. auf Servern in Frankfurt (Art. 6 Abs. 1 lit. b DSGVO). Gruppen werden 30 Tage nach dem letzten Sprung, Beitritt oder Kommentar gelöscht, dein Eintrag mit Namen ebenso, mit Online-Spielstand erst nach 13 Monaten ohne Nutzung. Deinen Code speichern wir nur als Prüfwert. Den Fragebogen speichern wir ohne Namen und Code.");
   }
   on("btnOnline", () => openOnline(overlay === "info" ? "info" : null));
   on("btnOlDone", () => closeOnline());
@@ -18319,12 +18688,12 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const c = chalFromLocation(); if (c && mode !== "jump") openChal(c);
   });
   // Online: liegengebliebene Gruppensprünge nachsenden, Spielstand abgleichen
-  if (ON) setTimeout(() => { flushPending(); cloudSoon(); }, 2500);
+  if (ON) setTimeout(() => { flushPending(); cloudSoon(); if (FB && onlineReady()) FB.flush(fbSend); }, 2500);
   requestAnimationFrame((t) => { last = t; frame(t); });
 
   // für Tests
   window.__tm = { get J() { return J; }, get mode() { return mode; }, get comp() { return comp; }, get hot() { return hot; }, get bd() { return bd; },
-    onAction, newJump, get H() { return H; }, S, finishJump, setWx, wxFor, get wx() { return wxNow; }, get drag() { return drag; }, padScale: () => padK() * uiS, get chal() { return chal; }, get club() { return club; }, openClub, openGroup: openClub, get lastResult() { return lastResult; }, chalUrl, chalDecode, Hap, setHill, get online() { return { on: !!ON, oc: S.oc, osave: S.osave, clubs: S.clubs, cseen: S.cseen, opend: S.opend }; }, cloudNow, get cam() { return cam; }, get st() { return lastSt; }, get Q() { return Q; }, get jc() { return jc; }, renderer, Snd, startWatch, ghostPack2, ghostUnpack2, get rp() { return rp; }, talkPost };
+    onAction, newJump, get H() { return H; }, S, finishJump, setWx, wxFor, get wx() { return wxNow; }, get drag() { return drag; }, padScale: () => padK() * uiS, get chal() { return chal; }, get club() { return club; }, openClub, openGroup: openClub, get lastResult() { return lastResult; }, chalUrl, chalDecode, Hap, setHill, get online() { return { on: !!ON, oc: S.oc, osave: S.osave, clubs: S.clubs, cseen: S.cseen, opend: S.opend }; }, cloudNow, get cam() { return cam; }, get st() { return lastSt; }, get Q() { return Q; }, get jc() { return jc; }, renderer, Snd, startWatch, ghostPack2, ghostUnpack2, get rp() { return rp; }, talkPost, openFb, fbCheck: (n) => { fbRun = n; fbMaybe(); }, get overlay() { return overlay; } };
 })();
 
 </script>
