@@ -1369,6 +1369,99 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 .sx-aw + .sx-d::before { content: "· "; }
 .sx-note { flex: none; margin: 6px 6px 0; font-size: 11.5px; line-height: 15px; color: var(--muted); }
 
+/* ---------- 0.61: Menüs sauber (Mat 14.11.2026: „Das darf keine Überschneidungen geben, das muss sauber und schön sein.“) ----------
+   Geprüft mit test/menus.py: jedes Fenster und jeder Reiter in allen Größen, mit Schriften so breit wie am iPhone oder breiter. */
+/* Einstellungen: eine Bezeichnung wird nie schmaler als ihr längstes Wort; reicht der Platz nicht, rückt der Schalter in die
+   nächste Zeile, rechtsbündig (vorher schob sich der Zähler der Startluke über das Wort „Startluke“) */
+.settings .set-row { flex-wrap: wrap; row-gap: 4px; }
+.settings .set-row > .lbl { flex: 1 1 0; min-width: min-content; }
+.settings .set-row > :not(.lbl) { flex: none; margin-left: auto; }
+.settings .set-row > .set-jp-txt { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.settings .set-row > .set-txt { min-width: 0; }
+.set-note-r { margin: -3px 0 3px; text-align: right; font-style: normal; }   /* Startluke: Schanze und Standard unter dem Zähler */
+/* Hilfen: linke Spalte breiter, Karten enger gesetzt, damit alle vier ohne Scrollen passen */
+#setPane-help { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; }
+.help-list { gap: 5px; }
+.help-opt { padding: 4px 9px 5px; }
+.help-opt b { font-size: 15px; line-height: 18px; }
+.help-opt span { font-size: 12px; line-height: 14px; }
+/* Schneebericht im Wachs-Shop: Tageszeit und Wetter in eigener Zeile, der Kicker bleibt einzeilig */
+.sh-cond .kicker { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sh-day { margin-top: -6px; font-family: var(--font-body); font-size: 13px; line-height: 16px; color: var(--muted); }
+/* Endstand: Kicker einzeilig (langer Name einer Meisterschaft wird kleiner, notfalls „…“); Namen mit mehr Platz */
+#fnKicker { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fn-grid, .fn-row { grid-template-columns: 24px minmax(0, 1fr) 48px 48px 54px; gap: 6px; }
+.fn-row .sr-n { text-overflow: ellipsis; }
+/* Ergebnis, Details: auf schmalen Bildschirmen (SE, iPad, 16:9) zwei Spalten statt drei; Schlüssel ohne weite Sperrung */
+.narrow .det-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.rs-det .dt-k { letter-spacing: 0.06em; }
+.rs-det { overflow-x: hidden; }
+.an-row { grid-template-columns: 70px minmax(0, 1fr) 34px 56px; }
+.an-k { letter-spacing: 0.05em; white-space: nowrap; }
+/* Schanzeninfo: Zahlen dürfen umbrechen statt „…“ */
+.hi-facts dd { white-space: normal; overflow: visible; }
+/* Arcade: Beschreibung einer Challenge in bis zu zwei Zeilen statt „…“ */
+.ms-t small { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+/* Meisterschaft und Party: Erklärung etwas enger, damit das Fenster auf dem iPhone ohne Scrollen passt */
+.setup { gap: 10px; }
+.su-note { font-size: 12px; line-height: 16px; }
+/* Bezeichnungen in den Einstellungen bleiben einzeilig („Fluglage-Kasten“ nicht am Bindestrich getrennt) */
+.settings .set-row > .lbl:not(.set-txt):not(.set-jp-txt) { white-space: nowrap; }
+/* Titel im Fenster vor dem Start: einzeilig, notfalls kleiner (fitText) */
+#suTitle { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.su-titles { min-width: 0; }
+/* Tabellen: Spalten für Weite und Punkte so breit, dass auch breite Schriften („124,5 m“, „PUNKTE“) hineinpassen */
+.jt-head:not(.rc-grid):not(.fn-grid):not(.st-grid):not(.cp-grid), .jt-row { grid-template-columns: 26px minmax(0, 1fr) 72px 58px; }
+.tk-row { grid-template-columns: 28px minmax(0, 1fr) 68px 54px; }
+.st-grid, .st-row { grid-template-columns: 26px minmax(0, 1fr) 68px 58px; }
+.fn-grid, .fn-row { grid-template-columns: 24px minmax(0, 1fr) 48px 48px 58px; }
+.jt-row .jr-l { text-overflow: ellipsis; }
+/* Scrollbereiche: unten weich auslaufen lassen, solange noch etwas folgt (Klasse setzt fadeAll im Spiel) */
+.fade-more { -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 26px), transparent); mask-image: linear-gradient(to bottom, #000 calc(100% - 26px), transparent); }
+/* Ergebnis, Analyse: Erklärung darf zweizeilig werden statt „…“; schmalere Balken */
+.an-row { grid-template-columns: 70px minmax(0, 1fr) 28px 54px; align-items: center; }
+.an-s { white-space: normal; line-height: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+/* Ergebnis, Details: zwei Spalten in allen Größen, Erklärung bis drei Zeilen */
+.det-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.rs-det .dt-s { -webkit-line-clamp: 3; }
+/* Endstand: die eigene Zeile ist hervorgehoben, das Schild „Du“ braucht es dort nicht (sonst wird der Name knapp) */
+.fn-row .you { display: none; }
+/* Zwischenstand auf schmalen Bildschirmen: Namen bekommen mehr Platz, Weiten etwas kleiner */
+.narrow .st-grid, .narrow .st-row { grid-template-columns: 22px minmax(0, 1fr) 60px 54px; gap: 6px; }
+.narrow .st-grid { letter-spacing: 0.08em; }
+.narrow .st-row .sr-d { font-size: 15px; }
+.st-row .sr-n, .tk-row .tk-n, .cp-row .sr-n { text-overflow: ellipsis; }
+.narrow .an-row { grid-template-columns: 64px minmax(0, 1fr) 50px; }
+.narrow .an-b { display: none; }
+/* Tageschallenge: „Starten“ füllt die Zeile, „Teilen“ ist ein Symbol daneben; beide bleiben in der Karte, bei jeder Schrift */
+.dy-btns #btnDyShare { flex: none; min-width: 0; padding: 0 14px; }
+.dy-btns #btnDyGo { flex: 1 1 auto; }
+/* Endstand: Siegerkarte links etwas schmaler, die Tabelle rechts bekommt den Platz für lange Namen */
+.fin-left { width: clamp(300px, calc(100% - 500px), 350px); }
+.fin-right { left: calc(clamp(300px, calc(100% - 500px), 350px) + 40px); }
+.fn-row .sr-mv { min-width: 18px; }
+/* Sprünge im Ergebnis auf schmalen Bildschirmen: Zahlen enger, die Landung („Ohne Telemark“) passt ganz */
+.narrow .jt-head:not(.rc-grid):not(.fn-grid):not(.st-grid):not(.cp-grid), .narrow .jt-row { grid-template-columns: 22px minmax(0, 1fr) 64px 52px; gap: 6px; }
+.narrow .jt-row .jr-d { font-size: 16px; }
+.narrow .jt-head:not(.rc-grid):not(.fn-grid):not(.st-grid):not(.cp-grid) { letter-spacing: 0.06em; }
+/* Ein Handy für alle: Namen bis 12 Zeichen passen ganz ins Feld */
+.hot-names input { font-size: 15px; letter-spacing: 0.02em; }
+/* Einführung: Text etwas enger, damit Leiste, Schilder und Ring in jeder Karte bleiben */
+.tcard { gap: 6px; padding: 12px 14px; }
+.tcard p { font-size: 12.5px; line-height: 16px; }
+/* Arcade: Zeilen der Liste werden nie gestaucht (sonst ragt eine zweizeilige Beschreibung aus der Zeile) */
+.ms-list > * { flex: none; }
+.narrow .jt-row .jr-l { font-size: 13px; gap: 5px; }
+/* Meisterschaft: Kicker einzeilig (fitText), Stationen ohne Stauchen */
+#cpKicker { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cp-cal > * { flex: none; }
+/* Schanzeninfo und Info: der Inhalt scrollt im Fenster, statt unten vom Fensterrand abgeschnitten zu werden */
+.hillinfo .hi-body { flex: 1 1 auto; }
+/* Neue Gruppe: „Anlegen und teilen“ passt mit Pfeil in den Knopf */
+.addlg .hd-btns .btn { letter-spacing: 0.03em; padding: 0 16px; }
+/* Arcade: Titel der Liste einzeilig, notfalls kleiner (fitText) */
+#msTitle { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+
 /* Cold Medal Games · Fenster „Deine Figur“ (pass/pass.css)
    Aussehen wie die Menüs des Skispringens: Papier mit Doppelrahmen, Knöpfe wie Druckmarken, Futura für Titel und Knöpfe,
    Buchschrift für Lesetext. Farben und Schriften kommen aus den Variablen des Spiels (alle Spiele der Reihe haben sie),
@@ -1767,12 +1860,12 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     <div id="dyTries" class="dy-tries"></div>
     <div class="dy-btns">
       <button type="button" id="btnDyGo" class="btn btn-primary btn-s"><span id="dyGoTxt">Starten</span><span class="ico" data-icon="arrow-right"></span></button>
-      <button type="button" id="btnDyShare" class="btn btn-secondary btn-s"><span class="ico" data-icon="share" data-size="20"></span><span>Teilen</span></button>
+      <button type="button" id="btnDyShare" class="btn btn-secondary btn-s btn-ico" aria-label="Teilen" title="Teilen"><span class="ico" data-icon="share" data-size="20"></span></button>
     </div>
     <textarea id="dyShareTxt" class="dy-share" readonly hidden aria-label="Ergebnis zum Kopieren"></textarea>
   </div>
   <div class="ar-right panel-strong">
-    <div class="rr-head"><h2 class="h2">Challenge &amp; Missionen</h2><span id="msStars" class="rr-sub"></span></div>
+    <div class="rr-head"><h2 id="msTitle" class="h2">Challenge &amp; Missionen</h2><span id="msStars" class="rr-sub"></span></div>
     <div id="msList" class="ms-list"></div>
   </div>
   <div class="res-btns">
@@ -1860,7 +1953,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       </div>
       <div class="cl-side">
         <div id="segClSide" class="seg seg-xs cl-tabs" role="radiogroup" aria-label="Gespräch oder Mitglieder"><button type="button" data-v="talk">Gespräch</button><button type="button" data-v="mem">Mitglieder</button></div>
-        <form id="clSay" class="cl-say" autocomplete="off" hidden><input id="clSayIn" type="text" maxlength="80" enterkeyhint="send" placeholder="Nachricht an die Gruppe …" aria-label="Nachricht an die Gruppe"><button type="submit" id="btnClSay" class="btn btn-secondary btn-s"><span>Senden</span></button></form>
+        <form id="clSay" class="cl-say" autocomplete="off" hidden><input id="clSayIn" type="text" maxlength="80" enterkeyhint="send" placeholder="Nachricht an alle …" aria-label="Nachricht an die Gruppe"><button type="submit" id="btnClSay" class="btn btn-secondary btn-s"><span>Senden</span></button></form>
         <div id="clFeed" class="cg-feed cl-feed"></div>
       </div>
     </div>
@@ -2057,7 +2150,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       <div class="set-col">
         <span class="kicker">TRAINING</span>
         <div class="set-row"><span class="lbl">Wind</span><div id="segWind" class="seg" role="radiogroup" aria-label="Wind im Training"><button type="button" data-v="off">Aus</button><button type="button" data-v="var">Wechselnd</button><button type="button" data-v="strong">Böig</button></div></div>
-        <div class="set-row"><span class="lbl">Startluke</span><div class="stepper"><button type="button" id="setGateMinus" class="mini-btn" aria-label="Luke tiefer">−</button><span id="setGateVal" class="num stepper-val">12</span><button type="button" id="setGatePlus" class="mini-btn" aria-label="Luke höher">+</button><span id="setGateNote" class="note">Standard 12</span></div></div>
+        <div class="set-row"><span class="lbl">Startluke</span><div class="stepper"><button type="button" id="setGateMinus" class="mini-btn" aria-label="Luke tiefer">−</button><span id="setGateVal" class="num stepper-val">12</span><button type="button" id="setGatePlus" class="mini-btn" aria-label="Luke höher">+</button></div></div>
+        <p id="setGateNote" class="set-note set-note-r">Standard 12</p>
         <div class="set-row"><span class="lbl">Tempo</span><div id="segSpeed" class="seg" role="radiogroup" aria-label="Tempo im Training"><button type="button" data-v="1">Normal</button><button type="button" data-v="0.75">75 %</button><button type="button" data-v="0.5">50 %</button></div></div>
       </div>
     </div>
@@ -12245,7 +12339,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp, FIG = window.CMFigur, PASS = window.CMPass;
-  const VERSION = "0.60";
+  const VERSION = "0.61";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -12718,6 +12812,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   const nb = (s) => (typeof s !== "string" ? s : (/\d/.test(s) ? s.replace(NB_U, "$1\u00a0").replace(NB_W, "$1$2\u00a0").replace(NB_O, "$1\u00a0").replace(NB_L, "$1\u00a0").replace(/ · /g, "\u00a0· ") : s)
     .replace(/K-Punkt/g, "K-\u2060Punkt"));   // Trennpunkt bleibt am Wort davor; „K-Punkt“ bricht nicht am Bindestrich (Wortverbinder)
   const txt = (e, s) => { s = nb(s); if (e.textContent !== s) e.textContent = s; };
+  // Zweizeilige Beschreibungen (Arcade): ein Wort mit Ziffern hängt an beiden Nachbarn, umbrochen wird nur zwischen Wörtern ohne Ziffern oder nach „·“
+  const glue = (s) => nb(s).replace(/(\S*\d\S*) (?=[^·])/g, "$1\u00a0").replace(/([^·\s]) (?=\S*\d)/g, "$1\u00a0");
   // dasselbe für die Vorlage und für Text aus innerHTML: nur Textknoten, nie Attribute oder SVG-Pfade
   (function nbWatch() {
     const skip = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, INPUT: 1 };
@@ -12787,11 +12883,11 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     stage.style.transform = rotated ? `translate(${vw}px, 0px) rotate(90deg)` : `translate(${ox}px, ${oy}px)`;
     renderer.lite = Q.dpr <= 1.5;
     renderer.resize(sw, sh, Q.dpr);
-    uiS = clamp(Math.min(sw / 780, sh / 390), 0.62, 1.7);
+    uiS = clamp(Math.min(sw / 780, sh / 390), 0.3, 1.7);   // nie schmaler als 780 (0.60): schmale Fenster ohne Touch werden kleiner, nicht enger
     ui.style.width = sw / uiS + "px"; ui.style.height = sh / uiS + "px"; ui.style.transform = `scale(${uiS})`;
     ui.classList.toggle("narrow", sw / uiS < 820);   // schmale Bildschirme (z. B. iPhone SE): kleinerer Schriftzug, damit nichts überlappt
     turnHint(rotated);
-    setTimeout(() => { if (mode === "result" && rsTab === "ana") drawAnaChart(lastResult); fitLogo(); fitResLeft(); }, 30);   // nach dem Start: erst wenn alles da ist
+    setTimeout(() => { if (mode === "result" && rsTab === "ana") drawAnaChart(lastResult); fitLogo(); fitResLeft(); fitText(); }, 30);   // nach dem Start: erst wenn alles da ist
   }
   // Hochformat: Das Spiel dreht sich mit, ein kurzer Hinweis sagt, dass man das Handy quer halten soll
   let turnEl = null, turnT = 0;
@@ -13021,6 +13117,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     for (const k in SCREENS) vis($(SCREENS[k]), k === name);
     vis($("snack"), false);
     if (name === "tutorial") tutTexts();
+    fitSoon();
   }
   // Einführung: mit Maus oder Touchpad andere Worte (klicken, Maus bewegen ohne Taste, Pfeiltasten)
   const TUT_TXT = {
@@ -13042,6 +13139,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     vis($("scrInfo"), name === "info");
     vis($("scrPic"), name === "pic");
     vis($("scrOnline"), name === "online");
+    fitSoon();
     vis($("scrAsk"), name === "ask");
     vis($("scrShop"), name === "shop");
     vis($("scrJcard"), name === "jcard");
@@ -13076,12 +13174,31 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const tw = Math.max(l.scrollWidth > l.clientWidth ? l.scrollWidth : 0, rg.getBoundingClientRect().width / uiS);   // Breite der Schrift selbst
     if (tw > cw) { const fs = Math.floor(parseFloat(getComputedStyle(l).fontSize) * cw / tw); l.style.fontSize = fs + "px"; l.style.lineHeight = Math.round(fs * 1.04) + "px"; }
   }
+  // Einzeilige Namen und Titel passen in ihr Feld, egal wie breit die Schrift des Geräts läuft: erst kleiner (bis 72 %), erst danach
+  // „…“ (Mat 14.11.2026: nichts abgeschnitten, nichts überlappt). Gemessen ohne Drehung und Maßstab (scrollWidth gegen clientWidth).
+  const FIT_SEL = "#hillName, #rsName, #setJumperTxt, #hdName, #fnKicker, #cpKicker, #suTitle, #msTitle, .sh-cond .kicker";
+  function fitText() {
+    for (const e of document.querySelectorAll(FIT_SEL)) {
+      if (!e.offsetParent) continue;
+      e.style.removeProperty("font-size");
+      const cw = e.clientWidth, sw = e.scrollWidth;
+      if (!cw || sw <= cw + 0.5) continue;
+      const fs = parseFloat(getComputedStyle(e).fontSize);
+      e.style.setProperty("font-size", Math.max(fs * 0.72, Math.floor(fs * (cw - 1.5) / sw * 10) / 10) + "px", "important");   // 1,5 px Luft, sonst bleibt „…“
+    }
+  }
+  // Scrollbereiche: unten weich ausblenden, solange noch etwas folgt, statt einer hart abgeschnittenen Zeile (0.60)
+  const FADE_SEL = ".ms-list, #rcList, .hi-body, .rs-anabox, .rs-det, .sh-pane, .cp-cal, #cpList";
+  function fadeOne(e) { e.classList.toggle("fade-more", e.scrollHeight > e.clientHeight + 2 && e.scrollTop + e.clientHeight < e.scrollHeight - 2); }
+  function fadeAll() { for (const e of document.querySelectorAll(FADE_SEL)) if (e.offsetParent) fadeOne(e); }
+  document.addEventListener("scroll", (ev) => { const e = ev.target; if (e && e.nodeType === 1 && e.matches(FADE_SEL)) fadeOne(e); }, true);
+  function fitSoon() { requestAnimationFrame(() => { fitText(); fadeAll(); }); }   // Deklaration: auch vor dieser Zeile aufrufbar
   function refreshTitle() {
     el.tjFlag.innerHTML = flag(S.nation); txt(el.tjName, S.name || "SPRINGER");
     vis($("btnCode"), !!ON);
     requestAnimationFrame(fitLogo);
     $("hillSketch").innerHTML = hillSketch(H);
-    txt($("hillName"), H.name); txt($("hillSub"), hillSub(H));
+    txt($("hillName"), H.name); txt($("hillSub"), hillSub(H)); fitSoon();
     el.hillStats.textContent = bestText(H);
     const c = S.champ && !S.champ.done ? S.champ : null, p = S.party && !S.party.done ? S.party : null;
     vis($("chBadge"), !!c); if (c) txt($("chBadge"), `${c.station + 1}/${c.hills.length}`);
@@ -14154,7 +14271,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     mode = "result";
     vis(hud, false); showScreen("result");
     const who = r.who || { name: S.name || "SPRINGER", nation: S.nation };
-    $("rsFlag").innerHTML = flag(who.nation); txt($("rsName"), who.name); txt($("rsNation"), who.nation);
+    $("rsFlag").innerHTML = flag(who.nation); txt($("rsName"), who.name); txt($("rsNation"), who.nation); fitSoon();
     const chip = $("rsChip");
     if (ctxMode === "comp") { chip.className = "chip chip-cyan"; chip.textContent = `PLATZ ${r.rank}`; }
     else if (ctxMode === "mission" && ms.m.n28 && r.mission) {
@@ -16254,12 +16371,12 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const nb = S.n28;
     let h = `<div class="ms-tier"><span>NOSTALGIE</span><small>St. Moritz, 18. Februar 1928</small></div>` +
       `<button type="button" class="ms-row n28-pick" data-n28="1"><span class="ms-n">${medalHtml(nb ? nb.medal : 0)}</span><span class="ms-t"><b>Winterspiele 1928</b>` +
-      `<small>Olympiaschanze K66 · zwei Durchgänge wie damals</small></span><span class="ms-s">${nb ? `Note ${fmtNote(nb.best)}` : "neu"}</span></button>`;
+      `<small>Olympiaschanze\u00a0K66\u00a0· zwei Durchgänge wie damals</small></span><span class="ms-s">${nb ? `Note ${fmtNote(nb.best)}` : "neu"}</span></button>`;
     h += `<div class="ms-tier"><span>SCHANZEN-CHALLENGE</span><small class="cup-count">${medalHtml(3)} ${mc[3]} ${medalHtml(2)} ${mc[2]} ${medalHtml(1)} ${mc[1]}</small></div>`;
     for (const key of cupKeys()) {
       const Hc = Hill.getHill(key), b = S.cup[key];
       h += `<button type="button" class="ms-row cup-row" data-cup="${key}"><span class="ms-n">${medalHtml(b ? b.medal : 0)}</span>` +
-        `<span class="ms-t"><b>${esc(Hc.short || Hc.name)}</b><small>HS${Hc.HS} · ${b ? `Bestwert ${fmtInt(b.pts)} Punkte` : "Weite, Punktlandung, Wind lesen, Haltung"}</small></span><span class="ms-s">${b && b.medal ? MEDAL_NAME[b.medal] : ""}</span></button>`;
+        `<span class="ms-t"><b>${esc(Hc.short || Hc.name)}</b><small>${glue(`HS${Hc.HS} · ${b ? `Bestwert ${fmtInt(b.pts)} Punkte` : "Weite, Punktlandung, Wind lesen, Haltung"}`)}</small></span><span class="ms-s">${b && b.medal ? MEDAL_NAME[b.medal] : ""}</span></button>`;
     }
     let lastTier = -1;
     const order = MISSIONS.slice().sort((a, b) => a.tier - b.tier);
@@ -16272,7 +16389,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       const open = tierOpen(m.tier), got = S.missions[m.id] || 0, Hm = Hill.getHill(m.hills ? m.hills[0] : m.hill);
       const where = m.hills ? `${m.hills.length} Schanzen` : `${Hm.short || Hm.name} HS${Hm.HS}`;
       h += `<button type="button" class="ms-row" data-id="${m.id}"${open ? "" : " disabled"}><span class="ms-n">${open ? missionIndex(m) : icon("lock", 16)}</span>` +
-        `<span class="ms-t"><b>${esc(m.title)}</b><small>${esc(where)} · ${esc(m.text)}</small></span><span class="ms-s">${"<i>★</i>".repeat(got)}${"★".repeat(3 - got)}</span></button>`;
+        `<span class="ms-t"><b>${esc(m.title)}</b><small>${glue(`${esc(where)} · ${esc(m.text)}`)}</small></span><span class="ms-s">${"<i>★</i>".repeat(got)}${"★".repeat(3 - got)}</span></button>`;
     }
     $("msList").innerHTML = h;
     txt($("arcNote"), `Challenge ${mc[1] + mc[2] + mc[3]} Medaillen · Missionen ${tot} ★ · Tageschallenge`);
@@ -16428,7 +16545,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     setupKind = kind;
     mode = "setup"; showScreen("setup");
     txt($("suKicker"), kind === "comp" ? "WETTKAMPF" : kind === "champ" ? "MEHRERE STATIONEN, EINE WERTUNG" : "PARTYMODUS");
-    txt($("suTitle"), kind === "comp" ? "Einzelwettkampf" : kind === "champ" ? "Meisterschaft" : "Mehrere Spieler, ein Handy");
+    txt($("suTitle"), kind === "comp" ? "Einzelwettkampf" : kind === "champ" ? "Meisterschaft" : "Ein Handy für alle");
     vis($("suComp"), kind === "comp"); vis($("suHot"), kind === "hot"); vis($("suChamp"), kind === "champ");
     vis($("suHill"), kind === "comp" || (kind === "hot" && S.hot.fmt !== "tour"));
     fillSetupHill();
@@ -16607,7 +16724,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       }
       setPrize($("fnPrize"), comp.prize || 0, comp.beg ? "Preisgeld, halb wegen Anfängerhilfen" : "Preisgeld");
       txt($("fnKicker"), champ ? `${CP.FORMATS[champ.format].label.toUpperCase()} · STATION ${champ.results.length}/${champ.hills.length} · ${hillShort(H.key).toUpperCase()}`
-        : `ENDERGEBNIS · GEGNER: ${CP.LEVELS[comp.level].label.toUpperCase()}`);
+        : `ENDERGEBNIS · ${CP.LEVELS[comp.level].label.toUpperCase()}`);
       txt($("fnTitle"), me && me.rank ? placeText(me.rank) : "Disqualifiziert");
       podium(s.slice(0, 3).map((x) => ({ name: x.name, nation: x.nation, total: x.total, me: x.id === "me", rank: x.rank })));
       let text = "";
@@ -16829,7 +16946,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     applyColor(col);
     $("hdSwatch").style.background = col[0];
     txt($("hdKicker"), `${party ? `TOURNEE ${party.station + 1}/${party.hills.length} · ${hillShort(H.key).toUpperCase()} · ` : ""}${!party || hot.rounds > 1 ? `DURCHGANG ${hot.round} VON ${hot.rounds} · ` : ""}SPRINGER ${hot.idx + 1} VON ${hot.players.length}`);
-    txt($("hdName"), p.name);
+    txt($("hdName"), p.name); fitSoon();
     txt($("hdText"), `Handy an ${p.name} übergeben. Luke ${hot.gate} · ${windTxt(hot.wind.mode === "off" ? 0 : hot.wind.display(0))} · für alle gleich.`);
     const s = hot.standings().filter((x) => x.r.length);
     $("hdStand").innerHTML = s.length ? s.slice(0, 4).map((x) => { const last = x.r[x.r.length - 1]; return standRow({ rank: x.rank, nation: x.nation, name: x.name, dist: last ? last.dist : null, total: x.total }, { helm: hotLook(x.bib) }); }).join("") : "";
@@ -16938,7 +17055,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const names = isParty ? null : CP.champNames(ch);
     const who = (id) => isParty ? (ch.players.find((p) => p.id === id) || { name: "?" }).name : (names[id] ? names[id].name : "?");
     const me = isParty ? null : st.find((x) => x.id === "me");
-    txt($("cpKicker"), isParty ? `PARTY · TOURNEE · ${ch.players.length} SPIELER` : `${started || ch.done ? F.label.toUpperCase() : "MEISTERSCHAFT"} · GEGNER ${CP.LEVELS[ch.level].label.toUpperCase()}`);
+    txt($("cpKicker"), isParty ? `PARTY · TOURNEE · ${ch.players.length} SPIELER` : `${started || ch.done ? F.label.toUpperCase() : "MEISTERSCHAFT"} · ${CP.LEVELS[ch.level].label.toUpperCase()}`);
     // Kopf: nächste Station oder Endstand mit Podest
     vis($("cpPodium"), ch.done); vis($("cpCal"), !ch.done);
     setPrize($("cpPrize"), ch.done && !isParty ? ch.bonus || 0 : 0, "Gesamtprämie");
@@ -17171,8 +17288,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   }
   function waxPaneHtml() {
     const c = snowCond(H, todFor(H), todayStr(), wxFor(H, S.wind));
-    let h = `<div class="sh-wax"><div class="sh-cond"><span class="kicker">HEUTE · ${esc(hillShort(H.key).toUpperCase())} · ${(TOD_NAME[c.tod] || "").toUpperCase()} · ${esc(wxName(c.wx).toUpperCase())}</span>` +
-      `<div class="sh-tline"><b class="sh-temp">${tempTxt(c.t)}</b><span>${c.snow}</span></div>${thermo(c.t)}` +
+    let h = `<div class="sh-wax"><div class="sh-cond"><span class="kicker">SCHNEEBERICHT · ${esc(hillShort(H.key).toUpperCase())}</span>` +
+      `<div class="sh-tline"><b class="sh-temp">${tempTxt(c.t)}</b><span>${c.snow}</span></div><span class="sh-day">Heute · ${TOD_NAME[c.tod] || ""} · ${esc(wxName(c.wx))}</span>${thermo(c.t)}` +
       `<p>Passend: <b>${WAX[c.band].n}</b>. Passt das Wachs, gleitet der Ski schneller, sonst bremst er.${S.svc ? " Dein Servicemann wachst vor jedem Sprung selbst." : " Am Start kannst du es mit einem Tipp wechseln."}</p></div><div class="sh-list">`;
     for (const w of WAX_KEYS) {
       const W = WAX[w], own = ownWax(w), cur = !S.svc && own && (S.wax === w || (!ownWax(S.wax) && w === "u"));
@@ -17295,14 +17412,14 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     const t = S.st || {}, pc = (a, b) => (b ? Math.round(100 * a / b) + " %" : "–");
     const tiles = [["SPRÜNGE", S.jumps || 0, S.jumps ? `Ø ${fmt1(S.sumD / S.jumps)} m` : ""], ["TELEMARK", pc(S.telemarks, S.jumps), `${S.telemarks || 0} Landungen`],
       ["ABSPRUNG", pc(t.perfect || 0, t.n), t.n ? `perfekt (aus ${t.n})` : "ab jetzt gezählt"], ["STÜRZE", t.falls || 0, t.n ? `Ø ${fmt1((t.pts || 0) / t.n)} Punkte` : ""],
-      ["WETTKÄMPFE", t.comps || 0, t.comps ? `${t.wins || 0} ${t.wins === 1 ? "Sieg" : "Siege"} · ${t.pods || 0}× Podest` : "noch keiner"], ["TITEL", t.titles || 0, t.champs ? `aus ${t.champs} ${t.champs === 1 ? "Meisterschaft" : "Meisterschaften"}` : "noch keine Meisterschaft"]];
+      ["WETTKÄMPFE", t.comps || 0, t.comps ? `${t.wins || 0} ${t.wins === 1 ? "Sieg" : "Siege"} · ${t.pods || 0}× Podest` : "noch keiner"], ["TITEL", t.titles || 0, t.champs ? `aus ${t.champs} ${t.champs === 1 ? "Meisterschaft" : "Meisterschaften"}` : "noch keine"]];
     // Messwert-Rekorde: schnellste Anfahrt, höchster Flug, Flugtempo, längste Flugzeit, weitester Sprung, Expertenmodus
     const mx = (k) => (t[k] && isFinite(t[k].v) ? t[k] : null), hs = (o) => (o && Hill.HILLS.some((h) => h.key === o.h) ? hillShort(o.h) : "");
     const vIn = mx("vIn"), hMax = mx("hMax"), vFl = mx("vFl"), ftM = mx("ftMax"), far = mx("far"), exF = mx("exFar");
     const at = (o) => (o ? hs(o) : "noch kein Wert");
     tiles.push(["ANFAHRT", vIn ? `${fmt1(vIn.v)} km/h` : "–", at(vIn, "schnellste")], ["FLUGHÖHE", hMax ? `${fmt1(hMax.v)} m` : "–", at(hMax, "über dem Hang")],
       ["FLUGTEMPO", vFl ? `${fmt1(vFl.v)} km/h` : "–", at(vFl, "Höchstwert")], ["FLUGZEIT", ftM ? `${fmt1(ftM.v)} s` : "–", at(ftM, "längste")],
-      ["WEITE", far ? `${fmt1(far.v)} m` : "–", at(far, "weiteste")], ["EXPERTE", t.ex || 0, t.ex ? `Sprünge, bis ${exF ? fmt1(exF.v) + " m" : "–"}` : "noch kein Sprung"]);
+      ["WEITE", far ? `${fmt1(far.v)} m` : "–", at(far, "weiteste")], ["EXPERTE", t.ex || 0, t.ex ? `Sprünge, bis ${exF ? fmt1(exF.v) + " m" : "–"}` : "noch keiner"]);
     $("rcStats").innerHTML = tiles.map(([k, v, sub]) => `<div class="dt"><span class="dt-k">${k}</span><span class="dt-v">${v}</span><span class="dt-s">${sub || "&nbsp;"}</span></div>`).join("");
     const cb = Object.keys(CP.FORMATS).filter((k) => S.champBest[k]).map((k) => `${CP.FORMATS[k].label} Platz ${S.champBest[k].place} (${LV_TXT[S.champBest[k].level]})`);
     txt($("rcNote"), `Tippe auf eine Schanze für Details${cb.length ? ` · Meisterschaft: ${cb.join(", ")}` : ""} · nur in diesem Browser gespeichert · Inoffizielles Fanspiel, Gegner frei erfunden`);
@@ -18181,7 +18298,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   let resetArm = 0;
   on("btnReset", () => {
     const b = $("btnReset");
-    if (Date.now() - resetArm > 4000) { resetArm = Date.now(); txt(b.querySelector("span"), "Wirklich? Nochmal tippen"); b.classList.add("warn"); setTimeout(() => { if (Date.now() - resetArm >= 3900) { txt(b.querySelector("span"), "Zurücksetzen"); b.classList.remove("warn"); } }, 4000); return; }
+    if (Date.now() - resetArm > 4000) { resetArm = Date.now(); txt(b.querySelector("span"), "Nochmal tippen"); b.classList.add("warn"); setTimeout(() => { if (Date.now() - resetArm >= 3900) { txt(b.querySelector("span"), "Zurücksetzen"); b.classList.remove("warn"); } }, 4000); return; }
     resetSave(); location.reload();
   });
   if (!S.eco) {
