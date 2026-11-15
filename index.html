@@ -7864,7 +7864,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
  *                            Bildhöhe / 390), voegel (Standard ja) }
  *   W.ueber(c, o)            über der ganzen Szene, zuletzt: Glitzern auf dem Schnee, Flocken, Sturmnebel, Schneefahnen am Boden.
  *                            o: { lage, W, H, t, cx (Kameraweg in px auf Bodenhöhe, für die Parallaxe), boden (y der Schneefläche; ohne
- *                            kein Glitzern und keine Schneefahnen), flocken (eigene Flocken, Standard ja), nacht, x, k, dicht (Stärke
+ *                            kein Glitzern und keine Schneefahnen), flocken (eigene Flocken, Standard ja), nacht, x, k, glitzer (Tempo und Menge des Funkelns, Standard 1; kleiner = ruhiger), dicht (Stärke
  *                            des Schleiers bei bedeckt und Sturm, Standard 1; das Skispringen nimmt weniger, damit der Springer gut
  *                            zu sehen bleibt) }
  *   W.rauch(c, x, y, s, t, a0, w)  Rauch, der mit dem Wind zieht (w aus W.wind): bei Windstille gerade, im Sturm flach weggerissen
@@ -7980,8 +7980,9 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       // Glitzern: einzelne Kristalle funkeln auf dem Schnee auf (nicht am Abend)
       if (boden != null && !o.nacht) {
         c.strokeStyle = "rgba(255,255,255,0.95)"; c.lineWidth = 1;
-        for (let i = 0; i < 70; i++) {
-          const x = md(hsh(i, 1) * W * 1.5 - cx, W), y = boden + 10 * k + hsh(i, 2) * (H - boden - 12 * k), tw = Math.sin(t * (2 + hsh(i, 3) * 4) + i * 3);
+        const gz = o.glitzer != null ? Math.max(0.05, +o.glitzer) : 1;   // glitzer < 1: langsamer und seltener (ruhiger, kein Flackern)
+        for (let i = 0, n = Math.round(70 * Math.min(1, gz + 0.3)); i < n; i++) {
+          const x = md(hsh(i, 1) * W * 1.5 - cx, W), y = boden + 10 * k + hsh(i, 2) * (H - boden - 12 * k), tw = Math.sin(t * (2 + hsh(i, 3) * 4) * gz + i * 3);
           if (tw > 0.75) { const r = (tw - 0.75) * 10 * (0.5 + hsh(i, 4)) * k; c.beginPath(); c.moveTo(x - r, y); c.lineTo(x + r, y); c.moveTo(x, y - r); c.lineTo(x, y + r); c.stroke(); }
         }
       }
@@ -11642,7 +11643,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
         }
         return;
       }
-      const sc = J.scale != null ? J.scale : Math.max(0.5, cam.ppm / 27 * JSCALE);
+      // Mindestgröße 0,5, damit man ihn in weiten Bildern sieht; die Eröffnungsfahrt zeigt ihn maßstäblich winzig (J.minScale)
+      const sc = J.scale != null ? J.scale : Math.max(J.minScale != null ? J.minScale : 0.5, cam.ppm / 27 * JSCALE);
       if (J.bar || J.bench) {
         // Startbalken quer über der Spur, auf Hüfthöhe; er bleibt stehen, wenn der Springer losfährt
         const B = J.bar || { x: J.x, y: J.y, rot: J.rot };
@@ -12701,7 +12703,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp, FIG = window.CMFigur, PASS = window.CMPass;
-  const VERSION = "0.65";
+  const VERSION = "0.66";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -13459,7 +13461,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   // die Kamera zieht seitlich am Hang entlang (Parallaxe: Hang, Talboden und Berge ziehen verschieden schnell) und schwebt leicht,
   // dann fliegt sie weich auf den Springer zu und landet in der Startansicht; erst danach misst die Ampel. Tippen überspringt.
   // Weitere Sprünge der Serie ohne Fahrt; eine neue Serie (zurück im Menü) an derselben Schanze bekommt die kurze Fassung.
-  // Erst einmal nur an einer Schanze (Mat: „nur mal für eine Schanze“); weitere hier eintragen.
+  // Erst einmal nur an einer Schanze (Mat: „nur mal für eine Schanze“); weitere hier eintragen. window.__tmNoIntro (nur Prüfungen mit
+  // festen Zeiten, test/online.py): ohne Fahrt.
   const INTRO = { holmenkollen: 1 };
   const INTRO_T = { b0: 3.9, b: 2.2, short: 3.4, skip: 0.75 };   // Beginn und Dauer des Anflugs, Start der kurzen Fassung, Überspringen
   let introHill = null;            // Schanze der laufenden Serie (null: neue Serie, goTitle)
@@ -13757,7 +13760,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     // Eröffnungsfahrt: erster Sprung der Serie an dieser Schanze (nicht im Übungssprung); später in diesem Besuch die kurze Fassung
     const firstHere = introHill !== H.key;
     introHill = H.key;
-    if (INTRO[H.key] && firstHere && !practice) { jc.intro = { t: introSeen[H.key] ? INTRO_T.short : 0, skip: null }; introSeen[H.key] = 1; }
+    if (INTRO[H.key] && firstHere && !practice && !window.__tmNoIntro) { jc.intro = { t: introSeen[H.key] ? INTRO_T.short : 0, skip: null }; introSeen[H.key] = 1; }
     mode = "jump"; particles = []; acc = 0; setOverlay(null); showScreen(null);
     if (jc.intro) introCam(snap(J)); else updateCam(camTarget(snap(J)), 0, true);   // Startbild sofort, dann der Zoom zum Springer
     hud.classList.toggle("intro", !!jc.intro); hud.classList.remove("intro-out"); vis($("introHint"), !!jc.intro);
@@ -18483,6 +18486,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       updateHud(st, true);
       jv = jumperVisual(bodySpring(st, dtReal * jc.slow), good, { mood: jc.mood, gt: jc.gt || 0, gg: jc.light === "green" ? jc.gg || 0 : -1, from: jc.gatePose });
       if (st.phase === "gate") jc.gatePose = jv.pose;
+      if (jc.intro) jv.minScale = 0.05;   // Eröffnungsfahrt: in der Totale maßstäblich winzig, wächst beim Anflug (Mat 15.11.2026)
       if (jc.expert) jv.air = null;
       // Landering am Springer (Hilfe): schließt sich bis zum Aufsetzen, nach dem Tipp kurz in der Farbe des Treffers
       if ((S.assist || jc.practice) && !jc.noAssist && J.phase === "flight" && !J.noseDive && !overlay) {
