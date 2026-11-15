@@ -1471,6 +1471,14 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 /* Arcade: Titel der Liste einzeilig, notfalls kleiner (fitText) */
 #msTitle { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 
+/* 0.65: Eröffnungsfahrt vor dem Sprung. Anzeigen weg, nur der Hinweis zum Überspringen (kommt nach einer Sekunde); danach blenden die
+   Anzeigen weich wieder ein (intro-out). */
+#hud.intro > *:not(#introHint) { opacity: 0 !important; pointer-events: none !important; }
+#hud.intro-out > * { transition: opacity 0.55s ease; }
+.intro-hint { opacity: 0; animation: introHint 0.6s ease 1s forwards; }
+@keyframes introHint { to { opacity: 0.9; } }
+@media (prefers-reduced-motion: reduce) { .intro-hint { animation: none; opacity: 0.9; } }
+
 /* Cold Medal Games · Fenster „Deine Figur“ (pass/pass.css)
    Aussehen wie die Menüs des Skispringens: Papier mit Doppelrahmen, Knöpfe wie Druckmarken, Futura für Titel und Knöpfe,
    Buchschrift für Lesetext. Farben und Schriften kommen aus den Variablen des Spiels (alle Spiele der Reihe haben sie),
@@ -1811,6 +1819,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
   <div id="toast" class="panel toast" hidden><span id="toastTitle" class="toast-title"></span><span id="toastSub" class="toast-sub"></span></div>
   <div id="replayBadge" class="replay-badge" hidden><span class="rec"></span><span id="rpTxt">WIEDERHOLUNG</span></div>
   <div id="replayHint" class="hint-wrap" hidden><div class="hint panel"><span class="ico" data-icon="tap" data-size="22"></span><span>Tippen zum Beenden</span></div></div>
+  <div id="introHint" class="hint-wrap intro-hint" hidden><div class="hint panel"><span class="ico" data-icon="tap" data-size="22"></span><span>Tippen zum Überspringen</span></div></div>
   <!-- Sprung eines anderen ansehen: reagieren und kommentieren wie bei SoundCloud (zum Moment im Flug), Zeitleiste mit den Einträgen der anderen -->
   <div id="wtSide" class="wt-side" role="group" aria-label="Reagieren" hidden></div>
   <button type="button" id="btnWtEnd" class="wt-end" aria-label="Ansehen beenden" hidden><span class="ico" data-icon="x" data-size="20"></span></button>
@@ -10458,6 +10467,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       if (v.particles) this.particles(S, cam, k, v.particles);
       // Vordergrund der Plakat-Orte (Bande, Zweige): vor dem Hang, hinter dem HUD
       Scene.drawFront(ctx, this.pano, cam, this.hor, this.vs, k, W, H, G.anchor);
+      if (v.fore && v.fore.length) this.foreTrees(v.fore);
       if (v.snow) { const dens = WX ? WX.flocken(this.wx) * (0.75 + 0.25 * atmoFor(v.hill.key).snow) : atmoFor(v.hill.key).snow; if (dens > 0) v.snow.draw(ctx, k, dens); }
       if (v.dim) { ctx.fillStyle = "rgba(14,20,28," + v.dim + ")"; ctx.fillRect(0, 0, W, H); }
     }
@@ -10562,6 +10572,12 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       if (own) this.flush(B);
     }
     batch() { return { c: new Path2D(), d: new Path2D(), l: new Path2D(), s: new Path2D(), sh: new Path2D() }; }
+    // Vordergrund der Eröffnungsfahrt (game.js introFore): große Fichten nah an der Kamera, sie ziehen schneller vorbei als der Hang
+    foreTrees(list) {
+      const B = this.batch();
+      for (const f of list) this.spruce(f.x, f.yb, f.h, f.v, false, B);
+      this.flush(B);
+    }
     flush(B) {
       const ctx = this.ctx, P = C.pal;
       ctx.fillStyle = P.kante; ctx.fill(B.c);
@@ -12538,14 +12554,15 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     crowdTick(s, near) {
       const N = this.nodes, cs = this.cs, t = this.ctx.currentTime;
       cs.near += (near - cs.near) * 0.08;
-      this.to(this.bus.crowdF.frequency, 1300 + 5200 * cs.near, 0.15);
+      const far = this.introLvl || 0;   // Eröffnungsfahrt: die Menge klingt ferner, der Wind oben am Turm deutlicher
+      this.to(this.bus.crowdF.frequency, (1300 + 5200 * cs.near) * (1 - 0.4 * far), 0.15);
       this.to(this.bus.crowdG.gain, 0.55 + 0.6 * cs.near, 0.15);
       // Gemurmel: am Start, in der Anfahrt leise, im Flug fast still (Schweben), im Auslauf wieder da;
       // Umgebung (Wind in den Bäumen) nur oben am Start
       const mur = { gate: 0.1, inrun: 0.04, flight: 0.012, outrun: 0.08, crash: 0.08, done: 0.08 }[s.phase];
       if (mur != null) this.to(N.crowd.g.gain, mur, s.phase === "flight" ? 0.3 : 0.5);
       const amb = { gate: 0.06, inrun: 0.03, flight: 0 }[s.phase];
-      this.to(N.amb.g.gain, amb != null ? amb : 0.015, 0.6);
+      this.to(N.amb.g.gain, (amb != null ? amb : 0.015) * (1 + 1.3 * far), 0.6);
       if (cs.hold && t < cs.hold) return;          // während Jubel oder Aufstöhnen nicht dazwischenfunken
       cs.excite *= s.phase === "flight" || s.phase === "inrun" ? 1 : 0.97;
       const e = clamp(cs.excite, 0, 1.3);
@@ -12570,6 +12587,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       if (this.wx) this.weather(this.wx);   // nach silence() heult der Sturm wieder
     },
     reset() { Object.assign(this.cs, { excite: 0, bellsAt: false, hold: 0, lastOut: 0 }); },
+    introLevel(v) { this.introLvl = clamp(+v || 0, 0, 1); },
     jumpEnd() {
       if (!this.ok()) return;
       const N = this.nodes;
@@ -12683,7 +12701,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp, FIG = window.CMFigur, PASS = window.CMPass;
-  const VERSION = "0.64";
+  const VERSION = "0.65";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
@@ -13436,6 +13454,71 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     return t;
   }
 
+  // ------------------------------------------------------------------ Eröffnungsfahrt (0.65, Mat 15.11.2026)
+  // Vor dem ersten Sprung einer Serie an der Schanze: Totale aus der Ferne (ganze Schanze, der Springer winzig oben am Balken),
+  // die Kamera zieht seitlich am Hang entlang (Parallaxe: Hang, Talboden und Berge ziehen verschieden schnell) und schwebt leicht,
+  // dann fliegt sie weich auf den Springer zu und landet in der Startansicht; erst danach misst die Ampel. Tippen überspringt.
+  // Weitere Sprünge der Serie ohne Fahrt; eine neue Serie (zurück im Menü) an derselben Schanze bekommt die kurze Fassung.
+  // Erst einmal nur an einer Schanze (Mat: „nur mal für eine Schanze“); weitere hier eintragen.
+  const INTRO = { holmenkollen: 1 };
+  const INTRO_T = { b0: 3.9, b: 2.2, short: 3.4, skip: 0.75 };   // Beginn und Dauer des Anflugs, Start der kurzen Fassung, Überspringen
+  let introHill = null;            // Schanze der laufenden Serie (null: neue Serie, goTitle)
+  const introSeen = {};            // in diesem Besuch schon die volle Fahrt gesehen
+  const ease = (u) => 0.5 - 0.5 * Math.cos(Math.PI * clamp(u, 0, 1));
+  function introEnd() { return INTRO_T.b0 + INTRO_T.b; }
+  // Totale: Anlaufturm bis zum Beginn des Auslaufs mit den Zuschauern, Kamera in der Bildmitte verankert
+  function introWide(t) {
+    const top = H.inrun[H.inrun.length - 1];
+    const x0 = top.x - 22, x1 = H.U.x + 60, y0 = H.U.y - 8, y1 = top.y + 12;
+    const fit = Math.min(W * 0.86 / (x1 - x0), Hs * 0.8 / (y1 - y0));
+    const e = ease(t / (INTRO_T.b0 + 0.6 * INTRO_T.b));
+    // seitlich am Hang entlang zum Turm und dabei leicht steigend (Hang, Talboden und Berge ziehen verschieden schnell), sanftes Schweben
+    return { cx: x0 + (x1 - x0) * lerp(0.62, 0.36, e), cy: (y0 + y1) / 2 + (y1 - y0) * (lerp(-0.03, 0.05, e) + 0.02 * Math.sin(t * 1.15) * (1 - e * 0.5)),
+      ppm: fit * lerp(0.94, 1.08, e), ax: W / 2, ay: Hs / 2 };
+  }
+  // Übergang zwischen zwei Kameras: Zoom gleichmäßig (logarithmisch), der Springer gleitet auf dem Bildschirm an seinen Platz
+  function camBlend(a, b, gx, gy, w) {
+    const sa = [a.ax + (gx - a.cx) * a.ppm, a.ay - (gy - a.cy) * a.ppm], sb = [b.ax + (gx - b.cx) * b.ppm, b.ay - (gy - b.cy) * b.ppm];
+    const ppm = Math.exp(lerp(Math.log(a.ppm), Math.log(b.ppm), w)), sx = lerp(sa[0], sb[0], w), sy = lerp(sa[1], sb[1], w);
+    return { cx: gx - (sx - W / 2) / ppm, cy: gy - (Hs / 2 - sy) / ppm, ppm, ax: W / 2, ay: Hs / 2 };
+  }
+  function introCam(st) {
+    const it = jc.intro, T = camTarget(st), gx = st.x, gy = st.y;
+    let c;
+    if (it.skip) c = camBlend(it.skip.from, T, gx, gy, ease((it.t - it.skip.t0) / INTRO_T.skip));
+    else c = it.t <= INTRO_T.b0 ? introWide(it.t) : camBlend(introWide(it.t), T, gx, gy, ease((it.t - INTRO_T.b0) / INTRO_T.b));
+    Object.assign(cam, c); cam.init = true;
+  }
+  // Vordergrund: Fichten nah an der Kamera (Lage beim Start in Bildbreite/-höhe), ziehen 1,8-mal so schnell wie der Hang ins Bild
+  // und fliegen beim Anflug zur Seite hinaus
+  const INTRO_FORE = [[-0.62, 1.3, 0.95, 1], [-0.5, 1.26, 0.78, 2], [-0.36, 1.34, 1.05, 1], [-0.22, 1.3, 0.72, 0], [-0.1, 1.36, 0.6, 2]];
+  function introFore() {
+    const it = jc && jc.intro;
+    if (!it) return null;
+    const w0 = introWide(0), wt = introWide(Math.min(it.t, INTRO_T.b0));
+    const dx = (w0.cx - cam.cx) * w0.ppm * 1.8, s = Math.pow(cam.ppm / wt.ppm, 1.5);
+    if (s > 6) return null;
+    return INTRO_FORE.map(([fx, fy, fh, v]) => ({ x: W / 2 + (fx * W + dx - W / 2) * s, yb: Hs / 2 + (fy * Hs - Hs / 2) * s, h: fh * Hs * s, v }));
+  }
+  function introStep(dt) {
+    const it = jc.intro;
+    it.t += dt;
+    Snd.introLevel(it.skip ? 0 : 1 - smooth((it.t - INTRO_T.b0) / INTRO_T.b));
+    if (it.t >= (it.skip ? it.skip.t0 + INTRO_T.skip : introEnd())) {
+      jc.intro = null;
+      updateCam(camTarget(snapLive(J, 0)), 0, true);
+      Snd.introLevel(0);
+      hud.classList.remove("intro"); hud.classList.add("intro-out"); vis($("introHint"), false);
+      setTimeout(() => hud.classList.remove("intro-out"), 700);
+    }
+  }
+  function skipIntro() {
+    const it = jc && jc.intro;
+    if (!it || it.skip || it.t >= introEnd() - 0.4) return;
+    it.skip = { t0: it.t, from: Object.assign({}, cam) };
+    vis($("introHint"), false);
+  }
+
   function updateCam(t, dt, snapNow) {
     if (!cam.init || snapNow) { Object.assign(cam, t); cam.init = true; return; }
     const a = 1 - Math.exp(-3.2 * dt), rc = 9;
@@ -13575,6 +13658,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 
   function goTitle() {
     saveChamp(); champ = null; party = null;
+    introHill = null; hud.classList.remove("intro", "intro-out");
     leaveArcadeJump();
     chalPending = false;
     mode = "title"; J = null; jc = null; comp = null; hot = null; bd = null; particles = []; ctxMode = "training"; setOverlay(null);
@@ -13670,8 +13754,13 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     if (H.era) renderer.setLook(Object.assign(lookFor(S.look), { era: 1928 }));   // Pullover, Mütze, Holzski
     const yl = champLeader();
     if (yl && ((champ && ctxMode === "comp" && yl === "me") || (party && ctxMode === "hot" && yl === hot.current().id))) renderer.look.bib = YELLOW;
+    // Eröffnungsfahrt: erster Sprung der Serie an dieser Schanze (nicht im Übungssprung); später in diesem Besuch die kurze Fassung
+    const firstHere = introHill !== H.key;
+    introHill = H.key;
+    if (INTRO[H.key] && firstHere && !practice) { jc.intro = { t: introSeen[H.key] ? INTRO_T.short : 0, skip: null }; introSeen[H.key] = 1; }
     mode = "jump"; particles = []; acc = 0; setOverlay(null); showScreen(null);
-    updateCam(camTarget(snap(J)), 0, true);   // Startbild sofort, dann der Zoom zum Springer
+    if (jc.intro) introCam(snap(J)); else updateCam(camTarget(snap(J)), 0, true);   // Startbild sofort, dann der Zoom zum Springer
+    hud.classList.toggle("intro", !!jc.intro); hud.classList.remove("intro-out"); vis($("introHint"), !!jc.intro);
     vis(hud, true); vis(el.replayBadge, false); vis(el.replayHint, false); vis(el.playerPanel, true); vis(el.btnPause, true);
     el.ppFlag.innerHTML = flag(who.nation); txt(el.ppName, who.name); txt(el.ppNation, who.nation);
     vis(el.toast, false); vis(el.distBox, false); vis(el.distChip, false); el.timingLbl.textContent = "";
@@ -13891,6 +13980,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     if (overlay) return false;
     if (mode === "replay") { if (rp && rp.pause) wtClose(); else endReplay(); return true; }
     if (mode !== "jump" || !J || jc.finished) return false;
+    if (J.phase === "gate" && jc.intro) { skipIntro(); return true; }
     if (J.phase === "gate") { startInrun(); return true; }
     if (jc.freeze === "takeoff" && J.phase === "inrun") { jc.freeze = null; takeoffTap(); return true; }
     if (jc.freeze === "land") jc.freeze = null;
@@ -13998,7 +14088,8 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     jc.ts = jc.ts == null ? tsGoal : jc.ts + (tsGoal - jc.ts) * (1 - Math.exp(-dtReal / 0.18));
     const dt = dtReal * jc.ts;
     if (J.phase === "gate") { jc.gt = (jc.gt || 0) + dtReal; if (jc.light === "green") jc.gg = (jc.gg || 0) + dtReal; }
-    if (J.phase === "gate" && jc.light === "red") {
+    if (jc.intro) introStep(dtReal);
+    if (J.phase === "gate" && jc.light === "red" && !jc.intro) {
       jc.tLight -= dtReal;
       if (jc.tLight <= 0) { jc.light = "green"; Snd.green(); vib(15); }
     }
@@ -18256,7 +18347,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     notePtr(e);
     if (interactive(e.target)) return;
     if (overlay) return;
-    if (mode === "jump" && J && J.phase === "gate" && (nearGateBox(e) || performance.now() - gateTapT < 450)) return;
+    if (mode === "jump" && J && J.phase === "gate" && !(jc && jc.intro) && (nearGateBox(e) || performance.now() - gateTapT < 450)) return;
     if (mode !== "jump" && mode !== "replay") return;
     e.preventDefault();
     const p = toStage(e);
@@ -18388,7 +18479,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
       if (!overlay) stepJump(dtReal);
       st = snapLive(J, overlay ? 0 : acc); lastSt = st;
       good = J.landing && J.landing.kind !== "fall" && J.landing.dist >= H.K - 5;
-      updateCam(camTarget(st), dtReal, false);
+      if (jc.intro) introCam(st); else updateCam(camTarget(st), dtReal, false);
       updateHud(st, true);
       jv = jumperVisual(bodySpring(st, dtReal * jc.slow), good, { mood: jc.mood, gt: jc.gt || 0, gg: jc.light === "green" ? jc.gg || 0 : -1, from: jc.gatePose });
       if (st.phase === "gate") jc.gatePose = jv.pose;
@@ -18455,7 +18546,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
     if (mode === "final" || mode === "champ") drawPodium(tAnim);
     renderer.draw({ hill: H, cam, t: tAnim, jumper: jv, ghost, ghosts, gate: J && J.phase === "gate" ? J.gate : null, best,
       ideal: mode === "jump" && jc && jc.ideal && J && J.phase !== "gate" ? jc.ideal : null,
-      particles, flags: true, windNow: wNow, snow, focus, screen: screenText(st),
+      particles, flags: true, windNow: wNow, snow, focus, screen: screenText(st), fore: mode === "jump" ? introFore() : null,
       speedLines: st && st.phase === "inrun" ? { a: clamp((st.v - 3) / 20, 0, 1) * 0.85, ang: st.ang } : null,
       cap: (mode === "jump" || mode === "result") && jc && jc.cap28 ? jc.cap28 : null, dim });
   }
@@ -18705,7 +18796,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 
   // für Tests
   window.__tm = { get J() { return J; }, get mode() { return mode; }, get comp() { return comp; }, get hot() { return hot; }, get bd() { return bd; },
-    onAction, newJump, get H() { return H; }, S, finishJump, setWx, wxFor, get wx() { return wxNow; }, get drag() { return drag; }, padScale: () => padK() * uiS, get chal() { return chal; }, get club() { return club; }, openClub, openGroup: openClub, get lastResult() { return lastResult; }, chalUrl, chalDecode, Hap, setHill, get online() { return { on: !!ON, oc: S.oc, osave: S.osave, clubs: S.clubs, cseen: S.cseen, opend: S.opend }; }, cloudNow, get cam() { return cam; }, get st() { return lastSt; }, get Q() { return Q; }, get jc() { return jc; }, renderer, Snd, startWatch, ghostPack2, ghostUnpack2, get rp() { return rp; }, talkPost, openFb, fbCheck: (n) => { fbRun = n; fbMaybe(); }, get overlay() { return overlay; } };
+    onAction, newJump, get H() { return H; }, S, finishJump, setWx, wxFor, get wx() { return wxNow; }, get drag() { return drag; }, padScale: () => padK() * uiS, get chal() { return chal; }, get club() { return club; }, openClub, openGroup: openClub, get lastResult() { return lastResult; }, chalUrl, chalDecode, Hap, setHill, get online() { return { on: !!ON, oc: S.oc, osave: S.osave, clubs: S.clubs, cseen: S.cseen, opend: S.opend }; }, cloudNow, get cam() { return cam; }, get st() { return lastSt; }, get Q() { return Q; }, get jc() { return jc; }, renderer, Snd, startWatch, ghostPack2, ghostUnpack2, get rp() { return rp; }, talkPost, openFb, fbCheck: (n) => { fbRun = n; fbMaybe(); }, get overlay() { return overlay; }, INTRO, INTRO_T };
 })();
 
 </script>
