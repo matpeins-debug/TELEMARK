@@ -253,6 +253,10 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .fb-chip { position: absolute; right: 24px; bottom: 46px; height: 46px; padding: 0 14px 0 11px; gap: 8px; }
 .fbq { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
 .fbq-k { font-family: var(--font-label); font-weight: 700; font-size: 10px; line-height: 11px; letter-spacing: 0.16em; color: var(--red); white-space: nowrap; }
+/* 0.64 (Mat: „invertieren, dass es rot ist“): rot wie „Training“, Schrift und Zeichen hell */
+.chip-btn.fb-chip { background: var(--red); color: #FBF4E4; border: 2px solid var(--ink-deep);
+  box-shadow: inset 0 0 0 2px var(--red), inset 0 0 0 3px rgba(251, 244, 228, 0.5), 0 3px 0 var(--ink-deep); }
+.chip-btn.fb-chip .ico, .chip-btn.fb-chip .fbq-k { color: #FBF4E4; }
 .fbq-t { font-family: var(--font-display); font-weight: 700; font-size: 15px; line-height: 17px; white-space: nowrap; }
 
 .tut { position: absolute; inset: 0; padding: 24px 32px 22px; display: flex; flex-direction: column; gap: 14px; }
@@ -12679,7 +12683,7 @@ body.era28 #windFlag, body.era28 #ppFlag, body.era28 #hud .ico { filter: sepia(0
 (function () {
   "use strict";
   const Hill = window.TMHill, Ph = window.TMPhys, RM = window.TMRender, CP = window.TMComp, FIG = window.CMFigur, PASS = window.CMPass;
-  const VERSION = "0.63";
+  const VERSION = "0.64";
   // Seiten-Einstellungen aus dem Build (eigenes Hosting: Adresse, Impressum); im claude.ai-Artefakt leer
   const SITE = Object.assign({ web: false, url: "", impressum: null }, {"web": true, "url": "https://matpeins-debug.github.io/TELEMARK/", "hoster": "GitHub Pages (GitHub Inc., USA)", "drittland": "GitHub ist nach dem EU-US Data Privacy Framework zertifiziert; die Übermittlung in die USA stützt sich auf den Angemessenheitsbeschluss der EU-Kommission dazu.", "impressum": {"name": "", "adresse": "", "mail": ""}, "sb": {"url": "https://pqpvgkslozsekjywpdrf.supabase.co", "key": "sb_publishable_KkKe9jchmXYp_-OEmB8WLQ_gZLXrRhF"}} || {});
   // Online (Supabase): Gruppen mit Live-Rangliste und Spielstand per Code. Nur auf der eigenen Seite eingerichtet, im Artefakt aus.
